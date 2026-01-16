@@ -41,7 +41,9 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 *Critères d'Acceptation (AC) :*
 - [ ] Formulaire demandant le N° TVA.
 - [ ] Appel API VIES/BCE pour pré-remplir (Nom, Adresse).
+- [ ] **Fallback** : Permettre la saisie manuelle si l'API échoue.
 - [ ] Création du User (Client) et de la Session en base de données.
+- [ ] **Auth** : Implémenter "Mot de passe oublié" (SendGrid/Nodemailer).
 - [ ] Envoi email confirmation (SMTP o2switch).
 
 ---
@@ -51,6 +53,7 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 ### US-05 : Dashboard Formateur
 - [ ] Vue "Mes Missions".
 - [ ] Accès aux détails logistiques.
+- [ ] **Profil** : Édition Bio et Photo.
 
 ### US-06 : Upload Liste de Présence
 - [ ] Drag & Drop fichier PDF/Image.
@@ -61,4 +64,13 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 ## 🔴 Sprint 3 : Administration & Facturation
 
 ### US-07 : Vue Master Calendar (Admin)
+- [ ] Vue globale ressources (FullCalendar).
+- [ ] Drag & Drop modifications.
+
 ### US-08 : Odoo Prep (Pré-facturation)
+- [ ] Liste sessions terminées + Preuve.
+- [ ] Calcul prix final.
+
+### US-09 : Gestion Formateurs (Onboarding)
+- [ ] CRUD Formateurs (Création manuelle par Admin).
+- [ ] Attribution Zones & Compétences.

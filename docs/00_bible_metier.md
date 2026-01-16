@@ -61,8 +61,10 @@ Le système gère la visibilité des formateurs via une matrice de régions (Pro
 3.  **Logique d'héritage** : Toute zone "Prédilection" est incluse d'office dans "Expertise".
 4.  **Gestion du "Désert" Géographique** : Si une demande client tombe dans une zone non couverte par les experts disponibles :
     *   Le système ne bloque pas.
-    *   Il propose un bouton **"Demander un devis spécial"**.
-    *   Cela crée une "Option" (Lead) dans le dashboard Admin pour négociation manuelle.
+    *   Il propose un bouton **"Demander une prise en charge personnalisée"**.
+    *   Cela crée une **Session "Non Attribuée"** dans le dashboard Admin.
+    *   Le client reçoit une notification : "Votre demande est bien enregistrée, nous recherchons le meilleur expert pour votre zone. Vous serez recontacté sous 24h."
+    *   L'Admin devra utiliser la fonction de **Forçage** pour assigner un formateur (qui pourra être hors zone).
 
 ### 2.3. Disponibilité & Synchronisation
 *   **Exclusivité Quotidienne (Verrouillage Inter-Clients)** : Un formateur réservé par le Client A est **invisible** pour le Client B sur toute la journée J. Cela protège contre les retards et temps de trajet.
@@ -82,7 +84,10 @@ Le système gère la visibilité des formateurs via une matrice de régions (Pro
     2.  **Formation** : Sélection dans le catalogue.
     3.  **Intervenant** : Choix du formateur (si plusieurs dispos). Présentation (Photo, Bio, "Pourquoi me choisir").
     4.  **Date** : Calendrier temps réel (ne montre que les dispos).
-    5.  **Identification** : Création de compte simplifiée via **N° TVA** (Récupération auto des données VIES/BCE).
+    5.  **Identification** : Création de compte simplifiée via **N° TVA**.
+        *   Récupération auto des données (VIES/BCE).
+        *   *Mode dégradé* : Saisie manuelle autorisée si API indisponible.
+        *   Inclus : Gestion de réinitialisation de mot de passe.
 
 ### 3.2. Espace Client (Tableau de Bord)
 *   **Dashboard** : Timeline des sessions (À venir, En attente d'infos, Terminée). Notifications urgentes.
@@ -94,8 +99,10 @@ Le système gère la visibilité des formateurs via une matrice de régions (Pro
 *   **Mes Missions** : Liste des prestations. Détail avec adresse cliquable (GPS) et pack logistique.
 *   **Centre Documentaire** : Zone d'upload (Drag & Drop) pour la liste de présence signée (Preuve de prestation).
 *   **Reporting** : Estimation des honoraires du mois.
+*   **Mon Profil** : Édition autonome de la Bio et de la Photo.
 
 ### 3.4. Panneau Administrateur (L'Administrateur)
+*   **Gestion des Formateurs (Onboarding)** : Création manuelle des comptes formateurs (Pas d'inscription publique). Configuration de leurs zones et compétences.
 *   **Master Calendar** : Vue globale de l'occupation de toute l'équipe.
 *   **Gestion Catalogue** : Création formations, liaisons Experts/Zones.
 *   **Gestion du "Forçage"** :
@@ -177,6 +184,5 @@ Ce formulaire est dynamique et s'adapte au type de formation.
 *   **SSL** : Obligatoire pour toutes les transactions.
 
 ### 6.3. Infrastructure Technique
-*   **Emails** : Utilisation impérative d'un service SMTP transactionnel (SendGrid, Mailjet) pour la délivrabilité.
+*   **Emails** : Utilisation du service SMTP de l'hébergeur (o2switch) pour la phase de lancement.
 *   **Cartographie** : API Google Maps (Places & Distance Matrix) pour la précision des adresses et des frais.
-*   **Mode Offline** : L'espace formateur (PWA ou Web) doit permettre la consultation des fiches mission sans réseau (cache).

@@ -96,7 +96,7 @@ sequenceDiagram
         *   Bouton "Choisir ce formateur".
     *   **Cas "Aucun formateur trouvé"** (Zone Désert) :
         *   Message : "Aucun expert disponible dans votre zone pour cette date."
-        *   Bouton : **"Demander un devis spécial"** (Crée un Lead Admin).
+        *   Bouton : **"Demander une prise en charge personnalisée"** (Crée une Session "Non Attribuée" Admin).
 
 #### ✅ Confirmation / Succès (`/checkout/success`)
 *   **Message Rassurant** : "Votre demande de réservation est confirmée !".
@@ -113,6 +113,7 @@ sequenceDiagram
 *   **Inscription** :
     *   Champ unique : **Numéro de TVA**.
     *   Bouton "Rechercher".
+    *   *Option* : "Saisir mes coordonnées manuellement" (si API indisponible).
     *   *Affichage dynamique* : Nom Entreprise, Adresse (non modifiable), Champ Email, Champ Mot de passe.
     *   Checkbox "J'accepte les CGV".
     *   *Note* : Flux "Tunnel Direct" (Checkout). Le choix de date est conservé en session pendant le login.
@@ -165,6 +166,7 @@ sequenceDiagram
     *   Bouton "Détails".
 *   **Mon Profil / Disponibilités** :
     *   Champ Input : **"Lien iCal (Google/Outlook)"** pour synchronisation auto.
+    *   Bouton "Éditer ma Bio / Photo".
     *   Switch : "Me déclarer indisponible temporairement".
 *   **Calendrier** :
     *   Vue agenda simple.
