@@ -6,9 +6,9 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 
 ### US-00 : Spike Déploiement & Architecture (P0)
 **Objectif :** Valider la faisabilité technique de la stack sur l'hébergement partagé o2switch avant tout développement métier.
-- [ ] **POC Hello World** : Déployer un Monorepo minimal (NestJS + Next.js) sur o2switch.
-- [ ] **Test Persistance** : Vérifier que le processus NestJS (Backend) ne se fait pas tuer par le Garbage Collector de cPanel.
-- [ ] **Test Base de Données** : Connexion MariaDB depuis le VPS/Mutualisé.
+- [x] **POC Hello World** : Déployer un Monorepo minimal (NestJS + Next.js) sur o2switch.
+- [x] **Test Persistance** : Vérifier que le processus NestJS (Backend) ne se fait pas tuer par le Garbage Collector de cPanel.
+- [x] **Test Base de Données** : Connexion MariaDB depuis le VPS/Mutualisé.
 
 ### US-01 : Initialisation du Projet
 - [ ] **Mise en place Stack** : Initialiser Monorepo pnpm (NestJS + Next.js).

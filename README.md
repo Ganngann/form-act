@@ -51,18 +51,19 @@ Le projet repose sur une stack moderne, robuste et typée (**Node.js + TypeScrip
 
 *(Cette section sera complétée au fur et à mesure de l'initialisation du code)*
 
-1.  **Prérequis** : Node.js (LTS), pnpm. (Pas de MariaDB local nécessaire, SQLite est utilisé en dev).
-2.  **Installation des dépendances** :
+1.  **Prérequis** : Node.js (LTS), pnpm (Installer via `npm i -g pnpm`).
+2.  **Installation des dépendances** (Racine) :
     ```bash
-    npm install
+    pnpm install
     ```
 3.  **Configuration** :
-    *   Dupliquer `.env.example` en `.env`.
-    *   Configurer la connexion BDD (`DATABASE_URL`).
+    *   **Backend** : Dupliquer `apps/api/.env` (si présent) ou créer le fichier selon les besoins (voir `apps/api/README.md` s'il existe). Le projet est configuré par défaut avec SQLite.
 4.  **Lancement (Dev)** :
     ```bash
-    npm run dev
+    pnpm dev
     ```
+    *   Frontend : http://localhost:3000
+    *   Backend : http://localhost:3001
 
 ## 📝 Licence
 
