@@ -113,6 +113,15 @@ sequenceDiagram
     *   Statuts visuels : 🔴 "Logistique manquante", 🟠 "Participants manquants", 🟢 "Prêt", 🔵 "Terminé".
     *   Action : Bouton "Gérer" sur chaque ligne.
 
+#### 🏢 Profil & Facturation (`/dashboard/client/profil`)
+*   **Coordonnées** :
+    *   Nom Entreprise, N° TVA (Modifiable avec re-validation VIES).
+    *   Adresse Siège.
+*   **Contacts** :
+    *   Email Principal.
+    *   Email Comptabilité (pour envoi factures).
+*   **Historique** : Liste des modifications (Audit log).
+
 #### 📝 Fiche Session / Logistique (`/dashboard/client/session/[id]`)
 *   **État** : Barre de progression (Commande > Logistique > Participants > Terminé).
 *   **Bloc 1 : Lieu & Accueil**
@@ -148,6 +157,14 @@ sequenceDiagram
 *   **Validation** : Prévisualisation image.
 *   Bouton "Envoyer et Clôturer".
 
+#### 💰 Reporting & Honoraires (`/dashboard/formateur/reporting`)
+*   **Sélecteur Mois** : (ex: Octobre 2023).
+*   **Synthèse** :
+    *   Total Missions effectuées.
+    *   Total Km parcourus.
+    *   Estimation Honoraires HT.
+*   **Liste Détaillée** : Date / Client / Km / Montant.
+
 ---
 
 ### 2.4. Espace Admin (Back-Office)
@@ -162,3 +179,17 @@ sequenceDiagram
 *   CRUD Formations.
 *   Gestion des liaisons Formateurs <-> Zones <-> Formations.
 *   Paramétrage des prix de base.
+
+#### 🔧 Interface de Forçage (Modale Admin sur Session)
+*   **Actions Critiques** :
+    *   Bouton "Déverrouiller Logistique" (Permet au client de modifier à J-1).
+    *   Bouton "Changer Formateur" (Ignore règles géographiques).
+    *   Bouton "Annuler Session" (Avec motif + Email auto).
+
+#### 💶 Odoo Prep (`/admin/odoo-prep`)
+*   **File d'attente** : Liste sessions terminées avec preuve uploadée.
+*   **Vue Détail Dossier** :
+    *   Vérification Données Facturation (TVA, Adresse).
+    *   Ajustement Prix Final (+/- Remise, + Frais Km).
+    *   Vérification Montant HTVA.
+*   **Action Finale** : Bouton "Marquer comme Facturé & Archiver".
