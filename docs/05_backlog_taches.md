@@ -5,8 +5,11 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 ## 🟢 Sprint 1 : Fondations & Tunnel de Réservation (MVP)
 
 ### US-01 : Initialisation du Projet
-- [ ] **Mise en place Stack** : Installer NestJS (API) et Next.js (Front).
-- [ ] **Config DB** : Monter MariaDB (Docker local) et initialiser Prisma.
+- [ ] **Mise en place Stack** : Initialiser Monorepo pnpm (NestJS + Next.js).
+- [ ] **Setup Design System** : Configurer `globals.css` (Variables couleurs HSL), Police `Inter`, et installer composants Shadcn de base (`button`, `card`, `input`).
+- [ ] **Config DB** : Configurer Prisma pour SQLite (Dev) et préparer le switch MariaDB (Prod).
+- [ ] **Script "Jules-Ready"** : Créer une commande `npm run init:project` qui installe tout et génère la DB SQLite en une fois.
+- [ ] **Seeding** : Créer le script `prisma/seed.ts` pour peupler la DB avec des données de test (Formateurs, Formations).
 - [ ] **CI/CD** : Configurer GitHub Actions pour le Lint et les Tests.
 
 ### US-02 : Catalogue des Formations (Public)

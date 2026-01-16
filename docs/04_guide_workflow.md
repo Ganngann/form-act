@@ -6,8 +6,8 @@ Comment piloter le développement de Form-Act efficacement avec une IA générat
 
 Pour chaque User Story (US) du Backlog, suivez scrupuleusement ces étapes :
 
-1.  **CONTEXTE** : Copiez le contenu de `docs/ai_session_brief.md` dans le chat de l'IA.
-2.  **MISSION** : Copiez l'US complète (avec les AC) depuis `docs/backlog.md`.
+1.  **CONTEXTE** : Copiez le contenu de `AGENT.md` dans le chat de l'IA.
+2.  **MISSION** : Copiez l'US complète (avec les AC) depuis `docs/05_backlog_taches.md`.
     *   *Prompt : "Réalise l'US-02. Voici les critères d'acceptation..."*
 3.  **REVIEW** : L'IA génère le code.
     *   Vérifiez qu'elle a créé des petits fichiers (Action-Based).
@@ -16,7 +16,7 @@ Pour chaque User Story (US) du Backlog, suivez scrupuleusement ces étapes :
     *   Lancer les tests : `npx playwright test`.
     *   Si vert : Commit.
     *   Si rouge : Copier l'erreur à l'IA -> *"Corrige ça"*.
-5.  **CLÔTURE** : Mettre une croix `[x]` dans le `backlog.md`.
+5.  **CLÔTURE** : Mettre une croix `[x]` dans le `05_backlog_taches.md`.
 
 ## 2. Comment rédiger une bonne US pour l'IA ?
 

@@ -2,6 +2,23 @@
 
 Ce document définit l'organisation stricte des fichiers. L'IA doit s'y conformer pour éviter la dispersion du code.
 
+## 0. Racine Monorepo (pnpm)
+
+```text
+/
+├── apps/                             # Applications (Deployables)
+│   ├── api/                          # Backend NestJS
+│   └── web/                          # Frontend Next.js
+├── packages/                         # Librairies partagées
+│   └── shared-types/                 # DTOs, Enums, Interfaces (Partagé Back/Front)
+│       └── src/
+│           ├── index.ts
+│           └── dto/
+├── pnpm-workspace.yaml               # Config Monorepo
+├── package.json                      # Scripts globaux
+└── turbo.json (Optionnel)            # Cache de build
+```
+
 ## 1. Backend (NestJS) - `apps/api`
 
 L'architecture est modulaire. Chaque module métier (Reservation, Auth, Catalog) est isolé.

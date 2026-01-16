@@ -94,6 +94,16 @@ sequenceDiagram
     *   **Liste Formateurs Dispos** :
         *   Avatar, Prénom, "Expertise".
         *   Bouton "Choisir ce formateur".
+    *   **Cas "Aucun formateur trouvé"** (Zone Désert) :
+        *   Message : "Aucun expert disponible dans votre zone pour cette date."
+        *   Bouton : **"Demander un devis spécial"** (Crée un Lead Admin).
+
+#### ✅ Confirmation / Succès (`/checkout/success`)
+*   **Message Rassurant** : "Votre demande de réservation est confirmée !".
+*   **Récapitulatif Commande** : Date, Formateur, Prix estimé.
+*   **Call To Action (Next Step)** :
+    *   "Complétez les infos logistiques maintenant" (Bouton principal).
+    *   "Aller à mon tableau de bord" (Bouton secondaire).
 
 ---
 
@@ -105,6 +115,13 @@ sequenceDiagram
     *   Bouton "Rechercher".
     *   *Affichage dynamique* : Nom Entreprise, Adresse (non modifiable), Champ Email, Champ Mot de passe.
     *   Checkbox "J'accepte les CGV".
+    *   *Note* : Flux "Tunnel Direct" (Checkout). Le choix de date est conservé en session pendant le login.
+
+#### 🔑 Mot de Passe Oublié (`/forgot-password`)
+*   **Formulaire Simple** :
+    *   Input Email.
+    *   Bouton "Réinitialiser".
+*   **Feedback** : "Si ce compte existe, un lien a été envoyé."
 
 #### 📊 Dashboard Client (`/dashboard/client`)
 *   **KPIs** : Formations à venir (nb), Actions requises (nb).
@@ -146,6 +163,9 @@ sequenceDiagram
     *   Client, Ville.
     *   Bouton "Y aller" (Waze/Maps).
     *   Bouton "Détails".
+*   **Mon Profil / Disponibilités** :
+    *   Champ Input : **"Lien iCal (Google/Outlook)"** pour synchronisation auto.
+    *   Switch : "Me déclarer indisponible temporairement".
 *   **Calendrier** :
     *   Vue agenda simple.
     *   Indicateurs de missions.

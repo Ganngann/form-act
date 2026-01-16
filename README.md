@@ -23,6 +23,7 @@ La documentation complète du projet se trouve dans le dossier `docs/` :
 *   [**🎨 Wireframes Fonctionnels**](docs/03_wireframes_fonctionnels.md) : Maquettes et parcours utilisateurs.
 *   [**🎓 Guide Workflow**](docs/04_guide_workflow.md) : Procédures de travail.
 *   [**📋 Backlog Tâches**](docs/05_backlog_taches.md) : Suivi de l'avancement du projet.
+*   [**🐛 Bugs & Questions**](docs/06_journal_bugs_questions.md) : Journal des points bloquants et questions ouvertes.
 *   [**🤖 Brief IA (AGENT.md)**](AGENT.md) : Instructions spécifiques pour l'assistant IA.
 
 ## 🛠 Stack Technique
@@ -50,7 +51,7 @@ Le projet repose sur une stack moderne, robuste et typée (**Node.js + TypeScrip
 
 *(Cette section sera complétée au fur et à mesure de l'initialisation du code)*
 
-1.  **Prérequis** : Node.js (LTS), MariaDB.
+1.  **Prérequis** : Node.js (LTS), pnpm. (Pas de MariaDB local nécessaire, SQLite est utilisé en dev).
 2.  **Installation des dépendances** :
     ```bash
     npm install

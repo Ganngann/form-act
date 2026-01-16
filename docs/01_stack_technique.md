@@ -13,49 +13,55 @@ Le choix de **Node.js + TypeScript** est validé pour son typage fort qui agit c
 *   **Runtime** : **Node.js** (Compatible o2switch).
 *   **Framework** : **NestJS**.
     *   *Pourquoi ?* Son architecture imposée (Modules/Controllers/Services) empêche l'IA de disperser le code.
-*   **Base de Données** : **MariaDB** (MySQL). Standard o2switch.
+*   **Sécurité / Auth** : **JWT** (JSON Web Tokens). Stateless, adapté à l'architecture API/Front séparée.
+*   **Base de Données** :
+    *   **Dev** : **SQLite**. (Fichier local `.db` pour démarrage immédiat sans Docker, idéal pour les sessions IA éphémères).
+    *   **Prod** : **MariaDB** (MySQL). Standard o2switch.
+    *   *Note* : Prisma gère l'abstraction. Le changement de DB est transparent via `schema.prisma`.
 *   **ORM** : **Prisma**.
-    *   *Pourquoi ?* Génère des types TS automatiquement depuis la DB. Si l'IA invente un champ, le code ne compile pas.
+    *   *Pourquoi ?* Génère des types TS automatiquement. Si l'IA invente un champ, le code ne compile pas.
 
 ### 1.2. Frontend (Interface)
 *   **Framework** : **Next.js** (App Router).
 *   **Langage** : **TypeScript**.
-*   **UI Library** : **Tailwind CSS** + **Shadcn/ui** (Composants pré-construits robustes, faciles à manipuler pour une IA).
+*   **UI Library** : **Tailwind CSS** + **Shadcn/ui** (Composants pré-construits robustes).
+    *   *Thème* : **Light Mode** par défaut (Style "Corporate" professionnel, accents bleus).
 
 ---
 
-## 2. Stratégie Anti-Régression & Qualité
+## 2. Architecture Monorepo & Qualité
 
-Pour empêcher l'IA de supprimer des fonctionnalités ou de casser l'existant.
+Pour assurer la cohérence entre le Backend et le Frontend, nous utilisons un **Monorepo** géré par **pnpm workspaces**.
 
-### 2.1. Tests End-to-End (E2E) Obligatoires
-*   **Outil** : **Playwright**.
-*   **Règle d'Or** : **"No Test, No Commit"**.
+### 2.1. Structure Hybride (Dev vs Prod)
+*   **Développement** : Monorepo unifié pour que l'IA puisse voir et modifier l'ensemble du projet en une seule opération, et partager les types.
+*   **Production (o2switch)** : Déploiement en deux applications distinctes (API et Front) pour respecter les contraintes de l'hébergeur.
+
+### 2.2. Stratégie Anti-Régression
+*   **Tests End-to-End (E2E)** :
+    *   **Outil** : **Playwright**.
+    *   **Règle d'Or** : **"No Test, No Commit"**.
     *   Chaque fonctionnalité critique (Réservation, Login, Upload) doit avoir un scénario de test associé.
-    *   L'IA doit lancer `npx playwright test` avant de proposer une validation. Si ça rougeoie, elle doit corriger.
-
-### 2.2. Architecture "Atomic Design" (Petits Fichiers)
-Pour éviter que l'IA ne se perde dans des fichiers géants et tronque du code.
-*   **Backend** : Pattern **CQRS** simplifié ou **Action-Based**.
-    *   1 Fichier = 1 Action métier (ex: `create-reservation.action.ts`).
-    *   Taille max fichier : ~150 lignes.
-*   **Frontend** : Composants atomiques.
-    *   Pas de `Page.tsx` de 1000 lignes. On découpe en `BookingForm.tsx`, `CalendarView.tsx`, etc.
-
-### 2.3. Sécurité par Design
-*   **IDs** : Utilisation exclusive d'**UUID** (ex: `123e4567-e89b...`) pour toutes les entités (Clients, Sessions). *Interdiction des auto-incréments (1, 2, 3) exposés.*
-*   **Permissions** : Politique **"Deny by Default"**.
-    *   Chaque route API doit avoir un décorateur `@Roles('ADMIN')` ou `@Roles('CLIENT')` explicite.
+*   **Architecture "Atomic Design"** :
+    *   **Backend** : Pattern **Action-Based** (1 fichier = 1 Action métier).
+    *   **Frontend** : Composants atomiques (Pas de fichiers géants).
+*   **Sécurité par Design** :
+    *   **IDs** : **UUID** obligatoires.
+    *   **Permissions** : "Deny by Default".
 
 ---
 
 ## 3. Infrastructure & Déploiement (o2switch)
 
-*   **Hébergement** : **o2switch** (Offre Unique).
-*   **Méthode** : Node.js via **cPanel Setup Node.js App**.
+L'architecture Monorepo nécessite une stratégie de déploiement adaptée à l'hébergement mutualisé **o2switch**.
+
+*   **Gestionnaire de Paquets** : **pnpm** (obligatoire pour les workspaces).
+*   **Hébergement** : 2 Applications Node.js distinctes dans cPanel :
+    1.  `api.form-act.be` (Dossier : `apps/api`)
+    2.  `app.form-act.be` (Dossier : `apps/web`)
 *   **CI/CD** : **GitHub Actions**.
-    *   Pipeline strict : `Lint` -> `TypeCheck` -> `Test E2E` -> `Deploy`.
-    *   Si l'IA pousse un code qui ne compile pas, le déploiement est bloqué automatiquement.
+    *   Pipeline : `Lint` -> `TypeCheck` -> `Test E2E`.
+    *   **Build** : Le pipeline génère deux artefacts distincts (`dist/api` et `dist/web`) qui sont déployés indépendamment.
 
 ---
 
