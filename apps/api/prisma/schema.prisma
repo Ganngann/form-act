@@ -17,10 +17,27 @@ model User {
 }
 
 model Formateur {
-  id        String   @id @default(uuid())
-  firstName String
-  lastName  String
-  email     String   @unique
+  id                String      @id @default(uuid())
+  firstName         String
+  lastName          String
+  email             String      @unique
+  predilectionZones Zone[]      @relation("Predilection")
+  expertiseZones    Zone[]      @relation("Expertise")
+  expertises        Expertise[]
+}
+
+model Zone {
+  id                     String      @id @default(uuid())
+  name                   String      @unique
+  code                   String?     @unique
+  formateursPredilection Formateur[] @relation("Predilection")
+  formateursExpertise    Formateur[] @relation("Expertise")
+}
+
+model Expertise {
+  id         String      @id @default(uuid())
+  name       String      @unique
+  formateurs Formateur[]
 }
 
 model Formation {

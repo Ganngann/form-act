@@ -5,13 +5,70 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Start seeding ...');
 
+  // Zones
+  const zonesData = [
+    { name: 'Bruxelles', code: 'BRU' },
+    { name: 'Brabant Wallon', code: 'BW' },
+    { name: 'Liège', code: 'LIE' },
+    { name: 'Namur', code: 'NAM' },
+    { name: 'Hainaut', code: 'HAI' },
+    { name: 'Luxembourg', code: 'LUX' },
+    { name: 'Anvers', code: 'ANT' },
+    { name: 'Limbourg', code: 'LIM' },
+    { name: 'Brabant Flamand', code: 'VBR' },
+    { name: 'Flandre Occidentale', code: 'WVL' },
+    { name: 'Flandre Orientale', code: 'OVL' },
+  ];
+
+  const zones = [];
+  for (const z of zonesData) {
+    const zone = await prisma.zone.upsert({
+      where: { code: z.code },
+      update: {},
+      create: z,
+    });
+    zones.push(zone);
+  }
+
+  // Expertises
+  const expertisesData = ['Bureautique', 'Management', 'Vente', 'NestJS'];
+  const expertises = [];
+  for (const e of expertisesData) {
+    const exp = await prisma.expertise.upsert({
+      where: { name: e },
+      update: {},
+      create: { name: e },
+    });
+    expertises.push(exp);
+  }
+
+  // Formateur
   const formateur = await prisma.formateur.upsert({
     where: { email: 'jean.dupont@example.com' },
-    update: {},
+    update: {
+       predilectionZones: {
+         set: [{ code: 'BRU' }, { code: 'BW' }]
+       },
+       expertiseZones: {
+         set: [{ code: 'BRU' }, { code: 'BW' }, { code: 'LIE' }, { code: 'NAM' }]
+       },
+       expertises: {
+         set: [{ name: 'NestJS' }, { name: 'Bureautique' }]
+       }
+    },
     create: {
       firstName: 'Jean',
       lastName: 'Dupont',
       email: 'jean.dupont@example.com',
+      predilectionZones: {
+        connect: [{ code: 'BRU' }, { code: 'BW' }]
+      },
+      expertiseZones: {
+        connect: [{ code: 'BRU' }, { code: 'BW' }, { code: 'LIE' }, { code: 'NAM' }]
+      },
+      expertises: {
+        connect: [{ name: 'NestJS' }, { name: 'Bureautique' }]
+      }
     },
   });
 

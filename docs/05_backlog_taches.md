@@ -11,12 +11,12 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [x] **Test Base de Données** : Connexion MariaDB depuis le VPS/Mutualisé.
 
 ### US-01 : Initialisation du Projet
-- [ ] **Mise en place Stack** : Initialiser Monorepo pnpm (NestJS + Next.js).
-- [ ] **Setup Design System** : Configurer `globals.css` (Variables couleurs HSL), Police `Inter`, et installer composants Shadcn de base (`button`, `card`, `input`).
-- [ ] **Config DB** : Configurer Prisma pour SQLite (Dev) et préparer le switch MariaDB (Prod).
-- [ ] **Script "Jules-Ready"** : Créer une commande `npm run init:project` qui installe tout et génère la DB SQLite en une fois.
-- [ ] **Seeding** : Créer le script `prisma/seed.ts` pour peupler la DB avec des données de test (Formateurs, Formations).
-- [ ] **CI/CD** : Configurer GitHub Actions pour le Lint et les Tests.
+- [x] **Mise en place Stack** : Initialiser Monorepo pnpm (NestJS + Next.js).
+- [x] **Setup Design System** : Configurer `globals.css` (Variables couleurs HSL), Police `Inter`, et installer composants Shadcn de base (`button`, `card`, `input`).
+- [x] **Config DB** : Configurer Prisma pour SQLite (Dev) et préparer le switch MariaDB (Prod).
+- [x] **Script "Jules-Ready"** : Créer une commande `npm run init:project` qui installe tout et génère la DB SQLite en une fois.
+- [x] **Seeding** : Créer le script `prisma/seed.ts` pour peupler la DB avec des données de test (Formateurs, Formations).
+- [x] **CI/CD** : Configurer GitHub Actions pour le Lint et les Tests.
 
 ### US-Tech-01 : Moteur de Territorialité & Dispatch
 **Objectif :** Coder la logique "cœur" d'attribution des formateurs (Bible 2.2).
