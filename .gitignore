@@ -7,9 +7,11 @@ node_modules
 
 # Build
 dist
+dist-web
 .next
 build
 coverage
+*.zip
 
 # Environment
 .env
