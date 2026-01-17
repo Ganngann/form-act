@@ -30,10 +30,10 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** choisir celle qui me convient.
 
 *Critères d'Acceptation (AC) :*
-- [ ] La page `/catalogue` affiche une grille de formations.
-- [ ] Un filtre "Province" permet de masquer les formations non disponibles (via `DispatcherService`).
-- [ ] Chaque carte affiche : Titre, Durée.
-- [ ] Données mockées (fausses données) utilisées pour cette étape.
+- [x] La page `/catalogue` affiche une grille de formations.
+- [x] Un filtre "Province" permet de masquer les formations non disponibles (via `DispatcherService`).
+- [x] Chaque carte affiche : Titre, Durée.
+- [x] Données mockées (fausses données) utilisées pour cette étape (Implémenté avec données réelles).
 
 ### US-03 : Fiche Formation & Calendrier
 **En tant que** Visiteur,
