@@ -20,9 +20,9 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 
 ### US-Tech-01 : Moteur de Territorialité & Dispatch
 **Objectif :** Coder la logique "cœur" d'attribution des formateurs (Bible 2.2).
-- [ ] **Modélisation DB** : Tables `Trainer`, `Zone`, `Expertise`. Distinction "Prédilection" vs "Expertise".
-- [ ] **Service de Dispatch** : `DispatcherService.findAvailableTrainers(date, zoneId)`.
-- [ ] **Règle** : Si zone "Désert", retourner tableau vide (pour trigger le fallback manuel).
+- [x] **Modélisation DB** : Tables `Trainer`, `Zone`, `Expertise`. Distinction "Prédilection" vs "Expertise".
+- [x] **Service de Dispatch** : `DispatcherService.findAvailableTrainers(date, zoneId)`.
+- [x] **Règle** : Si zone "Désert", retourner tableau vide (pour trigger le fallback manuel).
 
 ### US-02 : Catalogue des Formations (Public)
 **En tant que** Visiteur,
