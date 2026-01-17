@@ -41,6 +41,12 @@ model Expertise {
   formations Formation[]
 }
 
+model Category {
+  id         String      @id @default(uuid())
+  name       String      @unique
+  formations Formation[]
+}
+
 model Formation {
   id          String     @id @default(uuid())
   title       String
@@ -49,4 +55,6 @@ model Formation {
   duration    String
   expertiseId String?
   expertise   Expertise? @relation(fields: [expertiseId], references: [id])
+  categoryId  String?
+  category    Category?  @relation(fields: [categoryId], references: [id])
 }

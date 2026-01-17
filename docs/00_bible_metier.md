@@ -59,6 +59,11 @@ Le système gère la visibilité des formateurs via une matrice de régions (Pro
 1.  **Zone de Prédilection (Rayon Court)** : Zones où le formateur accepte d'aller quotidiennement pour des formations standards. Objectif : Rentabilité et confort.
 2.  **Zone d'Expertise (Rayon Étendu)** : Zones où le formateur accepte d'aller uniquement pour ses spécialités.
 3.  **Logique d'héritage** : Toute zone "Prédilection" est incluse d'office dans "Expertise".
+
+### 2.3. Catégorisation des Formations (Thèmes)
+Pour faciliter la recherche dans le catalogue public, les formations sont regroupées par **Catégories** (ex: Bureautique, Management, Soft Skills).
+*   Cette notion de Catégorie (Thème) est distincte de la notion technique "Expertise vs Standard" (Niveau).
+*   Le filtre principal du catalogue repose sur ces Catégories.
 4.  **Gestion du "Désert" Géographique** : Si une demande client tombe dans une zone non couverte par les experts disponibles :
     *   Le système ne bloque pas.
     *   Il propose un bouton **"Demander une prise en charge personnalisée"**.

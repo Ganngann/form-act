@@ -39,9 +39,9 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Objectif :** Modifier l'implémentation de la US-02 et préparer le terrain pour la US-03 afin de respecter la nouvelle logique métier (Province au Checkout).
 
 *Tâches Techniques :*
-- [ ] **Retrait Filtre (Catalogue)** : Supprimer le filtre "Province" de la page `/catalogue`. Le tri principal doit être par Thème.
-- [ ] **Logique State** : Le `RegionFilter` ne doit plus impacter le catalogue global mais uniquement le contexte de réservation d'une formation spécifique.
-- [ ] **Dispatcher** : Préparer le service pour qu'il ne soit appelé que sur demande explicite (et non plus au chargement global).
+- [x] **Retrait Filtre (Catalogue)** : Supprimer le filtre "Province" de la page `/catalogue`. Le tri principal est désormais par Thème (via entité `Category`).
+- [x] **Logique State** : Le `RegionFilter` a été remplacé par un filtrage par Catégorie. La zone n'est plus demandée à cette étape.
+- [x] **Dispatcher** : Le service de Dispatch n'est plus appelé au chargement du catalogue. Le filtrage géographique est repoussé à la réservation.
 
 ### US-03 : Fiche Formation & Calendrier
 **En tant que** Visiteur,

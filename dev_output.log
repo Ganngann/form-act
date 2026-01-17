@@ -1,0 +1,47 @@
+• turbo 2.7.5
+• Packages in scope: @form-act/shared-types, api, web
+• Running dev in 3 packages
+• Remote caching disabled
+api:dev: cache bypass, force executing 8a556151c1d71a50
+web:dev: cache bypass, force executing d52637592b0f36e9
+web:dev:
+web:dev: > web@0.1.0 dev /app/apps/web
+web:dev: > next dev
+web:dev:
+api:dev:
+api:dev: > api@0.0.1 dev /app/apps/api
+api:dev: > nest start --watch
+api:dev:
+api:dev: [2J[3J[H[[90m10:06:14 PM[0m] Starting compilation in watch mode...
+api:dev:
+web:dev:    ▲ Next.js 14.1.0
+web:dev:    - Local:        http://localhost:3000
+web:dev:
+web:dev: Attention: Next.js now collects completely anonymous telemetry regarding usage.
+web:dev: This information is used to shape Next.js' roadmap and prioritize features.
+web:dev: You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+web:dev: https://nextjs.org/telemetry
+web:dev:
+web:dev:  ✓ Ready in 2.6s
+api:dev: [[90m10:06:17 PM[0m] Found 0 errors. Watching for file changes.
+api:dev:
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +23ms[39m
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDispatcherModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFormationsModule dependencies initialized[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCategoriesModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mZonesModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/}:[39m[38;5;3m +7ms[39m
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/, GET} route[39m[38;5;3m +3ms[39m
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mZonesController {/zones}:[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/zones, GET} route[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mFormationsController {/formations}:[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/formations, GET} route[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCategoriesController {/categories}:[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/categories, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6605  - [39m01/17/2026, 10:06:18 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +27ms[39m
+api:dev: Application is running on: http://[::1]:3001
+web:dev:  ○ Compiling /catalogue ...
+web:dev:  ✓ Compiled /catalogue in 8.8s (622 modules)
+web:dev:  ✓ Compiled in 711ms (318 modules)

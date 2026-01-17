@@ -1,40 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { DispatcherService } from '../dispatcher/dispatcher.service';
 
 @Injectable()
 export class FormationsService {
-  constructor(
-    private prisma: PrismaService,
-    private dispatcherService: DispatcherService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  async findAll(zoneId?: string) {
-    const formations = await this.prisma.formation.findMany({
+  async findAll(categoryId?: string) {
+    const where = categoryId ? { categoryId } : {};
+
+    return this.prisma.formation.findMany({
+      where,
       include: {
-        expertise: true,
+        category: true,
+        expertise: true, // Keeping it for now as per plan, but mainly using category
       },
     });
-
-    if (!zoneId) {
-      return formations;
-    }
-
-    const availableFormations = [];
-    const date = new Date(); // Current date, as date logic isn't fully implemented yet but required by signature
-
-    for (const formation of formations) {
-      const trainers = await this.dispatcherService.findAvailableTrainers(
-        date,
-        zoneId,
-        formation.expertiseId || undefined,
-      );
-
-      if (trainers.length > 0) {
-        availableFormations.push(formation);
-      }
-    }
-
-    return availableFormations;
   }
 }
