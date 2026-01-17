@@ -77,13 +77,14 @@ Le système gère la visibilité des formateurs via une matrice de régions (Pro
 ## 3. Architecture & Parcours Utilisateurs
 
 ### 3.1. Interface Publique (Frontend)
-*   **Accueil** : Moteur de recherche (Thème, Région).
-*   **Catalogue** : Grille des formations.
+*   **Accueil** : Moteur de recherche (Thème uniquement).
+*   **Catalogue** : Grille des formations triées par Thème.
 *   **Tunnel de Réservation (Fil d'Ariane)** :
-    1.  **Localisation** : Choix de la Province (Indispensable pour le calcul de frais).
-    2.  **Formation** : Sélection dans le catalogue.
-    3.  **Intervenant** : Choix du formateur (si plusieurs dispos). Présentation (Photo, Bio, "Pourquoi me choisir").
-    4.  **Date** : Calendrier temps réel (ne montre que les dispos).
+    1.  **Formation** : Sélection dans le catalogue.
+    2.  **Localisation** : Choix de la Province (Indispensable pour filtrer les formateurs et calcul frais).
+    3.  **Intervenant** : Choix du formateur (si plusieurs dispos pour cette province).
+        *   *Cas "Aucun formateur"* : Proposition de demande manuelle.
+    4.  **Date** : Calendrier temps réel (ne montre que les dispos du formateur choisi).
     5.  **Identification** : Création de compte simplifiée via **N° TVA**.
         *   Récupération auto des données (VIES/BCE).
         *   *Mode dégradé* : Saisie manuelle autorisée si API indisponible.

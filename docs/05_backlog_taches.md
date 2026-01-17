@@ -35,16 +35,26 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [x] Chaque carte affiche : Titre, Durée.
 - [x] Données mockées (fausses données) utilisées pour cette étape (Implémenté avec données réelles).
 
+### US-Refacto-01 : Mise à jour Workflow Réservation (Transition V1 -> V2)
+**Objectif :** Modifier l'implémentation de la US-02 et préparer le terrain pour la US-03 afin de respecter la nouvelle logique métier (Province au Checkout).
+
+*Tâches Techniques :*
+- [ ] **Retrait Filtre (Catalogue)** : Supprimer le filtre "Province" de la page `/catalogue`. Le tri principal doit être par Thème.
+- [ ] **Logique State** : Le `RegionFilter` ne doit plus impacter le catalogue global mais uniquement le contexte de réservation d'une formation spécifique.
+- [ ] **Dispatcher** : Préparer le service pour qu'il ne soit appelé que sur demande explicite (et non plus au chargement global).
+
 ### US-03 : Fiche Formation & Calendrier
 **En tant que** Visiteur,
-**Je veux** voir les détails d'une formation et les dates dispos,
+**Je veux** voir les détails, choisir ma province et un formateur,
 **Afin de** décider quand réserver.
 
 *Critères d'Acceptation (AC) :*
 - [ ] Page `/formation/[id]` fonctionnelle.
-- [ ] Le calendrier affiche les jours "Libres" en vert et "Occupés" en gris.
-- [ ] Clic sur une date -> Sélectionne la date pour le panier.
-- [ ] Intégration de la règle "Demi-journée" vs "Journée complète" (Bible 2.1).
+- [ ] **Sélecteur de Province** : Intégrer le choix de la province (Step 1 du tunnel). *Design à définir : Modale ou encart "Sticky"*.
+- [ ] Affichage dynamique des formateurs disponibles pour la province choisie.
+- [ ] Si aucun formateur : Afficher bouton "Demande de prise en charge manuelle".
+- [ ] Le calendrier affiche les disponibilités du formateur sélectionné.
+- [ ] Intégration de la règle "Demi-journée" vs "Journée complète".
 
 ### US-04 : Tunnel de Réservation (Création Client)
 **En tant que** Visiteur,

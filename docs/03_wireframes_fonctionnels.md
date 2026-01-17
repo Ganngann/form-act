@@ -11,9 +11,14 @@ Ce diagramme illustre le parcours d'un client, de la recherche à la confirmatio
 
 ```mermaid
 graph TD
-    A[Accueil / Recherche] -->|Choix Filtres| B[Catalogue Formations]
+    A[Accueil / Recherche] -->|Choix Thème| B[Catalogue Formations]
     B -->|Clic Formation| C[Détail Formation]
-    C -->|Sélection Date| D[Panier / Connexion]
+    C -->|Clic Réserver| C1[Choix Province]
+    C1 -->|Filtrage Formateurs| C2{Formateurs Dispos ?}
+    C2 -->|Oui| C3[Choix Formateur & Date]
+    C2 -->|Non| C4[Demande Manuelle]
+    C3 --> D[Panier / Connexion]
+    C4 --> D
     D -->|Nouveau Client?| E{Création Compte}
     E -->|Oui - via TVA| F[Appel API VIES/BCE]
     F -->|Données Récupérées| G[Formulaire Simplifié]
@@ -65,15 +70,15 @@ sequenceDiagram
     *   Titre : "Trouvez votre formation en entreprise".
     *   **Moteur de Recherche** :
         *   Dropdown "Thème" (Bureautique, Soft Skills, IA...).
-        *   Dropdown "Ma Région" (Province).
+        *   *(Pas de filtre région ici)*.
         *   Bouton "Rechercher".
 *   **Réassurance** : "Formateurs certifiés", "Prix tout compris", "Gestion simplifiée".
 
 #### 📚 Catalogue (`/catalogue`)
 *   **Sidebar Filtres** :
-    *   Région (Checkboxes).
     *   Thématiques.
     *   Durée (Demi-journée / Journée).
+    *   *(Pas de filtre région)*.
 *   **Grille Formations** :
     *   Cartes : Image, Titre, Badges (Niveau, Durée), Prix indicatif "à partir de...".
     *   Bouton "Voir dates".
@@ -85,18 +90,16 @@ sequenceDiagram
     *   *Objectifs* : Ce que vous saurez faire.
     *   *Pré-requis* : Matériel ou connaissances nécessaires.
 *   **Bloc Réservation (Sticky)** :
-    *   Sélecteur "Votre Région" (Conditionne les formateurs).
-    *   **Calendrier Dispos** :
-        *   Vue mois.
-        *   Jours vert = Dispo.
-        *   Jours gris = Complet.
-    *   Sélection Créneau (Matin / Après-midi).
-    *   **Liste Formateurs Dispos** :
-        *   Avatar, Prénom, "Expertise".
-        *   Bouton "Choisir ce formateur".
+    *   Bouton **"Réserver cette formation"**.
+    *   **Étape 1 : Localisation** (Pop-up ou Slide-in) :
+        *   Sélecteur "Votre Province" (Obligatoire).
+        *   *Action* : Filtre les formateurs disponibles.
+    *   **Étape 2 : Choix Formateur & Date** :
+        *   Liste des experts de la zone.
+        *   Calendrier des disponibilités.
     *   **Cas "Aucun formateur trouvé"** (Zone Désert) :
-        *   Message : "Aucun expert disponible dans votre zone pour cette date."
-        *   Bouton : **"Demander une prise en charge personnalisée"** (Crée une Session "Non Attribuée" Admin).
+        *   Message : "Aucun expert disponible automatiquement dans votre zone."
+        *   Bouton : **"Demande de prise en charge manuelle"**.
 
 #### ✅ Confirmation / Succès (`/checkout/success`)
 *   **Message Rassurant** : "Votre demande de réservation est confirmée !".
