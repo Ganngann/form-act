@@ -5,6 +5,15 @@ import { PrismaService } from "../prisma/prisma.service";
 export class DispatcherService {
   constructor(private prisma: PrismaService) {}
 
+  /**
+   * Finds available trainers based on zone and optional expertise.
+   *
+   * @param date - The date of the formation.
+   *               TODO: Currently ignored. Temporal availability filtering will be implemented
+   *               once the Calendar/Session models are available (Sprint 1, US-03/04).
+   * @param zoneId - The ID of the zone where the formation takes place.
+   * @param expertiseId - (Optional) The ID of the expertise required.
+   */
   async findAvailableTrainers(
     date: Date,
     zoneId: string,
