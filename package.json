@@ -9,7 +9,8 @@
         "lint": "turbo run lint",
         "test": "turbo run test",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-        "init:project": "bash scripts/init-project.sh"
+        "init:project": "bash scripts/init-project.sh",
+        "start:windows": "powershell -ExecutionPolicy Bypass -File scripts/start-dev.ps1"
     },
     "devDependencies": {
         "turbo": "^2.0.0",
