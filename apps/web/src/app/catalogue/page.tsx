@@ -23,7 +23,7 @@ type Formation = {
   duration: string
 }
 
-const API_URL = "http://localhost:3001"
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
 
 export default function CataloguePage() {
   const [categories, setCategories] = useState<Category[]>([])
