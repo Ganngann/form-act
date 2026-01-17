@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { FormationsService } from './formations.service';
 import { FormationsController } from './formations.controller';
-import { DispatcherModule } from '../dispatcher/dispatcher.module';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-  imports: [DispatcherModule],
+  imports: [PrismaModule], // Need PrismaModule for PrismaService
   controllers: [FormationsController],
   providers: [FormationsService],
 })

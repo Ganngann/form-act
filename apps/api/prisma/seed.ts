@@ -42,6 +42,18 @@ async function main() {
     expertises.push(exp);
   }
 
+  // Categories
+  const categoriesData = ['Bureautique', 'Management', 'Développement', 'Soft Skills'];
+  const categories = [];
+  for (const c of categoriesData) {
+    const cat = await prisma.category.upsert({
+      where: { name: c },
+      update: {},
+      create: { name: c },
+    });
+    categories.push(cat);
+  }
+
   // Formateur
   const formateur = await prisma.formateur.upsert({
     where: { email: 'jean.dupont@example.com' },
@@ -87,6 +99,9 @@ async function main() {
         expertise: {
           connect: { name: 'NestJS' },
         },
+        category: {
+          connect: { name: 'Développement' },
+        }
       },
     });
   } else {
@@ -98,6 +113,9 @@ async function main() {
         expertise: {
             connect: { name: 'NestJS' },
         },
+        category: {
+          connect: { name: 'Développement' },
+        }
       }
     });
   }
@@ -105,8 +123,10 @@ async function main() {
   // Management Formation
   const managementTitle = 'Management 101';
   await prisma.formation.upsert({
-      where: { id: 'management-101' }, // Use a deterministic ID or find by something else? schema says ID is uuid. Best to findFirst.
-      update: {},
+      where: { id: 'management-101' },
+      update: {
+        category: { connect: { name: 'Management' } }
+      },
       create: {
           title: managementTitle,
           description: 'Basics of Team Management',
@@ -114,11 +134,11 @@ async function main() {
           duration: '1 jour',
           expertise: {
               connect: { name: 'Management' }
-          }
+          },
+          category: { connect: { name: 'Management' } }
       }
   });
-  // Since we don't have unique constraint on Title, upsert by ID is tricky if we don't know it.
-  // Better pattern for seed:
+
   const mgtFormation = await prisma.formation.findFirst({ where: { title: managementTitle } });
   if (!mgtFormation) {
       await prisma.formation.create({
@@ -129,9 +149,17 @@ async function main() {
               duration: '1 jour',
               expertise: {
                   connect: { name: 'Management' }
-              }
+              },
+              category: { connect: { name: 'Management' } }
           }
       });
+  } else {
+    await prisma.formation.update({
+      where: { id: mgtFormation.id },
+      data: {
+        category: { connect: { name: 'Management' } }
+      }
+    });
   }
 
   // Excel (Bureautique)
@@ -146,9 +174,17 @@ async function main() {
               duration: '3 jours',
               expertise: {
                   connect: { name: 'Bureautique' }
-              }
+              },
+              category: { connect: { name: 'Bureautique' } }
           }
       });
+  } else {
+    await prisma.formation.update({
+      where: { id: excelFormation.id },
+      data: {
+        category: { connect: { name: 'Bureautique' } }
+      }
+    });
   }
 
   console.log({ formateur, formation });

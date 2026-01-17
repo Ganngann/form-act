@@ -11,10 +11,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
-type Zone = {
+type Category = {
   id: string
   name: string
-  code: string
 }
 
 type Formation = {
@@ -27,23 +26,23 @@ type Formation = {
 const API_URL = "http://localhost:3001"
 
 export default function CataloguePage() {
-  const [zones, setZones] = useState<Zone[]>([])
-  const [selectedZone, setSelectedZone] = useState<string>("")
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<string>("")
   const [formations, setFormations] = useState<Formation[]>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    fetch(`${API_URL}/zones`)
+    fetch(`${API_URL}/categories`)
       .then((res) => res.json())
-      .then((data) => setZones(data))
-      .catch((err) => console.error("Error fetching zones:", err))
+      .then((data) => setCategories(data))
+      .catch((err) => console.error("Error fetching categories:", err))
   }, [])
 
   useEffect(() => {
     setLoading(true)
     let url = `${API_URL}/formations`
-    if (selectedZone) {
-      url += `?zoneId=${selectedZone}`
+    if (selectedCategory) {
+      url += `?categoryId=${selectedCategory}`
     }
 
     fetch(url)
@@ -56,10 +55,10 @@ export default function CataloguePage() {
         console.error("Error fetching formations:", err)
         setLoading(false)
       })
-  }, [selectedZone])
+  }, [selectedCategory])
 
-  const handleZoneChange = (val: string) => {
-    setSelectedZone(val === "all" ? "" : val)
+  const handleCategoryChange = (val: string) => {
+    setSelectedCategory(val === "all" ? "" : val)
   }
 
   return (
@@ -67,16 +66,16 @@ export default function CataloguePage() {
       <h1 className="text-3xl font-bold mb-6">Catalogue des Formations</h1>
 
       <div className="mb-8 w-full md:w-1/3">
-        <label className="block text-sm font-medium mb-2">Filtrer par Province</label>
-        <Select onValueChange={handleZoneChange} value={selectedZone || "all"}>
+        <label className="block text-sm font-medium mb-2">Filtrer par Thème</label>
+        <Select onValueChange={handleCategoryChange} value={selectedCategory || "all"}>
           <SelectTrigger>
-            <SelectValue placeholder="Toutes les provinces" />
+            <SelectValue placeholder="Tous les thèmes" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Toutes les provinces</SelectItem>
-            {zones.map((zone) => (
-              <SelectItem key={zone.id} value={zone.id}>
-                {zone.name}
+            <SelectItem value="all">Tous les thèmes</SelectItem>
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.id}>
+                {category.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -106,7 +105,7 @@ export default function CataloguePage() {
             ))
           ) : (
             <p className="col-span-full text-center text-muted-foreground">
-              Aucune formation disponible pour cette zone.
+              Aucune formation disponible pour ce thème.
             </p>
           )}
         </div>
