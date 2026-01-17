@@ -3,6 +3,7 @@ import { AppModule } from "./app.module";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   // Using PORT from env or default to 3001 (since 3000 is often frontend)
   const port = process.env.PORT || 3001;
   await app.listen(port);

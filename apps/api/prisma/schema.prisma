@@ -38,11 +38,15 @@ model Expertise {
   id         String      @id @default(uuid())
   name       String      @unique
   formateurs Formateur[]
+  formations Formation[]
 }
 
 model Formation {
-  id          String   @id @default(uuid())
+  id          String     @id @default(uuid())
   title       String
   description String
   level       String
+  duration    String
+  expertiseId String?
+  expertise   Expertise? @relation(fields: [expertiseId], references: [id])
 }
