@@ -88,7 +88,7 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 
 ---
 
-## 🟡 Sprint 2 : Espace Formateur & Logistique
+## 🟡 Sprint 2 : MVP Logistique & Admin (Prioritaire)
 
 ### US-Tech-02 : Moteur de Notifications (Cron Jobs)
 **Objectif :** Implémenter le "Harcèlement bienveillant" (Bible 4.1) pour automatiser la logistique.
@@ -105,38 +105,51 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
     - [ ] Job Quotidien vérifiant les sessions terminées J+1 (Relance Preuve).
 - [ ] **Logger** : Création d'une entité/table `NotificationLog` pour stocker les envois.
 
-### US-Auth-01 : Gestion de Compte & Sécurité (Future)
-**Objectif :** Compléter le cycle d'authentification initié en US-04.
-- [ ] "Mot de passe oublié" (Envoi lien reset via Nodemailer).
-- [ ] Validation de l'email (Double Opt-in, optionnel pour MVP mais recommandé).
-- [ ] Gestion de session sécurisée (JWT/Cookies).
+### US-09 : Gestion Formateurs (Onboarding Admin)
+**En tant que** Administrateur,
+**Je veux** créer et configurer les comptes des formateurs,
+**Afin de** leur donner accès à la plateforme et de les rendre disponibles.
+
+**Critères Business (AC) :**
+- [ ] Liste des formateurs avec recherche/filtre.
+- [ ] Formulaire de création/édition d'un formateur (Nom, Email, Tarif journalier, Adresse).
+- [ ] **Assignation** : Interface pour définir les zones de prédilection et les compétences (catégories) du formateur.
+
+**Critères Qualité & Technique :**
+- [ ] Protection de l'accès (Guard Admin).
+- [ ] Validation des données (Email unique, UUID valides).
+
+### US-07 : Vue Master Calendar (Admin)
+**Objectif :** Offrir une vue d'ensemble pour piloter l'activité.
+- [ ] Vue calendrier type "Ressources" (FullCalendar ou équivalent).
+- [ ] Affichage de toutes les sessions confirmées.
+- [ ] Capacité de visualiser les détails d'une session au clic.
+
+### US-05 : Dashboard Formateur
+- [ ] Vue "Mes Missions" (Liste et Détails).
+- [ ] Accès aux détails logistiques (Lieu, Participants).
+- [ ] **Profil** : Édition Bio et Photo.
+
+### US-06 : Upload Liste de Présence
+- [ ] Drag & Drop fichier PDF/Image (Relié stockage S3/Disque).
+- [ ] Stockage sécurisé et lien avec la session.
+
+---
+
+## 🔴 Sprint 3 : Post-MVP & Confort (Optimisations)
 
 ### US-Tech-03 : Synchronisation Calendrier (iCal)
 **Objectif :** Gestion bi-directionnelle des agendas (Bible 2.3).
 - [ ] **In (Import)** : Parser les iCal formateurs toutes les 30min pour bloquer les slots.
 - [ ] **Out (Export)** : Exposer une URL `.ics` par formateur avec ses missions.
 
-### US-05 : Dashboard Formateur
-- [ ] Vue "Mes Missions".
-- [ ] Accès aux détails logistiques.
-- [ ] **Profil** : Édition Bio et Photo.
-
-### US-06 : Upload Liste de Présence
-- [ ] Drag & Drop fichier PDF/Image (Relié stockage S3/Disque).
-- [ ] Stockage sécurisé.
-
----
-
-## 🔴 Sprint 3 : Administration & Facturation
-
-### US-07 : Vue Master Calendar (Admin)
-- [ ] Vue globale ressources (FullCalendar).
-- [ ] Drag & Drop modifications.
-
 ### US-08 : Odoo Prep (Pré-facturation)
-- [ ] Liste sessions terminées + Preuve.
+- [ ] Liste sessions terminées + Preuve validée.
 - [ ] Calculateur Prix Final (API Google Distance Matrix).
+- [ ] Export ou vue synthétique pour encodage Odoo.
 
-### US-09 : Gestion Formateurs (Onboarding)
-- [ ] CRUD Formateurs (Création manuelle).
-- [ ] Attribution Zones & Compétences.
+### US-Auth-01 : Gestion de Compte & Sécurité
+**Objectif :** Compléter le cycle d'authentification.
+- [ ] "Mot de passe oublié" (Envoi lien reset via Nodemailer).
+- [ ] Validation de l'email.
+- [ ] Gestion fine des sessions.
