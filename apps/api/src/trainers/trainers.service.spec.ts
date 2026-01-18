@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { TrainersService } from './trainers.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { TrainersService } from "./trainers.service";
+import { PrismaService } from "../prisma/prisma.service";
 
-describe('TrainersService', () => {
+describe("TrainersService", () => {
   let service: TrainersService;
   let prisma: PrismaService;
 
@@ -25,22 +25,22 @@ describe('TrainersService', () => {
     prisma = module.get<PrismaService>(PrismaService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  it('should find availability for a month', async () => {
-    await service.getAvailability('trainer-1', '2024-02');
+  it("should find availability for a month", async () => {
+    await service.getAvailability("trainer-1", "2024-02");
     expect(prisma.session.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
-          trainerId: 'trainer-1',
+          trainerId: "trainer-1",
           date: expect.objectContaining({
-             gte: expect.any(Date),
-             lte: expect.any(Date),
+            gte: expect.any(Date),
+            lte: expect.any(Date),
           }),
         }),
-      })
+      }),
     );
   });
 });

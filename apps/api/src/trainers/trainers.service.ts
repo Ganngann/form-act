@@ -1,32 +1,33 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class TrainersService {
   constructor(private prisma: PrismaService) {}
 
   async getAvailability(trainerId: string, month?: string) {
-    const where: any = {
+    const where: Prisma.SessionWhereInput = {
       trainerId,
     };
 
     if (month) {
-      const [year, monthNum] = month.split('-').map(Number);
+      const [year, monthNum] = month.split("-").map(Number);
       if (!isNaN(year) && !isNaN(monthNum)) {
-         const startDate = new Date(year, monthNum - 1, 1);
-         // Get last day of the month by going to day 0 of next month
-         const endDate = new Date(year, monthNum, 0, 23, 59, 59);
-         where.date = {
-            gte: startDate,
-            lte: endDate,
-         };
+        const startDate = new Date(year, monthNum - 1, 1);
+        // Get last day of the month by going to day 0 of next month
+        const endDate = new Date(year, monthNum, 0, 23, 59, 59);
+        where.date = {
+          gte: startDate,
+          lte: endDate,
+        };
       }
     } else {
-        const today = new Date();
-        today.setHours(0,0,0,0);
-        where.date = {
-            gte: today,
-        };
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      where.date = {
+        gte: today,
+      };
     }
 
     return this.prisma.session.findMany({
@@ -37,11 +38,11 @@ export class TrainersService {
         slot: true,
         status: true,
         formation: {
-            select: {
-                title: true,
-                durationType: true
-            }
-        }
+          select: {
+            title: true,
+            durationType: true,
+          },
+        },
       },
     });
   }

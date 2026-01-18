@@ -1,17 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { FormationsService } from './formations.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { FormationsService } from "./formations.service";
+import { PrismaService } from "../prisma/prisma.service";
 
 const mockPrismaService = {
   formation: {
     findMany: jest.fn().mockResolvedValue([
-      { id: '1', title: 'NestJS Intro', categoryId: 'dev' },
-      { id: '2', title: 'Management 101', categoryId: 'mgt' },
+      { id: "1", title: "NestJS Intro", categoryId: "dev" },
+      { id: "2", title: "Management 101", categoryId: "mgt" },
     ]),
   },
 };
 
-describe('FormationsService', () => {
+describe("FormationsService", () => {
   let service: FormationsService;
 
   beforeEach(async () => {
@@ -28,11 +28,11 @@ describe('FormationsService', () => {
     service = module.get<FormationsService>(FormationsService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  it('should return all formations if no categoryId provided', async () => {
+  it("should return all formations if no categoryId provided", async () => {
     await service.findAll();
     expect(mockPrismaService.formation.findMany).toHaveBeenCalledWith({
       where: {},
@@ -40,10 +40,10 @@ describe('FormationsService', () => {
     });
   });
 
-  it('should filter by categoryId if provided', async () => {
-    await service.findAll('dev');
+  it("should filter by categoryId if provided", async () => {
+    await service.findAll("dev");
     expect(mockPrismaService.formation.findMany).toHaveBeenCalledWith({
-      where: { categoryId: 'dev' },
+      where: { categoryId: "dev" },
       include: { category: true, expertise: true },
     });
   });

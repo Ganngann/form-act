@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DispatcherController } from './dispatcher.controller';
-import { DispatcherService } from './dispatcher.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { DispatcherController } from "./dispatcher.controller";
+import { DispatcherService } from "./dispatcher.service";
 
-describe('DispatcherController', () => {
+describe("DispatcherController", () => {
   let controller: DispatcherController;
   let service: DispatcherService;
 
@@ -23,12 +23,16 @@ describe('DispatcherController', () => {
     service = module.get<DispatcherService>(DispatcherService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 
-  it('should call findAvailableTrainers', async () => {
-    await controller.findTrainers('zone-1', 'expert-1');
-    expect(service.findAvailableTrainers).toHaveBeenCalledWith(expect.any(Date), 'zone-1', 'expert-1');
+  it("should call findAvailableTrainers", async () => {
+    await controller.findTrainers("zone-1", "expert-1");
+    expect(service.findAvailableTrainers).toHaveBeenCalledWith(
+      expect.any(Date),
+      "zone-1",
+      "expert-1",
+    );
   });
 });

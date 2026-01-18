@@ -8,7 +8,14 @@ import { CategoriesModule } from "./categories/categories.module";
 import { TrainersModule } from "./trainers/trainers.module";
 
 @Module({
-  imports: [PrismaModule, DispatcherModule, ZonesModule, FormationsModule, CategoriesModule, TrainersModule],
+  imports: [
+    PrismaModule,
+    DispatcherModule,
+    ZonesModule,
+    FormationsModule,
+    CategoriesModule,
+    TrainersModule,
+  ],
   controllers: [AppController],
   providers: [],
 })
