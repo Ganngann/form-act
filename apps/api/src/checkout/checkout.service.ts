@@ -1,7 +1,7 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateBookingDto } from './create-booking.dto';
-import * as bcrypt from 'bcrypt';
+import { Injectable, BadRequestException } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import { CreateBookingDto } from "./create-booking.dto";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class CheckoutService {
@@ -14,15 +14,17 @@ export class CheckoutService {
     });
 
     if (existingUser) {
-      throw new BadRequestException('User with this email already exists.');
+      throw new BadRequestException("User with this email already exists.");
     }
 
     // Check if client (VAT) exists
     const existingClient = await this.prisma.client.findUnique({
-        where: { vatNumber: data.vatNumber }
+      where: { vatNumber: data.vatNumber },
     });
     if (existingClient) {
-        throw new BadRequestException('Company with this VAT already registered.');
+      throw new BadRequestException(
+        "Company with this VAT already registered.",
+      );
     }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -56,7 +58,7 @@ export class CheckoutService {
           formationId: data.formationId,
           trainerId: data.trainerId,
           clientId: client.id,
-          status: 'CONFIRMED',
+          status: "CONFIRMED",
         },
       });
 

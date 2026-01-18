@@ -1,8 +1,14 @@
-import { Controller, Post, Body, ValidationPipe, UsePipes } from '@nestjs/common';
-import { CheckoutService } from './checkout.service';
-import { CreateBookingDto } from './create-booking.dto';
+import {
+  Controller,
+  Post,
+  Body,
+  ValidationPipe,
+  UsePipes,
+} from "@nestjs/common";
+import { CheckoutService } from "./checkout.service";
+import { CreateBookingDto } from "./create-booking.dto";
 
-@Controller('checkout')
+@Controller("checkout")
 export class CheckoutController {
   constructor(private readonly checkoutService: CheckoutService) {}
 

@@ -111,7 +111,7 @@ export function CheckoutForm({ formationId, trainerId, date, slot }: CheckoutFor
                     </div>
 
                     <div className="space-y-2">
-                        <label htmlFor="companyName" className={labelClass}>Nom de l'entreprise</label>
+                        <label htmlFor="companyName" className={labelClass}>Nom de l&apos;entreprise</label>
                         <Input id="companyName" {...register("companyName")} />
                         {errors.companyName && <p className="text-sm text-red-500">{errors.companyName.message}</p>}
                     </div>

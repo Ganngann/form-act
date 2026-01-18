@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsString, IsUUID, IsISO8601 } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+  IsISO8601,
+} from "class-validator";
 
 export class CreateBookingDto {
   @IsNotEmpty()

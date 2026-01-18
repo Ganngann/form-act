@@ -8,7 +8,7 @@ export default function CheckoutSuccessPage() {
             <p className="text-xl">Votre compte a été créé et votre session est enregistrée.</p>
             <div className="flex justify-center gap-4">
                 <Button asChild>
-                    <Link href="/">Retour à l'accueil</Link>
+                    <Link href="/">Retour à l&apos;accueil</Link>
                 </Button>
             </div>
         </div>
