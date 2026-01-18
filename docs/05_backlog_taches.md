@@ -89,21 +89,6 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 
 ## 🟡 Sprint 2 : MVP Logistique & Admin (Prioritaire)
 
-### US-Tech-02 : Moteur de Notifications (Cron Jobs)
-**Objectif :** Implémenter le "Harcèlement bienveillant" (Bible 4.1) pour automatiser la logistique.
-
-**Critères Business (AC) :**
-- [ ] Le système envoie automatiquement les emails aux échéances définies (J-30, J-7, J+1).
-- [ ] Chaque envoi est tracé/historisé pour preuve.
-
-**Critères Qualité & Technique :**
-- [ ] Architecture : Utilisation de **NestJS Schedule** (Cron) ou **Bull** (Queue) pour gérer les tâches de fond.
-- [ ] **Planification** :
-    - [ ] Job Quotidien vérifiant les sessions à J-30 (Envoi Ressources).
-    - [ ] Job Quotidien vérifiant les sessions à J-7 (Verrouillage + PDF).
-    - [ ] Job Quotidien vérifiant les sessions terminées J+1 (Relance Preuve).
-- [ ] **Logger** : Création d'une entité/table `NotificationLog` pour stocker les envois.
-
 ### US-09 : Gestion Formateurs (Onboarding Admin)
 **En tant que** Administrateur,
 **Je veux** créer et configurer les comptes des formateurs,
@@ -136,6 +121,21 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 ---
 
 ## 🔴 Sprint 3 : Post-MVP & Confort (Optimisations)
+
+### US-Tech-02 : Moteur de Notifications (Cron Jobs)
+**Objectif :** Implémenter le "Harcèlement bienveillant" (Bible 4.1) pour automatiser la logistique.
+
+**Critères Business (AC) :**
+- [ ] Le système envoie automatiquement les emails aux échéances définies (J-30, J-7, J+1).
+- [ ] Chaque envoi est tracé/historisé pour preuve.
+
+**Critères Qualité & Technique :**
+- [ ] Architecture : Utilisation de **NestJS Schedule** (Cron) ou **Bull** (Queue) pour gérer les tâches de fond.
+- [ ] **Planification** :
+    - [ ] Job Quotidien vérifiant les sessions à J-30 (Envoi Ressources).
+    - [ ] Job Quotidien vérifiant les sessions à J-7 (Verrouillage + PDF).
+    - [ ] Job Quotidien vérifiant les sessions terminées J+1 (Relance Preuve).
+- [ ] **Logger** : Création d'une entité/table `NotificationLog` pour stocker les envois.
 
 ### US-Tech-03 : Synchronisation Calendrier (iCal)
 **Objectif :** Gestion bi-directionnelle des agendas (Bible 2.3).
