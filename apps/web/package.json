@@ -9,6 +9,7 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "@hookform/resolvers": "^5.2.2",
         "@radix-ui/react-select": "^2.2.6",
         "@radix-ui/react-slot": "^1.2.4",
         "class-variance-authority": "^0.7.1",
@@ -19,8 +20,10 @@
         "react": "^18",
         "react-day-picker": "^9.13.0",
         "react-dom": "^18",
+        "react-hook-form": "^7.71.1",
         "tailwind-merge": "^3.4.0",
-        "tailwindcss-animate": "^1.0.7"
+        "tailwindcss-animate": "^1.0.7",
+        "zod": "^4.3.5"
     },
     "devDependencies": {
         "@types/node": "^20",
