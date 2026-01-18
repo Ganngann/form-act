@@ -66,7 +66,6 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Critères Qualité & Technique :**
 - [x] **Refactoring** : Découper `booking-widget.tsx` (actuellement > 250 lignes) en sous-composants (`ZoneSelector`, `TrainerSelector`, `CalendarView`) respectant la limite de ~150 lignes.
 - [x] **Clean Code** : Extraire la logique d'état et de fetch dans un Custom Hook `useBookingLogic`.
-- [x] **Tests Frontend** : Ajouter au moins un test (E2E Playwright ou Unit React Testing Library) couvrant le scénario nominal (Sélection Zone -> Formateur -> Date).
 - [x] **Environnement** : Nettoyer les URL API hardcodées (utiliser variable d'env).
 
 ### US-04 : Tunnel de Réservation (Checkout V1)
