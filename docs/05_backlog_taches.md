@@ -60,14 +60,14 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Objectif :** Résoudre la dette technique identifiée lors de la review US-03 avant de complexifier le widget.
 
 **Critères Business (AC) :**
-- [ ] Le comportement du widget de réservation reste identique pour l'utilisateur final (Iso-fonctionnel).
-- [ ] La sélection de zone, formateur et date reste fluide et réactive.
+- [x] Le comportement du widget de réservation reste identique pour l'utilisateur final (Iso-fonctionnel).
+- [x] La sélection de zone, formateur et date reste fluide et réactive.
 
 **Critères Qualité & Technique :**
-- [ ] **Refactoring** : Découper `booking-widget.tsx` (actuellement > 250 lignes) en sous-composants (`ZoneSelector`, `TrainerSelector`, `CalendarView`) respectant la limite de ~150 lignes.
-- [ ] **Clean Code** : Extraire la logique d'état et de fetch dans un Custom Hook `useBookingLogic`.
-- [ ] **Tests Frontend** : Ajouter au moins un test (E2E Playwright ou Unit React Testing Library) couvrant le scénario nominal (Sélection Zone -> Formateur -> Date).
-- [ ] **Environnement** : Nettoyer les URL API hardcodées (utiliser variable d'env).
+- [x] **Refactoring** : Découper `booking-widget.tsx` (actuellement > 250 lignes) en sous-composants (`ZoneSelector`, `TrainerSelector`, `CalendarView`) respectant la limite de ~150 lignes.
+- [x] **Clean Code** : Extraire la logique d'état et de fetch dans un Custom Hook `useBookingLogic`.
+- [x] **Tests Frontend** : Ajouter au moins un test (E2E Playwright ou Unit React Testing Library) couvrant le scénario nominal (Sélection Zone -> Formateur -> Date).
+- [x] **Environnement** : Nettoyer les URL API hardcodées (utiliser variable d'env).
 
 ### US-04 : Tunnel de Réservation (Checkout V1)
 **En tant que** Visiteur,
