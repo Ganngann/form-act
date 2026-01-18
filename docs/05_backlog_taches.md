@@ -49,12 +49,12 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** décider quand réserver.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Page `/formation/[id]` fonctionnelle.
-- [ ] **Sélecteur de Province** : Intégrer le choix de la province (Step 1 du tunnel). *Design à définir : Modale ou encart "Sticky"*.
-- [ ] Affichage dynamique des formateurs disponibles pour la province choisie.
-- [ ] Si aucun formateur : Afficher bouton "Demande de prise en charge manuelle".
-- [ ] Le calendrier affiche les disponibilités du formateur sélectionné.
-- [ ] Intégration de la règle "Demi-journée" vs "Journée complète".
+- [x] Page `/formation/[id]` fonctionnelle.
+- [x] **Sélecteur de Province** : Intégrer le choix de la province (Step 1 du tunnel). *Design à définir : Modale ou encart "Sticky"*.
+- [x] Affichage dynamique des formateurs disponibles pour la province choisie.
+- [x] Si aucun formateur : Afficher bouton "Demande de prise en charge manuelle".
+- [x] Le calendrier affiche les disponibilités du formateur sélectionné.
+- [x] Intégration de la règle "Demi-journée" vs "Journée complète".
 
 ### US-04 : Tunnel de Réservation (Création Client)
 **En tant que** Visiteur,

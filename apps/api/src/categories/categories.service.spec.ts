@@ -1,17 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CategoriesService } from './categories.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { CategoriesService } from "./categories.service";
+import { PrismaService } from "../prisma/prisma.service";
 
 const mockPrismaService = {
   category: {
     findMany: jest.fn().mockResolvedValue([
-      { id: '1', name: 'Bureautique' },
-      { id: '2', name: 'Management' },
+      { id: "1", name: "Bureautique" },
+      { id: "2", name: "Management" },
     ]),
   },
 };
 
-describe('CategoriesService', () => {
+describe("CategoriesService", () => {
   let service: CategoriesService;
 
   beforeEach(async () => {
@@ -28,18 +28,18 @@ describe('CategoriesService', () => {
     service = module.get<CategoriesService>(CategoriesService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  it('should return an array of categories', async () => {
+  it("should return an array of categories", async () => {
     const categories = await service.findAll();
     expect(categories).toEqual([
-      { id: '1', name: 'Bureautique' },
-      { id: '2', name: 'Management' },
+      { id: "1", name: "Bureautique" },
+      { id: "2", name: "Management" },
     ]);
     expect(mockPrismaService.category.findMany).toHaveBeenCalledWith({
-      orderBy: { name: 'asc' },
+      orderBy: { name: "asc" },
     });
   });
 });

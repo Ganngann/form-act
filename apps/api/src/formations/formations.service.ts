@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class FormationsService {
@@ -13,6 +13,16 @@ export class FormationsService {
       include: {
         category: true,
         expertise: true, // Keeping it for now as per plan, but mainly using category
+      },
+    });
+  }
+
+  async findOne(id: string) {
+    return this.prisma.formation.findUnique({
+      where: { id },
+      include: {
+        category: true,
+        expertise: true,
       },
     });
   }
