@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { format } from "date-fns"
+import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,6 +21,7 @@ interface BookingWidgetProps {
 }
 
 export function BookingWidget({ formation }: BookingWidgetProps) {
+  const router = useRouter()
   const {
     zones,
     selectedZone,
@@ -74,7 +76,16 @@ export function BookingWidget({ formation }: BookingWidgetProps) {
           <Button
             className="w-full"
             disabled={!canBook}
-            onClick={() => alert(`Réservation: ${format(selectedDate!, 'yyyy-MM-dd')} ${selectedSlot}`)}
+            onClick={() => {
+              if (!selectedDate) return
+              const params = new URLSearchParams({
+                  formationId: formation.id,
+                  trainerId: selectedTrainer,
+                  date: format(selectedDate, 'yyyy-MM-dd'),
+                  slot: selectedSlot
+              })
+              router.push(`/checkout?${params.toString()}`)
+            }}
           >
             Réserver
           </Button>

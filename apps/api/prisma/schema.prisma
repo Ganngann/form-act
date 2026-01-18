@@ -11,9 +11,21 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(uuid())
-  email String @unique
-  name  String?
+  id       String  @id @default(uuid())
+  email    String  @unique
+  name     String?
+  password String?
+  client   Client?
+}
+
+model Client {
+  id          String    @id @default(uuid())
+  vatNumber   String    @unique
+  companyName String
+  address     String
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id])
+  sessions    Session[]
 }
 
 model Formateur {
@@ -63,12 +75,14 @@ model Formation {
 }
 
 model Session {
-  id          String      @id @default(uuid())
+  id          String    @id @default(uuid())
   date        DateTime
   slot        String
   formationId String
-  formation   Formation   @relation(fields: [formationId], references: [id])
+  formation   Formation @relation(fields: [formationId], references: [id])
   trainerId   String
-  trainer     Formateur   @relation(fields: [trainerId], references: [id])
-  status      String      @default("PENDING")
+  trainer     Formateur @relation(fields: [trainerId], references: [id])
+  status      String    @default("PENDING")
+  clientId    String?
+  client      Client?   @relation(fields: [clientId], references: [id])
 }

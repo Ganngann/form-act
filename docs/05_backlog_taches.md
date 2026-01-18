@@ -74,16 +74,16 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** valider ma commande.
 
 **Critères Business (AC) :**
-- [ ] Un formulaire demande le N° TVA au visiteur.
-- [ ] **Auto-complétion** : Le système pré-remplit le Nom de l'entreprise et l'Adresse via API externe (VIES/BCE).
-- [ ] **Mode Dégradé** : Si l'API TVA échoue ou si le client le souhaite, la saisie manuelle est possible.
-- [ ] La validation du formulaire crée le compte utilisateur (Client) et enregistre la session en base de données.
-- [ ] L'utilisateur est redirigé vers une page de succès/confirmation.
+- [x] Un formulaire demande le N° TVA au visiteur.
+- [x] **Auto-complétion** : Le système pré-remplit le Nom de l'entreprise et l'Adresse via API externe (VIES/BCE).
+- [x] **Mode Dégradé** : Si l'API TVA échoue ou si le client le souhaite, la saisie manuelle est possible.
+- [x] La validation du formulaire crée le compte utilisateur (Client) et enregistre la session en base de données.
+- [x] L'utilisateur est redirigé vers une page de succès/confirmation.
 
 **Critères Qualité & Technique :**
-- [ ] Utilisation de Zod pour la validation stricte des données (Format TVA BE, champs requis).
-- [ ] Gestion robuste des erreurs API (ne pas bloquer le tunnel si VIES est down).
-- [ ] Test E2E validant la création d'une réservation complète.
+- [x] Utilisation de Zod pour la validation stricte des données (Format TVA BE, champs requis).
+- [x] Gestion robuste des erreurs API (ne pas bloquer le tunnel si VIES est down).
+- [x] Test E2E validant la création d'une réservation complète.
 
 ---
 

@@ -6,6 +6,8 @@ import { ZonesModule } from "./zones/zones.module";
 import { FormationsModule } from "./formations/formations.module";
 import { CategoriesModule } from "./categories/categories.module";
 import { TrainersModule } from "./trainers/trainers.module";
+import { CompanyModule } from "./company/company.module";
+import { CheckoutModule } from "./checkout/checkout.module";
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { TrainersModule } from "./trainers/trainers.module";
     FormationsModule,
     CategoriesModule,
     TrainersModule,
+    CompanyModule,
+    CheckoutModule,
   ],
   controllers: [AppController],
   providers: [],
