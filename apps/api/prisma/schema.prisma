@@ -24,6 +24,7 @@ model Formateur {
   predilectionZones Zone[]      @relation("Predilection")
   expertiseZones    Zone[]      @relation("Expertise")
   expertises        Expertise[]
+  sessions          Session[]
 }
 
 model Zone {
@@ -53,8 +54,21 @@ model Formation {
   description String
   level       String
   duration    String
+  durationType String @default("HALF_DAY")
   expertiseId String?
   expertise   Expertise? @relation(fields: [expertiseId], references: [id])
   categoryId  String?
   category    Category?  @relation(fields: [categoryId], references: [id])
+  sessions    Session[]
+}
+
+model Session {
+  id          String      @id @default(uuid())
+  date        DateTime
+  slot        String
+  formationId String
+  formation   Formation   @relation(fields: [formationId], references: [id])
+  trainerId   String
+  trainer     Formateur   @relation(fields: [trainerId], references: [id])
+  status      String      @default("PENDING")
 }

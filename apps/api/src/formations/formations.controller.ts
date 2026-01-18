@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { FormationsService } from './formations.service';
 
 @Controller('formations')
@@ -8,5 +8,10 @@ export class FormationsController {
   @Get()
   findAll(@Query('categoryId') categoryId?: string) {
     return this.formationsService.findAll(categoryId);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.formationsService.findOne(id);
   }
 }

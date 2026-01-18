@@ -96,6 +96,7 @@ async function main() {
         description: 'Learn the basics of NestJS framework.',
         level: 'Beginner',
         duration: '2 jours',
+        durationType: 'FULL_DAY',
         expertise: {
           connect: { name: 'NestJS' },
         },
@@ -110,6 +111,7 @@ async function main() {
       where: { id: formation.id },
       data: {
         duration: '2 jours',
+        durationType: 'FULL_DAY',
         expertise: {
             connect: { name: 'NestJS' },
         },
@@ -172,6 +174,7 @@ async function main() {
               description: 'Spreadsheets for everyone',
               level: 'Beginner',
               duration: '3 jours',
+              durationType: 'HALF_DAY',
               expertise: {
                   connect: { name: 'Bureautique' }
               },
@@ -182,10 +185,61 @@ async function main() {
     await prisma.formation.update({
       where: { id: excelFormation.id },
       data: {
+        durationType: 'HALF_DAY',
         category: { connect: { name: 'Bureautique' } }
       }
     });
   }
+
+  // --- SESSIONS SEEDING ---
+  console.log('Seeding sessions for Jean Dupont...');
+  // Clear existing sessions
+  await prisma.session.deleteMany({ where: { trainerId: formateur.id } });
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  const dayAfter = new Date(today);
+  dayAfter.setDate(today.getDate() + 2);
+
+  const nextWeek = new Date(today);
+  nextWeek.setDate(today.getDate() + 7);
+
+  // 1. Tomorrow: FULL_DAY session (Busy)
+  await prisma.session.create({
+    data: {
+      date: tomorrow,
+      slot: 'ALL_DAY',
+      status: 'CONFIRMED',
+      trainer: { connect: { id: formateur.id } },
+      formation: { connect: { id: formation.id } }
+    }
+  });
+
+  // 2. Day After: AM session (PM free)
+  await prisma.session.create({
+    data: {
+      date: dayAfter,
+      slot: 'AM',
+      status: 'CONFIRMED',
+      trainer: { connect: { id: formateur.id } },
+      formation: { connect: { id: formation.id } }
+    }
+  });
+
+  // 3. Next Week: PM session (AM free)
+  await prisma.session.create({
+    data: {
+      date: nextWeek,
+      slot: 'PM',
+      status: 'CONFIRMED',
+      trainer: { connect: { id: formateur.id } },
+      formation: { connect: { id: formation.id } }
+    }
+  });
 
   console.log({ formateur, formation });
   console.log('Seeding finished.');

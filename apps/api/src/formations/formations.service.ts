@@ -16,4 +16,14 @@ export class FormationsService {
       },
     });
   }
+
+  async findOne(id: string) {
+    return this.prisma.formation.findUnique({
+      where: { id },
+      include: {
+        category: true,
+        expertise: true,
+      },
+    });
+  }
 }
