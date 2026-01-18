@@ -56,59 +56,100 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [x] Le calendrier affiche les disponibilités du formateur sélectionné.
 - [x] Intégration de la règle "Demi-journée" vs "Journée complète".
 
-### US-04 : Tunnel de Réservation (Création Client)
+### US-Quality-01 : Stabilisation & Qualité (Post US-03)
+**Objectif :** Résoudre la dette technique identifiée lors de la review US-03 avant de complexifier le widget.
+
+**Critères Business (AC) :**
+- [ ] Le comportement du widget de réservation reste identique pour l'utilisateur final (Iso-fonctionnel).
+- [ ] La sélection de zone, formateur et date reste fluide et réactive.
+
+**Critères Qualité & Technique :**
+- [ ] **Refactoring** : Découper `booking-widget.tsx` (actuellement > 250 lignes) en sous-composants (`ZoneSelector`, `TrainerSelector`, `CalendarView`) respectant la limite de ~150 lignes.
+- [ ] **Clean Code** : Extraire la logique d'état et de fetch dans un Custom Hook `useBookingLogic`.
+- [ ] **Tests Frontend** : Ajouter au moins un test (E2E Playwright ou Unit React Testing Library) couvrant le scénario nominal (Sélection Zone -> Formateur -> Date).
+- [ ] **Environnement** : Nettoyer les URL API hardcodées (utiliser variable d'env).
+
+### US-04 : Tunnel de Réservation (Checkout V1)
 **En tant que** Visiteur,
 **Je veux** finaliser ma réservation en créant mon compte via mon N° TVA,
 **Afin de** valider ma commande.
 
-*Critères d'Acceptation (AC) :*
-- [ ] Formulaire demandant le N° TVA.
-- [ ] Appel API VIES/BCE pour pré-remplir (Nom, Adresse).
-- [ ] **Fallback** : Permettre la saisie manuelle si l'API échoue.
-- [ ] Création du User (Client) et de la Session en base de données.
-- [ ] **Auth** : Implémenter "Mot de passe oublié" (Nodemailer).
-- [ ] Envoi email confirmation (SMTP o2switch).
+**Critères Business (AC) :**
+- [ ] Un formulaire demande le N° TVA au visiteur.
+- [ ] **Auto-complétion** : Le système pré-remplit le Nom de l'entreprise et l'Adresse via API externe (VIES/BCE).
+- [ ] **Mode Dégradé** : Si l'API TVA échoue ou si le client le souhaite, la saisie manuelle est possible.
+- [ ] La validation du formulaire crée le compte utilisateur (Client) et enregistre la session en base de données.
+- [ ] L'utilisateur est redirigé vers une page de succès/confirmation.
+
+**Critères Qualité & Technique :**
+- [ ] Utilisation de Zod pour la validation stricte des données (Format TVA BE, champs requis).
+- [ ] Gestion robuste des erreurs API (ne pas bloquer le tunnel si VIES est down).
+- [ ] Test E2E validant la création d'une réservation complète.
 
 ---
 
-## 🟡 Sprint 2 : Espace Formateur & Logistique
+## 🟡 Sprint 2 : MVP Logistique & Admin (Prioritaire)
 
 ### US-Tech-02 : Moteur de Notifications (Cron Jobs)
-**Objectif :** Implémenter le "Harcèlement bienveillant" (Bible 4.1).
-- [ ] **Queue System** : Mettre en place NestJS Bull ou Cron.
-- [ ] **Tâches Planifiées** :
-    - [ ] `J-30` (Ressources).
-    - [ ] `J-7` (Verrouillage + PDF).
-    - [ ] `J+1` (Relance Preuve).
-- [ ] **Logger** : Historiser chaque envoi dans la DB.
+**Objectif :** Implémenter le "Harcèlement bienveillant" (Bible 4.1) pour automatiser la logistique.
+
+**Critères Business (AC) :**
+- [ ] Le système envoie automatiquement les emails aux échéances définies (J-30, J-7, J+1).
+- [ ] Chaque envoi est tracé/historisé pour preuve.
+
+**Critères Qualité & Technique :**
+- [ ] Architecture : Utilisation de **NestJS Schedule** (Cron) ou **Bull** (Queue) pour gérer les tâches de fond.
+- [ ] **Planification** :
+    - [ ] Job Quotidien vérifiant les sessions à J-30 (Envoi Ressources).
+    - [ ] Job Quotidien vérifiant les sessions à J-7 (Verrouillage + PDF).
+    - [ ] Job Quotidien vérifiant les sessions terminées J+1 (Relance Preuve).
+- [ ] **Logger** : Création d'une entité/table `NotificationLog` pour stocker les envois.
+
+### US-09 : Gestion Formateurs (Onboarding Admin)
+**En tant que** Administrateur,
+**Je veux** créer et configurer les comptes des formateurs,
+**Afin de** leur donner accès à la plateforme et de les rendre disponibles.
+
+**Critères Business (AC) :**
+- [ ] Liste des formateurs avec recherche/filtre.
+- [ ] Formulaire de création/édition d'un formateur (Nom, Email, Tarif journalier, Adresse).
+- [ ] **Assignation** : Interface pour définir les zones de prédilection et les compétences (catégories) du formateur.
+
+**Critères Qualité & Technique :**
+- [ ] Protection de l'accès (Guard Admin).
+- [ ] Validation des données (Email unique, UUID valides).
+
+### US-07 : Vue Master Calendar (Admin)
+**Objectif :** Offrir une vue d'ensemble pour piloter l'activité.
+- [ ] Vue calendrier type "Ressources" (FullCalendar ou équivalent).
+- [ ] Affichage de toutes les sessions confirmées.
+- [ ] Capacité de visualiser les détails d'une session au clic.
+
+### US-05 : Dashboard Formateur
+- [ ] Vue "Mes Missions" (Liste et Détails).
+- [ ] Accès aux détails logistiques (Lieu, Participants).
+- [ ] **Profil** : Édition Bio et Photo.
+
+### US-06 : Upload Liste de Présence
+- [ ] Drag & Drop fichier PDF/Image (Relié stockage S3/Disque).
+- [ ] Stockage sécurisé et lien avec la session.
+
+---
+
+## 🔴 Sprint 3 : Post-MVP & Confort (Optimisations)
 
 ### US-Tech-03 : Synchronisation Calendrier (iCal)
 **Objectif :** Gestion bi-directionnelle des agendas (Bible 2.3).
 - [ ] **In (Import)** : Parser les iCal formateurs toutes les 30min pour bloquer les slots.
 - [ ] **Out (Export)** : Exposer une URL `.ics` par formateur avec ses missions.
 
-### US-05 : Dashboard Formateur
-- [ ] Vue "Mes Missions".
-- [ ] Accès aux détails logistiques.
-- [ ] **Profil** : Édition Bio et Photo.
-
-### US-06 : Upload Liste de Présence
-- [ ] Drag & Drop fichier PDF/Image (Relié stockage S3/Disque).
-- [ ] Stockage sécurisé.
-
----
-
-## 🔴 Sprint 3 : Administration & Facturation
-
-### US-07 : Vue Master Calendar (Admin)
-- [ ] Vue globale ressources (FullCalendar).
-- [ ] Drag & Drop modifications (Doit trigger les emails de changement).
-
 ### US-08 : Odoo Prep (Pré-facturation)
-- [ ] Liste sessions terminées + Preuve.
-- [ ] **Calculateur** : Implémenter la formule `PrixCatalogue + FraisKm + Options` (Bible 5.1).
-- [ ] Utilisation API Google Distance Matrix pour le calcul des frais réels.
+- [ ] Liste sessions terminées + Preuve validée.
+- [ ] Calculateur Prix Final (API Google Distance Matrix).
+- [ ] Export ou vue synthétique pour encodage Odoo.
 
-### US-09 : Gestion Formateurs (Onboarding)
-- [ ] CRUD Formateurs (Création manuelle par Admin).
-- [ ] Attribution Zones & Compétences.
+### US-Auth-01 : Gestion de Compte & Sécurité
+**Objectif :** Compléter le cycle d'authentification.
+- [ ] "Mot de passe oublié" (Envoi lien reset via Nodemailer).
+- [ ] Validation de l'email.
+- [ ] Gestion fine des sessions.
