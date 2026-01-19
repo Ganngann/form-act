@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -54,10 +55,41 @@ async function main() {
     categories.push(cat);
   }
 
-  // Formateur
-  const formateur = await prisma.formateur.upsert({
-    where: { email: 'jean.dupont@example.com' },
+  // Admin User
+  const adminEmail = 'admin@formact.be';
+  const hashedPassword = await bcrypt.hash('admin123', 10);
+
+  await prisma.user.upsert({
+    where: { email: adminEmail },
     update: {
+      role: 'ADMIN',
+    },
+    create: {
+      email: adminEmail,
+      name: 'Super Admin',
+      password: hashedPassword,
+      role: 'ADMIN',
+    },
+  });
+
+  // Formateur
+  const formateurEmail = 'jean.dupont@example.com';
+  // Ensure user exists for formateur
+  const formateurUser = await prisma.user.upsert({
+      where: { email: formateurEmail },
+      update: { role: 'TRAINER' },
+      create: {
+          email: formateurEmail,
+          name: 'Jean Dupont',
+          password: hashedPassword, // Same password for testing
+          role: 'TRAINER'
+      }
+  });
+
+  const formateur = await prisma.formateur.upsert({
+    where: { email: formateurEmail },
+    update: {
+       userId: formateurUser.id,
        predilectionZones: {
          set: [{ code: 'BRU' }, { code: 'BW' }]
        },
@@ -71,7 +103,8 @@ async function main() {
     create: {
       firstName: 'Jean',
       lastName: 'Dupont',
-      email: 'jean.dupont@example.com',
+      email: formateurEmail,
+      userId: formateurUser.id,
       predilectionZones: {
         connect: [{ code: 'BRU' }, { code: 'BW' }]
       },

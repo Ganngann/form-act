@@ -11,11 +11,13 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(uuid())
-  email    String  @unique
-  name     String?
-  password String?
-  client   Client?
+  id        String     @id @default(uuid())
+  email     String     @unique
+  name      String?
+  password  String?
+  role      String     @default("CLIENT") // Enums as String for SQLite compatibility
+  client    Client?
+  formateur Formateur?
 }
 
 model Client {
@@ -33,6 +35,8 @@ model Formateur {
   firstName         String
   lastName          String
   email             String      @unique
+  userId            String?     @unique
+  user              User?       @relation(fields: [userId], references: [id])
   predilectionZones Zone[]      @relation("Predilection")
   expertiseZones    Zone[]      @relation("Expertise")
   expertises        Expertise[]
