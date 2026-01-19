@@ -1,4 +1,4 @@
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEmail, IsOptional, IsString } from "class-validator";
 
 export class UpdateTrainerDto {
   @IsEmail()
@@ -12,4 +12,14 @@ export class UpdateTrainerDto {
   @IsString()
   @IsOptional()
   lastName?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  predilectionZones?: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  expertiseZones?: string[];
 }
