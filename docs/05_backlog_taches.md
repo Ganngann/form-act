@@ -89,66 +89,166 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 
 ## 🟡 Sprint 2 : MVP Logistique & Admin (Prioritaire)
 
-### US-09 : Gestion Formateurs (Onboarding Admin)
+### US-10 : Admin - Gestion Identité Formateurs
+**Référence Bible :** Section 3.4 (Panneau Administrateur > Gestion des Formateurs)
 **En tant que** Administrateur,
-**Je veux** créer et configurer les comptes des formateurs,
-**Afin de** leur donner accès à la plateforme et de les rendre disponibles.
+**Je veux** créer et gérer les comptes des formateurs (Identité),
+**Afin de** leur donner accès à la plateforme.
 
-**Critères Business (AC) :**
-- [ ] Liste des formateurs avec recherche/filtre.
-- [ ] Formulaire de création/édition d'un formateur (Nom, Email).
-- [ ] **Assignation** : Interface pour définir les zones de prédilection du formateur, les zones sont composés de deux types: la zone principale (proche) et la zone secondaire (plus large) les zones sont définies sous forme de provinces.
+*Critères d'Acceptation (AC) :*
+- [ ] Liste paginée des formateurs avec filtrage.
+- [ ] Création d'un formateur : Nom, Prénom, Email.
+- [ ] Validation : Email unique requis.
+- [ ] Édition des informations de base.
 
-**Critères Qualité & Technique :**
-- [ ] Protection de l'accès (Guard Admin).
-- [ ] Validation des données (Email unique, UUID valides).
+### US-11 : Admin - Gestion Zones Formateurs
+**Référence Bible :** Section 2.2 (Algorithme de Territorialité) & 3.4
+**En tant que** Administrateur,
+**Je veux** définir les zones géographiques d'intervention d'un formateur,
+**Afin que** le moteur de dispatch puisse les proposer correctement.
 
-### US-07 : Vue Master Calendar (Admin)
-**Objectif :** Offrir une vue d'ensemble pour piloter l'activité.
-- [ ] Vue calendrier type "Ressources" (FullCalendar ou équivalent).
-- [ ] Affichage de toutes les sessions confirmées.
-- [ ] Capacité de visualiser les détails d'une session au clic.
+*Critères d'Acceptation (AC) :*
+- [ ] Interface d'assignation des provinces par formateur.
+- [ ] Distinction explicite : Zone de Prédilection (Court) vs Zone d'Expertise (Long).
+- [ ] Règle métier : Une zone de prédilection est automatiquement incluse comme zone d'expertise (Héritage).
 
-### US-05 : Dashboard Formateur
-- [ ] Vue "Mes Missions" (Liste et Détails).
-- [ ] Accès aux détails logistiques (Lieu, Participants).
-- [ ] **Profil** : Édition Bio et Photo.
+### US-12 : Admin - Vue Master Calendar
+**Référence Bible :** Section 3.4 (Master Calendar)
+**En tant que** Administrateur,
+**Je veux** visualiser l'ensemble des sessions confirmées sur un calendrier global,
+**Afin de** piloter l'activité de l'équipe.
 
-### US-06 : Upload Liste de Présence
-- [ ] Drag & Drop fichier PDF/Image (Relié stockage S3/Disque).
-- [ ] Stockage sécurisé et lien avec la session.
+*Critères d'Acceptation (AC) :*
+- [ ] Vue Calendrier (Mois/Semaine) agrégée.
+- [ ] Affichage des sessions avec code couleur (Confirmé, En attente, Terminé).
+- [ ] Détail au clic : Client, Formateur, Lieu.
+
+### US-13 : Formateur - Dashboard & Missions
+**Référence Bible :** Section 3.3 (Espace Formateur > Mes Missions)
+**En tant que** Formateur,
+**Je veux** consulter la liste de mes missions et leurs détails,
+**Afin de** m'organiser.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Liste chronologique des sessions à venir.
+- [ ] Page de détail par session.
+- [ ] Affichage des infos logistiques : Adresse (Lien GPS), Matériel requis, Participants.
+
+### US-14 : Formateur - Gestion Profil
+**Référence Bible :** Section 3.3 (Espace Formateur > Mon Profil)
+**En tant que** Formateur,
+**Je veux** modifier mes informations de présentation,
+**Afin de** maintenir mon profil à jour.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Formulaire d'édition de la Bio.
+- [ ] Upload de la Photo de profil.
+
+### US-15 : Formateur - Upload Preuve
+**Référence Bible :** Section 3.3 (Centre Documentaire)
+**En tant que** Formateur,
+**Je veux** téléverser la liste de présence signée après une session,
+**Afin de** prouver la prestation et déclencher la facturation.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Zone d'upload (Drag & Drop) sur la fiche session terminée.
+- [ ] Stockage sécurisé du fichier.
+- [ ] Mise à jour du statut de la session ("Preuve Reçue").
 
 ---
 
-## 🔴 Sprint 3 : Post-MVP & Confort (Optimisations)
+## 🔴 Sprint 3 : Automations & Finalisation (Post-MVP)
 
-### US-Tech-02 : Moteur de Notifications (Cron Jobs)
-**Objectif :** Implémenter le "Harcèlement bienveillant" (Bible 4.1) pour automatiser la logistique.
+### US-16 : Tech - Infrastructure Notifications
+**Référence Bible :** Section 4 (Moteur d'Automatisations)
+**En tant que** Développeur,
+**Je veux** mettre en place l'architecture technique des tâches planifiées,
+**Afin de** supporter le moteur de notifications.
 
-**Critères Business (AC) :**
-- [ ] Le système envoie automatiquement les emails aux échéances définies (J-30, J-7, J+1).
-- [ ] Chaque envoi est tracé/historisé pour preuve.
+*Critères Techniques :*
+- [ ] Installation et configuration de NestJS Schedule (Cron) ou Bull (Queues).
+- [ ] Création de l'entité `NotificationLog` pour l'historique.
+- [ ] Service générique d'envoi d'email.
 
-**Critères Qualité & Technique :**
-- [ ] Architecture : Utilisation de **NestJS Schedule** (Cron) ou **Bull** (Queue) pour gérer les tâches de fond.
-- [ ] **Planification** :
-    - [ ] Job Quotidien vérifiant les sessions à J-30 (Envoi Ressources).
-    - [ ] Job Quotidien vérifiant les sessions à J-7 (Verrouillage + PDF).
-    - [ ] Job Quotidien vérifiant les sessions terminées J+1 (Relance Preuve).
-- [ ] **Logger** : Création d'une entité/table `NotificationLog` pour stocker les envois.
+### US-17 : Notifs - Cycle Logistique (Relances)
+**Référence Bible :** Section 4.1 (Matrice des Notifications)
+**En tant que** Système,
+**Je veux** relancer automatiquement le client pour obtenir les informations manquantes,
+**Afin de** garantir la bonne tenue de la formation.
 
-### US-Tech-03 : Synchronisation Calendrier (iCal)
-**Objectif :** Gestion bi-directionnelle des agendas (Bible 2.3).
-- [ ] **In (Import)** : Parser les iCal formateurs toutes les 30min pour bloquer les slots.
-- [ ] **Out (Export)** : Exposer une URL `.ics` par formateur avec ses missions.
+*Critères d'Acceptation (AC) :*
+- [ ] Cron T+48h : Relance si Logistique vide.
+- [ ] Cron J-15 : Alerte si Participants vides.
+- [ ] Cron J-9 : Alerte Critique si Participants vides.
 
-### US-08 : Odoo Prep (Pré-facturation)
-- [ ] Liste sessions terminées + Preuve validée.
-- [ ] Calculateur Prix Final (API Google Distance Matrix).
-- [ ] Export ou vue synthétique pour encodage Odoo.
+### US-18 : Notifs - Cycle Préparation (J-30/J-7)
+**Référence Bible :** Section 4.1 (Matrice des Notifications)
+**En tant que** Système,
+**Je veux** envoyer les documents et instructions aux moments clés,
+**Afin de** préparer les parties prenantes.
 
-### US-Auth-01 : Gestion de Compte & Sécurité
-**Objectif :** Compléter le cycle d'authentification.
-- [ ] "Mot de passe oublié" (Envoi lien reset via Nodemailer).
-- [ ] Validation de l'email.
-- [ ] Gestion fine des sessions.
+*Critères d'Acceptation (AC) :*
+- [ ] Cron J-30 (Client) : Envoi PDF Programme.
+- [ ] Cron J-21 (Formateur) : Rappel Mission avec détails.
+- [ ] Cron J-7 (Formateur) : Envoi Pack Documentaire (Liste Présence PDF) + Verrouillage modification Client.
+
+### US-19 : Notifs - Cycle Clôture (J+1)
+**Référence Bible :** Section 4.1 (Matrice des Notifications)
+**En tant que** Système,
+**Je veux** relancer le formateur après la session,
+**Afin de** récupérer la preuve de prestation rapidement.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Cron J+1 (Formateur) : Rappel upload preuve si non reçue.
+
+### US-20 : Tech - Export Calendrier (iCal Out)
+**Référence Bible :** Section 2.3 (Flux Sortant)
+**En tant que** Formateur,
+**Je veux** un lien iCal exposant mes missions Form-Act,
+**Afin de** les voir dans mon agenda personnel.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Endpoint public sécurisé (Token) générant un flux .ics.
+- [ ] Inclusion des détails (Lieu, Heure) dans les événements.
+
+### US-21 : Tech - Import Calendrier (iCal In)
+**Référence Bible :** Section 2.3 (Flux Entrant)
+**En tant que** Système,
+**Je veux** lire l'agenda personnel du formateur,
+**Afin de** ne pas lui proposer de missions sur ses créneaux occupés.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Champ URL iCal dans le profil Formateur.
+- [ ] Tâche planifiée de synchronisation (lecture et création de "blocages").
+
+### US-22 : Admin - Préparation Facturation
+**Référence Bible :** Section 5.1 & 5.2
+**En tant que** Administrateur,
+**Je veux** visualiser les sessions prêtes à être facturées avec le prix calculé,
+**Afin de** préparer l'encodage comptable.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Liste des sessions terminées avec preuve validée.
+- [ ] Calcul automatique du prix final : Base + Distance (Matrix) + Ajustement.
+- [ ] Vue synthétique des données de facturation (TVA, Adresse).
+
+### US-23 : Admin - Clôture Facturation
+**Référence Bible :** Section 5.2 (Odoo Prep)
+**En tant que** Administrateur,
+**Je veux** marquer une session comme "Facturée",
+**Afin de** notifier le client et archiver le dossier.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Action "Marquer comme Facturé".
+- [ ] Envoi email notification client.
+- [ ] Archivage de la session (Lecture seule).
+
+### US-24 : Auth - Réinitialisation Mot de Passe
+**Référence Bible :** Section 3.1 (Interface Publique)
+**En tant que** Utilisateur,
+**Je veux** pouvoir définir un nouveau mot de passe si j'ai oublié l'ancien,
+**Afin de** récupérer l'accès à mon compte.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Flux "Mot de passe oublié" (Email avec lien/token).
+- [ ] Page de définition du nouveau mot de passe.
