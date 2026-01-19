@@ -108,9 +108,9 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin que** le moteur de dispatch puisse les proposer correctement.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Interface d'assignation des provinces par formateur.
-- [ ] Distinction explicite : Zone de Prédilection (Court) vs Zone d'Expertise (Long).
-- [ ] Règle métier : Une zone de prédilection est automatiquement incluse comme zone d'expertise (Héritage).
+- [x] Interface d'assignation des provinces par formateur.
+- [x] Distinction explicite : Zone de Prédilection (Court) vs Zone d'Expertise (Long).
+- [x] Règle métier : Une zone de prédilection est automatiquement incluse comme zone d'expertise (Héritage).
 
 ### US-12 : Admin - Vue Master Calendar
 **Référence Bible :** Section 3.4 (Master Calendar)
