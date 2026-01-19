@@ -36,7 +36,11 @@ export class TrainersService {
   async findOne(id: string) {
     const formateur = await this.prisma.formateur.findUnique({
       where: { id },
-      include: { user: true },
+      include: {
+        user: true,
+        predilectionZones: true,
+        expertiseZones: true,
+      },
     });
     if (!formateur) throw new BadRequestException('Trainer not found');
     return formateur;
@@ -85,16 +89,40 @@ export class TrainersService {
 
   async update(id: string, data: UpdateTrainerDto) {
     return this.prisma.$transaction(async (tx) => {
-      const trainer = await tx.formateur.findUnique({ where: { id } });
+      const trainer = await tx.formateur.findUnique({
+        where: { id },
+        include: { predilectionZones: true },
+      });
       if (!trainer) throw new BadRequestException('Trainer not found');
+
+      const updateData: Prisma.FormateurUpdateInput = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+      };
+
+      if (data.predilectionZones) {
+        updateData.predilectionZones = {
+          set: data.predilectionZones.map((id) => ({ id })),
+        };
+      }
+
+      if (data.expertiseZones) {
+        const predilectionIds = data.predilectionZones
+          ? data.predilectionZones
+          : trainer.predilectionZones.map((z) => z.id);
+
+        const validExpertiseIds = data.expertiseZones.filter(
+          (id) => !predilectionIds.includes(id),
+        );
+        updateData.expertiseZones = {
+          set: validExpertiseIds.map((id) => ({ id })),
+        };
+      }
 
       const updatedTrainer = await tx.formateur.update({
         where: { id },
-        data: {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-        },
+        data: updateData,
       });
 
       if (trainer.userId) {
