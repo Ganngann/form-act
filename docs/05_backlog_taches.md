@@ -96,8 +96,8 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 
 **Critères Business (AC) :**
 - [ ] Liste des formateurs avec recherche/filtre.
-- [ ] Formulaire de création/édition d'un formateur (Nom, Email, Tarif journalier, Adresse).
-- [ ] **Assignation** : Interface pour définir les zones de prédilection et les compétences (catégories) du formateur.
+- [ ] Formulaire de création/édition d'un formateur (Nom, Email).
+- [ ] **Assignation** : Interface pour définir les zones de prédilection du formateur, les zones sont composés de deux types: la zone principale (proche) et la zone secondaire (plus large) les zones sont définies sous forme de provinces.
 
 **Critères Qualité & Technique :**
 - [ ] Protection de l'accès (Guard Admin).
