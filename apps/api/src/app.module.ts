@@ -8,6 +8,7 @@ import { CategoriesModule } from "./categories/categories.module";
 import { TrainersModule } from "./trainers/trainers.module";
 import { CompanyModule } from "./company/company.module";
 import { CheckoutModule } from "./checkout/checkout.module";
+import { SessionsModule } from "./sessions/sessions.module";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CheckoutModule } from "./checkout/checkout.module";
     TrainersModule,
     CompanyModule,
     CheckoutModule,
+    SessionsModule,
   ],
   controllers: [AppController],
   providers: [],
