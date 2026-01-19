@@ -42,12 +42,12 @@ export class TrainersService {
         expertiseZones: true,
       },
     });
-    if (!formateur) throw new BadRequestException('Trainer not found');
+    if (!formateur) throw new BadRequestException("Trainer not found");
     return formateur;
   }
 
   async create(data: CreateTrainerDto) {
-    const tempPassword = 'password123';
+    const tempPassword = "password123";
     const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
     return this.prisma.$transaction(async (tx) => {
@@ -55,14 +55,14 @@ export class TrainersService {
         where: { email: data.email },
       });
       if (existingUser) {
-        throw new BadRequestException('User with this email already exists');
+        throw new BadRequestException("User with this email already exists");
       }
 
       const existingTrainer = await tx.formateur.findUnique({
         where: { email: data.email },
       });
       if (existingTrainer) {
-        throw new BadRequestException('Trainer with this email already exists');
+        throw new BadRequestException("Trainer with this email already exists");
       }
 
       const user = await tx.user.create({
@@ -70,7 +70,7 @@ export class TrainersService {
           email: data.email,
           name: `${data.firstName} ${data.lastName}`,
           password: hashedPassword,
-          role: 'TRAINER',
+          role: "TRAINER",
         },
       });
 
@@ -93,7 +93,7 @@ export class TrainersService {
         where: { id },
         include: { predilectionZones: true },
       });
-      if (!trainer) throw new BadRequestException('Trainer not found');
+      if (!trainer) throw new BadRequestException("Trainer not found");
 
       const updateData: Prisma.FormateurUpdateInput = {
         firstName: data.firstName,
@@ -142,12 +142,12 @@ export class TrainersService {
   async remove(id: string) {
     return this.prisma.$transaction(async (tx) => {
       const trainer = await tx.formateur.findUnique({ where: { id } });
-      if (!trainer) throw new BadRequestException('Trainer not found');
+      if (!trainer) throw new BadRequestException("Trainer not found");
 
       const sessionCount = await tx.session.count({ where: { trainerId: id } });
       if (sessionCount > 0) {
         throw new BadRequestException(
-          'Cannot delete trainer with existing sessions',
+          "Cannot delete trainer with existing sessions",
         );
       }
 

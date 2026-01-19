@@ -145,7 +145,7 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
 
       {isEdit && zones.length > 0 && (
         <div className="space-y-4 pt-4 border-t">
-          <h3 className="text-lg font-medium">Zones d'intervention</h3>
+          <h3 className="text-lg font-medium">Zones d&apos;intervention</h3>
           <div className="grid grid-cols-3 gap-4 font-medium text-sm text-gray-500 mb-2">
             <div>Province</div>
             <div className="text-center">Prédilection</div>
