@@ -96,10 +96,10 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** leur donner accès à la plateforme.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Liste paginée des formateurs avec filtrage.
-- [ ] Création d'un formateur : Nom, Prénom, Email.
-- [ ] Validation : Email unique requis.
-- [ ] Édition des informations de base.
+- [x] Liste paginée des formateurs avec filtrage.
+- [x] Création d'un formateur : Nom, Prénom, Email.
+- [x] Validation : Email unique requis.
+- [x] Édition des informations de base.
 
 ### US-11 : Admin - Gestion Zones Formateurs
 **Référence Bible :** Section 2.2 (Algorithme de Territorialité) & 3.4
