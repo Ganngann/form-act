@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TrainersService } from "./trainers.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { AuthService } from "../auth/auth.service";
 
 describe("TrainersService", () => {
   let service: TrainersService;
@@ -16,6 +17,12 @@ describe("TrainersService", () => {
             session: {
               findMany: jest.fn().mockResolvedValue([]),
             },
+          },
+        },
+        {
+          provide: AuthService,
+          useValue: {
+            hashPassword: jest.fn().mockResolvedValue("hashed_password"),
           },
         },
       ],

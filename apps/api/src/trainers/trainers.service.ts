@@ -3,11 +3,14 @@ import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateTrainerDto } from "./dto/create-trainer.dto";
 import { UpdateTrainerDto } from "./dto/update-trainer.dto";
-import * as bcrypt from "bcrypt";
+import { AuthService } from "../auth/auth.service";
 
 @Injectable()
 export class TrainersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private authService: AuthService,
+  ) {}
 
   async findAll(skip: number = 0, take: number = 10, search?: string) {
     const where: Prisma.FormateurWhereInput = search
@@ -48,7 +51,7 @@ export class TrainersService {
 
   async create(data: CreateTrainerDto) {
     const tempPassword = "password123";
-    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+    const hashedPassword = await this.authService.hashPassword(tempPassword);
 
     return this.prisma.$transaction(async (tx) => {
       const existingUser = await tx.user.findUnique({
