@@ -13,11 +13,8 @@ export function SessionDetailsDialog({ session, open, onOpenChange }: SessionDet
   if (!session) return null
 
   const computedStatus = getComputedStatus(session)
-  // @ts-ignore - session may have extra fields from API include
   const clientName = session.client?.companyName || "Client inconnu"
-  // @ts-ignore
   const trainerName = session.trainer ? `${session.trainer.firstName} ${session.trainer.lastName}` : "Non assigné"
-  // @ts-ignore
   const formationTitle = session.formation?.title || "Formation"
 
   return (

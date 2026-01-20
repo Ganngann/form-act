@@ -1,4 +1,4 @@
-import { differenceInDays, isBefore, isPast } from "date-fns";
+import { differenceInDays, isBefore, isPast, differenceInHours } from "date-fns";
 
 export type SessionStatus =
   | "PENDING"
@@ -23,6 +23,19 @@ export interface SessionData {
   proofUrl?: string | null;
   billedAt?: string | Date | null;
   createdAt?: string | Date; // Needed for T+48h rule
+
+  // Relations (included via API)
+  client?: {
+    companyName: string;
+    vatNumber?: string;
+  } | null;
+  trainer?: {
+    firstName: string;
+    lastName: string;
+  } | null;
+  formation?: {
+    title: string;
+  } | null;
 }
 
 export function getComputedStatus(session: SessionData): SessionStatus {
@@ -59,19 +72,23 @@ export function getComputedStatus(session: SessionData): SessionStatus {
   }
 
   // T+48h: Logistics Missing
-  // If we don't have createdAt, we assume it's old enough to require logistics
-  // But strictly: check if created > 48h ago
+  // Check if session was created more than 48 hours ago
   if (!hasLogistics) {
-      // Simplified rule: if confirmed and no logistics, it's missing.
-      // We could check createdAt here if available.
+      if (session.createdAt) {
+          const hoursSinceCreation = differenceInHours(now, new Date(session.createdAt));
+          if (hoursSinceCreation > 48) {
+              return "LOGISTICS_MISSING";
+          }
+           // Grace period active
+          return "CONFIRMED";
+      }
+      // Fallback if createdAt is missing (assume old data)
       return "LOGISTICS_MISSING";
   }
 
   // If logistics present but participants missing (and > J-15)
   if (hasLogistics && !hasParticipants) {
       // It's technically "Logistics OK, waiting for participants"
-      // We can default to CONFIRMED or keep specific status.
-      // Let's return CONFIRMED as "Standard/On Track" until J-15
       return "CONFIRMED";
   }
 

@@ -2,6 +2,7 @@ import { format, isSameDay, isWeekend } from "date-fns";
 import { fr } from "date-fns/locale";
 import { SessionData } from "@/lib/session-status";
 import { SessionPill } from "./session-pill";
+import { useMemo } from "react";
 
 interface CalendarGridProps {
   days: Date[];
@@ -11,6 +12,23 @@ interface CalendarGridProps {
 }
 
 export function CalendarGrid({ days, trainers, sessions, onSessionClick }: CalendarGridProps) {
+
+  // Optimize: Create a lookup map for sessions
+  // Key: "trainerId-YYYY-MM-DD"
+  // Value: SessionData[]
+  const sessionsMap = useMemo(() => {
+    const map: Record<string, SessionData[]> = {};
+    for (const session of sessions) {
+      const dateKey = format(new Date(session.date), "yyyy-MM-dd");
+      const key = `${session.trainerId}-${dateKey}`;
+      if (!map[key]) {
+        map[key] = [];
+      }
+      map[key].push(session);
+    }
+    return map;
+  }, [sessions]);
+
   return (
     <div className="overflow-x-auto border rounded-lg">
       <table className="w-full text-sm border-collapse">
@@ -39,9 +57,9 @@ export function CalendarGrid({ days, trainers, sessions, onSessionClick }: Calen
                 {trainer.firstName} {trainer.lastName}
               </td>
               {days.map((day) => {
-                const daySessions = sessions.filter(
-                  (s) => s.trainerId === trainer.id && isSameDay(new Date(s.date), day)
-                );
+                const dateKey = format(day, "yyyy-MM-dd");
+                const lookupKey = `${trainer.id}-${dateKey}`;
+                const daySessions = sessionsMap[lookupKey] || [];
 
                 return (
                   <td

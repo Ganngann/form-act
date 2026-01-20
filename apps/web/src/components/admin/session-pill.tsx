@@ -9,7 +9,6 @@ interface SessionPillProps {
 export function SessionPill({ session, onClick }: SessionPillProps) {
   const status = getComputedStatus(session);
   const colorClass = STATUS_COLORS[status];
-  // @ts-ignore
   const clientName = session.client?.companyName || "Client";
   const slotLabel = session.slot === 'AM' ? 'Matin' : 'PM';
 
