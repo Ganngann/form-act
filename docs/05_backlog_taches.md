@@ -119,9 +119,9 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** piloter l'activité de l'équipe.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Vue Calendrier (Mois/Semaine) agrégée.
-- [ ] Affichage des sessions avec code couleur (Confirmé, En attente, Terminé).
-- [ ] Détail au clic : Client, Formateur, Lieu.
+- [x] Vue Calendrier (Mois/Semaine) agrégée.
+- [x] Affichage des sessions avec code couleur (Confirmé, En attente, Terminé).
+- [x] Détail au clic : Client, Formateur, Lieu.
 
 ### US-13 : Formateur - Dashboard & Missions
 **Référence Bible :** Section 3.3 (Espace Formateur > Mes Missions)
