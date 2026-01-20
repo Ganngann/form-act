@@ -130,19 +130,19 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** protéger les données sensibles (RGPD).
 
 *Critères Business (AC) :*
-- [ ] **Page de Connexion** : Interface unique `/login` demandant Email + Mot de passe.
-- [ ] **Redirection Intelligente** :
+- [x] **Page de Connexion** : Interface unique `/login` demandant Email + Mot de passe.
+- [x] **Redirection Intelligente** :
     - Role `ADMIN` -> `/admin` (Master Calendar)
     - Role `TRAINER` -> `/trainer`
     - Role `CLIENT` -> `/dashboard` (Espace Client)
-- [ ] **Protection des Routes** : Tentative d'accès direct sans session -> Redirection vers `/login`.
-- [ ] **Déconnexion** : Bouton accessible partout détruisant la session.
+- [x] **Protection des Routes** : Tentative d'accès direct sans session -> Redirection vers `/login`.
+- [x] **Déconnexion** : Bouton accessible partout détruisant la session.
 
 *Critères Qualité & Technique :*
-- [ ] **Backend** : Création du `AuthModule` (NestJS) avec stratégie Passport-JWT.
-- [ ] **Sécurité** : Stockage du Token JWT dans un Cookie `HttpOnly` (Secure/SameSite).
-- [ ] **Middleware** : Implémentation Next.js Middleware pour le contrôle d'accès (RBAC) côté serveur.
-- [ ] **Ségrégation** : Un client ne peut pas accéder aux routes `/admin` ou `/trainer`, et vice-versa.
+- [x] **Backend** : Création du `AuthModule` (NestJS) avec stratégie Passport-JWT.
+- [x] **Sécurité** : Stockage du Token JWT dans un Cookie `HttpOnly` (Secure/SameSite).
+- [x] **Middleware** : Implémentation Next.js Middleware pour le contrôle d'accès (RBAC) côté serveur.
+- [x] **Ségrégation** : Un client ne peut pas accéder aux routes `/admin` ou `/trainer`, et vice-versa.
 
 ### US-13 : Formateur - Dashboard & Missions
 **Référence Bible :** Section 3.3 (Espace Formateur > Mes Missions)
