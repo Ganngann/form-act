@@ -201,4 +201,25 @@ export class TrainersService {
       },
     });
   }
+
+  async getMissions(trainerId: string) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return this.prisma.session.findMany({
+      where: {
+        trainerId,
+        date: {
+          gte: today,
+        },
+      },
+      include: {
+        formation: true,
+        client: true,
+      },
+      orderBy: {
+        date: "asc",
+      },
+    });
+  }
 }

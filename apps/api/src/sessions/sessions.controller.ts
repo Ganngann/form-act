@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { SessionsService } from './sessions.service';
 
 @Controller('sessions')
@@ -13,5 +13,10 @@ export class SessionsController {
     const startDate = start ? new Date(start) : undefined;
     const endDate = end ? new Date(end) : undefined;
     return this.sessionsService.findAll(startDate, endDate);
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.sessionsService.findOne(id);
   }
 }

@@ -12,4 +12,9 @@ export class TrainersController {
   ) {
     return this.trainersService.getAvailability(id, month);
   }
+
+  @Get(":id/missions")
+  async getMissions(@Param("id") id: string) {
+    return this.trainersService.getMissions(id);
+  }
 }

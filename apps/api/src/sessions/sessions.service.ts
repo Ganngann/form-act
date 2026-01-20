@@ -34,4 +34,17 @@ export class SessionsService {
       },
     });
   }
+
+  async findOne(id: string) {
+    return this.prisma.session.findUnique({
+      where: { id },
+      include: {
+        client: {
+          include: { user: true },
+        },
+        trainer: true,
+        formation: true,
+      },
+    });
+  }
 }

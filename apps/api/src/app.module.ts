@@ -9,6 +9,7 @@ import { TrainersModule } from "./trainers/trainers.module";
 import { CompanyModule } from "./company/company.module";
 import { CheckoutModule } from "./checkout/checkout.module";
 import { SessionsModule } from "./sessions/sessions.module";
+import { AuthModule } from "./auth/auth.module";
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { SessionsModule } from "./sessions/sessions.module";
     CompanyModule,
     CheckoutModule,
     SessionsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [],
