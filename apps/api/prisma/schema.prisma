@@ -99,3 +99,13 @@ model Session {
   proofUrl     String?   // URL to the signed attendance sheet
   billedAt     DateTime? // When the session was marked as billed
 }
+
+model NotificationLog {
+  id        String   @id @default(uuid())
+  type      String
+  recipient String
+  status    String
+  sentAt    DateTime @default(now())
+  error     String?
+  metadata  String?  // JSON string
+}

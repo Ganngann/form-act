@@ -11,6 +11,8 @@ import { CheckoutModule } from "./checkout/checkout.module";
 import { SessionsModule } from "./sessions/sessions.module";
 import { AuthModule } from "./auth/auth.module";
 import { FilesModule } from "./files/files.module";
+import { EmailModule } from "./email/email.module";
+import { NotificationsModule } from "./notifications/notifications.module";
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { FilesModule } from "./files/files.module";
     SessionsModule,
     AuthModule,
     FilesModule,
+    EmailModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [],
