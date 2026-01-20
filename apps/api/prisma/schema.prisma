@@ -89,4 +89,11 @@ model Session {
   status      String    @default("PENDING")
   clientId    String?
   client      Client?   @relation(fields: [clientId], references: [id])
+
+  // New fields for Workflow Status
+  location     String?   // Address of the session (can differ from client address)
+  logistics    String?   // JSON string: { access, wifi, videoMaterial, etc. }
+  participants String?   // JSON string: [ { name, email }, ... ]
+  proofUrl     String?   // URL to the signed attendance sheet
+  billedAt     DateTime? // When the session was marked as billed
 }
