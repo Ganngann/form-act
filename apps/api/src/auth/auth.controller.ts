@@ -47,7 +47,13 @@ export class AuthController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get("me")
-  getProfile(@Req() req) {
-    return req.user;
+  async getProfile(@Req() req) {
+    const user = await this.authService.getUserProfile(req.user.userId);
+    if (!user) {
+      throw new UnauthorizedException("User not found");
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = user;
+    return result;
   }
 }

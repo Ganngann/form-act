@@ -1,9 +1,14 @@
-import { Controller, Get, Query } from "@nestjs/common";
+import { Controller, Get, Param, Query } from "@nestjs/common";
 import { SessionsService } from "./sessions.service";
 
 @Controller("sessions")
 export class SessionsController {
   constructor(private readonly sessionsService: SessionsService) {}
+
+  @Get(":id")
+  async findOne(@Param("id") id: string) {
+    return this.sessionsService.findOne(id);
+  }
 
   @Get()
   async findAll(@Query("start") start?: string, @Query("end") end?: string) {

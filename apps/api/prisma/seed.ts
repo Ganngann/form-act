@@ -224,6 +224,30 @@ async function main() {
     });
   }
 
+  // Client
+  const clientEmail = 'client@company.com';
+  const clientUser = await prisma.user.upsert({
+      where: { email: clientEmail },
+      update: { role: 'CLIENT' },
+      create: {
+          email: clientEmail,
+          name: 'Client User',
+          password: hashedPassword,
+          role: 'CLIENT'
+      }
+  });
+
+  const client = await prisma.client.upsert({
+      where: { userId: clientUser.id },
+      update: {},
+      create: {
+          companyName: 'Acme Corp',
+          vatNumber: 'BE0000000001',
+          address: 'Rue de la Loi 16, 1000 Bruxelles',
+          userId: clientUser.id
+      }
+  });
+
   // --- SESSIONS SEEDING ---
   console.log('Seeding sessions for Jean Dupont...');
   // Clear existing sessions
@@ -248,7 +272,11 @@ async function main() {
       slot: 'ALL_DAY',
       status: 'CONFIRMED',
       trainer: { connect: { id: formateur.id } },
-      formation: { connect: { id: formation.id } }
+      formation: { connect: { id: formation.id } },
+      client: { connect: { id: client.id } },
+      location: 'Rue de la Loi 16, 1000 Bruxelles',
+      logistics: JSON.stringify({ wifi: 'Yes', projector: 'Needed', access: 'Badge required' }),
+      participants: JSON.stringify([{ name: 'Alice', email: 'alice@acme.com' }, { name: 'Bob', email: 'bob@acme.com' }])
     }
   });
 
@@ -259,7 +287,8 @@ async function main() {
       slot: 'AM',
       status: 'CONFIRMED',
       trainer: { connect: { id: formateur.id } },
-      formation: { connect: { id: formation.id } }
+      formation: { connect: { id: formation.id } },
+      client: { connect: { id: client.id } },
     }
   });
 
@@ -270,7 +299,8 @@ async function main() {
       slot: 'PM',
       status: 'CONFIRMED',
       trainer: { connect: { id: formateur.id } },
-      formation: { connect: { id: formation.id } }
+      formation: { connect: { id: formation.id } },
+      client: { connect: { id: client.id } },
     }
   });
 
