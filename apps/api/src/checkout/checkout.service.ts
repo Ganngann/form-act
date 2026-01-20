@@ -1,11 +1,14 @@
 import { Injectable, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateBookingDto } from "./create-booking.dto";
-import * as bcrypt from "bcrypt";
+import { AuthService } from "../auth/auth.service";
 
 @Injectable()
 export class CheckoutService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private authService: AuthService,
+  ) {}
 
   async processCheckout(data: CreateBookingDto) {
     // Check if user exists
@@ -27,7 +30,7 @@ export class CheckoutService {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    const hashedPassword = await this.authService.hashPassword(data.password);
 
     // Atomic transaction
     return this.prisma.$transaction(async (tx) => {
