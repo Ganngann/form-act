@@ -32,7 +32,7 @@ export default async function MissionDetailsPage({ params }: { params: { id: str
 
   // Address Logic
   const address = session.location || session.client?.address;
-  const mapLink = address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}` : null;
+  const mapLink = address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}` : undefined;
 
   // Parsing JSON fields
   let logistics = null;
