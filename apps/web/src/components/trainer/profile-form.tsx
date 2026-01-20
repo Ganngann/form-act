@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { API_URL } from '@/lib/config';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export function ProfileForm({ trainer }: { trainer: any }) {
     const router = useRouter();
@@ -63,11 +64,15 @@ export function ProfileForm({ trainer }: { trainer: any }) {
         <div className="bg-white p-6 rounded-lg border shadow-sm space-y-6">
             <div className="flex items-center gap-6">
                 <div className="relative group">
-                    <img
-                        src={trainer.avatarUrl ? `${API_URL}${trainer.avatarUrl}` : "https://via.placeholder.com/150?text=Avatar"}
-                        alt="Avatar"
-                        className="w-24 h-24 rounded-full object-cover border bg-gray-100"
-                    />
+                    <div className="w-24 h-24 rounded-full overflow-hidden border bg-gray-100 relative">
+                        <Image
+                            src={trainer.avatarUrl ? `${API_URL}${trainer.avatarUrl}` : "https://via.placeholder.com/150?text=Avatar"}
+                            alt="Avatar"
+                            fill
+                            className="object-cover"
+                            unoptimized
+                        />
+                    </div>
                      <label className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 shadow-md transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
                         <input type="file" className="hidden" accept="image/*" onChange={handleAvatarUpload} />

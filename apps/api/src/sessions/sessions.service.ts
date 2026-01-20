@@ -57,7 +57,7 @@ export class SessionsService {
       where: { id },
       data: {
         proofUrl,
-        status: 'PROOF_RECEIVED',
+        status: "PROOF_RECEIVED",
       },
     });
   }

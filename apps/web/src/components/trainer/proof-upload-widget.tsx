@@ -94,7 +94,7 @@ export function ProofUploadWidget({ sessionId, status, proofUrl }: ProofUploadWi
                         <p className="text-sm text-gray-600">
                             <span className="font-medium text-blue-600">Cliquez pour uploader</span> ou glissez le fichier ici
                         </p>
-                        <p className="text-xs text-gray-500">PDF, JPG, PNG jusqu'à 10MB</p>
+                        <p className="text-xs text-gray-500">PDF, JPG, PNG jusqu&apos;à 10MB</p>
                     </div>
                 )}
             </div>
