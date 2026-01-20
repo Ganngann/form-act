@@ -151,9 +151,9 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** m'organiser.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Liste chronologique des sessions à venir.
-- [ ] Page de détail par session.
-- [ ] Affichage des infos logistiques : Adresse (Lien GPS), Matériel requis, Participants.
+- [x] Liste chronologique des sessions à venir.
+- [x] Page de détail par session.
+- [x] Affichage des infos logistiques : Adresse (Lien GPS), Matériel requis, Participants.
 
 ### US-14 : Formateur - Gestion Profil
 **Référence Bible :** Section 3.3 (Espace Formateur > Mon Profil)
