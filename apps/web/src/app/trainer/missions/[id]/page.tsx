@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { API_URL } from '@/lib/config';
 import { LogoutButton } from '@/components/LogoutButton';
+import { ProofUploadWidget } from '@/components/trainer/proof-upload-widget';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -134,8 +135,14 @@ export default async function MissionDetailsPage({ params }: { params: { id: str
             </div>
 
             {/* Right Column: Participants */}
-            <div className="lg:col-span-1">
-                 <div className="bg-white p-6 rounded-xl border shadow-sm h-full">
+            <div className="lg:col-span-1 space-y-6">
+                 <ProofUploadWidget
+                    sessionId={session.id}
+                    status={session.status}
+                    proofUrl={session.proofUrl}
+                 />
+
+                 <div className="bg-white p-6 rounded-xl border shadow-sm">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xl font-semibold">Participants</h2>
                         <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-md text-sm font-medium">

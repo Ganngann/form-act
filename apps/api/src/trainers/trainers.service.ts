@@ -102,6 +102,7 @@ export class TrainersService {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
+        bio: data.bio,
       };
 
       if (data.predilectionZones) {
@@ -225,6 +226,13 @@ export class TrainersService {
       orderBy: {
         date: "asc",
       },
+    });
+  }
+
+  async updateAvatar(id: string, avatarUrl: string) {
+    return this.prisma.formateur.update({
+      where: { id },
+      data: { avatarUrl },
     });
   }
 }

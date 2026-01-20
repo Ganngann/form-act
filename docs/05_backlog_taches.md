@@ -162,8 +162,8 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** maintenir mon profil à jour.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Formulaire d'édition de la Bio.
-- [ ] Upload de la Photo de profil.
+- [x] Formulaire d'édition de la Bio.
+- [x] Upload de la Photo de profil.
 
 ### US-15 : Formateur - Upload Preuve
 **Référence Bible :** Section 3.3 (Centre Documentaire)
@@ -172,9 +172,9 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** prouver la prestation et déclencher la facturation.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Zone d'upload (Drag & Drop) sur la fiche session terminée.
-- [ ] Stockage sécurisé du fichier.
-- [ ] Mise à jour du statut de la session ("Preuve Reçue").
+- [x] Zone d'upload (Drag & Drop) sur la fiche session terminée.
+- [x] Stockage sécurisé du fichier.
+- [x] Mise à jour du statut de la session ("Preuve Reçue").
 
 ---
 
