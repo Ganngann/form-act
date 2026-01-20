@@ -22,4 +22,8 @@ export class UpdateTrainerDto {
   @IsString({ each: true })
   @IsOptional()
   expertiseZones?: string[];
+
+  @IsString()
+  @IsOptional()
+  bio?: string;
 }

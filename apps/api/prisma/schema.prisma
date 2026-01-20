@@ -41,6 +41,8 @@ model Formateur {
   expertiseZones    Zone[]      @relation("Expertise")
   expertises        Expertise[]
   sessions          Session[]
+  bio               String?
+  avatarUrl         String?
 }
 
 model Zone {

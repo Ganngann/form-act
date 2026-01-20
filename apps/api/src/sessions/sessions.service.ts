@@ -51,4 +51,14 @@ export class SessionsService {
       },
     });
   }
+
+  async updateProof(id: string, proofUrl: string) {
+    return this.prisma.session.update({
+      where: { id },
+      data: {
+        proofUrl,
+        status: 'PROOF_RECEIVED',
+      },
+    });
+  }
 }

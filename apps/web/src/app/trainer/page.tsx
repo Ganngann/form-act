@@ -52,7 +52,12 @@ export default async function TrainerPage() {
             <h1 className="text-3xl font-bold text-gray-900">Mes Missions</h1>
             <p className="text-gray-500 mt-1">Gérez vos prochaines sessions de formation</p>
         </div>
-        <LogoutButton />
+        <div className="flex items-center gap-4">
+            <Link href="/trainer/profile" className="text-blue-600 font-medium hover:underline">
+                Mon Profil
+            </Link>
+            <LogoutButton />
+        </div>
       </div>
 
       <div className="space-y-4">

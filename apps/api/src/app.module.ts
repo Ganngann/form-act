@@ -10,6 +10,7 @@ import { CompanyModule } from "./company/company.module";
 import { CheckoutModule } from "./checkout/checkout.module";
 import { SessionsModule } from "./sessions/sessions.module";
 import { AuthModule } from "./auth/auth.module";
+import { FilesModule } from "./files/files.module";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AuthModule } from "./auth/auth.module";
     CheckoutModule,
     SessionsModule,
     AuthModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [],
