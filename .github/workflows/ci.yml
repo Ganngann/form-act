@@ -34,3 +34,11 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install
       - run: pnpm run test
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            apps/api/coverage/
+            apps/web/coverage/
