@@ -28,7 +28,16 @@ export class TrainersService {
         where,
         skip,
         take,
-        include: { user: true },
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              role: true,
+            },
+          },
+        },
       }),
       this.prisma.formateur.count({ where }),
     ]);
