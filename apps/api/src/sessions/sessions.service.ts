@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class SessionsService {
@@ -15,22 +15,22 @@ export class SessionsService {
         lte: end,
       };
     } else if (start) {
-        where.date = { gte: start };
+      where.date = { gte: start };
     } else if (end) {
-        where.date = { lte: end };
+      where.date = { lte: end };
     }
 
     return this.prisma.session.findMany({
       where,
       include: {
         client: {
-            include: { user: true }
+          include: { user: true },
         },
         trainer: true,
         formation: true,
       },
       orderBy: {
-        date: 'asc',
+        date: "asc",
       },
     });
   }
