@@ -253,6 +253,60 @@ describe("NotificationsService", () => {
     });
   });
 
+  describe("J+1 Proof", () => {
+    it("should send proof reminder to trainer at J+1", async () => {
+      // Session date is Feb 1st
+      // Now is Feb 2nd
+      const now = new Date("2024-02-02T10:00:00Z");
+      jest.useFakeTimers({ now });
+      const session = createSession({ proofUrl: null });
+
+      jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
+      // Silence other notifications by pretending they were sent
+      jest
+        .spyOn(logService, "hasLog")
+        .mockImplementation(async (type) => type !== "PROOF_REMINDER_J1");
+
+      await service.handleCron();
+      expect(emailService.sendEmail).toHaveBeenCalledWith(
+        "trainer@api.com",
+        expect.stringContaining("Action requise : Dépôt de la feuille d'émargement"),
+        expect.any(String),
+      );
+      expect(logService.createLog).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "PROOF_REMINDER_J1",
+        }),
+      );
+    });
+
+    it("should NOT send proof reminder if proof exists", async () => {
+      const now = new Date("2024-02-02T10:00:00Z");
+      jest.useFakeTimers({ now });
+      const session = createSession({ proofUrl: "http://proof.com" });
+
+      jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
+      // Silence all notifications
+      jest.spyOn(logService, "hasLog").mockResolvedValue(true);
+
+      await service.handleCron();
+      expect(emailService.sendEmail).not.toHaveBeenCalled();
+    });
+
+    it("should NOT send proof reminder if not J+1 (e.g. J+2)", async () => {
+      const now = new Date("2024-02-03T10:00:00Z"); // 2 days later
+      jest.useFakeTimers({ now });
+      const session = createSession({ proofUrl: null });
+
+      jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
+      // Silence all notifications
+      jest.spyOn(logService, "hasLog").mockResolvedValue(true);
+
+      await service.handleCron();
+      expect(emailService.sendEmail).not.toHaveBeenCalled();
+    });
+  });
+
   describe("General", () => {
     it("should skip cancelled sessions", async () => {
       const now = new Date("2024-01-25T12:00:00Z");

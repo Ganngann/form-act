@@ -32,6 +32,7 @@ export class NotificationsService {
         await this.checkProgramJ30(session, now);
         await this.checkMissionJ21(session, now);
         await this.checkAttendanceJ7(session, now);
+        await this.checkProofJPlus1(session, now);
       } catch (error) {
         this.logger.error(
           `Error processing session ${session.id}: ${error.message}`,
@@ -208,6 +209,46 @@ export class NotificationsService {
           status: "SENT",
           metadata: JSON.stringify({ sessionId: session.id }),
         });
+      }
+    }
+  }
+
+  // 7. J+1: Rappel Preuve (Formateur)
+  private async checkProofJPlus1(session: SessionWithRelations, now: Date) {
+    // Si la preuve est déjà là ou session annulée (déjà filtré en haut mais double check), on ne fait rien
+    if (session.proofUrl) return;
+
+    const sessionDate = new Date(session.date);
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    // Vérifie si la session a eu lieu "hier" (même jour calendaire)
+    if (
+      sessionDate.getDate() === yesterday.getDate() &&
+      sessionDate.getMonth() === yesterday.getMonth() &&
+      sessionDate.getFullYear() === yesterday.getFullYear()
+    ) {
+      const type = "PROOF_REMINDER_J1";
+      if (await this.logService.hasLog(type, session.id)) return;
+
+      if (session.trainer?.email) {
+        await this.emailService.sendEmail(
+          session.trainer.email,
+          "Action requise : Dépôt de la feuille d'émargement",
+          `<p>Bonjour ${session.trainer.firstName},</p>
+           <p>La session de formation du ${sessionDate.toLocaleDateString()} pour le client ${
+             session.client?.companyName || "Inconnu"
+           } est terminée.</p>
+           <p>Merci de déposer la feuille d'émargement signée sur votre espace formateur afin de déclencher la facturation.</p>
+           <p>Cordialement,<br>L'équipe Formact</p>`,
+        );
+        await this.logService.createLog({
+          type,
+          recipient: session.trainer.email,
+          status: "SENT",
+          metadata: JSON.stringify({ sessionId: session.id }),
+        });
+        this.logger.log(`Sent proof reminder for session ${session.id}`);
       }
     }
   }
