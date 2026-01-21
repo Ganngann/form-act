@@ -187,9 +187,9 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** supporter le moteur de notifications.
 
 *Critères Techniques :*
-- [ ] Installation et configuration de NestJS Schedule (Cron) ou Bull (Queues).
-- [ ] Création de l'entité `NotificationLog` pour l'historique.
-- [ ] Service générique d'envoi d'email.
+- [x] Installation et configuration de NestJS Schedule (Cron) ou Bull (Queues).
+- [x] Création de l'entité `NotificationLog` pour l'historique.
+- [x] Service générique d'envoi d'email.
 
 ### US-17 : Notifs - Cycle Logistique (Relances)
 **Référence Bible :** Section 4.1 (Matrice des Notifications)
