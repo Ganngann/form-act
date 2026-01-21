@@ -1,7 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { EmailService } from '../email/email.service';
-import { NotificationLogService } from './notification-log.service';
+import { Injectable, Logger } from "@nestjs/common";
+import { Cron, CronExpression } from "@nestjs/schedule";
+import { EmailService } from "../email/email.service";
+import { NotificationLogService } from "./notification-log.service";
 
 @Injectable()
 export class NotificationsService {
@@ -14,6 +14,6 @@ export class NotificationsService {
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   handleCron() {
-    this.logger.debug('Notification cron job running (Infrastructure ready)');
+    this.logger.debug("Notification cron job running (Infrastructure ready)");
   }
 }
