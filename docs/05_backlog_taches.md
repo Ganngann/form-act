@@ -198,9 +198,9 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** garantir la bonne tenue de la formation.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Cron T+48h : Relance si Logistique vide.
-- [ ] Cron J-15 : Alerte si Participants vides.
-- [ ] Cron J-9 : Alerte Critique si Participants vides.
+- [x] Cron T+48h : Relance si Logistique vide.
+- [x] Cron J-15 : Alerte si Participants vides.
+- [x] Cron J-9 : Alerte Critique si Participants vides.
 
 ### US-18 : Notifs - Cycle Préparation (J-30/J-7)
 **Référence Bible :** Section 4.1 (Matrice des Notifications)
@@ -209,9 +209,9 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** préparer les parties prenantes.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Cron J-30 (Client) : Envoi PDF Programme.
-- [ ] Cron J-21 (Formateur) : Rappel Mission avec détails.
-- [ ] Cron J-7 (Formateur) : Envoi Pack Documentaire (Liste Présence PDF) + Verrouillage modification Client.
+- [x] Cron J-30 (Client) : Envoi PDF Programme.
+- [x] Cron J-21 (Formateur) : Rappel Mission avec détails.
+- [x] Cron J-7 (Formateur) : Envoi Pack Documentaire (Liste Présence PDF) + Verrouillage modification Client.
 
 ### US-19 : Notifs - Cycle Clôture (J+1)
 **Référence Bible :** Section 4.1 (Matrice des Notifications)
