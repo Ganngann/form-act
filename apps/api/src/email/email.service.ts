@@ -38,7 +38,7 @@ export class EmailService {
     to: string,
     subject: string,
     html: string,
-    attachments: any[],
+    attachments: nodemailer.SendMailOptions["attachments"],
   ): Promise<void> {
     try {
       const info = await this.transporter.sendMail({

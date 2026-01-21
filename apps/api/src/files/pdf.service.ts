@@ -1,17 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import PDFDocument from "pdfkit";
-import { Session, Client, Formation, Formateur } from "@prisma/client";
+import { Session, Client, Formation, Formateur, User } from "@prisma/client";
 
 // Define a type that includes relations
 export type SessionWithRelations = Session & {
-  client: Client | null;
+  client: (Client & { user: User }) | null;
   formation: Formation;
   trainer: Formateur;
 };
 
 @Injectable()
 export class PdfService {
-  async generateAttendanceSheet(session: SessionWithRelations): Promise<Buffer> {
+  async generateAttendanceSheet(
+    session: SessionWithRelations,
+  ): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       const doc = new PDFDocument();
       const buffers: Buffer[] = [];
@@ -29,12 +31,14 @@ export class PdfService {
 
       // Formatting date manually to avoid locale issues if not available
       const date = new Date(session.date);
-      const dateStr = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+      const dateStr = `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear()}`;
 
       doc.text(`Date: ${dateStr}`);
-      doc.text(`Formateur: ${session.trainer.firstName} ${session.trainer.lastName}`);
-      doc.text(`Client: ${session.client?.companyName || 'N/A'}`);
-      doc.text(`Lieu: ${session.location || session.client?.address || 'N/A'}`);
+      doc.text(
+        `Formateur: ${session.trainer.firstName} ${session.trainer.lastName}`,
+      );
+      doc.text(`Client: ${session.client?.companyName || "N/A"}`);
+      doc.text(`Lieu: ${session.location || session.client?.address || "N/A"}`);
       doc.moveDown();
 
       // Table Header
@@ -50,12 +54,12 @@ export class PdfService {
       currentY += 10;
 
       // Participants
-      let participants: any[] = [];
+      let participants: { name?: string; email?: string }[] = [];
       try {
         if (session.participants) {
           participants = JSON.parse(session.participants);
         }
-      } catch (e) {
+      } catch {
         participants = [];
       }
 

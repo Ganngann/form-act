@@ -3,7 +3,7 @@ import { Cron, CronExpression } from "@nestjs/schedule";
 import { EmailService } from "../email/email.service";
 import { NotificationLogService } from "./notification-log.service";
 import { SessionsService } from "../sessions/sessions.service";
-import { PdfService } from "../files/pdf.service";
+import { PdfService, SessionWithRelations } from "../files/pdf.service";
 
 @Injectable()
 export class NotificationsService {
@@ -43,7 +43,10 @@ export class NotificationsService {
   }
 
   // 1. T+48h: Relance si Logistique vide
-  private async checkLogisticsTPlus48(session: any, now: Date) {
+  private async checkLogisticsTPlus48(
+    session: SessionWithRelations,
+    now: Date,
+  ) {
     if (!this.isEmpty(session.logistics)) return;
 
     const createdAt = new Date(session.createdAt);
@@ -75,7 +78,7 @@ export class NotificationsService {
   }
 
   // 2. J-15: Alerte si Participants vides
-  private async checkParticipantsJ15(session: any, now: Date) {
+  private async checkParticipantsJ15(session: SessionWithRelations, now: Date) {
     if (!this.isEmpty(session.participants)) return;
 
     const days = this.getDaysUntil(new Date(session.date), now);
@@ -101,7 +104,7 @@ export class NotificationsService {
   }
 
   // 3. J-9: Alerte Critique si Participants vides
-  private async checkParticipantsJ9(session: any, now: Date) {
+  private async checkParticipantsJ9(session: SessionWithRelations, now: Date) {
     if (!this.isEmpty(session.participants)) return;
 
     const days = this.getDaysUntil(new Date(session.date), now);
@@ -127,7 +130,7 @@ export class NotificationsService {
   }
 
   // 4. J-30: Envoi PDF Programme (Client)
-  private async checkProgramJ30(session: any, now: Date) {
+  private async checkProgramJ30(session: SessionWithRelations, now: Date) {
     const days = this.getDaysUntil(new Date(session.date), now);
     if (days <= 30) {
       const type = "PROGRAM_SEND_J30";
@@ -152,7 +155,7 @@ export class NotificationsService {
   }
 
   // 5. J-21: Rappel Mission avec détails (Formateur)
-  private async checkMissionJ21(session: any, now: Date) {
+  private async checkMissionJ21(session: SessionWithRelations, now: Date) {
     const days = this.getDaysUntil(new Date(session.date), now);
     if (days <= 21) {
       const type = "MISSION_REMINDER_J21";
@@ -178,16 +181,15 @@ export class NotificationsService {
   }
 
   // 6. J-7: Envoi Pack Documentaire (Formateur) + Verrouillage (implied)
-  private async checkAttendanceJ7(session: any, now: Date) {
+  private async checkAttendanceJ7(session: SessionWithRelations, now: Date) {
     const days = this.getDaysUntil(new Date(session.date), now);
     if (days <= 7) {
       const type = "DOC_PACK_J7";
       if (await this.logService.hasLog(type, session.id)) return;
 
       if (session.trainer?.email) {
-        const pdfBuffer = await this.pdfService.generateAttendanceSheet(
-          session,
-        );
+        const pdfBuffer =
+          await this.pdfService.generateAttendanceSheet(session);
 
         await this.emailService.sendEmailWithAttachments(
           session.trainer.email,

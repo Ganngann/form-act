@@ -7,12 +7,7 @@ import { SessionsModule } from "../sessions/sessions.module";
 import { FilesModule } from "../files/files.module";
 
 @Module({
-  imports: [
-    ScheduleModule.forRoot(),
-    EmailModule,
-    SessionsModule,
-    FilesModule,
-  ],
+  imports: [ScheduleModule.forRoot(), EmailModule, SessionsModule, FilesModule],
   providers: [NotificationsService, NotificationLogService],
   exports: [NotificationsService],
 })
