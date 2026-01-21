@@ -1,11 +1,11 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { NotificationsService } from "./notifications.service";
-import { EmailService } from "../email/email.service";
-import { NotificationLogService } from "./notification-log.service";
-import { SessionsService } from "../sessions/sessions.service";
-import { PdfService, SessionWithRelations } from "../files/pdf.service";
+import { Test, TestingModule } from '@nestjs/testing';
+import { NotificationsService } from './notifications.service';
+import { EmailService } from '../email/email.service';
+import { NotificationLogService } from './notification-log.service';
+import { SessionsService } from '../sessions/sessions.service';
+import { PdfService, SessionWithRelations } from '../files/pdf.service';
 
-describe("NotificationsService", () => {
+describe('NotificationsService', () => {
   let service: NotificationsService;
   let emailService: EmailService;
   let logService: NotificationLogService;
@@ -38,9 +38,7 @@ describe("NotificationsService", () => {
         {
           provide: PdfService,
           useValue: {
-            generateAttendanceSheet: jest
-              .fn()
-              .mockResolvedValue(Buffer.from("pdf")),
+            generateAttendanceSheet: jest.fn().mockResolvedValue(Buffer.from('pdf')),
           },
         },
       ],
@@ -56,90 +54,209 @@ describe("NotificationsService", () => {
     jest.useRealTimers();
   });
 
-  it("should be defined", () => {
-    expect(service).toBeDefined();
+  // Helper to create a base session
+  const createSession = (overrides: any = {}): SessionWithRelations => ({
+    id: 's1',
+    date: new Date('2024-02-01T12:00:00Z'),
+    createdAt: new Date('2024-01-01T12:00:00Z'),
+    status: 'CONFIRMED',
+    logistics: null,
+    participants: null,
+    client: {
+      id: 'c1',
+      vatNumber: '123',
+      companyName: 'ACME',
+      address: '123 St',
+      userId: 'u1',
+      user: { id: 'u1', email: 'client@acme.com', name: 'Client', password: '', role: 'CLIENT' },
+    },
+    formation: {
+      id: 'f1',
+      title: 'NestJS',
+      description: '',
+      level: '',
+      duration: '',
+      durationType: 'HALF_DAY',
+      programLink: 'http://pdf.com',
+      expertiseId: null,
+      categoryId: null,
+    },
+    trainer: {
+      id: 't1',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'trainer@api.com',
+      userId: 'u2',
+      bio: '',
+      avatarUrl: '',
+    },
+    ...overrides,
+  } as unknown as SessionWithRelations);
+
+  describe('T+48h Logistics', () => {
+    it('should send reminder if logistics missing and > 48h', async () => {
+      const now = new Date('2024-01-03T13:00:00Z'); // 49h after creation
+      jest.useFakeTimers({ now });
+      const session = createSession({ logistics: null });
+
+      jest.spyOn(sessionsService, 'findAll').mockResolvedValue([session]);
+      jest.spyOn(logService, 'hasLog').mockResolvedValue(false);
+
+      await service.handleCron();
+
+      expect(emailService.sendEmail).toHaveBeenCalledWith(
+        'client@acme.com',
+        expect.stringContaining('Informations logistiques manquantes'),
+        expect.any(String),
+      );
+    });
+
+    it('should NOT send reminder if logistics present', async () => {
+      const now = new Date('2024-01-03T13:00:00Z');
+      jest.useFakeTimers({ now });
+      // Remove programLink to avoid J-30 trigger
+      const session = createSession({ logistics: JSON.stringify({ wifi: true }), formation: { programLink: null } });
+
+      jest.spyOn(sessionsService, 'findAll').mockResolvedValue([session]);
+      await service.handleCron();
+      expect(emailService.sendEmail).not.toHaveBeenCalled();
+    });
+
+    it('should NOT send reminder if < 48h', async () => {
+      const now = new Date('2024-01-02T10:00:00Z'); // 22h after creation
+      jest.useFakeTimers({ now });
+      // Remove programLink to avoid J-30 trigger
+      const session = createSession({ formation: { programLink: null } });
+
+      jest.spyOn(sessionsService, 'findAll').mockResolvedValue([session]);
+      await service.handleCron();
+      expect(emailService.sendEmail).not.toHaveBeenCalled();
+    });
   });
 
-  it("should send J-15 alert if participants empty", async () => {
-    const now = new Date("2024-01-01T12:00:00Z");
-    jest.useFakeTimers({ now });
+  describe('J-15 Participants', () => {
+    it('should send alert if participants missing at J-15', async () => {
+      const now = new Date('2024-01-17T12:00:00Z'); // 15 days before Feb 1
+      jest.useFakeTimers({ now });
+      const session = createSession({ participants: '[]' }); // Empty array json
 
-    // J-15 means "days <= 15". Date is 15 days later?
-    // 2024-01-16 is 15 days from 2024-01-01.
-    const sessionDate = new Date("2024-01-16T12:00:00Z");
+      jest.spyOn(sessionsService, 'findAll').mockResolvedValue([session]);
+      jest.spyOn(logService, 'hasLog').mockResolvedValue(false);
 
-    const session = {
-      id: "s1",
-      date: sessionDate,
-      participants: null,
-      client: {
-        companyName: "ACME",
-        user: { email: "client@acme.com" },
-      },
-      formation: {}, // Prevent crash in checkProgramJ30
-      trainer: {}, // Prevent crash in checkMissionJ21
-    };
+      await service.handleCron();
+      expect(emailService.sendEmail).toHaveBeenCalledWith(
+        'client@acme.com',
+        expect.stringContaining('Rappel : Liste des participants attendue'),
+        expect.any(String),
+      );
+    });
 
-    jest
-      .spyOn(sessionsService, "findAll")
-      .mockResolvedValue([session as unknown as SessionWithRelations]);
-    jest
-      .spyOn(sessionsService, "findAll")
-      .mockResolvedValue([session as unknown as SessionWithRelations]);
-    jest.spyOn(logService, "hasLog").mockResolvedValue(false);
+    it('should NOT send alert if > J-15', async () => {
+        const now = new Date('2024-01-01T12:00:00Z'); // 30 days before
+        jest.useFakeTimers({ now });
+        const session = createSession({ participants: null });
 
-    await service.handleCron();
-
-    expect(emailService.sendEmail).toHaveBeenCalledWith(
-      "client@acme.com",
-      expect.stringContaining("Rappel : Liste des participants attendue"),
-      expect.any(String),
-    );
-    expect(logService.createLog).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: "PARTICIPANTS_ALERT_J15",
-      }),
-    );
+        jest.spyOn(sessionsService, 'findAll').mockResolvedValue([session]);
+        await service.handleCron();
+        expect(emailService.sendEmail).not.toHaveBeenCalled();
+      });
   });
 
-  it("should send T+48h logistics reminder", async () => {
-    const now = new Date("2024-01-03T13:00:00Z"); // Jan 3rd 13:00
-    jest.useFakeTimers({ now });
+  describe('J-9 Participants Critical', () => {
+    it('should send critical alert at J-9', async () => {
+      const now = new Date('2024-01-24T12:00:00Z'); // 8 days before (<=9)
+      jest.useFakeTimers({ now });
+      const session = createSession({ participants: null });
 
-    const createdAt = new Date("2024-01-01T12:00:00Z"); // Created Jan 1st 12:00 (49h ago)
-    const sessionDate = new Date("2024-02-01T12:00:00Z");
+      jest.spyOn(sessionsService, 'findAll').mockResolvedValue([session]);
+      jest.spyOn(logService, 'hasLog').mockResolvedValue(false);
 
-    const session = {
-      id: "s2",
-      createdAt,
-      date: sessionDate,
-      logistics: null,
-      client: {
-        companyName: "ACME",
-        user: { email: "client@acme.com" },
-      },
-      formation: {}, // Prevent crash in checkProgramJ30
-      trainer: {}, // Prevent crash in checkMissionJ21
-    };
+      await service.handleCron();
+      expect(emailService.sendEmail).toHaveBeenCalledWith(
+        'client@acme.com',
+        expect.stringContaining('URGENT : Liste des participants manquante'),
+        expect.any(String),
+      );
+    });
+  });
 
-    jest
-      .spyOn(sessionsService, "findAll")
-      .mockResolvedValue([session as unknown as SessionWithRelations]);
-    jest.spyOn(logService, "hasLog").mockResolvedValue(false);
+  describe('J-30 Program', () => {
+    it('should send program at J-30', async () => {
+      const now = new Date('2024-01-02T12:00:00Z'); // 30 days before
+      jest.useFakeTimers({ now });
+      const session = createSession();
 
-    await service.handleCron();
+      jest.spyOn(sessionsService, 'findAll').mockResolvedValue([session]);
+      jest.spyOn(logService, 'hasLog').mockResolvedValue(false);
 
-    expect(emailService.sendEmail).toHaveBeenCalledWith(
-      "client@acme.com",
-      expect.stringContaining(
-        "Action requise : Informations logistiques manquantes",
-      ),
-      expect.any(String),
-    );
-    expect(logService.createLog).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: "LOGISTICS_REMINDER_48H",
-      }),
-    );
+      await service.handleCron();
+      expect(emailService.sendEmail).toHaveBeenCalledWith(
+        'client@acme.com',
+        expect.stringContaining('Votre programme de formation'),
+        expect.any(String),
+      );
+    });
+  });
+
+  describe('J-21 Mission', () => {
+    it('should send mission reminder to trainer at J-21', async () => {
+      const now = new Date('2024-01-11T12:00:00Z'); // 21 days before
+      jest.useFakeTimers({ now });
+      const session = createSession();
+
+      jest.spyOn(sessionsService, 'findAll').mockResolvedValue([session]);
+      jest.spyOn(logService, 'hasLog').mockResolvedValue(false);
+
+      await service.handleCron();
+      expect(emailService.sendEmail).toHaveBeenCalledWith(
+        'trainer@api.com',
+        expect.stringContaining('Rappel de votre mission'),
+        expect.any(String),
+      );
+    });
+  });
+
+  describe('J-7 Attendance', () => {
+    it('should send attendance sheet to trainer at J-7', async () => {
+      const now = new Date('2024-01-25T12:00:00Z'); // 7 days before
+      jest.useFakeTimers({ now });
+      const session = createSession();
+
+      jest.spyOn(sessionsService, 'findAll').mockResolvedValue([session]);
+      jest.spyOn(logService, 'hasLog').mockResolvedValue(false);
+
+      await service.handleCron();
+      expect(emailService.sendEmailWithAttachments).toHaveBeenCalledWith(
+        'trainer@api.com',
+        expect.stringContaining('Votre Pack Documentaire'),
+        expect.any(String),
+        expect.any(Array),
+      );
+    });
+  });
+
+  describe('General', () => {
+      it('should skip cancelled sessions', async () => {
+        const now = new Date('2024-01-25T12:00:00Z');
+        jest.useFakeTimers({ now });
+        const session = createSession({ status: 'CANCELLED' });
+
+        jest.spyOn(sessionsService, 'findAll').mockResolvedValue([session]);
+        await service.handleCron();
+        expect(emailService.sendEmail).not.toHaveBeenCalled();
+        expect(emailService.sendEmailWithAttachments).not.toHaveBeenCalled();
+      });
+
+      it('should handle duplicate logs (idempotency)', async () => {
+        const now = new Date('2024-01-25T12:00:00Z');
+        jest.useFakeTimers({ now });
+        const session = createSession();
+
+        jest.spyOn(sessionsService, 'findAll').mockResolvedValue([session]);
+        jest.spyOn(logService, 'hasLog').mockResolvedValue(true); // Already sent
+
+        await service.handleCron();
+        expect(emailService.sendEmail).not.toHaveBeenCalled();
+      });
   });
 });
