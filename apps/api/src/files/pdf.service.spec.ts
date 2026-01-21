@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PdfService } from './pdf.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { PdfService, SessionWithRelations } from "./pdf.service";
 
 const mockPDFDocumentInstance = {
   on: jest.fn().mockImplementation((event, callback) => {
-    if (event === 'end') {
+    if (event === "end") {
       callback();
     }
     return mockPDFDocumentInstance;
@@ -18,14 +18,14 @@ const mockPDFDocumentInstance = {
   end: jest.fn(),
 };
 
-jest.mock('pdfkit', () => {
+jest.mock("pdfkit", () => {
   return {
     __esModule: true,
     default: jest.fn(() => mockPDFDocumentInstance),
   };
 });
 
-describe('PdfService', () => {
+describe("PdfService", () => {
   let service: PdfService;
 
   beforeEach(async () => {
@@ -36,31 +36,31 @@ describe('PdfService', () => {
     service = module.get<PdfService>(PdfService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  it('should generate a PDF buffer', async () => {
+  it("should generate a PDF buffer", async () => {
     const mockSession = {
       date: new Date(),
-      formation: { title: 'Test Formation' },
-      trainer: { firstName: 'John', lastName: 'Doe' },
-      client: { companyName: 'ACME', address: '123 St' },
-      participants: JSON.stringify([{ name: 'Alice' }, { name: 'Bob' }]),
-    } as any;
+      formation: { title: "Test Formation" },
+      trainer: { firstName: "John", lastName: "Doe" },
+      client: { companyName: "ACME", address: "123 St" },
+      participants: JSON.stringify([{ name: "Alice" }, { name: "Bob" }]),
+    } as unknown as SessionWithRelations;
 
     const buffer = await service.generateAttendanceSheet(mockSession);
     expect(buffer).toBeInstanceOf(Buffer);
   });
 
-  it('should handle missing participants gracefully', async () => {
+  it("should handle missing participants gracefully", async () => {
     const mockSession = {
       date: new Date(),
-      formation: { title: 'Test Formation' },
-      trainer: { firstName: 'John', lastName: 'Doe' },
-      client: { companyName: 'ACME' },
+      formation: { title: "Test Formation" },
+      trainer: { firstName: "John", lastName: "Doe" },
+      client: { companyName: "ACME" },
       participants: null,
-    } as any;
+    } as unknown as SessionWithRelations;
 
     const buffer = await service.generateAttendanceSheet(mockSession);
     expect(buffer).toBeInstanceOf(Buffer);
