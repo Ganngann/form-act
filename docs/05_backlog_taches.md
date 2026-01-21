@@ -53,7 +53,83 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [ ] Endpoint public sécurisé (Token) générant un flux .ics.
 - [ ] Inclusion des détails (Lieu, Heure) dans les événements.
 
-### US-21 : Tech - Import Calendrier (iCal In)
+## 🟣 Sprint 4 : Feedback & UX (Refonte & Ajustements)
+
+### US-21 : Page d'Accueil Publique
+**Référence Wireframe :** Section 2.1 (Accueil)
+**En tant que** Visiteur,
+**Je veux** une page d'accueil accueillante avec un moteur de recherche par thème,
+**Afin de** comprendre l'offre et commencer ma réservation.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Hero Section avec Titre & Sous-titre.
+- [ ] Dropdown de recherche par "Catégorie" (Thème).
+- [ ] CTA "Espace Formateur" et "Connexion".
+- [ ] Section Réassurance.
+
+### US-22 : Catalogue Client & Recherche
+**Référence Wireframe :** Section 2.1 (Catalogue)
+**En tant que** Client,
+**Je veux** voir la liste des formations disponibles,
+**Afin de** faire mon choix.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Grille des formations filtrable par Catégorie.
+- [ ] Affichage des cartes formations (Titre, Durée, Prix "à partir de").
+- [ ] Lien vers la page détail formation.
+
+### US-23 : Admin - Liste des Clients
+**En tant que** Administrateur,
+**Je veux** voir la liste de tous les comptes clients inscrits,
+**Afin de** gérer le parc utilisateur.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Page liste des clients (Tableau).
+- [ ] Colonnes : Nom Entreprise, TVA, Email, Date inscription.
+
+### US-24 : UX Admin - Création Formateur (Zones)
+**En tant que** Administrateur,
+**Je veux** sélectionner facilement les zones (Prédilection/Expertise) lors de la création d'un formateur,
+**Afin de** configurer correctement son profil géographique dès le départ.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Formulaire de création formateur amélioré.
+- [ ] Composant de sélection de zones (Multi-select) visible et ergonomique.
+- [ ] Validation immédiate.
+
+### US-25 : UX Formateur - Dashboard & Next Mission
+**Référence Wireframe :** Section 2.3 (Dashboard Formateur)
+**En tant que** Formateur,
+**Je veux** voir immédiatement les détails complets de ma prochaine mission,
+**Afin de** me préparer sans chercher l'info.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Bloc "Prochaine Mission" mis en avant.
+- [ ] Informations affichées : Client, Date/Heure, Adresse, Formation.
+- [ ] Actions : Bouton "Y aller" (Maps) et "Détails".
+
+### US-26 : UX Admin - Dashboard (Vue d'ensemble)
+**En tant que** Administrateur,
+**Je veux** voir les prochaines formations prévues sur mon dashboard,
+**Afin de** piloter l'activité au jour le jour.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Widget "Prochaines Sessions" sur le dashboard Admin.
+- [ ] Liste chronologique des sessions CONFIRMED.
+
+### US-27 : Tech - Seed Consolidation (Données de Test)
+**En tant que** Développeur/Testeur,
+**Je veux** des données de seed cohérentes et interconnectées,
+**Afin de** tester les parcours utilisateurs complets sans configuration manuelle.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Seed Client avec historique de commandes (Passées, Futures).
+- [ ] Cohérence entre Zones Formateur et Zones Client dans les sessions seedées.
+- [ ] Données réalistes pour les tests de dashboard (KPIs non vides).
+
+## ⚪ Sprint 5 : Fonctionnalités Avancées (Reportées)
+
+### US-28 : Tech - Import Calendrier (iCal In)
 **Référence Bible :** Section 2.3 (Flux Entrant)
 **En tant que** Système,
 **Je veux** lire l'agenda personnel du formateur,
@@ -63,7 +139,7 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [ ] Champ URL iCal dans le profil Formateur.
 - [ ] Tâche planifiée de synchronisation (lecture et création de "blocages").
 
-### US-22 : Admin - Préparation Facturation
+### US-29 : Admin - Préparation Facturation
 **Référence Bible :** Section 5.1 & 5.2
 **En tant que** Administrateur,
 **Je veux** visualiser les sessions prêtes à être facturées avec le prix calculé,
@@ -74,7 +150,7 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [ ] Calcul automatique du prix final : Base + Distance (Matrix) + Ajustement.
 - [ ] Vue synthétique des données de facturation (TVA, Adresse).
 
-### US-23 : Admin - Clôture Facturation
+### US-30 : Admin - Clôture Facturation
 **Référence Bible :** Section 5.2 (Odoo Prep)
 **En tant que** Administrateur,
 **Je veux** marquer une session comme "Facturée",
@@ -85,7 +161,7 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [ ] Envoi email notification client.
 - [ ] Archivage de la session (Lecture seule).
 
-### US-24 : Auth - Réinitialisation Mot de Passe
+### US-31 : Auth - Réinitialisation Mot de Passe
 **Référence Bible :** Section 3.1 (Interface Publique)
 **En tant que** Utilisateur,
 **Je veux** pouvoir définir un nouveau mot de passe si j'ai oublié l'ancien,
