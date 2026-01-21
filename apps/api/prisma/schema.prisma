@@ -43,6 +43,7 @@ model Formateur {
   sessions          Session[]
   bio               String?
   avatarUrl         String?
+  calendarToken     String?     @unique
 }
 
 model Zone {
