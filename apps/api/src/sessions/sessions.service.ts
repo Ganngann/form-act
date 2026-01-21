@@ -61,4 +61,11 @@ export class SessionsService {
       },
     });
   }
+
+  async update(id: string, data: Prisma.SessionUpdateInput) {
+    return this.prisma.session.update({
+      where: { id },
+      data,
+    });
+  }
 }

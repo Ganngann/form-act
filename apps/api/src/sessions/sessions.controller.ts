@@ -4,6 +4,8 @@ import {
   Param,
   Query,
   Post,
+  Patch,
+  Body,
   UseInterceptors,
   UploadedFile,
   UseGuards,
@@ -12,6 +14,7 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 import { SessionsService } from "./sessions.service";
+import { UpdateSessionDto } from "./dto/update-session.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
@@ -73,5 +76,41 @@ export class SessionsController {
 
     const proofUrl = `/files/proofs/${file.filename}`;
     return this.sessionsService.updateProof(id, proofUrl);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Patch(":id")
+  async update(
+    @Param("id") id: string,
+    @Body() updateSessionDto: UpdateSessionDto,
+    @Request() req,
+  ) {
+    const session = await this.sessionsService.findOne(id);
+
+    if (req.user.role === "CLIENT") {
+      if (session.client?.userId !== req.user.userId) {
+        throw new ForbiddenException("Access denied");
+      }
+
+      // Locking logic: J-7
+      const now = new Date();
+      const sessionDate = new Date(session.date);
+      const diffTime = sessionDate.getTime() - now.getTime();
+      const diffDays = diffTime / (1000 * 3600 * 24);
+
+      if (diffDays < 7) {
+        throw new ForbiddenException(
+          "Modifications are locked 7 days before the session",
+        );
+      }
+    } else if (req.user.role === "TRAINER") {
+      if (session.trainer.userId !== req.user.userId) {
+        throw new ForbiddenException("Access denied");
+      }
+    } else if (req.user.role !== "ADMIN") {
+      throw new ForbiddenException("Access denied");
+    }
+
+    return this.sessionsService.update(id, updateSessionDto);
   }
 }

@@ -73,6 +73,7 @@ model Formation {
   level       String
   duration    String
   durationType String @default("HALF_DAY")
+  programLink String?    // URL to the PDF program
   expertiseId String?
   expertise   Expertise? @relation(fields: [expertiseId], references: [id])
   categoryId  String?
@@ -82,6 +83,7 @@ model Formation {
 
 model Session {
   id          String    @id @default(uuid())
+  createdAt   DateTime  @default(now())
   date        DateTime
   slot        String
   formationId String

@@ -11,4 +11,16 @@ export class NotificationLogService {
       data,
     });
   }
+
+  async hasLog(type: string, sessionId: string): Promise<boolean> {
+    const count = await this.prisma.notificationLog.count({
+      where: {
+        type,
+        metadata: {
+          contains: sessionId,
+        },
+      },
+    });
+    return count > 0;
+  }
 }
