@@ -42,3 +42,11 @@ jobs:
           path: |
             apps/api/coverage/
             apps/web/coverage/
+
+      - name: Comment Coverage on PR
+        uses: actions/github-script@v7
+        if: always() && github.event_name == 'pull_request'
+        with:
+          script: |
+            const script = require('./.github/scripts/comment-coverage.js');
+            await script({ github, context });
