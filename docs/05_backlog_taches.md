@@ -94,3 +94,24 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 *Critères d'Acceptation (AC) :*
 - [ ] Flux "Mot de passe oublié" (Email avec lien/token).
 - [ ] Page de définition du nouveau mot de passe.
+
+## 🔵 Backlog - Améliorations Données
+
+### US-Data-01 : Enrichissement Modèle Formation
+
+**En tant que** Développeur,
+**Je veux** étendre le modèle de données `Formation` dans Prisma,
+**Afin de** pouvoir persister les données commerciales et pédagogiques complètes.
+
+*Champs à ajouter (Spécifications) :*
+1. **`price`** (Decimal) : Montant standard en Euros (HTVA).
+2. **`methodology`** (String/Text) : Description de l'approche pédagogique (ex: "Jeux de rôles, mises en situation...").
+3. **`inclusions`** (String/Text) : Liste du matériel inclus (ex: "Syllabus, Matériel pédagogique, Analyse demande").
+4. **`agreementCode`** (String) : Numéro d'agrément Titres-Services (ex: "E XXXX" ou "XXX").
+5. **`imageUrl`** (String) : URL de l'image d'illustration de la formation.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Schema Prisma mis à jour avec les nouveaux champs (Optionnels/Nullable pour l'instant).
+- [ ] Migration SQL générée et appliquée.
+- [ ] DTOs NestJS (`CreateFormationDto`, `UpdateFormationDto`) mis à jour pour accepter ces champs.
+- [ ] Entité de retour mise à jour.

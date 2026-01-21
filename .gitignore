@@ -43,3 +43,7 @@ Thumbs.db
 
 # Uploads
 /apps/api/uploads
+
+# Documentation
+docs/formations.csv
+docs/07_liste_formations.md
