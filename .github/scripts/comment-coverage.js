@@ -69,7 +69,7 @@ function generateAppReport(appName, summaryPath, configPath) {
       icon = '❌';
       statusText = `**Failed** (< ${min}%)`;
       failed = true;
-    } else if (current > min) {
+    } else if (Math.floor(current) > min) {
       icon = '🎉';
       statusText = `**Improved** (> ${min}%)`;
       improved = true;
@@ -91,7 +91,7 @@ module.exports = async ({ github, context }) => {
   const webResult = generateAppReport('Frontend (Web)', webSummaryPath, webConfigPath);
   const apiResult = generateAppReport('Backend (API)', apiSummaryPath, apiConfigPath);
 
-  let body = `## 📊 Test Coverage Report for @jules\n\n`;
+  let body = `## 📊 Test Coverage Report\n\n`;
   body += webResult.report + '\n';
   body += apiResult.report + '\n';
 
