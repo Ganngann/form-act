@@ -41,7 +41,7 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** récupérer la preuve de prestation rapidement.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Cron J+1 (Formateur) : Rappel upload preuve si non reçue.
+- [x] Cron J+1 (Formateur) : Rappel upload preuve si non reçue.
 
 ### US-20 : Tech - Export Calendrier (iCal Out)
 **Référence Bible :** Section 2.3 (Flux Sortant)
