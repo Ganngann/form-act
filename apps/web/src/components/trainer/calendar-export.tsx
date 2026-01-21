@@ -48,7 +48,7 @@ export function CalendarExport({ url }: { url: string | null }) {
                 </button>
             </div>
             <p className="text-xs text-gray-400">
-                Instructions : Copiez ce lien et utilisez la fonction "S'abonner à un calendrier via URL" de votre agenda.
+                Instructions : Copiez ce lien et utilisez la fonction &quot;S&apos;abonner à un calendrier via URL&quot; de votre agenda.
             </p>
         </div>
     );
