@@ -33,4 +33,30 @@ export class EmailService {
       throw error;
     }
   }
+
+  async sendEmailWithAttachments(
+    to: string,
+    subject: string,
+    html: string,
+    attachments: nodemailer.SendMailOptions["attachments"],
+  ): Promise<void> {
+    try {
+      const info = await this.transporter.sendMail({
+        from: process.env.SMTP_FROM || '"Formact" <noreply@formact.com>',
+        to,
+        subject,
+        html,
+        attachments,
+      });
+      this.logger.log(
+        `Email sent with attachments: ${info.messageId} to ${to}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to send email with attachments to ${to}`,
+        error,
+      );
+      throw error;
+    }
+  }
 }

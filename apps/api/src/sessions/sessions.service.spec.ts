@@ -105,4 +105,18 @@ describe("SessionsService", () => {
       expect(result).toEqual(mockSession);
     });
   });
+
+  describe("update", () => {
+    it("should update session", async () => {
+      const mockSession = { id: "1", logistics: "{}" } as Session;
+      jest.spyOn(prisma.session, "update").mockResolvedValue(mockSession);
+
+      const result = await service.update("1", { logistics: "{}" });
+      expect(result).toEqual(mockSession);
+      expect(prisma.session.update).toHaveBeenCalledWith({
+        where: { id: "1" },
+        data: { logistics: "{}" },
+      });
+    });
+  });
 });
