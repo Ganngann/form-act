@@ -2,7 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { SessionsController } from "./sessions.controller";
 import { SessionsService } from "./sessions.service";
 import { ForbiddenException } from "@nestjs/common";
-import { Session } from "@prisma/client";
 
 describe("SessionsController", () => {
   let controller: SessionsController;
@@ -37,9 +36,11 @@ describe("SessionsController", () => {
       };
       jest
         .spyOn(service, "findOne")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .mockResolvedValue(mockSession as any);
       jest
         .spyOn(service, "update")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .mockResolvedValue(mockSession as any);
 
       await controller.update(
@@ -61,9 +62,11 @@ describe("SessionsController", () => {
 
       jest
         .spyOn(service, "findOne")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .mockResolvedValue(mockSession as any);
       jest
         .spyOn(service, "update")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .mockResolvedValue(mockSession as any);
 
       await controller.update(
@@ -85,6 +88,7 @@ describe("SessionsController", () => {
 
       jest
         .spyOn(service, "findOne")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .mockResolvedValue(mockSession as any);
 
       await expect(
@@ -100,6 +104,7 @@ describe("SessionsController", () => {
       };
       jest
         .spyOn(service, "findOne")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .mockResolvedValue(mockSession as any);
 
       await expect(
@@ -119,9 +124,11 @@ describe("SessionsController", () => {
       };
       jest
         .spyOn(service, "findOne")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .mockResolvedValue(mockSession as any);
       jest
         .spyOn(service, "update")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .mockResolvedValue(mockSession as any);
 
       await controller.update(
@@ -140,6 +147,7 @@ describe("SessionsController", () => {
       };
       jest
         .spyOn(service, "findOne")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .mockResolvedValue(mockSession as any);
 
       await expect(

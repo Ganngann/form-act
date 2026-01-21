@@ -128,6 +128,7 @@ describe("NotificationsService", () => {
       // Remove programLink to avoid J-30 trigger
       const session = createSession({
         logistics: JSON.stringify({ wifi: true }),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         formation: { programLink: null } as any,
       });
 
@@ -141,6 +142,7 @@ describe("NotificationsService", () => {
       jest.useFakeTimers({ now });
       // Remove programLink to avoid J-30 trigger
       const session = createSession({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         formation: { programLink: null } as any,
       });
 
