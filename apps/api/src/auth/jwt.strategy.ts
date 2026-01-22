@@ -9,15 +9,15 @@ interface JwtPayload {
   role: string;
 }
 
+export const cookieExtractor = (request: Request) => {
+  return request?.cookies?.Authentication;
+};
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => {
-          return request?.cookies?.Authentication;
-        },
-      ]),
+      jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET || "super-secret-key",
     });

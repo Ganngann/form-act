@@ -82,6 +82,7 @@ describe("ClientsService", () => {
 
   describe("updateProfile", () => {
     it("should update client profile and audit log", async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockClient = {
         id: "1",
         userId: "u1",
@@ -94,6 +95,7 @@ describe("ClientsService", () => {
 
       jest.spyOn(service, "findByUserId").mockResolvedValue(mockClient);
       jest.spyOn(prisma.client, "update").mockResolvedValue(mockClient);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       jest.spyOn(prisma.user, "update").mockResolvedValue({} as any);
 
       await service.updateProfile(
@@ -122,6 +124,7 @@ describe("ClientsService", () => {
     });
 
     it("should return early if no changes", async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockClient = {
         id: "1",
         companyName: "Old",

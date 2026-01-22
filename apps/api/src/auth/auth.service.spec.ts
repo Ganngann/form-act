@@ -143,7 +143,11 @@ describe("AuthService", () => {
     });
 
     it("should generate token and send email if user found", async () => {
-      const mockUser = { id: "1", email: "test@test.com", name: "User" } as User;
+      const mockUser = {
+        id: "1",
+        email: "test@test.com",
+        name: "User",
+      } as User;
       jest.spyOn(prisma.user, "findUnique").mockResolvedValue(mockUser);
       jest.spyOn(prisma.user, "update").mockResolvedValue(mockUser);
 
