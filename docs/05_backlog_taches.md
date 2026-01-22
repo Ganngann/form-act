@@ -98,10 +98,10 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** gérer le parc utilisateur.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Endpoint Backend `GET /clients` (Nouveau Module Clients).
-- [ ] Mise à jour Schema Prisma : Ajout `createdAt` sur le modèle Client.
-- [ ] Page liste des clients (Tableau).
-- [ ] Colonnes : Nom Entreprise, TVA, Email, Date inscription.
+- [x] Endpoint Backend `GET /clients` (Nouveau Module Clients).
+- [x] Mise à jour Schema Prisma : Ajout `createdAt` sur le modèle Client.
+- [x] Page liste des clients (Tableau).
+- [x] Colonnes : Nom Entreprise, TVA, Email, Date inscription.
 
 ### US-25 : UX Admin - Création Formateur (Zones)
 **En tant que** Administrateur,
@@ -109,8 +109,8 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** configurer correctement son profil géographique dès le départ.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Correctif `TrainerForm` : Chargement des zones activé en mode "Création" (et pas seulement Edition).
-- [ ] Composant de sélection de zones (Multi-select) visible et ergonomique.
+- [x] Correctif `TrainerForm` : Chargement des zones activé en mode "Création" (et pas seulement Edition).
+- [x] Composant de sélection de zones (Multi-select) visible et ergonomique.
 
 ### US-26 : UX Formateur - Dashboard & Next Mission
 **Référence Wireframe :** Section 2.3 (Dashboard Formateur)
@@ -119,11 +119,11 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** gérer mon activité au quotidien.
 
 *Critères d'Acceptation (AC) :*
-- [ ] **Menu de navigation Formateur** : Liens vers "Tableau de bord / Missions", "Mon Profil" et "Mon Calendrier" (Export iCal).
-- [ ] Logique de filtre : Prochaine mission = Première mission chronologique où `date >= today`.
-- [ ] Bloc "Prochaine Mission" mis en avant (Card distincte).
-- [ ] Informations affichées : Client, Date/Heure, Adresse, Formation.
-- [ ] Actions : Bouton "Y aller" (Lien Google Maps généré) et "Détails".
+- [x] **Menu de navigation Formateur** : Liens vers "Tableau de bord / Missions", "Mon Profil" et "Mon Calendrier" (Export iCal).
+- [x] Logique de filtre : Prochaine mission = Première mission chronologique où `date >= today`.
+- [x] Bloc "Prochaine Mission" mis en avant (Card distincte).
+- [x] Informations affichées : Client, Date/Heure, Adresse, Formation.
+- [x] Actions : Bouton "Y aller" (Lien Google Maps généré) et "Détails".
 
 ### US-27 : UX Admin - Dashboard (Vue d'ensemble)
 **En tant que** Administrateur,
@@ -131,10 +131,10 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** piloter l'activité au jour le jour.
 
 *Critères d'Acceptation (AC) :*
-- [ ] **Menu de navigation Admin** (Sidebar/Tabs) : Liens vers "Dashboard", "Formateurs", "Clients", "Calendrier Master".
-- [ ] Endpoint Backend `GET /sessions` avec filtres de date et status.
-- [ ] Widget "Prochaines Sessions" sur le dashboard Admin (Sessions CONFIRMED à venir).
-- [ ] Lien "Voir tout" redirigeant vers la liste complète des sessions.
+- [x] **Menu de navigation Admin** (Sidebar/Tabs) : Liens vers "Dashboard", "Formateurs", "Clients", "Calendrier Master".
+- [x] Endpoint Backend `GET /sessions` avec filtres de date et status.
+- [x] Widget "Prochaines Sessions" sur le dashboard Admin (Sessions CONFIRMED à venir).
+- [x] Lien "Voir tout" redirigeant vers la liste complète des sessions.
 
 ### US-28 : Tech - Seed Consolidation (Données de Test)
 **En tant que** Développeur/Testeur,
@@ -142,10 +142,10 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** tester les parcours utilisateurs complets sans configuration manuelle.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Seed Client avec historique de commandes (Passées, Futures).
-- [ ] Ajout des dates de création (`createdAt`) pour les clients seedés.
-- [ ] Cohérence entre Zones Formateur et Zones Client dans les sessions seedées.
-- [ ] Données réalistes pour les tests de dashboard (KPIs non vides).
+- [x] Seed Client avec historique de commandes (Passées, Futures).
+- [x] Ajout des dates de création (`createdAt`) pour les clients seedés.
+- [x] Cohérence entre Zones Formateur et Zones Client dans les sessions seedées.
+- [x] Données réalistes pour les tests de dashboard (KPIs non vides).
 
 ## ⚪ Sprint 5 : Fonctionnalités Avancées (Reportées)
 

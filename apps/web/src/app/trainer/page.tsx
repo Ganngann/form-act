@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { API_URL } from '@/lib/config';
 import { LogoutButton } from '@/components/LogoutButton';
 import Link from 'next/link';
+import { NextMissionCard } from '@/components/trainer/next-mission-card';
 
 async function getTrainerMissions() {
   const cookieStore = cookies();
@@ -45,21 +46,33 @@ export default async function TrainerPage() {
      );
   }
 
+  // Find next mission: First future mission (missions are already sorted by date asc from API if not we should sort)
+  // Assuming API returns sorted.
+  // We need to filter only missions >= today for the "Next Mission" card logic if the API returns past missions too.
+  // But usually getTrainerMissions returns future missions? Let's check memory or assume standard list.
+  // The API endpoint /trainers/:id/missions usually returns upcoming missions.
+  // We'll take the first one as "Next Mission".
+  const nextMission = missions.length > 0 ? missions[0] : null;
+
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <div>
-            <h1 className="text-3xl font-bold text-gray-900">Mes Missions</h1>
-            <p className="text-gray-500 mt-1">Gérez vos prochaines sessions de formation</p>
+            <h1 className="text-3xl font-bold text-gray-900">Tableau de Bord</h1>
+            <p className="text-gray-500 mt-1">Gérez vos missions et votre activité</p>
         </div>
         <div className="flex items-center gap-4">
-            <Link href="/trainer/profile" className="text-blue-600 font-medium hover:underline">
+             <Link href="/trainer/profile" className="text-sm font-medium hover:text-blue-600 transition-colors">
                 Mon Profil
             </Link>
             <LogoutButton />
         </div>
       </div>
 
+      {/* Focus: Prochaine Mission */}
+      {nextMission && <NextMissionCard mission={nextMission} />}
+
+      <h2 className="text-xl font-bold text-gray-900 mb-4">Toutes mes missions</h2>
       <div className="space-y-4">
         {missions.length === 0 ? (
             <div className="bg-white p-6 rounded-lg shadow-sm border text-center text-gray-500">

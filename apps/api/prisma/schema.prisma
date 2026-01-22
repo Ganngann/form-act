@@ -28,6 +28,7 @@ model Client {
   userId      String    @unique
   user        User      @relation(fields: [userId], references: [id])
   sessions    Session[]
+  createdAt   DateTime  @default(now())
 }
 
 model Formateur {

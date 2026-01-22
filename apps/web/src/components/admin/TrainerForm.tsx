@@ -60,13 +60,11 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
   const expertiseIds = watch('expertiseZones') || [];
 
   useEffect(() => {
-    if (isEdit) {
-      fetch(`${API_URL}/zones`)
-        .then((res) => res.json())
-        .then((data) => setZones(data))
-        .catch((err) => console.error('Failed to fetch zones', err));
-    }
-  }, [isEdit]);
+    fetch(`${API_URL}/zones`)
+      .then((res) => res.json())
+      .then((data) => setZones(data))
+      .catch((err) => console.error('Failed to fetch zones', err));
+  }, []);
 
   const handlePredilectionChange = (zoneId: string, checked: boolean) => {
     const current = new Set(predilectionIds);
@@ -143,7 +141,7 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
         {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
       </div>
 
-      {isEdit && zones.length > 0 && (
+      {zones.length > 0 && (
         <div className="space-y-4 pt-4 border-t">
           <h3 className="text-lg font-medium">Zones d&apos;intervention</h3>
           <div className="grid grid-cols-3 gap-4 font-medium text-sm text-gray-500 mb-2">
