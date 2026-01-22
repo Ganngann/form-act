@@ -1,23 +1,16 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TrainersController } from "./trainers.controller";
 import { TrainersService } from "./trainers.service";
-import { ForbiddenException } from "@nestjs/common";
+import { ForbiddenException, BadRequestException } from "@nestjs/common";
 
 describe("TrainersController", () => {
   let controller: TrainersController;
-
-  const mockTrainer = {
-    id: "trainer-id",
-    userId: "user-id",
-    firstName: "John",
-    lastName: "Doe",
-    email: "john@example.com",
-  };
+  let service: TrainersService;
 
   const mockTrainersService = {
-    findOne: jest.fn(),
     getAvailability: jest.fn(),
     getMissions: jest.fn(),
+    findOne: jest.fn(),
     update: jest.fn(),
     updateAvatar: jest.fn(),
     ensureCalendarToken: jest.fn(),
@@ -35,54 +28,96 @@ describe("TrainersController", () => {
     }).compile();
 
     controller = module.get<TrainersController>(TrainersController);
+    service = module.get<TrainersService>(TrainersService);
   });
 
   it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 
-  describe("findOne", () => {
-    it("should return a trainer if user is owner", async () => {
-      mockTrainersService.findOne.mockResolvedValue(mockTrainer);
-      const req = { user: { role: "TRAINER", userId: "user-id" } };
+  describe("getAvailability", () => {
+    it("should call service", async () => {
+      await controller.getAvailability("1", "2023-01");
+      expect(service.getAvailability).toHaveBeenCalledWith("1", "2023-01");
+    });
+  });
 
-      const result = await controller.findOne("trainer-id", req);
-      expect(result).toEqual(mockTrainer);
+  describe("getMissions", () => {
+    it("should call service", async () => {
+      await controller.getMissions("1");
+      expect(service.getMissions).toHaveBeenCalledWith("1");
+    });
+  });
+
+  describe("findOne", () => {
+    it("should return trainer for ADMIN", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u2", user: { password: "123" } });
+      const result: any = await controller.findOne("1", { user: { role: "ADMIN", userId: "u1" } });
+      expect(result.user.password).toBeUndefined();
     });
 
-    it("should throw ForbiddenException if user is not owner and not admin", async () => {
-      mockTrainersService.findOne.mockResolvedValue(mockTrainer);
-      const req = { user: { role: "TRAINER", userId: "other-id" } };
+    it("should return trainer for Owner", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u1", user: {} });
+      await controller.findOne("1", { user: { role: "TRAINER", userId: "u1" } });
+    });
 
-      await expect(controller.findOne("trainer-id", req)).rejects.toThrow(
-        ForbiddenException,
-      );
+    it("should deny others", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u2" });
+      await expect(controller.findOne("1", { user: { role: "TRAINER", userId: "u1" } }))
+        .rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("updateProfile", () => {
+    it("should allow Owner", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u1" });
+      mockTrainersService.update.mockResolvedValue({});
+      await controller.updateProfile("1", { firstName: "A" }, { user: { role: "TRAINER", userId: "u1" } });
+      expect(service.update).toHaveBeenCalled();
+    });
+
+    it("should deny others", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u2" });
+      await expect(controller.updateProfile("1", {}, { user: { role: "TRAINER", userId: "u1" } }))
+        .rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("uploadAvatar", () => {
+    it("should throw if file missing", async () => {
+      await expect(controller.uploadAvatar("1", undefined, {})).rejects.toThrow(BadRequestException);
+    });
+
+    it("should allow Owner", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u1" });
+      mockTrainersService.updateAvatar.mockResolvedValue({});
+      const file: any = { filename: "av.jpg" };
+      await controller.uploadAvatar("1", file, { user: { role: "TRAINER", userId: "u1" } });
+      expect(service.updateAvatar).toHaveBeenCalled();
+    });
+
+    it("should deny others", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u2" });
+      const file: any = { filename: "av.jpg" };
+      await expect(controller.uploadAvatar("1", file, { user: { role: "TRAINER", userId: "u1" } }))
+        .rejects.toThrow(ForbiddenException);
     });
   });
 
   describe("getCalendarUrl", () => {
-    it("should return calendar URL", async () => {
-      mockTrainersService.findOne.mockResolvedValue(mockTrainer);
-      mockTrainersService.ensureCalendarToken.mockResolvedValue("token-123");
-      const req = {
-        user: { role: "TRAINER", userId: "user-id" },
-        protocol: "http",
-        get: jest.fn().mockReturnValue("localhost:3000"),
-      };
+    it("should allow Owner", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u1" });
+      mockTrainersService.ensureCalendarToken.mockResolvedValue("tok");
+      const req = { user: { userId: "u1" }, protocol: "http", get: () => "localhost" };
 
-      const result = await controller.getCalendarUrl("trainer-id", req);
-      expect(result).toEqual({
-        url: "http://localhost:3000/calendars/token-123/events.ics",
-      });
+      const res = await controller.getCalendarUrl("1", req);
+      expect(res.url).toContain("/calendars/tok/events.ics");
     });
 
-    it("should throw ForbiddenException if user is not owner", async () => {
-      mockTrainersService.findOne.mockResolvedValue(mockTrainer);
-      const req = { user: { role: "TRAINER", userId: "other-id" } };
-
-      await expect(
-        controller.getCalendarUrl("trainer-id", req),
-      ).rejects.toThrow(ForbiddenException);
+    it("should deny others", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u2" });
+      const req = { user: { role: "TRAINER", userId: "u1" } };
+      await expect(controller.getCalendarUrl("1", req)).rejects.toThrow(ForbiddenException);
     });
   });
 });

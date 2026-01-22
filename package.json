@@ -13,6 +13,7 @@
         "start:windows": "powershell -ExecutionPolicy Bypass -File scripts/start-dev.ps1"
     },
     "devDependencies": {
+        "@testing-library/user-event": "^14.6.1",
         "prettier": "^3.0.0",
         "turbo": "^2.0.0",
         "typescript": "^5.0.0"

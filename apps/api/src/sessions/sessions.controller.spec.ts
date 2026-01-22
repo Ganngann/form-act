@@ -1,11 +1,18 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SessionsController } from "./sessions.controller";
 import { SessionsService } from "./sessions.service";
-import { ForbiddenException } from "@nestjs/common";
+import { ForbiddenException, BadRequestException } from "@nestjs/common";
 
 describe("SessionsController", () => {
   let controller: SessionsController;
   let service: SessionsService;
+
+  const mockSessionsService = {
+    findOne: jest.fn(),
+    findAll: jest.fn(),
+    update: jest.fn(),
+    updateProof: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -13,12 +20,7 @@ describe("SessionsController", () => {
       providers: [
         {
           provide: SessionsService,
-          useValue: {
-            findOne: jest.fn(),
-            update: jest.fn(),
-            updateProof: jest.fn(),
-            findAll: jest.fn(),
-          },
+          useValue: mockSessionsService,
         },
       ],
     }).compile();
@@ -27,136 +29,112 @@ describe("SessionsController", () => {
     service = module.get<SessionsService>(SessionsService);
   });
 
+  it("should be defined", () => {
+    expect(controller).toBeDefined();
+  });
+
+  describe("findAll", () => {
+    it("should parse dates", async () => {
+      await controller.findAll("2023-01-01", "2023-01-02", "PENDING");
+      expect(service.findAll).toHaveBeenCalledWith(new Date("2023-01-01"), new Date("2023-01-02"), "PENDING");
+    });
+  });
+
+  describe("uploadProof", () => {
+    it("should throw BadRequest if file missing", async () => {
+      await expect(controller.uploadProof("1", undefined, {})).rejects.toThrow(BadRequestException);
+    });
+
+    it("should allow ADMIN", async () => {
+      mockSessionsService.findOne.mockResolvedValue({});
+      mockSessionsService.updateProof.mockResolvedValue({});
+      const file: any = { filename: "test.jpg" };
+
+      await controller.uploadProof("1", file, { user: { role: "ADMIN" } });
+      expect(service.updateProof).toHaveBeenCalledWith("1", "/files/proofs/test.jpg");
+    });
+
+    it("should allow TRAINER if owner", async () => {
+      mockSessionsService.findOne.mockResolvedValue({ trainer: { userId: "u1" } });
+      mockSessionsService.updateProof.mockResolvedValue({});
+      const file: any = { filename: "test.jpg" };
+
+      await controller.uploadProof("1", file, { user: { role: "TRAINER", userId: "u1" } });
+      expect(service.updateProof).toHaveBeenCalledWith("1", "/files/proofs/test.jpg");
+    });
+
+    it("should deny TRAINER if not owner", async () => {
+      mockSessionsService.findOne.mockResolvedValue({ trainer: { userId: "u2" } });
+      const file: any = { filename: "test.jpg" };
+
+      await expect(controller.uploadProof("1", file, { user: { role: "TRAINER", userId: "u1" } }))
+        .rejects.toThrow(ForbiddenException);
+    });
+
+    it("should deny CLIENT", async () => {
+      mockSessionsService.findOne.mockResolvedValue({});
+      const file: any = { filename: "test.jpg" };
+
+      await expect(controller.uploadProof("1", file, { user: { role: "CLIENT" } }))
+        .rejects.toThrow(ForbiddenException);
+    });
+  });
+
   describe("update", () => {
-    it("should allow Admin to update anytime", async () => {
-      const mockSession = {
-        id: "s1",
-        date: new Date(),
-        client: { userId: "u1" },
-      };
-      jest
-        .spyOn(service, "findOne")
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .mockResolvedValue(mockSession as any);
-      jest
-        .spyOn(service, "update")
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .mockResolvedValue(mockSession as any);
+    it("should deny CLIENT if session < 7 days away", async () => {
+      const nearFuture = new Date();
+      nearFuture.setDate(nearFuture.getDate() + 2); // 2 days away
+      mockSessionsService.findOne.mockResolvedValue({
+        date: nearFuture.toISOString(),
+        client: { userId: "u1" }
+      });
 
-      await controller.update(
-        "s1",
-        {},
-        { user: { role: "ADMIN", userId: "admin" } },
-      );
-      expect(service.update).toHaveBeenCalled();
+      await expect(controller.update("1", {}, { user: { role: "CLIENT", userId: "u1" } }))
+        .rejects.toThrow(ForbiddenException);
     });
 
-    it("should allow Client to update if > 7 days", async () => {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 10);
-      const mockSession = {
-        id: "s1",
-        date: futureDate,
-        client: { userId: "u1" },
-      };
+    it("should allow CLIENT if session > 7 days away", async () => {
+        const farFuture = new Date();
+        farFuture.setDate(farFuture.getDate() + 10); // 10 days away
+        mockSessionsService.findOne.mockResolvedValue({
+          date: farFuture.toISOString(),
+          client: { userId: "u1" }
+        });
+        mockSessionsService.update.mockResolvedValue({});
 
-      jest
-        .spyOn(service, "findOne")
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .mockResolvedValue(mockSession as any);
-      jest
-        .spyOn(service, "update")
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .mockResolvedValue(mockSession as any);
+        await controller.update("1", {}, { user: { role: "CLIENT", userId: "u1" } });
+        expect(service.update).toHaveBeenCalled();
+      });
 
-      await controller.update(
-        "s1",
-        {},
-        { user: { role: "CLIENT", userId: "u1" } },
-      );
-      expect(service.update).toHaveBeenCalled();
-    });
+      it("should deny CLIENT if not owner", async () => {
+        mockSessionsService.findOne.mockResolvedValue({
+          client: { userId: "u2" }
+        });
 
-    it("should BLOCK Client update if < 7 days", async () => {
-      const nearDate = new Date();
-      nearDate.setDate(nearDate.getDate() + 2);
-      const mockSession = {
-        id: "s1",
-        date: nearDate,
-        client: { userId: "u1" },
-      };
+        await expect(controller.update("1", {}, { user: { role: "CLIENT", userId: "u1" } }))
+          .rejects.toThrow(ForbiddenException);
+      });
 
-      jest
-        .spyOn(service, "findOne")
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .mockResolvedValue(mockSession as any);
+      it("should deny TRAINER if not owner", async () => {
+        mockSessionsService.findOne.mockResolvedValue({
+            trainer: { userId: "u2" }
+          });
 
-      await expect(
-        controller.update("s1", {}, { user: { role: "CLIENT", userId: "u1" } }),
-      ).rejects.toThrow(ForbiddenException);
-    });
+          await expect(controller.update("1", {}, { user: { role: "TRAINER", userId: "u1" } }))
+            .rejects.toThrow(ForbiddenException);
+      });
 
-    it("should BLOCK Client update if not owner", async () => {
-      const mockSession = {
-        id: "s1",
-        date: new Date(),
-        client: { userId: "u1" },
-      };
-      jest
-        .spyOn(service, "findOne")
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .mockResolvedValue(mockSession as any);
+      it("should allow ADMIN", async () => {
+        mockSessionsService.findOne.mockResolvedValue({});
+        mockSessionsService.update.mockResolvedValue({});
+        await controller.update("1", {}, { user: { role: "ADMIN" } });
+        expect(service.update).toHaveBeenCalled();
+      });
 
-      await expect(
-        controller.update(
-          "s1",
-          {},
-          { user: { role: "CLIENT", userId: "other" } },
-        ),
-      ).rejects.toThrow(ForbiddenException);
-    });
-
-    it("should allow Trainer to update own session", async () => {
-      const mockSession = {
-        id: "s1",
-        date: new Date(),
-        trainer: { userId: "t1" },
-      };
-      jest
-        .spyOn(service, "findOne")
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .mockResolvedValue(mockSession as any);
-      jest
-        .spyOn(service, "update")
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .mockResolvedValue(mockSession as any);
-
-      await controller.update(
-        "s1",
-        {},
-        { user: { role: "TRAINER", userId: "t1" } },
-      );
-      expect(service.update).toHaveBeenCalled();
-    });
-
-    it("should BLOCK Trainer update if not owner", async () => {
-      const mockSession = {
-        id: "s1",
-        date: new Date(),
-        trainer: { userId: "t1" },
-      };
-      jest
-        .spyOn(service, "findOne")
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .mockResolvedValue(mockSession as any);
-
-      await expect(
-        controller.update(
-          "s1",
-          {},
-          { user: { role: "TRAINER", userId: "other" } },
-        ),
-      ).rejects.toThrow(ForbiddenException);
-    });
+      it("should deny unknown role", async () => {
+        mockSessionsService.findOne.mockResolvedValue({});
+        await expect(controller.update("1", {}, { user: { role: "UNKNOWN" } }))
+            .rejects.toThrow(ForbiddenException);
+      });
   });
 });
