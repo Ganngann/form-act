@@ -25,6 +25,10 @@ export function StatusBadge({ status }: StatusBadgeProps) {
       colorClass = "bg-red-100 text-red-800";
       label = "Annulée";
       break;
+    case 'PROOF_RECEIVED':
+      colorClass = "bg-purple-100 text-purple-800";
+      label = "Preuve reçue";
+      break;
   }
 
   return (
