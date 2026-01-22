@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { ClientsService } from "./clients.service";
 import { PrismaService } from "../prisma/prisma.service";
-import { Client } from "@prisma/client";
+import { Client, User } from "@prisma/client";
 
 import { NotFoundException } from "@nestjs/common";
 
@@ -41,9 +41,6 @@ describe("ClientsService", () => {
   describe("findAll", () => {
     it("should return an array of clients", async () => {
       // Mocking partial client data that matches what the service returns (Client & User relation)
-      // Since the service query uses 'include', the return type is technically Client & { user: { email: string } }
-      // But for the purpose of the test, we can cast to unknown first or use proper typing if available.
-      // However, to satisfy strict linting without any, we should use 'unknown' and then cast, or use a Partial.
       const result = [{ id: "1", companyName: "Test" }] as unknown as Client[];
 
       jest.spyOn(prisma.client, "findMany").mockResolvedValue(result);
@@ -82,7 +79,6 @@ describe("ClientsService", () => {
 
   describe("updateProfile", () => {
     it("should update client profile and audit log", async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockClient = {
         id: "1",
         userId: "u1",
@@ -91,12 +87,14 @@ describe("ClientsService", () => {
         address: "Addr",
         auditLog: "[]",
         user: { email: "old@test.com" },
-      } as any;
+      } as unknown as Client & { user: { email: string } };
 
       jest.spyOn(service, "findByUserId").mockResolvedValue(mockClient);
       jest.spyOn(prisma.client, "update").mockResolvedValue(mockClient);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      jest.spyOn(prisma.user, "update").mockResolvedValue({} as any);
+
+      jest
+        .spyOn(prisma.user, "update")
+        .mockResolvedValue({} as unknown as User);
 
       await service.updateProfile(
         "u1",
@@ -124,14 +122,13 @@ describe("ClientsService", () => {
     });
 
     it("should return early if no changes", async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockClient = {
         id: "1",
         companyName: "Old",
         vatNumber: "123",
         address: "Addr",
         user: { email: "old@test.com" },
-      } as any;
+      } as unknown as Client & { user: { email: string } };
 
       jest.spyOn(service, "findByUserId").mockResolvedValue(mockClient);
 

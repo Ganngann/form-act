@@ -31,7 +31,9 @@ describe("JwtStrategy", () => {
 
   describe("cookieExtractor", () => {
     it("should return token from cookies", () => {
-      const req = { cookies: { Authentication: "token" } } as unknown as Request;
+      const req = {
+        cookies: { Authentication: "token" },
+      } as unknown as Request;
       expect(cookieExtractor(req)).toBe("token");
     });
 
