@@ -11,6 +11,8 @@ describe("AuthController", () => {
     validateUser: jest.fn(),
     login: jest.fn(),
     getUserProfile: jest.fn(),
+    forgotPassword: jest.fn(),
+    resetPassword: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -103,6 +105,31 @@ describe("AuthController", () => {
 
       await expect(controller.getProfile(req)).rejects.toThrow(
         UnauthorizedException,
+      );
+    });
+  });
+
+  describe("forgotPassword", () => {
+    it("should call authService.forgotPassword", async () => {
+      const dto = { email: "test@example.com" };
+      mockAuthService.forgotPassword.mockResolvedValue(undefined);
+
+      await controller.forgotPassword(dto);
+
+      expect(mockAuthService.forgotPassword).toHaveBeenCalledWith(dto.email);
+    });
+  });
+
+  describe("resetPassword", () => {
+    it("should call authService.resetPassword", async () => {
+      const dto = { token: "token", password: "newPassword" };
+      mockAuthService.resetPassword.mockResolvedValue(undefined);
+
+      await controller.resetPassword(dto);
+
+      expect(mockAuthService.resetPassword).toHaveBeenCalledWith(
+        dto.token,
+        dto.password,
       );
     });
   });

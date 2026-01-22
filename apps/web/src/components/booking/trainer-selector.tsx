@@ -40,7 +40,22 @@ export function TrainerSelector({ trainers, selectedTrainer, onSelectTrainer, lo
            ) : (
              <div className="bg-muted p-4 rounded text-sm text-center">
                Aucun formateur disponible dans cette zone pour cette expertise.
-               <Button variant="outline" className="mt-2 w-full" size="sm">Demande manuelle</Button>
+               <Button
+                variant="outline"
+                className="mt-2 w-full"
+                size="sm"
+                onClick={() => onSelectTrainer('manual')}
+               >
+                 Demande manuelle
+               </Button>
+             </div>
+           )}
+           {/* Allow manual request even if trainers are found (fallback) */}
+           {trainers.length > 0 && selectedTrainer !== 'manual' && (
+             <div className="mt-2 text-right">
+                <Button variant="link" size="sm" onClick={() => onSelectTrainer('manual')} className="text-xs text-muted-foreground h-auto p-0">
+                    Je ne trouve pas mon bonheur, faire une demande manuelle
+                </Button>
              </div>
            )}
          </div>

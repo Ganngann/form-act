@@ -83,7 +83,7 @@ export function Header({ userRole }: HeaderProps) {
                    */}
                </form>
                <Button variant="ghost" size="icon" asChild>
-                 <Link href="/profile">
+                 <Link href={userRole === 'TRAINER' ? "/trainer/profile" : userRole === 'CLIENT' ? "/dashboard/profile" : "/profile"}>
                    <User className="h-5 w-5" />
                  </Link>
                </Button>

@@ -12,10 +12,27 @@ import { AuthService } from "./auth.service";
 import { Response } from "express";
 import { AuthGuard } from "@nestjs/passport";
 import { LoginDto } from "./dto/login.dto";
+import { ForgotPasswordDto } from "./dto/forgot-password.dto";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
 
 @Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
+
+  @Post("forgot-password")
+  async forgotPassword(@Body() body: ForgotPasswordDto) {
+    await this.authService.forgotPassword(body.email);
+    return {
+      message:
+        "Si un compte existe avec cet email, un lien de réinitialisation a été envoyé.",
+    };
+  }
+
+  @Post("reset-password")
+  async resetPassword(@Body() body: ResetPasswordDto) {
+    await this.authService.resetPassword(body.token, body.password);
+    return { message: "Mot de passe mis à jour avec succès." };
+  }
 
   @Post("login")
   async login(

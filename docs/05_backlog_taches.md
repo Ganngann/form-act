@@ -43,7 +43,7 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [x] **US-28** : Tech - Seed Consolidation (Données de Test)
 
 
-## ⚪ Sprint 5 : Opérations & Fiabilisation (Le Système "Gérable")
+## ⚪ Sprint 5 : Opérations & Fiabilisation (Le Système "Gérable") - ✅ TERMINE
 
 ### US-29 : Client - Gestion Profil & Facturation
 **Référence Bible :** Section 3.2 (Espace Client) & 5.2
@@ -52,10 +52,10 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** garantir que les factures émises seront correctes.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Page "Mon Profil" dans l'espace client.
-- [ ] Modification Nom Entreprise / TVA (avec re-validation VIES/Format si possible).
-- [ ] Modification Adresse Siège et Email Compta.
-- [ ] Historique des modifications (Audit simple : "Modifié le X par Y").
+- [x] Page "Mon Profil" dans l'espace client.
+- [x] Modification Nom Entreprise / TVA (avec re-validation VIES/Format si possible).
+- [x] Modification Adresse Siège et Email Compta.
+- [x] Historique des modifications (Audit simple : "Modifié le X par Y").
 
 ### US-30 : Admin - Gestion des Sessions (Forçage)
 **Référence Bible :** Section 3.4 (Forçage) & 1.2 (RACI)
@@ -64,11 +64,11 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** gérer les imprévus et les erreurs clients.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Vue "Liste des Sessions" (Filtres: Date, Statut, Client).
-- [ ] Vue "Détail Session" pour l'Admin.
-- [ ] Action "Changer Formateur" : Permet de sélectionner un autre formateur (ignore les règles de zones).
-- [ ] Action "Déverrouiller Logistique" : Permet au client de modifier les infos après J-7.
-- [ ] Action "Annuler Session" : Change statut + Email notification + Libère le créneau.
+- [x] Vue "Liste des Sessions" (Filtres: Date, Statut, Client).
+- [x] Vue "Détail Session" pour l'Admin.
+- [x] Action "Changer Formateur" : Permet de sélectionner un autre formateur (ignore les règles de zones).
+- [x] Action "Déverrouiller Logistique" : Permet au client de modifier les infos après J-7.
+- [x] Action "Annuler Session" : Change statut + Email notification + Libère le créneau.
 
 ### US-31 : Booking - Demande Manuelle (Gestion "Désert")
 **Référence Bible :** Section 2.3 (Gestion du Désert)
@@ -77,10 +77,10 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** ne pas être bloqué et de recevoir une offre sur mesure.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Bouton "Demander une prise en charge" visible quand le résultat de recherche est vide.
-- [ ] Création d'une session avec statut spécial (ex: `PENDING_ASSIGNMENT`).
-- [ ] Notification Email Admin ("Nouvelle demande hors zone à traiter").
-- [ ] Notification Email Client ("Demande reçue, réponse sous 24h").
+- [x] Bouton "Demander une prise en charge" visible quand le résultat de recherche est vide.
+- [x] Création d'une session avec statut spécial (ex: `PENDING_ASSIGNMENT`).
+- [x] Notification Email Admin ("Nouvelle demande hors zone à traiter").
+- [x] Notification Email Client ("Demande reçue, réponse sous 24h").
 
 ### US-32 : Auth - Réinitialisation Mot de Passe
 **Référence Bible :** Section 3.1 (Interface Publique)
@@ -89,8 +89,8 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** récupérer l'accès à mon compte.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Flux "Mot de passe oublié" (Email avec lien/token).
-- [ ] Page de définition du nouveau mot de passe.
+- [x] Flux "Mot de passe oublié" (Email avec lien/token).
+- [x] Page de définition du nouveau mot de passe.
 
 ## ⚫ Sprint 6 : Finance & Reporting (L'Argent)
 

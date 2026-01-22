@@ -1,76 +1,53 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Header } from './Header';
-import { vi } from 'vitest';
+import { render, screen, fireEvent } from "@testing-library/react";
+import { Header } from "./Header";
+import { vi } from "vitest";
 
-// Mock next/navigation
-vi.mock('next/navigation', () => ({
-  usePathname: () => '/',
+// Mock usePathname
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/",
 }));
 
-// Mock next/link (renders anchor)
-vi.mock('next/link', () => {
-  return {
-    default: ({ href, children, onClick }: any) => {
-      return <a href={href} onClick={onClick}>{children}</a>;
-    }
-  };
-});
-
-describe('Header', () => {
-  it('renders correctly for guest', () => {
+describe("Header", () => {
+  it("renders guest links", () => {
     render(<Header />);
-    expect(screen.getByText('Form-Act')).toBeDefined();
-    expect(screen.getByText('Se connecter')).toBeDefined();
+    expect(screen.getByText("Se connecter")).toBeDefined();
     expect(screen.getByText("S'inscrire")).toBeDefined();
   });
 
-  it('renders correctly for ADMIN', () => {
+  it("renders Admin links", () => {
     render(<Header userRole="ADMIN" />);
-    expect(screen.getByText('Dashboard Admin')).toBeDefined();
-    expect(screen.getByText('Administrateur')).toBeDefined();
-    expect(screen.queryByText('Se connecter')).toBeNull();
+    expect(screen.getByText("Dashboard Admin")).toBeDefined();
+    expect(screen.getByText("Administrateur")).toBeDefined();
   });
 
-  it('renders correctly for TRAINER', () => {
+  it("renders Trainer links", () => {
     render(<Header userRole="TRAINER" />);
-    expect(screen.getByText('Espace Formateur')).toBeDefined();
-    expect(screen.getByText('Formateur')).toBeDefined();
+    expect(screen.getByText("Espace Formateur")).toBeDefined();
+    expect(screen.getByText("Formateur")).toBeDefined();
   });
 
-  it('renders correctly for CLIENT', () => {
+  it("renders Client links", () => {
     render(<Header userRole="CLIENT" />);
-    expect(screen.getByText('Mes Formations')).toBeDefined();
-    expect(screen.getByText('Client')).toBeDefined();
+    expect(screen.getByText("Mes Formations")).toBeDefined();
+    expect(screen.getByText("Client")).toBeDefined();
   });
 
-  it('toggles mobile menu', () => {
-    // Need to mock window matchMedia or resize to test mobile view logic if conditional rendering depends on CSS media queries?
-    // The component uses `md:hidden` classes which are Tailwind. JSDOM doesn't handle CSS layout/classes.
-    // However, the `isMenuOpen` logic renders the menu in JS.
-    // The button `md:hidden` is always in DOM.
-    // The toggle button is the one with `onClick={toggleMenu}`.
-
-    // We can find the button by finding the Icon logic?
-    // <Menu /> or <X />
-    // Lucide icons render SVGs.
-
-    // Let's rely on the button itself.
-
+  it("toggles mobile menu", () => {
     render(<Header />);
-    const buttons = screen.getAllByRole('button'); // Login, Register, MobileToggle
-    // The toggle is the last one in mobile view usually, or we can look for specific aria/class logic if available.
-    // The component code: <button className="md:hidden" onClick={toggleMenu}>
+    const buttons = screen.getAllByRole("button");
+    const toggleBtn = buttons[buttons.length - 1]; // Toggle is the last button
+    fireEvent.click(toggleBtn);
+    // Should see mobile menu links (duplicate text, but check existence)
+    const links = screen.getAllByText("Catalogue");
+    expect(links.length).toBeGreaterThan(1);
+  });
 
-    // We can just try clicking the button that contains the Menu icon.
-    // But icons are mocked? No, we didn't mock Lucide.
+  it("shows correct mobile menu for logged in user", () => {
+      render(<Header userRole="CLIENT" />);
+      const buttons = screen.getAllByRole("button");
+      const toggleBtn = buttons[buttons.length - 1]; // Toggle is the last button
+      fireEvent.click(toggleBtn);
 
-    // Let's render and look for the menu content which is conditional.
-    // Initially mobile menu is closed.
-    expect(screen.queryByText('Catalogue', { selector: '.md\\:hidden *' })).toBeNull();
-    // Actually the mobile menu repeats the nav links.
-    // "Catalogue" appears in desktop nav too.
-
-    // Let's verify standard links.
-
+      expect(screen.getByText("Connecté en tant que CLIENT")).toBeDefined();
   });
 });

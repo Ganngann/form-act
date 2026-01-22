@@ -1,6 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { API_URL } from '@/lib/config';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -64,6 +65,11 @@ export default function LoginPage() {
                     required
                 />
                 {error && <p className="text-red-500 text-sm">{error}</p>}
+                <div className="text-right">
+                    <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
+                        Mot de passe oublié ?
+                    </Link>
+                </div>
                 <Button type="submit" className="w-full">Se connecter</Button>
             </form>
         </CardContent>

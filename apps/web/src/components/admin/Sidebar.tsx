@@ -14,6 +14,13 @@ export function Sidebar() {
       <div className="flex-1 overflow-auto py-2">
         <nav className="grid items-start px-4 text-sm font-medium">
           <Link
+            href="/admin/sessions"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            Sessions
+          </Link>
+          <Link
             href="/admin/trainers"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
           >

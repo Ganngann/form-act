@@ -68,7 +68,7 @@ export function CheckoutForm({ formationId, trainerId, date, slot }: CheckoutFor
             const payload = {
                 ...data,
                 formationId,
-                trainerId,
+                trainerId: trainerId || undefined,
                 date,
                 slot
             }

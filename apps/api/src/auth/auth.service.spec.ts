@@ -2,13 +2,17 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AuthService } from "./auth.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { JwtService } from "@nestjs/jwt";
+import { EmailService } from "../email/email.service";
 import * as bcrypt from "bcrypt";
 import { User } from "@prisma/client";
+
+import { BadRequestException } from "@nestjs/common";
 
 describe("AuthService", () => {
   let service: AuthService;
   let prisma: PrismaService;
   let jwtService: JwtService;
+  let emailService: EmailService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -19,6 +23,8 @@ describe("AuthService", () => {
           useValue: {
             user: {
               findUnique: jest.fn(),
+              findFirst: jest.fn(),
+              update: jest.fn(),
             },
           },
         },
@@ -28,12 +34,19 @@ describe("AuthService", () => {
             sign: jest.fn().mockReturnValue("token"),
           },
         },
+        {
+          provide: EmailService,
+          useValue: {
+            sendEmail: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     prisma = module.get<PrismaService>(PrismaService);
     jwtService = module.get<JwtService>(JwtService);
+    emailService = module.get<EmailService>(EmailService);
   });
 
   it("should be defined", () => {
@@ -116,6 +129,72 @@ describe("AuthService", () => {
         expect.objectContaining({
           where: { id: "1" },
           include: { formateur: { select: { id: true } } },
+        }),
+      );
+    });
+  });
+
+  describe("forgotPassword", () => {
+    it("should return silently if user not found", async () => {
+      jest.spyOn(prisma.user, "findUnique").mockResolvedValue(null);
+      await service.forgotPassword("test@test.com");
+      expect(prisma.user.update).not.toHaveBeenCalled();
+      expect(emailService.sendEmail).not.toHaveBeenCalled();
+    });
+
+    it("should generate token and send email if user found", async () => {
+      const mockUser = {
+        id: "1",
+        email: "test@test.com",
+        name: "User",
+      } as User;
+      jest.spyOn(prisma.user, "findUnique").mockResolvedValue(mockUser);
+      jest.spyOn(prisma.user, "update").mockResolvedValue(mockUser);
+
+      await service.forgotPassword("test@test.com");
+
+      expect(prisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: "1" },
+          data: expect.objectContaining({
+            resetToken: expect.any(String),
+          }),
+        }),
+      );
+      expect(emailService.sendEmail).toHaveBeenCalledWith(
+        "test@test.com",
+        expect.stringContaining("Réinitialisation"),
+        expect.any(String),
+      );
+    });
+  });
+
+  describe("resetPassword", () => {
+    it("should throw BadRequestException if token invalid/expired", async () => {
+      jest.spyOn(prisma.user, "findFirst").mockResolvedValue(null);
+      await expect(service.resetPassword("token", "newpass")).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it("should update password and clear token", async () => {
+      const mockUser = { id: "1" } as User;
+      jest.spyOn(prisma.user, "findFirst").mockResolvedValue(mockUser);
+      jest.spyOn(prisma.user, "update").mockResolvedValue(mockUser);
+      jest
+        .spyOn(bcrypt, "hash")
+        .mockImplementation(() => Promise.resolve("hashed"));
+
+      await service.resetPassword("token", "newpass");
+
+      expect(prisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: "1" },
+          data: {
+            password: "hashed",
+            resetToken: null,
+            resetTokenExpires: null,
+          },
         }),
       );
     });

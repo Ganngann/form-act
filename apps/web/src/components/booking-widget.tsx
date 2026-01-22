@@ -80,14 +80,16 @@ export function BookingWidget({ formation }: BookingWidgetProps) {
               if (!selectedDate) return
               const params = new URLSearchParams({
                   formationId: formation.id,
-                  trainerId: selectedTrainer,
                   date: format(selectedDate, 'yyyy-MM-dd'),
                   slot: selectedSlot
               })
+              if (selectedTrainer && selectedTrainer !== 'manual') {
+                  params.append('trainerId', selectedTrainer)
+              }
               router.push(`/checkout?${params.toString()}`)
             }}
           >
-            Réserver
+            {selectedTrainer === 'manual' ? "Envoyer la demande" : "Réserver"}
           </Button>
 
         </CardContent>

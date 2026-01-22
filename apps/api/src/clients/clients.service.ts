@@ -1,5 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
+import { UpdateClientProfileDto } from "./dto/update-client-profile.dto";
 
 @Injectable()
 export class ClientsService {
@@ -17,6 +18,91 @@ export class ClientsService {
       orderBy: {
         createdAt: "desc",
       },
+    });
+  }
+
+  async findByUserId(userId: string) {
+    const client = await this.prisma.client.findUnique({
+      where: { userId },
+      include: { user: { select: { email: true } } },
+    });
+    if (!client) throw new NotFoundException("Client profile not found");
+    return client;
+  }
+
+  async updateProfile(
+    userId: string,
+    data: UpdateClientProfileDto,
+    modifierName: string,
+  ) {
+    const client = await this.findByUserId(userId);
+    const changes = [];
+
+    // Check for changes in Client fields
+    if (data.companyName !== client.companyName) {
+      changes.push({
+        field: "Nom Entreprise",
+        old: client.companyName,
+        new: data.companyName,
+      });
+    }
+    if (data.vatNumber !== client.vatNumber) {
+      changes.push({
+        field: "TVA",
+        old: client.vatNumber,
+        new: data.vatNumber,
+      });
+    }
+    if (data.address !== client.address) {
+      changes.push({
+        field: "Adresse",
+        old: client.address,
+        new: data.address,
+      });
+    }
+
+    // Check for changes in User email
+    if (data.email && data.email !== client.user.email) {
+      changes.push({
+        field: "Email",
+        old: client.user.email,
+        new: data.email,
+      });
+    }
+
+    if (changes.length === 0) {
+      return client;
+    }
+
+    // Update Audit Log
+    const currentLog = client.auditLog ? JSON.parse(client.auditLog) : [];
+    const newEntry = {
+      date: new Date(),
+      by: modifierName,
+      changes,
+    };
+    const updatedLog = JSON.stringify([newEntry, ...currentLog]);
+
+    // Perform Update Transaction
+    return this.prisma.$transaction(async (tx) => {
+      // Update User email if needed
+      if (data.email && data.email !== client.user.email) {
+        await tx.user.update({
+          where: { id: client.userId },
+          data: { email: data.email },
+        });
+      }
+
+      // Update Client data
+      return tx.client.update({
+        where: { id: client.id },
+        data: {
+          companyName: data.companyName,
+          vatNumber: data.vatNumber,
+          address: data.address,
+          auditLog: updatedLog,
+        },
+      });
     });
   }
 }

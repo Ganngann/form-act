@@ -1,14 +1,17 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, BadRequestException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "../prisma/prisma.service";
 import * as bcrypt from "bcrypt";
 import { User } from "@prisma/client";
+import { EmailService } from "../email/email.service";
+import * as crypto from "crypto";
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
 
   async hashPassword(password: string): Promise<string> {
@@ -26,6 +29,62 @@ export class AuthService {
       return result;
     }
     return null;
+  }
+
+  async forgotPassword(email: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      // Return silently to prevent enumeration
+      return;
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const expires = new Date(Date.now() + 3600000); // 1 hour
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetToken: token,
+        resetTokenExpires: expires,
+      },
+    });
+
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    const resetLink = `${frontendUrl}/auth/reset-password?token=${token}`;
+
+    await this.emailService.sendEmail(
+      email,
+      "Réinitialisation de votre mot de passe",
+      `<p>Bonjour ${user.name || "Client"},</p>
+       <p>Vous avez demandé la réinitialisation de votre mot de passe.</p>
+       <p>Cliquez sur le lien ci-dessous pour définir un nouveau mot de passe (valable 1h) :</p>
+       <p><a href="${resetLink}">${resetLink}</a></p>
+       <p>Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>`,
+    );
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        resetToken: token,
+        resetTokenExpires: { gt: new Date() },
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException("Token invalide ou expiré");
+    }
+
+    const hashedPassword = await this.hashPassword(newPassword);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetToken: null,
+        resetTokenExpires: null,
+      },
+    });
   }
 
   async login(user: Omit<User, "password">) {
