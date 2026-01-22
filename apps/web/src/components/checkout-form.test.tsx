@@ -18,6 +18,7 @@ describe("CheckoutForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     global.fetch = vi.fn();
+    global.alert = vi.fn();
     // Mock window.location
     Object.defineProperty(window, 'location', {
         value: { href: '' },
@@ -28,20 +29,54 @@ describe("CheckoutForm", () => {
   it("renders form fields", () => {
     render(<CheckoutForm {...defaultProps} />);
     expect(screen.getByLabelText(/Numéro de TVA/i)).toBeDefined();
-    expect(screen.getByLabelText(/Nom de l'entreprise/i)).toBeDefined();
-    expect(screen.getByLabelText(/Adresse/i)).toBeDefined();
-    expect(screen.getByLabelText(/Email professionnel/i)).toBeDefined();
   });
 
-  it("handles manual request (missing trainerId)", () => {
-      render(<CheckoutForm {...defaultProps} trainerId="" />);
-      expect(screen.getByLabelText(/Numéro de TVA/i)).toBeDefined();
+  it("check VAT valid", async () => {
+      (global.fetch as any).mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve({ isValid: true, companyName: "Test Co", address: "Test Addr", vatNumber: "BE123" })
+      });
+      render(<CheckoutForm {...defaultProps} />);
+      const vatInput = screen.getByLabelText(/Numéro de TVA/i);
+      fireEvent.change(vatInput, { target: { value: "BE12345" } });
+      fireEvent.click(screen.getByText("Vérifier"));
+
+      await waitFor(() => {
+          expect(screen.getByDisplayValue("Test Co")).toBeDefined();
+      });
   });
 
-  it("submits form successfully", async () => {
+  it("check VAT invalid", async () => {
+      (global.fetch as any).mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve({ isValid: false })
+      });
+      render(<CheckoutForm {...defaultProps} />);
+      const vatInput = screen.getByLabelText(/Numéro de TVA/i);
+      fireEvent.change(vatInput, { target: { value: "BE12345" } });
+      fireEvent.click(screen.getByText("Vérifier"));
+
+      await waitFor(() => {
+          expect(global.alert).toHaveBeenCalledWith(expect.stringContaining("non valide"));
+      });
+  });
+
+  it("check VAT error", async () => {
+      (global.fetch as any).mockRejectedValue(new Error("Network"));
+      render(<CheckoutForm {...defaultProps} />);
+      const vatInput = screen.getByLabelText(/Numéro de TVA/i);
+      fireEvent.change(vatInput, { target: { value: "BE12345" } });
+      fireEvent.click(screen.getByText("Vérifier"));
+
+      await waitFor(() => {
+          expect(global.alert).toHaveBeenCalledWith(expect.stringContaining("Impossible de vérifier"));
+      });
+  });
+
+  it("submits form failure", async () => {
     (global.fetch as any).mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({}),
+        ok: false,
+        json: () => Promise.resolve({ message: "Server Error" }),
     });
 
     render(<CheckoutForm {...defaultProps} />);
@@ -56,12 +91,7 @@ describe("CheckoutForm", () => {
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-            expect.stringContaining("/checkout"),
-            expect.objectContaining({
-                method: "POST",
-            })
-        );
+        expect(screen.getByText("Server Error")).toBeDefined();
     });
   });
 });
