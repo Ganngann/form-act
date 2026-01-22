@@ -76,6 +76,11 @@ model Formation {
   duration    String
   durationType String @default("HALF_DAY")
   programLink String?    // URL to the PDF program
+  price       Decimal?   // Standard amount in Euros (HTVA)
+  methodology String?    // Pedagogical approach description
+  inclusions  String?    // List of included material
+  agreementCode String?  // Service Voucher agreement number
+  imageUrl    String?    // URL of illustration image
   expertiseId String?
   expertise   Expertise? @relation(fields: [expertiseId], references: [id])
   categoryId  String?

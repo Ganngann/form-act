@@ -207,7 +207,7 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 5. **`imageUrl`** (String) : URL de l'image d'illustration de la formation.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Schema Prisma mis à jour avec les nouveaux champs (Optionnels/Nullable pour l'instant).
-- [ ] Migration SQL générée et appliquée.
-- [ ] DTOs NestJS (`CreateFormationDto`, `UpdateFormationDto`) mis à jour pour accepter ces champs.
-- [ ] Entité de retour mise à jour.
+- [x] Schema Prisma mis à jour avec les nouveaux champs (Optionnels/Nullable pour l'instant).
+- [x] Migration SQL générée et appliquée.
+- [x] DTOs NestJS (`CreateFormationDto`, `UpdateFormationDto`) mis à jour pour accepter ces champs.
+- [x] Entité de retour mise à jour.
