@@ -62,10 +62,10 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** comprendre l'offre et commencer ma réservation.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Hero Section avec Titre & Sous-titre.
-- [ ] Dropdown de recherche par "Catégorie" (Thème) redirigeant vers le Catalogue.
-- [ ] CTAs "Espace Formateur", "Connexion" et "Voir le Catalogue".
-- [ ] Section Réassurance.
+- [x] Hero Section avec Titre & Sous-titre.
+- [x] Dropdown de recherche par "Catégorie" (Thème) redirigeant vers le Catalogue.
+- [x] CTAs "Espace Formateur", "Connexion" et "Voir le Catalogue".
+- [x] Section Réassurance.
 
 ### US-22 : Navigation Globale
 **En tant que** Utilisateur,
@@ -73,11 +73,11 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** circuler facilement entre l'accueil, le catalogue et mon espace personnel.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Header présent sur le layout principal.
-- [ ] **Public** : Liens Accueil, Catalogue, Connexion.
-- [ ] **Admin** : Lien vers Dashboard Admin.
-- [ ] **Formateur** : Lien vers Espace Formateur (Missions).
-- [ ] **Client** : Lien vers Espace Client (Mes formations).
+- [x] Header présent sur le layout principal.
+- [x] **Public** : Liens Accueil, Catalogue, Connexion.
+- [x] **Admin** : Lien vers Dashboard Admin.
+- [x] **Formateur** : Lien vers Espace Formateur (Missions).
+- [x] **Client** : Lien vers Espace Client (Mes formations).
 
 ### US-23 : Catalogue Client & Recherche
 **Référence Wireframe :** Section 2.1 (Catalogue)
@@ -86,11 +86,11 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** faire mon choix.
 
 *Critères d'Acceptation (AC) :*
-- [ ] **Menu de navigation Client** : Liens vers "Catalogue" et "Mes Formations".
-- [ ] Grille des formations filtrable par Catégorie.
-- [ ] Affichage des cartes formations (Titre, Durée).
-- [ ] Accès clair à la page Catalogue depuis la Navigation et l'Accueil.
-- [ ] Lien vers la page détail formation.
+- [x] **Menu de navigation Client** : Liens vers "Catalogue" et "Mes Formations".
+- [x] Grille des formations filtrable par Catégorie.
+- [x] Affichage des cartes formations (Titre, Durée).
+- [x] Accès clair à la page Catalogue depuis la Navigation et l'Accueil.
+- [x] Lien vers la page détail formation.
 
 ### US-24 : Admin - Liste des Clients
 **En tant que** Administrateur,
