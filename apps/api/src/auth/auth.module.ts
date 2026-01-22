@@ -5,11 +5,13 @@ import { PrismaModule } from "../prisma/prisma.module";
 import { AuthService } from "./auth.service";
 import { JwtStrategy } from "./jwt.strategy";
 import { AuthController } from "./auth.controller";
+import { EmailModule } from "../email/email.module";
 
 @Module({
   imports: [
     PrismaModule,
     PassportModule,
+    EmailModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || "super-secret-key",
       signOptions: { expiresIn: "1d" },
@@ -19,4 +21,4 @@ import { AuthController } from "./auth.controller";
   providers: [AuthService, JwtStrategy],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule { }
