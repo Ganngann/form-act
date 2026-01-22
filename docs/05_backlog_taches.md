@@ -50,8 +50,8 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** les voir dans mon agenda personnel.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Endpoint public sécurisé (Token) générant un flux .ics.
-- [ ] Inclusion des détails (Lieu, Heure) dans les événements.
+- [x] Endpoint public sécurisé (Token) générant un flux .ics.
+- [x] Inclusion des détails (Lieu, Heure) dans les événements.
 
 ## 🟣 Sprint 4 : Feedback & UX (Refonte & Ajustements)
 
