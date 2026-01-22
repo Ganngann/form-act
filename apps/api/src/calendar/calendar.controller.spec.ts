@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CalendarController } from './calendar.controller';
-import { CalendarService } from './calendar.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { CalendarController } from "./calendar.controller";
+import { CalendarService } from "./calendar.service";
 
-describe('CalendarController', () => {
+describe("CalendarController", () => {
   let controller: CalendarController;
   let service: CalendarService;
 
@@ -13,7 +13,7 @@ describe('CalendarController', () => {
         {
           provide: CalendarService,
           useValue: {
-            generateIcs: jest.fn().mockResolvedValue('BEGIN:VCALENDAR...'),
+            generateIcs: jest.fn().mockResolvedValue("BEGIN:VCALENDAR..."),
           },
         },
       ],
@@ -23,15 +23,15 @@ describe('CalendarController', () => {
     service = module.get<CalendarService>(CalendarService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 
-  describe('getEvents', () => {
-    it('should return ICS content', async () => {
-      const result = await controller.getEvents('token');
-      expect(result).toBe('BEGIN:VCALENDAR...');
-      expect(service.generateIcs).toHaveBeenCalledWith('token');
+  describe("getEvents", () => {
+    it("should return ICS content", async () => {
+      const result = await controller.getEvents("token");
+      expect(result).toBe("BEGIN:VCALENDAR...");
+      expect(service.generateIcs).toHaveBeenCalledWith("token");
     });
   });
 });

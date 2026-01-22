@@ -1,18 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { TrainersController } from './trainers.controller';
-import { TrainersService } from './trainers.service';
-import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import { Test, TestingModule } from "@nestjs/testing";
+import { TrainersController } from "./trainers.controller";
+import { TrainersService } from "./trainers.service";
+import { ForbiddenException } from "@nestjs/common";
 
-describe('TrainersController', () => {
+describe("TrainersController", () => {
   let controller: TrainersController;
-  let service: TrainersService;
 
   const mockTrainer = {
-    id: 'trainer-id',
-    userId: 'user-id',
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john@example.com',
+    id: "trainer-id",
+    userId: "user-id",
+    firstName: "John",
+    lastName: "Doe",
+    email: "john@example.com",
   };
 
   const mockTrainersService = {
@@ -36,49 +35,54 @@ describe('TrainersController', () => {
     }).compile();
 
     controller = module.get<TrainersController>(TrainersController);
-    service = module.get<TrainersService>(TrainersService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 
-  describe('findOne', () => {
-    it('should return a trainer if user is owner', async () => {
+  describe("findOne", () => {
+    it("should return a trainer if user is owner", async () => {
       mockTrainersService.findOne.mockResolvedValue(mockTrainer);
-      const req = { user: { role: 'TRAINER', userId: 'user-id' } };
+      const req = { user: { role: "TRAINER", userId: "user-id" } };
 
-      const result = await controller.findOne('trainer-id', req);
+      const result = await controller.findOne("trainer-id", req);
       expect(result).toEqual(mockTrainer);
     });
 
-    it('should throw ForbiddenException if user is not owner and not admin', async () => {
+    it("should throw ForbiddenException if user is not owner and not admin", async () => {
       mockTrainersService.findOne.mockResolvedValue(mockTrainer);
-      const req = { user: { role: 'TRAINER', userId: 'other-id' } };
+      const req = { user: { role: "TRAINER", userId: "other-id" } };
 
-      await expect(controller.findOne('trainer-id', req)).rejects.toThrow(ForbiddenException);
+      await expect(controller.findOne("trainer-id", req)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 
-  describe('getCalendarUrl', () => {
-    it('should return calendar URL', async () => {
+  describe("getCalendarUrl", () => {
+    it("should return calendar URL", async () => {
       mockTrainersService.findOne.mockResolvedValue(mockTrainer);
-      mockTrainersService.ensureCalendarToken.mockResolvedValue('token-123');
+      mockTrainersService.ensureCalendarToken.mockResolvedValue("token-123");
       const req = {
-          user: { role: 'TRAINER', userId: 'user-id' },
-          protocol: 'http',
-          get: jest.fn().mockReturnValue('localhost:3000'),
+        user: { role: "TRAINER", userId: "user-id" },
+        protocol: "http",
+        get: jest.fn().mockReturnValue("localhost:3000"),
       };
 
-      const result = await controller.getCalendarUrl('trainer-id', req);
-      expect(result).toEqual({ url: 'http://localhost:3000/calendars/token-123/events.ics' });
+      const result = await controller.getCalendarUrl("trainer-id", req);
+      expect(result).toEqual({
+        url: "http://localhost:3000/calendars/token-123/events.ics",
+      });
     });
 
-    it('should throw ForbiddenException if user is not owner', async () => {
+    it("should throw ForbiddenException if user is not owner", async () => {
       mockTrainersService.findOne.mockResolvedValue(mockTrainer);
-      const req = { user: { role: 'TRAINER', userId: 'other-id' } };
+      const req = { user: { role: "TRAINER", userId: "other-id" } };
 
-      await expect(controller.getCalendarUrl('trainer-id', req)).rejects.toThrow(ForbiddenException);
+      await expect(
+        controller.getCalendarUrl("trainer-id", req),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 });

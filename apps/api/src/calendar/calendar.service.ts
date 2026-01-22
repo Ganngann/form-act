@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import ical, { ICalCalendarMethod } from 'ical-generator';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import ical, { ICalCalendarMethod } from "ical-generator";
 
 @Injectable()
 export class CalendarService {
@@ -16,42 +16,47 @@ export class CalendarService {
             client: true,
           },
           where: {
-             // Optional: only future sessions? The user said "Flux Sortant", implied all or future.
-             // Standard is usually everything or window. I'll fetch everything for now.
-             status: { not: 'CANCELLED' }
+            // Optional: only future sessions? The user said "Flux Sortant", implied all or future.
+            // Standard is usually everything or window. I'll fetch everything for now.
+            status: { not: "CANCELLED" },
           },
-          orderBy: { date: 'asc' },
+          orderBy: { date: "asc" },
         },
       },
     });
 
     if (!trainer) {
-      throw new NotFoundException('Calendar not found');
+      throw new NotFoundException("Calendar not found");
     }
 
     const calendar = ical({
       name: `Form-Act - ${trainer.firstName} ${trainer.lastName}`,
       method: ICalCalendarMethod.PUBLISH,
-      timezone: 'Europe/Brussels',
+      timezone: "Europe/Brussels",
     });
 
     for (const session of trainer.sessions) {
-      const { start, end, allDay } = this.calculateTimes(session.date, session.slot);
+      const { start, end, allDay } = this.calculateTimes(
+        session.date,
+        session.slot,
+      );
 
       const descriptionParts = [
         `Client: ${session.client?.companyName || "N/A"}`,
-        `Formation: ${session.formation?.title || 'N/A'}`,
-        `Lieu: ${session.location || session.client?.address || 'Non défini'}`,
+        `Formation: ${session.formation?.title || "N/A"}`,
+        `Lieu: ${session.location || session.client?.address || "Non défini"}`,
       ];
 
       if (session.logistics) {
-          try {
-             const logistics = JSON.parse(session.logistics);
-             const logStr = Object.entries(logistics).map(([k,v]) => `${k}: ${v}`).join(', ');
-             descriptionParts.push(`Logistique: ${logStr}`);
-          } catch (e) {
-             descriptionParts.push(`Logistique: ${session.logistics}`);
-          }
+        try {
+          const logistics = JSON.parse(session.logistics);
+          const logStr = Object.entries(logistics)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join(", ");
+          descriptionParts.push(`Logistique: ${logStr}`);
+        } catch {
+          descriptionParts.push(`Logistique: ${session.logistics}`);
+        }
       }
 
       calendar.createEvent({
@@ -106,15 +111,15 @@ export class CalendarService {
     // Best effort: Set hours on the Date object.
 
     switch (slot) {
-      case 'AM':
+      case "AM":
         start.setHours(9, 0, 0, 0);
         end.setHours(12, 30, 0, 0);
         break;
-      case 'PM':
+      case "PM":
         start.setHours(13, 30, 0, 0);
         end.setHours(17, 0, 0, 0);
         break;
-      case 'ALL_DAY':
+      case "ALL_DAY":
         start.setHours(9, 0, 0, 0);
         end.setHours(17, 0, 0, 0);
         break;

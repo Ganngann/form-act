@@ -270,7 +270,9 @@ describe("NotificationsService", () => {
       await service.handleCron();
       expect(emailService.sendEmail).toHaveBeenCalledWith(
         "trainer@api.com",
-        expect.stringContaining("Action requise : Dépôt de la feuille d'émargement"),
+        expect.stringContaining(
+          "Action requise : Dépôt de la feuille d'émargement",
+        ),
         expect.any(String),
       );
       expect(logService.createLog).toHaveBeenCalledWith(
