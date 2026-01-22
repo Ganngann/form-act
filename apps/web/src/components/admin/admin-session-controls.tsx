@@ -81,7 +81,7 @@ export function AdminSessionControls({ session, trainers }: { session: Session; 
                  </div>
              </div>
              <p className="text-sm text-muted-foreground">
-                 Note : Ce sélecteur ignore les règles de zone et d'expertise (Forçage).
+                 Note : Ce sélecteur ignore les règles de zone et d&apos;expertise (Forçage).
              </p>
         </CardContent>
       </Card>
