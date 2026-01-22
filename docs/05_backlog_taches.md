@@ -69,12 +69,15 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 
 ### US-22 : Navigation Globale
 **En tant que** Utilisateur,
-**Je veux** une barre de navigation accessible sur toutes les pages,
+**Je veux** une barre de navigation accessible sur toutes les pages et adaptée à mon rôle,
 **Afin de** circuler facilement entre l'accueil, le catalogue et mon espace personnel.
 
 *Critères d'Acceptation (AC) :*
 - [ ] Header présent sur le layout principal.
-- [ ] Liens : Accueil, Catalogue, Connexion/Mon Compte.
+- [ ] **Public** : Liens Accueil, Catalogue, Connexion.
+- [ ] **Admin** : Lien vers Dashboard Admin.
+- [ ] **Formateur** : Lien vers Espace Formateur (Missions).
+- [ ] **Client** : Lien vers Espace Client (Mes formations).
 
 ### US-23 : Catalogue Client & Recherche
 **Référence Wireframe :** Section 2.1 (Catalogue)
