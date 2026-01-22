@@ -50,10 +50,17 @@ describe("TrainersService", () => {
   });
 
   describe("findAll", () => {
-    it("should return data and total", async () => {
+    it("should return data and total with search", async () => {
       mockPrismaService.formateur.findMany.mockResolvedValue([]);
       mockPrismaService.formateur.count.mockResolvedValue(0);
       const result = await service.findAll(0, 10, "test");
+      expect(result).toEqual({ data: [], total: 0 });
+    });
+
+    it("should return data and total without search", async () => {
+      mockPrismaService.formateur.findMany.mockResolvedValue([]);
+      mockPrismaService.formateur.count.mockResolvedValue(0);
+      const result = await service.findAll(0, 10);
       expect(result).toEqual({ data: [], total: 0 });
     });
   });
@@ -100,12 +107,13 @@ describe("TrainersService", () => {
   });
 
   describe("update", () => {
-    it("should update trainer", async () => {
+    it("should update trainer without zones", async () => {
       mockPrismaService.formateur.findUnique.mockResolvedValue({
         id: "t1",
         predilectionZones: [],
       });
       mockPrismaService.formateur.update.mockResolvedValue({ id: "t1" });
+      // Call update with NO zones to trigger skipped if blocks
       await service.update("t1", { firstName: "B" });
       expect(mockPrismaService.formateur.update).toHaveBeenCalled();
     });
