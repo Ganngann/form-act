@@ -51,20 +51,33 @@ describe("TrainersController", () => {
 
   describe("findOne", () => {
     it("should return trainer for ADMIN", async () => {
-      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u2", user: { password: "123" } });
-      const result: any = await controller.findOne("1", { user: { role: "ADMIN", userId: "u1" } });
+      mockTrainersService.findOne.mockResolvedValue({
+        id: "1",
+        userId: "u2",
+        user: { password: "123" },
+      });
+      const result = (await controller.findOne("1", {
+        user: { role: "ADMIN", userId: "u1" },
+      })) as unknown as { user: { password?: string } };
       expect(result.user.password).toBeUndefined();
     });
 
     it("should return trainer for Owner", async () => {
-      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u1", user: {} });
-      await controller.findOne("1", { user: { role: "TRAINER", userId: "u1" } });
+      mockTrainersService.findOne.mockResolvedValue({
+        id: "1",
+        userId: "u1",
+        user: {},
+      });
+      await controller.findOne("1", {
+        user: { role: "TRAINER", userId: "u1" },
+      });
     });
 
     it("should deny others", async () => {
       mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u2" });
-      await expect(controller.findOne("1", { user: { role: "TRAINER", userId: "u1" } }))
-        .rejects.toThrow(ForbiddenException);
+      await expect(
+        controller.findOne("1", { user: { role: "TRAINER", userId: "u1" } }),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 
@@ -72,35 +85,51 @@ describe("TrainersController", () => {
     it("should allow Owner", async () => {
       mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u1" });
       mockTrainersService.update.mockResolvedValue({});
-      await controller.updateProfile("1", { firstName: "A" }, { user: { role: "TRAINER", userId: "u1" } });
+      await controller.updateProfile(
+        "1",
+        { firstName: "A" },
+        { user: { role: "TRAINER", userId: "u1" } },
+      );
       expect(service.update).toHaveBeenCalled();
     });
 
     it("should deny others", async () => {
       mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u2" });
-      await expect(controller.updateProfile("1", {}, { user: { role: "TRAINER", userId: "u1" } }))
-        .rejects.toThrow(ForbiddenException);
+      await expect(
+        controller.updateProfile(
+          "1",
+          {},
+          { user: { role: "TRAINER", userId: "u1" } },
+        ),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 
   describe("uploadAvatar", () => {
     it("should throw if file missing", async () => {
-      await expect(controller.uploadAvatar("1", undefined, {})).rejects.toThrow(BadRequestException);
+      await expect(controller.uploadAvatar("1", undefined, {})).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it("should allow Owner", async () => {
       mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u1" });
       mockTrainersService.updateAvatar.mockResolvedValue({});
-      const file: any = { filename: "av.jpg" };
-      await controller.uploadAvatar("1", file, { user: { role: "TRAINER", userId: "u1" } });
+      const file = { filename: "av.jpg" } as Express.Multer.File;
+      await controller.uploadAvatar("1", file, {
+        user: { role: "TRAINER", userId: "u1" },
+      });
       expect(service.updateAvatar).toHaveBeenCalled();
     });
 
     it("should deny others", async () => {
       mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u2" });
-      const file: any = { filename: "av.jpg" };
-      await expect(controller.uploadAvatar("1", file, { user: { role: "TRAINER", userId: "u1" } }))
-        .rejects.toThrow(ForbiddenException);
+      const file = { filename: "av.jpg" } as Express.Multer.File;
+      await expect(
+        controller.uploadAvatar("1", file, {
+          user: { role: "TRAINER", userId: "u1" },
+        }),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 
@@ -108,7 +137,11 @@ describe("TrainersController", () => {
     it("should allow Owner", async () => {
       mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u1" });
       mockTrainersService.ensureCalendarToken.mockResolvedValue("tok");
-      const req = { user: { userId: "u1" }, protocol: "http", get: () => "localhost" };
+      const req = {
+        user: { userId: "u1" },
+        protocol: "http",
+        get: () => "localhost",
+      };
 
       const res = await controller.getCalendarUrl("1", req);
       expect(res.url).toContain("/calendars/tok/events.ics");
@@ -117,7 +150,9 @@ describe("TrainersController", () => {
     it("should deny others", async () => {
       mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u2" });
       const req = { user: { role: "TRAINER", userId: "u1" } };
-      await expect(controller.getCalendarUrl("1", req)).rejects.toThrow(ForbiddenException);
+      await expect(controller.getCalendarUrl("1", req)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 });

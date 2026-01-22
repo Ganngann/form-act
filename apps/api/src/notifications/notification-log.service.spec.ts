@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { NotificationLogService } from "./notification-log.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { Prisma } from "@prisma/client";
 
 describe("NotificationLogService", () => {
   let service: NotificationLogService;
@@ -34,7 +35,11 @@ describe("NotificationLogService", () => {
 
   describe("createLog", () => {
     it("should create a log entry", async () => {
-      const data: any = { type: "TEST", recipient: "a@a.com", status: "SENT" };
+      const data = {
+        type: "TEST",
+        recipient: "a@a.com",
+        status: "SENT",
+      } as unknown as Prisma.NotificationLogCreateInput;
       mockPrismaService.notificationLog.create.mockResolvedValue(data);
 
       const result = await service.createLog(data);

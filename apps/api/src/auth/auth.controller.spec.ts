@@ -6,7 +6,6 @@ import { Response } from "express";
 
 describe("AuthController", () => {
   let controller: AuthController;
-  let authService: AuthService;
 
   const mockAuthService = {
     validateUser: jest.fn(),
@@ -26,7 +25,6 @@ describe("AuthController", () => {
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
-    authService = module.get<AuthService>(AuthService);
   });
 
   it("should be defined", () => {
@@ -45,9 +43,16 @@ describe("AuthController", () => {
 
       const result = await controller.login(dto, res);
 
-      expect(mockAuthService.validateUser).toHaveBeenCalledWith(dto.email, dto.password);
+      expect(mockAuthService.validateUser).toHaveBeenCalledWith(
+        dto.email,
+        dto.password,
+      );
       expect(mockAuthService.login).toHaveBeenCalledWith(user);
-      expect(res.cookie).toHaveBeenCalledWith("Authentication", "jwt_token", expect.any(Object));
+      expect(res.cookie).toHaveBeenCalledWith(
+        "Authentication",
+        "jwt_token",
+        expect.any(Object),
+      );
       expect(result).toEqual(user);
     });
 
@@ -56,7 +61,9 @@ describe("AuthController", () => {
       mockAuthService.validateUser.mockResolvedValue(null);
       const res = { cookie: jest.fn() } as unknown as Response;
 
-      await expect(controller.login(dto, res)).rejects.toThrow(UnauthorizedException);
+      await expect(controller.login(dto, res)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 
@@ -65,7 +72,9 @@ describe("AuthController", () => {
       const res = { clearCookie: jest.fn() } as unknown as Response;
       const result = controller.logout(res);
 
-      expect(res.clearCookie).toHaveBeenCalledWith("Authentication", { path: "/" });
+      expect(res.clearCookie).toHaveBeenCalledWith("Authentication", {
+        path: "/",
+      });
       expect(result).toEqual({ success: true });
     });
   });
@@ -73,7 +82,11 @@ describe("AuthController", () => {
   describe("getProfile", () => {
     it("should return the user profile without password", async () => {
       const req = { user: { userId: "1" } };
-      const userProfile = { userId: "1", email: "test@example.com", password: "hash" };
+      const userProfile = {
+        userId: "1",
+        email: "test@example.com",
+        password: "hash",
+      };
 
       mockAuthService.getUserProfile.mockResolvedValue(userProfile);
 
@@ -88,7 +101,9 @@ describe("AuthController", () => {
       const req = { user: { userId: "1" } };
       mockAuthService.getUserProfile.mockResolvedValue(null);
 
-      await expect(controller.getProfile(req)).rejects.toThrow(UnauthorizedException);
+      await expect(controller.getProfile(req)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 });

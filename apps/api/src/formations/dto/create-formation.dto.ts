@@ -1,4 +1,12 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, Min, IsUrl, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  Min,
+  IsUrl,
+  IsUUID,
+} from "class-validator";
 
 export class CreateFormationDto {
   @IsString()

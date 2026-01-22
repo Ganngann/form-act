@@ -83,7 +83,10 @@ describe("CompanyService", () => {
       (global.fetch as jest.Mock).mockRejectedValue(new Error("Network error"));
 
       await expect(service.validateVat("BE123456789")).rejects.toThrow(
-        new HttpException("Error connecting to VIES", HttpStatus.INTERNAL_SERVER_ERROR),
+        new HttpException(
+          "Error connecting to VIES",
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        ),
       );
     });
   });

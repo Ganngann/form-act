@@ -43,7 +43,11 @@ describe("DispatcherController", () => {
       const result = await controller.findTrainers("zone1", "exp1");
 
       expect(result).toEqual(trainers);
-      expect(service.findAvailableTrainers).toHaveBeenCalledWith(expect.any(Date), "zone1", "exp1");
+      expect(service.findAvailableTrainers).toHaveBeenCalledWith(
+        expect.any(Date),
+        "zone1",
+        "exp1",
+      );
     });
   });
 });

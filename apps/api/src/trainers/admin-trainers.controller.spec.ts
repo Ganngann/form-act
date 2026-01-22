@@ -56,7 +56,11 @@ describe("AdminTrainersController", () => {
 
   describe("create", () => {
     it("should call create", async () => {
-      const dto: CreateTrainerDto = { firstName: "John", lastName: "Doe", email: "j@d.com" };
+      const dto: CreateTrainerDto = {
+        firstName: "John",
+        lastName: "Doe",
+        email: "j@d.com",
+      };
       await controller.create(dto);
       expect(service.create).toHaveBeenCalledWith(dto);
     });

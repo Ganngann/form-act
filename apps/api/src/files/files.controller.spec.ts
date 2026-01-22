@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FilesController } from "./files.controller";
 import { FilesService } from "./files.service";
-import { ForbiddenException } from "@nestjs/common";
 
 describe("FilesController", () => {
   let controller: FilesController;
@@ -39,9 +38,15 @@ describe("FilesController", () => {
 
       const result = await controller.getFile("proofs", "test.pdf", req, res);
 
-      expect(res.set).toHaveBeenCalledWith({ "Content-Type": "application/pdf" });
+      expect(res.set).toHaveBeenCalledWith({
+        "Content-Type": "application/pdf",
+      });
       expect(result).toBe(fileStream);
-      expect(service.getFile).toHaveBeenCalledWith("proofs", "test.pdf", req.user);
+      expect(service.getFile).toHaveBeenCalledWith(
+        "proofs",
+        "test.pdf",
+        req.user,
+      );
     });
 
     it("should return file and set correct content type for JPG", async () => {
@@ -71,7 +76,9 @@ describe("FilesController", () => {
 
       await controller.getFile("proofs", "test.xyz", req, res);
 
-      expect(res.set).toHaveBeenCalledWith({ "Content-Type": "application/octet-stream" });
+      expect(res.set).toHaveBeenCalledWith({
+        "Content-Type": "application/octet-stream",
+      });
     });
   });
 });

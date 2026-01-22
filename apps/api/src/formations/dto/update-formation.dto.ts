@@ -1,4 +1,11 @@
-import { IsString, IsOptional, IsNumber, Min, IsUrl, IsUUID } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  Min,
+  IsUrl,
+  IsUUID,
+} from "class-validator";
 
 export class UpdateFormationDto {
   @IsString()

@@ -5,7 +5,6 @@ import { NotFoundException } from "@nestjs/common";
 
 describe("CalendarService", () => {
   let service: CalendarService;
-  let prisma: PrismaService;
 
   const mockPrismaService = {
     formateur: {
@@ -25,7 +24,6 @@ describe("CalendarService", () => {
     }).compile();
 
     service = module.get<CalendarService>(CalendarService);
-    prisma = module.get<PrismaService>(PrismaService);
   });
 
   it("should be defined", () => {
@@ -73,13 +71,17 @@ describe("CalendarService", () => {
       // But let's check normalized content for robustness if we could,
       // here we will just relax the check to be safer against line folding.
       expect(ics).toContain("Logistique");
-      expect(ics).toContain("projector");
-      expect(ics).toContain("Logistique: simple string");
+      // "projector" might be split by line folding "proje \n ctor"
+      expect(ics.replace(/\s+/g, "")).toContain("projector");
+      // "Logistique: simple string" might be split too
+      expect(ics.replace(/\s+/g, "")).toContain("Logistique:simplestring");
     });
 
     it("should throw NotFoundException if token invalid", async () => {
       mockPrismaService.formateur.findUnique.mockResolvedValue(null);
-      await expect(service.generateIcs("invalid")).rejects.toThrow(NotFoundException);
+      await expect(service.generateIcs("invalid")).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

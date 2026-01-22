@@ -29,16 +29,20 @@ describe("EmailService", () => {
     it("should send an email", async () => {
       sendMailMock.mockResolvedValue({ messageId: "123" });
       await service.sendEmail("to@test.com", "Subject", "<p>Hi</p>");
-      expect(sendMailMock).toHaveBeenCalledWith(expect.objectContaining({
-        to: "to@test.com",
-        subject: "Subject",
-        html: "<p>Hi</p>",
-      }));
+      expect(sendMailMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          to: "to@test.com",
+          subject: "Subject",
+          html: "<p>Hi</p>",
+        }),
+      );
     });
 
     it("should throw error if sending fails", async () => {
       sendMailMock.mockRejectedValue(new Error("Fail"));
-      await expect(service.sendEmail("to@test.com", "Subject", "Body")).rejects.toThrow("Fail");
+      await expect(
+        service.sendEmail("to@test.com", "Subject", "Body"),
+      ).rejects.toThrow("Fail");
     });
   });
 
@@ -46,15 +50,24 @@ describe("EmailService", () => {
     it("should send email with attachments", async () => {
       sendMailMock.mockResolvedValue({ messageId: "123" });
       const attachments = [{ filename: "test.pdf", content: "data" }];
-      await service.sendEmailWithAttachments("to@test.com", "Subject", "Body", attachments);
-      expect(sendMailMock).toHaveBeenCalledWith(expect.objectContaining({
+      await service.sendEmailWithAttachments(
+        "to@test.com",
+        "Subject",
+        "Body",
         attachments,
-      }));
+      );
+      expect(sendMailMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          attachments,
+        }),
+      );
     });
 
     it("should throw error if sending fails", async () => {
       sendMailMock.mockRejectedValue(new Error("Fail"));
-      await expect(service.sendEmailWithAttachments("to@test.com", "S", "B", [])).rejects.toThrow("Fail");
+      await expect(
+        service.sendEmailWithAttachments("to@test.com", "S", "B", []),
+      ).rejects.toThrow("Fail");
     });
   });
 });
