@@ -94,7 +94,7 @@ export function Header({ userRole }: HeaderProps) {
                 <Link href="/login">Se connecter</Link>
               </Button>
               <Button asChild>
-                <Link href="/register">S'inscrire</Link>
+                <Link href="/register">S&apos;inscrire</Link>
               </Button>
             </div>
           )}
@@ -124,7 +124,7 @@ export function Header({ userRole }: HeaderProps) {
                     <Link href="/login">Se connecter</Link>
                   </Button>
                   <Button asChild className="w-full justify-start">
-                    <Link href="/register">S'inscrire</Link>
+                    <Link href="/register">S&apos;inscrire</Link>
                   </Button>
                 </>
               ) : (

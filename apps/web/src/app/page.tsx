@@ -33,7 +33,7 @@ export default async function Home() {
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mb-10 leading-relaxed">
             Form-Act est la plateforme de référence pour connecter les entreprises
-            avec des formateurs d'élite. Programmes sur-mesure, suivi qualité et simplicité administrative.
+            avec des formateurs d&apos;élite. Programmes sur-mesure, suivi qualité et simplicité administrative.
             </p>
 
             <div className="w-full max-w-md mb-12 transform hover:scale-105 transition-transform duration-300">

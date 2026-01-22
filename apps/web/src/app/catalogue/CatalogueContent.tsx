@@ -41,7 +41,7 @@ export default function CatalogueContent() {
     if (cat !== selectedCategory) {
         setSelectedCategory(cat)
     }
-  }, [searchParams])
+  }, [searchParams, selectedCategory])
 
   useEffect(() => {
     fetch(`${API_URL}/categories`)
