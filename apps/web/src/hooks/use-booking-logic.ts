@@ -132,6 +132,12 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
 
   const getAvailableSlots = () => {
       if (!selectedDate || formation.durationType === 'FULL_DAY') return [];
+
+      // Manual mode: slots are generic and always available
+      if (selectedTrainer === 'manual') {
+          return ['AM', 'PM'];
+      }
+
       const ymd = format(selectedDate, 'yyyy-MM-dd')
       const sessionsOnDate = availability.filter(s => s.date.startsWith(ymd))
 
