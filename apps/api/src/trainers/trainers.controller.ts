@@ -100,4 +100,21 @@ export class TrainersController {
     const avatarUrl = `/files/avatars/${file.filename}`;
     return this.trainersService.updateAvatar(id, avatarUrl);
   }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get(":id/calendar-url")
+  async getCalendarUrl(@Param("id") id: string, @Request() req) {
+    const trainer = await this.trainersService.findOne(id);
+    if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
+      throw new ForbiddenException("Access denied");
+    }
+
+    const token = await this.trainersService.ensureCalendarToken(id);
+
+    const protocol = req.protocol;
+    const host = req.get("host");
+    const baseUrl = process.env.PUBLIC_API_URL || `${protocol}://${host}`;
+
+    return { url: `${baseUrl}/calendars/${token}/events.ics` };
+  }
 }

@@ -2,40 +2,59 @@ import { cookies } from 'next/headers';
 import { API_URL } from '@/lib/config';
 import Link from 'next/link';
 import { ProfileForm } from '@/components/trainer/profile-form';
+import { CalendarExport } from '@/components/trainer/calendar-export';
 
-async function getTrainerProfile() {
+async function getData() {
   const cookieStore = cookies();
   const token = cookieStore.get('Authentication')?.value;
-  if (!token) return null;
+  if (!token) return { trainer: null, calendarUrl: null };
 
   const meRes = await fetch(`${API_URL}/auth/me`, {
     headers: { Cookie: `Authentication=${token}` },
     cache: 'no-store',
   });
+
   if (!meRes.ok) {
-     console.error('Profile Fetch Error Me:', meRes.status, await meRes.clone().text());
-     return null;
-  }
-  const user = await meRes.json();
-  const trainerId = user.formateur?.id;
-  if (!trainerId) {
-    console.error('No trainer ID in user profile:', user);
-    return null;
+     console.error('Profile Fetch Error Me:', meRes.status);
+     return { trainer: null, calendarUrl: null };
   }
 
-  const trainerRes = await fetch(`${API_URL}/trainers/${trainerId}`, {
-    headers: { Cookie: `Authentication=${token}` },
-    cache: 'no-store',
-  });
-  if (!trainerRes.ok) {
-     console.error('Profile Fetch Error Trainer:', trainerRes.status, await trainerRes.clone().text());
-     return null;
+  const user = await meRes.json();
+  const trainerId = user.formateur?.id;
+
+  if (!trainerId) {
+    console.error('No trainer ID in user profile:', user);
+    return { trainer: null, calendarUrl: null };
   }
-  return trainerRes.json();
+
+  const [trainerRes, calendarRes] = await Promise.all([
+      fetch(`${API_URL}/trainers/${trainerId}`, {
+        headers: { Cookie: `Authentication=${token}` },
+        cache: 'no-store',
+      }),
+      fetch(`${API_URL}/trainers/${trainerId}/calendar-url`, {
+        headers: { Cookie: `Authentication=${token}` },
+        cache: 'no-store',
+      })
+  ]);
+
+  if (!trainerRes.ok) {
+     return { trainer: null, calendarUrl: null };
+  }
+
+  const trainer = await trainerRes.json();
+
+  let calendarUrl = null;
+  if (calendarRes.ok) {
+      const data = await calendarRes.json();
+      calendarUrl = data.url;
+  }
+
+  return { trainer, calendarUrl };
 }
 
 export default async function TrainerProfilePage() {
-    const trainer = await getTrainerProfile();
+    const { trainer, calendarUrl } = await getData();
 
     if (!trainer) return (
         <div className="p-8 text-center text-red-600">
@@ -50,6 +69,7 @@ export default async function TrainerProfilePage() {
             </Link>
             <h1 className="text-3xl font-bold text-gray-900 mb-8">Mon Profil Formateur</h1>
             <ProfileForm trainer={trainer} />
+            <CalendarExport url={calendarUrl} />
         </div>
     );
 }

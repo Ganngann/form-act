@@ -4,6 +4,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateTrainerDto } from "./dto/create-trainer.dto";
 import { UpdateTrainerDto } from "./dto/update-trainer.dto";
 import { AuthService } from "../auth/auth.service";
+import * as crypto from "crypto";
 
 @Injectable()
 export class TrainersService {
@@ -243,5 +244,24 @@ export class TrainersService {
       where: { id },
       data: { avatarUrl },
     });
+  }
+
+  async ensureCalendarToken(id: string) {
+    const trainer = await this.prisma.formateur.findUnique({
+      where: { id },
+      select: { calendarToken: true },
+    });
+    if (!trainer) throw new BadRequestException("Trainer not found");
+
+    if (trainer.calendarToken) {
+      return trainer.calendarToken;
+    }
+
+    const token = crypto.randomUUID();
+    await this.prisma.formateur.update({
+      where: { id },
+      data: { calendarToken: token },
+    });
+    return token;
   }
 }
