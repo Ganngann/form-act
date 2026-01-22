@@ -32,7 +32,6 @@ export default async function AdminDashboard() {
           <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">Bienvenue dans l&apos;espace administrateur.</p>
         </div>
-        <LogoutButton />
       </div>
 
       {/* Widget Prochaines Sessions */}
@@ -50,13 +49,13 @@ export default async function AdminDashboard() {
           <div className="space-y-4">
             {sessions.slice(0, 5).map((session: any) => (
               <div key={session.id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
-                 <div>
-                    <h3 className="font-medium">{session.formation.title}</h3>
-                    <p className="text-sm text-gray-500">
-                       {new Date(session.date).toLocaleDateString('fr-FR')} • {session.client?.companyName}
-                    </p>
-                 </div>
-                 <StatusBadge status={session.status} />
+                <div>
+                  <h3 className="font-medium">{session.formation.title}</h3>
+                  <p className="text-sm text-gray-500">
+                    {new Date(session.date).toLocaleDateString('fr-FR')} • {session.client?.companyName}
+                  </p>
+                </div>
+                <StatusBadge status={session.status} />
               </div>
             ))}
           </div>

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Menu, X, User, LogOut } from "lucide-react";
 import { useState } from "react";
+import { LogoutButton } from "@/components/LogoutButton";
 
 interface HeaderProps {
   userRole?: string | null;
@@ -63,30 +64,17 @@ export function Header({ userRole }: HeaderProps) {
         <div className="hidden md:flex items-center gap-4">
           {userRole ? (
             <div className="flex items-center gap-4">
-               <span className="text-sm text-muted-foreground">
-                  {userRole === 'ADMIN' && 'Administrateur'}
-                  {userRole === 'TRAINER' && 'Formateur'}
-                  {userRole === 'CLIENT' && 'Client'}
-               </span>
-               <form action="/auth/logout" method="POST">
-                   {/* Note: In a real app we might use a server action or client handler,
-                       but for now assuming there is a way to logout or just link to logout if implemented.
-                       Currently checking existing auth. Use Button as Link for now if no logout endpoint.
-                    */}
-                    {/* The backlog doesn't explicitly mention a logout button in the header but it's good practice.
-                        I'll use a simple Link to login if not logged in.
-                        If logged in, I'll just show the role for now, or maybe a logout button if I can verify the logout flow.
-                    */}
-                   {/* Checking previous memory: POST /auth/logout clears cookie.
-                       Since this is a client component, I can't easily do a POST form submission without a server action or fetch.
-                       I'll add a logout button that calls an API route.
-                   */}
-               </form>
-               <Button variant="ghost" size="icon" asChild>
-                 <Link href={userRole === 'TRAINER' ? "/trainer/profile" : userRole === 'CLIENT' ? "/dashboard/profile" : "/profile"}>
-                   <User className="h-5 w-5" />
-                 </Link>
-               </Button>
+              <span className="text-sm text-muted-foreground">
+                {userRole === 'ADMIN' && 'Administrateur'}
+                {userRole === 'TRAINER' && 'Formateur'}
+                {userRole === 'CLIENT' && 'Client'}
+              </span>
+              <LogoutButton />
+              <Button variant="ghost" size="icon" asChild>
+                <Link href={userRole === 'TRAINER' ? "/trainer/profile" : userRole === 'CLIENT' ? "/dashboard/profile" : "/profile"}>
+                  <User className="h-5 w-5" />
+                </Link>
+              </Button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
@@ -128,10 +116,13 @@ export function Header({ userRole }: HeaderProps) {
                   </Button>
                 </>
               ) : (
-                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground px-2">
                     <User className="h-4 w-4" />
                     <span>Connecté en tant que {userRole}</span>
-                 </div>
+                  </div>
+                  <LogoutButton />
+                </div>
               )}
             </div>
           </nav>

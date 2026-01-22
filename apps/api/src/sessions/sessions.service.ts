@@ -9,7 +9,7 @@ export class SessionsService {
   constructor(
     private prisma: PrismaService,
     private emailService: EmailService,
-  ) {}
+  ) { }
 
   async findOne(id: string) {
     const session = await this.prisma.session.findUnique({
@@ -57,6 +57,32 @@ export class SessionsService {
       },
       orderBy: {
         date: "asc",
+      },
+    });
+  }
+
+  async findByUserId(userId: string, role: string) {
+    const where: Prisma.SessionWhereInput = {};
+
+    if (role === "CLIENT") {
+      where.client = { userId };
+    } else if (role === "TRAINER") {
+      where.trainer = { userId };
+    } else {
+      return [];
+    }
+
+    return this.prisma.session.findMany({
+      where,
+      include: {
+        client: {
+          include: { user: true },
+        },
+        trainer: true,
+        formation: true,
+      },
+      orderBy: {
+        date: "desc",
       },
     });
   }

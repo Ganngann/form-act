@@ -23,7 +23,13 @@ import { AuthGuard } from "@nestjs/passport";
 
 @Controller("sessions")
 export class SessionsController {
-  constructor(private readonly sessionsService: SessionsService) {}
+  constructor(private readonly sessionsService: SessionsService) { }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("me")
+  async findMySessions(@Request() req) {
+    return this.sessionsService.findByUserId(req.user.userId, req.user.role);
+  }
 
   @Get(":id")
   async findOne(@Param("id") id: string) {
