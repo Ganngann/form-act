@@ -132,6 +132,7 @@ describe("SessionsService", () => {
 
   describe("adminUpdate", () => {
     it("should update trainer connect", async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockSession = { id: "1" } as any;
       jest.spyOn(service, "findOne").mockResolvedValue(mockSession);
       jest.spyOn(prisma.session, "update").mockResolvedValue(mockSession);
@@ -148,6 +149,7 @@ describe("SessionsService", () => {
     });
 
     it("should update trainer disconnect", async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockSession = { id: "1" } as any;
       jest.spyOn(service, "findOne").mockResolvedValue(mockSession);
       jest.spyOn(prisma.session, "update").mockResolvedValue(mockSession);
@@ -164,6 +166,7 @@ describe("SessionsService", () => {
     });
 
     it("should send email on cancellation", async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockSession = { id: "1", status: "CONFIRMED" } as any;
       const updatedSession = {
         ...mockSession,
@@ -171,6 +174,7 @@ describe("SessionsService", () => {
         formation: { title: "Formation" },
         client: { user: { email: "client@test.com" } },
         trainer: { email: "trainer@test.com" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any;
 
       jest.spyOn(service, "findOne").mockResolvedValue(mockSession);
@@ -192,6 +196,7 @@ describe("SessionsService", () => {
     });
 
     it("should NOT send email if already cancelled", async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mockSession = { id: "1", status: "CANCELLED" } as any;
       jest.spyOn(service, "findOne").mockResolvedValue(mockSession);
       jest.spyOn(prisma.session, "update").mockResolvedValue(mockSession);
