@@ -86,6 +86,7 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 **Afin de** faire mon choix.
 
 *Critères d'Acceptation (AC) :*
+- [ ] **Menu de navigation Client** : Liens vers "Catalogue" et "Mes Formations".
 - [ ] Grille des formations filtrable par Catégorie.
 - [ ] Affichage des cartes formations (Titre, Durée).
 - [ ] Accès clair à la page Catalogue depuis la Navigation et l'Accueil.
@@ -114,10 +115,11 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 ### US-26 : UX Formateur - Dashboard & Next Mission
 **Référence Wireframe :** Section 2.3 (Dashboard Formateur)
 **En tant que** Formateur,
-**Je veux** voir immédiatement les détails complets de ma prochaine mission,
-**Afin de** me préparer sans chercher l'info.
+**Je veux** voir immédiatement les détails complets de ma prochaine mission et accéder à tout mon espace,
+**Afin de** gérer mon activité au quotidien.
 
 *Critères d'Acceptation (AC) :*
+- [ ] **Menu de navigation Formateur** : Liens vers "Tableau de bord / Missions", "Mon Profil" et "Mon Calendrier" (Export iCal).
 - [ ] Logique de filtre : Prochaine mission = Première mission chronologique où `date >= today`.
 - [ ] Bloc "Prochaine Mission" mis en avant (Card distincte).
 - [ ] Informations affichées : Client, Date/Heure, Adresse, Formation.
@@ -125,10 +127,11 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 
 ### US-27 : UX Admin - Dashboard (Vue d'ensemble)
 **En tant que** Administrateur,
-**Je veux** voir les prochaines formations prévues sur mon dashboard,
+**Je veux** voir les prochaines formations prévues sur mon dashboard et accéder à tous mes outils de gestion,
 **Afin de** piloter l'activité au jour le jour.
 
 *Critères d'Acceptation (AC) :*
+- [ ] **Menu de navigation Admin** (Sidebar/Tabs) : Liens vers "Dashboard", "Formateurs", "Clients", "Calendrier Master".
 - [ ] Endpoint Backend `GET /sessions` avec filtres de date et status.
 - [ ] Widget "Prochaines Sessions" sur le dashboard Admin (Sessions CONFIRMED à venir).
 - [ ] Lien "Voir tout" redirigeant vers la liste complète des sessions.
