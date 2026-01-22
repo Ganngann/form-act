@@ -87,7 +87,14 @@ export default async function SessionDetailPage({ params }: { params: { id: stri
                 <div className="bg-white p-6 rounded-lg border shadow-sm">
                     <h3 className="font-semibold mb-2">Logistique</h3>
                     <pre className="bg-gray-50 p-4 rounded text-xs overflow-auto">
-                        {session.logistics ? JSON.stringify(JSON.parse(session.logistics), null, 2) : "Non renseigné"}
+                        {(() => {
+                            if (!session.logistics) return "Non renseigné";
+                            try {
+                                return JSON.stringify(JSON.parse(session.logistics), null, 2);
+                            } catch (e) {
+                                return session.logistics; // Fallback to raw string
+                            }
+                        })()}
                     </pre>
                 </div>
             </div>

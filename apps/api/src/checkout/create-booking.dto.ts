@@ -4,6 +4,7 @@ import {
   IsString,
   IsUUID,
   IsISO8601,
+  IsOptional,
 } from "class-validator";
 
 export class CreateBookingDto {
@@ -30,7 +31,8 @@ export class CreateBookingDto {
   formationId: string;
 
   @IsUUID()
-  trainerId: string;
+  @IsOptional()
+  trainerId?: string;
 
   @IsISO8601()
   date: string;
