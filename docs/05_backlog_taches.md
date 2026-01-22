@@ -23,129 +23,25 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [x] **US-14** : Formateur - Gestion Profil
 - [x] **US-15** : Formateur - Upload Preuve
 
-## 🔴 Sprint 3 : Automations & Finalisation (Post-MVP)
+## 🔴 Sprint 3 : Automations & Finalisation (Post-MVP) - ✅ TERMINE
 
-### US-16 : Tech - Infrastructure Notifications
-- [x] **Infra** : NestJS Schedule/Bull, Entité NotificationLog, Service Email.
+- [x] **US-16** : Tech - Infrastructure Notifications
+- [x] **US-17** : Notifs - Cycle Logistique (Relances)
+- [x] **US-18** : Notifs - Cycle Préparation (J-30/J-7)
+- [x] **US-19** : Notifs - Cycle Clôture (J+1)
+- [x] **US-20** : Tech - Export Calendrier (iCal Out)
 
-### US-17 : Notifs - Cycle Logistique (Relances)
-- [x] **Relances** : Cron T+48h (Logistique), Cron J-15 & J-9 (Participants).
+## 🟣 Sprint 4 : Feedback & UX (Refonte & Ajustements) - ✅ TERMINE
 
-### US-18 : Notifs - Cycle Préparation (J-30/J-7)
-- [x] **Docs** : Programme (J-30), Rappel (J-21), Pack Doc & Lock (J-7).
+- [x] **US-21** : Page d'Accueil Publique
+- [x] **US-22** : Navigation Globale
+- [x] **US-23** : Catalogue Client & Recherche
+- [x] **US-24** : Admin - Liste des Clients
+- [x] **US-25** : UX Admin - Création Formateur (Zones)
+- [x] **US-26** : UX Formateur - Dashboard & Next Mission
+- [x] **US-27** : UX Admin - Dashboard (Vue d'ensemble)
+- [x] **US-28** : Tech - Seed Consolidation (Données de Test)
 
-### US-19 : Notifs - Cycle Clôture (J+1)
-**Référence Bible :** Section 4.1 (Matrice des Notifications)
-**En tant que** Système,
-**Je veux** relancer le formateur après la session,
-**Afin de** récupérer la preuve de prestation rapidement.
-
-*Critères d'Acceptation (AC) :*
-- [x] Cron J+1 (Formateur) : Rappel upload preuve si non reçue.
-
-### US-20 : Tech - Export Calendrier (iCal Out)
-**Référence Bible :** Section 2.3 (Flux Sortant)
-**En tant que** Formateur,
-**Je veux** un lien iCal exposant mes missions Form-Act,
-**Afin de** les voir dans mon agenda personnel.
-
-*Critères d'Acceptation (AC) :*
-- [x] Endpoint public sécurisé (Token) générant un flux .ics.
-- [x] Inclusion des détails (Lieu, Heure) dans les événements.
-
-## 🟣 Sprint 4 : Feedback & UX (Refonte & Ajustements)
-
-### US-21 : Page d'Accueil Publique
-**Référence Wireframe :** Section 2.1 (Accueil)
-**En tant que** Visiteur,
-**Je veux** une page d'accueil accueillante avec un moteur de recherche par thème,
-**Afin de** comprendre l'offre et commencer ma réservation.
-
-*Critères d'Acceptation (AC) :*
-- [x] Hero Section avec Titre & Sous-titre.
-- [x] Dropdown de recherche par "Catégorie" (Thème) redirigeant vers le Catalogue.
-- [x] CTAs "Espace Formateur", "Connexion" et "Voir le Catalogue".
-- [x] Section Réassurance.
-
-### US-22 : Navigation Globale
-**En tant que** Utilisateur,
-**Je veux** une barre de navigation accessible sur toutes les pages et adaptée à mon rôle,
-**Afin de** circuler facilement entre l'accueil, le catalogue et mon espace personnel.
-
-*Critères d'Acceptation (AC) :*
-- [x] Header présent sur le layout principal.
-- [x] **Public** : Liens Accueil, Catalogue, Connexion.
-- [x] **Admin** : Lien vers Dashboard Admin.
-- [x] **Formateur** : Lien vers Espace Formateur (Missions).
-- [x] **Client** : Lien vers Espace Client (Mes formations).
-
-### US-23 : Catalogue Client & Recherche
-**Référence Wireframe :** Section 2.1 (Catalogue)
-**En tant que** Client,
-**Je veux** voir la liste des formations disponibles,
-**Afin de** faire mon choix.
-
-*Critères d'Acceptation (AC) :*
-- [x] **Menu de navigation Client** : Liens vers "Catalogue" et "Mes Formations".
-- [x] Grille des formations filtrable par Catégorie.
-- [x] Affichage des cartes formations (Titre, Durée).
-- [x] Accès clair à la page Catalogue depuis la Navigation et l'Accueil.
-- [x] Lien vers la page détail formation.
-
-### US-24 : Admin - Liste des Clients
-**En tant que** Administrateur,
-**Je veux** voir la liste de tous les comptes clients inscrits,
-**Afin de** gérer le parc utilisateur.
-
-*Critères d'Acceptation (AC) :*
-- [x] Endpoint Backend `GET /clients` (Nouveau Module Clients).
-- [x] Mise à jour Schema Prisma : Ajout `createdAt` sur le modèle Client.
-- [x] Page liste des clients (Tableau).
-- [x] Colonnes : Nom Entreprise, TVA, Email, Date inscription.
-
-### US-25 : UX Admin - Création Formateur (Zones)
-**En tant que** Administrateur,
-**Je veux** sélectionner facilement les zones (Prédilection/Expertise) lors de la création d'un formateur,
-**Afin de** configurer correctement son profil géographique dès le départ.
-
-*Critères d'Acceptation (AC) :*
-- [x] Correctif `TrainerForm` : Chargement des zones activé en mode "Création" (et pas seulement Edition).
-- [x] Composant de sélection de zones (Multi-select) visible et ergonomique.
-
-### US-26 : UX Formateur - Dashboard & Next Mission
-**Référence Wireframe :** Section 2.3 (Dashboard Formateur)
-**En tant que** Formateur,
-**Je veux** voir immédiatement les détails complets de ma prochaine mission et accéder à tout mon espace,
-**Afin de** gérer mon activité au quotidien.
-
-*Critères d'Acceptation (AC) :*
-- [x] **Menu de navigation Formateur** : Liens vers "Tableau de bord / Missions", "Mon Profil" et "Mon Calendrier" (Export iCal).
-- [x] Logique de filtre : Prochaine mission = Première mission chronologique où `date >= today`.
-- [x] Bloc "Prochaine Mission" mis en avant (Card distincte).
-- [x] Informations affichées : Client, Date/Heure, Adresse, Formation.
-- [x] Actions : Bouton "Y aller" (Lien Google Maps généré) et "Détails".
-
-### US-27 : UX Admin - Dashboard (Vue d'ensemble)
-**En tant que** Administrateur,
-**Je veux** voir les prochaines formations prévues sur mon dashboard et accéder à tous mes outils de gestion,
-**Afin de** piloter l'activité au jour le jour.
-
-*Critères d'Acceptation (AC) :*
-- [x] **Menu de navigation Admin** (Sidebar/Tabs) : Liens vers "Dashboard", "Formateurs", "Clients", "Calendrier Master".
-- [x] Endpoint Backend `GET /sessions` avec filtres de date et status.
-- [x] Widget "Prochaines Sessions" sur le dashboard Admin (Sessions CONFIRMED à venir).
-- [x] Lien "Voir tout" redirigeant vers la liste complète des sessions.
-
-### US-28 : Tech - Seed Consolidation (Données de Test)
-**En tant que** Développeur/Testeur,
-**Je veux** des données de seed cohérentes et interconnectées,
-**Afin de** tester les parcours utilisateurs complets sans configuration manuelle.
-
-*Critères d'Acceptation (AC) :*
-- [x] Seed Client avec historique de commandes (Passées, Futures).
-- [x] Ajout des dates de création (`createdAt`) pour les clients seedés.
-- [x] Cohérence entre Zones Formateur et Zones Client dans les sessions seedées.
-- [x] Données réalistes pour les tests de dashboard (KPIs non vides).
 
 ## ⚪ Sprint 5 : Fonctionnalités Avancées (Reportées)
 
@@ -221,21 +117,6 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 
 ## 🔵 Backlog - Améliorations Données
 
-### US-Data-01 : Enrichissement Modèle Formation
+### US-Data-01 : Enrichissement Modèle Formation - ✅ TERMINE
+- [x] Mise à jour du modèle Prisma, migrations, DTOs et entités.
 
-**En tant que** Développeur,
-**Je veux** étendre le modèle de données `Formation` dans Prisma,
-**Afin de** pouvoir persister les données commerciales et pédagogiques complètes.
-
-*Champs à ajouter (Spécifications) :*
-1. **`price`** (Decimal) : Montant standard en Euros (HTVA).
-2. **`methodology`** (String/Text) : Description de l'approche pédagogique (ex: "Jeux de rôles, mises en situation...").
-3. **`inclusions`** (String/Text) : Liste du matériel inclus (ex: "Syllabus, Matériel pédagogique, Analyse demande").
-4. **`agreementCode`** (String) : Numéro d'agrément Titres-Services (ex: "E XXXX" ou "XXX").
-5. **`imageUrl`** (String) : URL de l'image d'illustration de la formation.
-
-*Critères d'Acceptation (AC) :*
-- [x] Schema Prisma mis à jour avec les nouveaux champs (Optionnels/Nullable pour l'instant).
-- [x] Migration SQL générée et appliquée.
-- [x] DTOs NestJS (`CreateFormationDto`, `UpdateFormationDto`) mis à jour pour accepter ces champs.
-- [x] Entité de retour mise à jour.
