@@ -8,50 +8,51 @@ export class CheckoutService {
   constructor(
     private prisma: PrismaService,
     private authService: AuthService,
-  ) {}
+  ) { }
 
   async processCheckout(data: CreateBookingDto) {
     // Check if user exists
-    const existingUser = await this.prisma.user.findUnique({
+    let user = await this.prisma.user.findUnique({
       where: { email: data.email },
+      include: { client: true }
     });
 
-    if (existingUser) {
-      throw new BadRequestException("User with this email already exists.");
+    if (!user && !data.password) {
+      throw new BadRequestException("Password is required for new users.");
     }
-
-    // Check if client (VAT) exists
-    const existingClient = await this.prisma.client.findUnique({
-      where: { vatNumber: data.vatNumber },
-    });
-    if (existingClient) {
-      throw new BadRequestException(
-        "Company with this VAT already registered.",
-      );
-    }
-
-    const hashedPassword = await this.authService.hashPassword(data.password);
 
     // Atomic transaction
     return this.prisma.$transaction(async (tx) => {
-      // 1. Create User
-      const user = await tx.user.create({
-        data: {
-          email: data.email,
-          name: data.companyName,
-          password: hashedPassword,
-        },
+      // 1. Get or Create User
+      if (!user) {
+        const hashedPassword = await this.authService.hashPassword(data.password!);
+        user = await tx.user.create({
+          data: {
+            email: data.email,
+            name: data.companyName,
+            password: hashedPassword,
+          },
+          include: { client: true }
+        });
+      }
+
+      // 2. Get or Create Client
+      let client = user.client || await tx.client.findUnique({
+        where: { vatNumber: data.vatNumber }
       });
 
-      // 2. Create Client
-      const client = await tx.client.create({
-        data: {
-          vatNumber: data.vatNumber,
-          companyName: data.companyName,
-          address: data.address,
-          userId: user.id,
-        },
-      });
+      if (!client) {
+        client = await tx.client.create({
+          data: {
+            vatNumber: data.vatNumber,
+            companyName: data.companyName,
+            address: data.address,
+            userId: user.id,
+          },
+        });
+      } else if (client.userId !== user.id) {
+        throw new BadRequestException("VAT number already associated with another account.");
+      }
 
       // 3. Create Session
       const session = await tx.session.create({

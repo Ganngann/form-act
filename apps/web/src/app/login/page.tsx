@@ -31,9 +31,18 @@ export default function LoginPage() {
 
       const user = await res.json();
 
-      if (user.role === 'ADMIN') router.push('/admin');
-      else if (user.role === 'TRAINER') router.push('/trainer');
-      else router.push('/dashboard');
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirect = searchParams.get('redirect');
+
+      if (redirect) {
+        router.push(redirect);
+      } else if (user.role === 'ADMIN') {
+        router.push('/admin');
+      } else if (user.role === 'TRAINER') {
+        router.push('/trainer');
+      } else {
+        router.push('/dashboard');
+      }
 
       router.refresh();
 
@@ -46,32 +55,32 @@ export default function LoginPage() {
     <div className="flex h-screen items-center justify-center bg-gray-100">
       <Card className="w-96">
         <CardHeader>
-            <CardTitle>Connexion</CardTitle>
+          <CardTitle>Connexion</CardTitle>
         </CardHeader>
         <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <Input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <Input
-                    type="password"
-                    placeholder="Mot de passe"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                {error && <p className="text-red-500 text-sm">{error}</p>}
-                <div className="text-right">
-                    <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
-                        Mot de passe oublié ?
-                    </Link>
-                </div>
-                <Button type="submit" className="w-full">Se connecter</Button>
-            </form>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <Input
+              type="password"
+              placeholder="Mot de passe"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            <div className="text-right">
+              <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
+                Mot de passe oublié ?
+              </Link>
+            </div>
+            <Button type="submit" className="w-full">Se connecter</Button>
+          </form>
         </CardContent>
       </Card>
     </div>

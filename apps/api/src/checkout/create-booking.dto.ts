@@ -23,9 +23,9 @@ export class CreateBookingDto {
   @IsEmail()
   email: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  password: string;
+  password?: string;
 
   @IsUUID()
   formationId: string;

@@ -1,6 +1,5 @@
 "use client"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -8,13 +7,15 @@ import { API_URL } from "@/lib/config"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 const formSchema = z.object({
-  vatNumber: z.string().min(4, "Numéro de TVA invalide"),
-  companyName: z.string().min(2, "Nom de l'entreprise requis"),
-  address: z.string().min(5, "Adresse requise"),
-  email: z.string().email("Email invalide"),
-  password: z.string().min(8, "Mot de passe de 8 caractères minimum"),
+    vatNumber: z.string().min(4, "Numéro de TVA invalide"),
+    companyName: z.string().min(2, "Nom de l'entreprise requis"),
+    address: z.string().min(5, "Adresse requise"),
+    email: z.string().email("Email invalide"),
+    password: z.string().optional().or(z.string().min(8, "Mot de passe de 8 caractères minimum")),
 })
 
 type FormData = z.infer<typeof formSchema>
@@ -24,9 +25,12 @@ interface CheckoutFormProps {
     trainerId: string
     date: string
     slot: string
+    isLoggedIn?: boolean
 }
 
-export function CheckoutForm({ formationId, trainerId, date, slot }: CheckoutFormProps) {
+export function CheckoutForm({ formationId, trainerId, date, slot, isLoggedIn }: CheckoutFormProps) {
+    const pathname = usePathname()
+
     const [loadingVat, setLoadingVat] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState("")
@@ -34,6 +38,22 @@ export function CheckoutForm({ formationId, trainerId, date, slot }: CheckoutFor
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(formSchema)
     })
+
+    useEffect(() => {
+        if (isLoggedIn) {
+            fetch(`${API_URL}/auth/me`, { credentials: "include" })
+                .then(res => res.json())
+                .then(user => {
+                    setValue("email", user.email)
+                    if (user.client) {
+                        setValue("vatNumber", user.client.vatNumber)
+                        setValue("companyName", user.client.companyName)
+                        setValue("address", user.client.address)
+                    }
+                })
+                .catch(err => console.error("Error fetching user profile:", err))
+        }
+    }, [isLoggedIn, setValue])
 
     const checkVat = async () => {
         const vat = getValues("vatNumber")
@@ -126,18 +146,31 @@ export function CheckoutForm({ formationId, trainerId, date, slot }: CheckoutFor
 
             <Card>
                 <CardContent className="pt-6 space-y-4">
-                     <div className="space-y-2">
+                    {!isLoggedIn && (
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm font-medium">Informations de compte</span>
+                            <Link
+                                href={`/login?redirect=${encodeURIComponent(pathname + window.location.search)}`}
+                                className="text-sm text-blue-600 hover:underline font-medium"
+                            >
+                                Déjà client ? Se connecter
+                            </Link>
+                        </div>
+                    )}
+                    <div className="space-y-2">
                         <label htmlFor="email" className={labelClass}>Email professionnel</label>
                         <Input id="email" type="email" {...register("email")} />
                         {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
                     </div>
 
-                     <div className="space-y-2">
-                        <label htmlFor="password" className={labelClass}>Mot de passe</label>
-                        <Input id="password" type="password" {...register("password")} />
-                        <p className="text-xs text-muted-foreground">Pour accéder à votre espace client ultérieurement.</p>
-                        {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
-                    </div>
+                    {!isLoggedIn && (
+                        <div className="space-y-2">
+                            <label htmlFor="password" className={labelClass}>Mot de passe</label>
+                            <Input id="password" type="password" {...register("password")} />
+                            <p className="text-xs text-muted-foreground">Pour accéder à votre espace client ultérieurement.</p>
+                            {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 

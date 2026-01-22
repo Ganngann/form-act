@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 type Category = {
   id: string
@@ -39,7 +40,7 @@ export default function CatalogueContent() {
   useEffect(() => {
     const cat = searchParams.get("categoryId") || ""
     if (cat !== selectedCategory) {
-        setSelectedCategory(cat)
+      setSelectedCategory(cat)
     }
   }, [searchParams, selectedCategory])
 
@@ -110,7 +111,9 @@ export default function CatalogueContent() {
                     <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
                       {formation.duration}
                     </span>
-                    <Button variant="outline">Voir détails</Button>
+                    <Link href={`/formation/${formation.id}`}>
+                      <Button variant="outline">Voir détails</Button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
