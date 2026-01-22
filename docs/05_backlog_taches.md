@@ -191,6 +191,34 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [ ] Flux "Mot de passe oublié" (Email avec lien/token).
 - [ ] Page de définition du nouveau mot de passe.
 
+## ⚫ Sprint 6 : Infrastructure & Mise en Prod
+
+### US-33 : Mise en Production (Production Ready)
+**Contexte :** Le projet doit être déployé sur un hébergement o2switch (Node.js) et supporter une charge d'environ 120 sessions/an. L'objectif est de sécuriser l'application et de garantir sa stabilité en production.
+
+**En tant que** DevOps / Développeur,
+**Je veux** configurer l'application pour un environnement de production sécurisé et robuste,
+**Afin de** prévenir les failles de sécurité et assurer le bon fonctionnement sur l'infrastructure cible.
+
+*Critères d'Acceptation (AC) :*
+
+1.  **Sécurité Applicative** :
+    - [ ] Mise en place de **Helmet** (En-têtes HTTP sécurisés).
+    - [ ] Configuration **CORS** dynamique (via variables d'environnement) pour autoriser uniquement le domaine frontend de production.
+    - [ ] Activation du **Rate Limiting** (Throttler) pour protéger l'API contre les abus (ex: Brute Force).
+
+2.  **Configuration & Environnement** :
+    - [ ] Validation stricte des variables d'environnement au démarrage (Joi/Zod) : Vérifier présence DB_URL, JWT_SECRET, SMTP_CONFIG, etc.
+    - [ ] Désactivation des logs de debug (NestJS Logger) en mode production.
+
+3.  **Procédure de Déploiement (o2switch)** :
+    - [ ] Documentation de la procédure de mise en ligne sur cPanel/Node.js.
+    - [ ] Stratégie de gestion des uploads : Configuration du dossier `uploads` pour être persistant (hors du dossier de build écrasé à chaque déploiement).
+    - [ ] Script ou documentation pour l'exécution des migrations Prisma en production (`prisma migrate deploy`).
+
+4.  **Build & Optimisation** :
+    - [ ] Vérification des scripts de build pour exclure les `devDependencies` en production (`pnpm prune --prod` ou équivalent).
+
 ## 🔵 Backlog - Améliorations Données
 
 ### US-Data-01 : Enrichissement Modèle Formation
