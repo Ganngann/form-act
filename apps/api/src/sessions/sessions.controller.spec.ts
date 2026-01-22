@@ -12,6 +12,7 @@ describe("SessionsController", () => {
     findAll: jest.fn(),
     update: jest.fn(),
     updateProof: jest.fn(),
+    adminUpdate: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -118,11 +119,30 @@ describe("SessionsController", () => {
       mockSessionsService.findOne.mockResolvedValue({
         date: nearFuture.toISOString(),
         client: { userId: "u1" },
+        isLogisticsOpen: false,
       });
 
       await expect(
         controller.update("1", {}, { user: { role: "CLIENT", userId: "u1" } }),
       ).rejects.toThrow(ForbiddenException);
+    });
+
+    it("should allow CLIENT if session < 7 days away BUT unlocked", async () => {
+      const nearFuture = new Date();
+      nearFuture.setDate(nearFuture.getDate() + 2); // 2 days away
+      mockSessionsService.findOne.mockResolvedValue({
+        date: nearFuture.toISOString(),
+        client: { userId: "u1" },
+        isLogisticsOpen: true,
+      });
+      mockSessionsService.update.mockResolvedValue({});
+
+      await controller.update(
+        "1",
+        {},
+        { user: { role: "CLIENT", userId: "u1" } },
+      );
+      expect(service.update).toHaveBeenCalled();
     });
 
     it("should allow CLIENT if session > 7 days away", async () => {
@@ -174,6 +194,20 @@ describe("SessionsController", () => {
       await expect(
         controller.update("1", {}, { user: { role: "UNKNOWN" } }),
       ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("adminUpdate", () => {
+    it("should deny non-ADMIN", async () => {
+      await expect(
+        controller.adminUpdate("1", {}, { user: { role: "CLIENT" } }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it("should allow ADMIN", async () => {
+      mockSessionsService.adminUpdate.mockResolvedValue({});
+      await controller.adminUpdate("1", {}, { user: { role: "ADMIN" } });
+      expect(service.adminUpdate).toHaveBeenCalled();
     });
   });
 });

@@ -15,6 +15,7 @@ import {
 } from "@nestjs/common";
 import { SessionsService } from "./sessions.service";
 import { UpdateSessionDto } from "./dto/update-session.dto";
+import { AdminUpdateSessionDto } from "./dto/admin-update-session.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
@@ -102,7 +103,8 @@ export class SessionsController {
       const diffTime = sessionDate.getTime() - now.getTime();
       const diffDays = diffTime / (1000 * 3600 * 24);
 
-      if (diffDays < 7) {
+      // Check if unlocked by admin
+      if (diffDays < 7 && !session.isLogisticsOpen) {
         throw new ForbiddenException(
           "Modifications are locked 7 days before the session",
         );
@@ -116,5 +118,18 @@ export class SessionsController {
     }
 
     return this.sessionsService.update(id, updateSessionDto);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Patch(":id/admin-update")
+  async adminUpdate(
+    @Param("id") id: string,
+    @Body() body: AdminUpdateSessionDto,
+    @Request() req,
+  ) {
+    if (req.user.role !== "ADMIN") {
+      throw new ForbiddenException("Access denied");
+    }
+    return this.sessionsService.adminUpdate(id, body);
   }
 }

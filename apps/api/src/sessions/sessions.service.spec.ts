@@ -1,12 +1,14 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SessionsService } from "./sessions.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { EmailService } from "../email/email.service";
 import { NotFoundException } from "@nestjs/common";
 import { Session } from "@prisma/client";
 
 describe("SessionsService", () => {
   let service: SessionsService;
   let prisma: PrismaService;
+  let emailService: EmailService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -22,11 +24,19 @@ describe("SessionsService", () => {
             },
           },
         },
+        {
+            provide: EmailService,
+            useValue: {
+                sendEmail: jest.fn(),
+                sendEmailWithAttachments: jest.fn(),
+            }
+        }
       ],
     }).compile();
 
     service = module.get<SessionsService>(SessionsService);
     prisma = module.get<PrismaService>(PrismaService);
+    emailService = module.get<EmailService>(EmailService);
   });
 
   it("should be defined", () => {
@@ -117,6 +127,78 @@ describe("SessionsService", () => {
         where: { id: "1" },
         data: { logistics: "{}" },
       });
+    });
+  });
+
+  describe("adminUpdate", () => {
+    it("should update trainer connect", async () => {
+      const mockSession = { id: "1" } as any;
+      jest.spyOn(service, "findOne").mockResolvedValue(mockSession);
+      jest.spyOn(prisma.session, "update").mockResolvedValue(mockSession);
+
+      await service.adminUpdate("1", { trainerId: "t1" });
+
+      expect(prisma.session.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            trainer: { connect: { id: "t1" } },
+          }),
+        }),
+      );
+    });
+
+    it("should update trainer disconnect", async () => {
+      const mockSession = { id: "1" } as any;
+      jest.spyOn(service, "findOne").mockResolvedValue(mockSession);
+      jest.spyOn(prisma.session, "update").mockResolvedValue(mockSession);
+
+      await service.adminUpdate("1", { trainerId: "" }); // Empty string -> disconnect
+
+      expect(prisma.session.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            trainer: { disconnect: true },
+          }),
+        }),
+      );
+    });
+
+    it("should send email on cancellation", async () => {
+      const mockSession = { id: "1", status: "CONFIRMED" } as any;
+      const updatedSession = {
+        ...mockSession,
+        status: "CANCELLED",
+        formation: { title: "Formation" },
+        client: { user: { email: "client@test.com" } },
+        trainer: { email: "trainer@test.com" },
+      } as any;
+
+      jest.spyOn(service, "findOne").mockResolvedValue(mockSession);
+      jest.spyOn(prisma.session, "update").mockResolvedValue(updatedSession);
+
+      await service.adminUpdate("1", { status: "CANCELLED" });
+
+      expect(emailService.sendEmail).toHaveBeenCalledTimes(2);
+      expect(emailService.sendEmail).toHaveBeenCalledWith(
+        "client@test.com",
+        expect.stringContaining("Annulation"),
+        expect.any(String),
+      );
+      expect(emailService.sendEmail).toHaveBeenCalledWith(
+        "trainer@test.com",
+        expect.stringContaining("Annulation"),
+        expect.any(String),
+      );
+    });
+
+    it("should NOT send email if already cancelled", async () => {
+      const mockSession = { id: "1", status: "CANCELLED" } as any;
+      jest.spyOn(service, "findOne").mockResolvedValue(mockSession);
+      jest.spyOn(prisma.session, "update").mockResolvedValue(mockSession);
+
+      await service.adminUpdate("1", { status: "CANCELLED" });
+
+      expect(emailService.sendEmail).not.toHaveBeenCalled();
     });
   });
 });

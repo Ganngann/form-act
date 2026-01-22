@@ -71,6 +71,15 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
 
   useEffect(() => {
     if (!selectedTrainer) return
+
+    // Manual handling: No availability check
+    if (selectedTrainer === 'manual') {
+        setAvailability([]);
+        setSelectedDate(undefined);
+        setSelectedSlot("");
+        return;
+    }
+
     setLoadingAvailability(true)
     setAvailability([])
     setSelectedDate(undefined)
@@ -93,6 +102,9 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
     const today = new Date();
     today.setHours(0,0,0,0);
     if (date < today) return true;
+
+    // If manual request, all future dates are available
+    if (selectedTrainer === 'manual') return false;
 
     const ymd = format(date, 'yyyy-MM-dd')
     const sessionsOnDate = availability.filter(s => s.date.startsWith(ymd))
