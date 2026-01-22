@@ -23,7 +23,7 @@ export class SessionsService {
     return session;
   }
 
-  async findAll(start?: Date, end?: Date) {
+  async findAll(start?: Date, end?: Date, status?: string) {
     const where: Prisma.SessionWhereInput = {};
 
     if (start && end) {
@@ -35,6 +35,10 @@ export class SessionsService {
       where.date = { gte: start };
     } else if (end) {
       where.date = { lte: end };
+    }
+
+    if (status) {
+      where.status = status;
     }
 
     return this.prisma.session.findMany({

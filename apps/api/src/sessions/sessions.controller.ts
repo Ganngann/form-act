@@ -30,10 +30,14 @@ export class SessionsController {
   }
 
   @Get()
-  async findAll(@Query("start") start?: string, @Query("end") end?: string) {
+  async findAll(
+    @Query("start") start?: string,
+    @Query("end") end?: string,
+    @Query("status") status?: string,
+  ) {
     const startDate = start ? new Date(start) : undefined;
     const endDate = end ? new Date(end) : undefined;
-    return this.sessionsService.findAll(startDate, endDate);
+    return this.sessionsService.findAll(startDate, endDate, status);
   }
 
   @UseGuards(AuthGuard("jwt"))

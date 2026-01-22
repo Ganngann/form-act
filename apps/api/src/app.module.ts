@@ -5,6 +5,7 @@ import { DispatcherModule } from "./dispatcher/dispatcher.module";
 import { ZonesModule } from "./zones/zones.module";
 import { FormationsModule } from "./formations/formations.module";
 import { CategoriesModule } from "./categories/categories.module";
+import { ClientsModule } from "./clients/clients.module";
 import { TrainersModule } from "./trainers/trainers.module";
 import { CompanyModule } from "./company/company.module";
 import { CheckoutModule } from "./checkout/checkout.module";
@@ -22,6 +23,7 @@ import { CalendarModule } from "./calendar/calendar.module";
     ZonesModule,
     FormationsModule,
     CategoriesModule,
+    ClientsModule,
     TrainersModule,
     CompanyModule,
     CheckoutModule,
