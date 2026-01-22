@@ -83,34 +83,42 @@ export class SessionsService {
 
     // Prepare update data
     const updateData: Prisma.SessionUpdateInput = {};
-    if (data.trainerId !== undefined) updateData.trainer = data.trainerId ? { connect: { id: data.trainerId } } : { disconnect: true };
-    if (data.isLogisticsOpen !== undefined) updateData.isLogisticsOpen = data.isLogisticsOpen;
+    if (data.trainerId !== undefined)
+      updateData.trainer = data.trainerId
+        ? { connect: { id: data.trainerId } }
+        : { disconnect: true };
+    if (data.isLogisticsOpen !== undefined)
+      updateData.isLogisticsOpen = data.isLogisticsOpen;
     if (data.status !== undefined) updateData.status = data.status;
 
     const updatedSession = await this.prisma.session.update({
       where: { id },
       data: updateData,
-      include: { client: { include: { user: true } }, trainer: true, formation: true },
+      include: {
+        client: { include: { user: true } },
+        trainer: true,
+        formation: true,
+      },
     });
 
     // Handle Cancellation Notification
-    if (data.status === 'CANCELLED' && session.status !== 'CANCELLED') {
-        // Notify Client
-        if (updatedSession.client?.user?.email) {
-            await this.emailService.sendEmail(
-                updatedSession.client.user.email,
-                `Annulation de session : ${updatedSession.formation.title}`,
-                `<p>Votre session prévue le ${updatedSession.date} a été annulée.</p>`
-            );
-        }
-        // Notify Trainer
-        if (updatedSession.trainer?.email) {
-            await this.emailService.sendEmail(
-                updatedSession.trainer.email,
-                 `Annulation de mission : ${updatedSession.formation.title}`,
-                `<p>La session prévue le ${updatedSession.date} a été annulée.</p>`
-            );
-        }
+    if (data.status === "CANCELLED" && session.status !== "CANCELLED") {
+      // Notify Client
+      if (updatedSession.client?.user?.email) {
+        await this.emailService.sendEmail(
+          updatedSession.client.user.email,
+          `Annulation de session : ${updatedSession.formation.title}`,
+          `<p>Votre session prévue le ${updatedSession.date} a été annulée.</p>`,
+        );
+      }
+      // Notify Trainer
+      if (updatedSession.trainer?.email) {
+        await this.emailService.sendEmail(
+          updatedSession.trainer.email,
+          `Annulation de mission : ${updatedSession.formation.title}`,
+          `<p>La session prévue le ${updatedSession.date} a été annulée.</p>`,
+        );
+      }
     }
 
     return updatedSession;

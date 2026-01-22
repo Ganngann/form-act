@@ -25,12 +25,12 @@ describe("SessionsService", () => {
           },
         },
         {
-            provide: EmailService,
-            useValue: {
-                sendEmail: jest.fn(),
-                sendEmailWithAttachments: jest.fn(),
-            }
-        }
+          provide: EmailService,
+          useValue: {
+            sendEmail: jest.fn(),
+            sendEmailWithAttachments: jest.fn(),
+          },
+        },
       ],
     }).compile();
 

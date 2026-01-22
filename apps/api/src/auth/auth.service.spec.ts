@@ -10,7 +10,6 @@ describe("AuthService", () => {
   let service: AuthService;
   let prisma: PrismaService;
   let jwtService: JwtService;
-  let emailService: EmailService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -44,7 +43,6 @@ describe("AuthService", () => {
     service = module.get<AuthService>(AuthService);
     prisma = module.get<PrismaService>(PrismaService);
     jwtService = module.get<JwtService>(JwtService);
-    emailService = module.get<EmailService>(EmailService);
   });
 
   it("should be defined", () => {

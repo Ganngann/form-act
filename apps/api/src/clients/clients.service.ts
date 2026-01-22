@@ -30,7 +30,11 @@ export class ClientsService {
     return client;
   }
 
-  async updateProfile(userId: string, data: UpdateClientProfileDto, modifierName: string) {
+  async updateProfile(
+    userId: string,
+    data: UpdateClientProfileDto,
+    modifierName: string,
+  ) {
     const client = await this.findByUserId(userId);
     const changes = [];
 
