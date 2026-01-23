@@ -92,7 +92,7 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [x] Flux "Mot de passe oublié" (Email avec lien/token).
 - [x] Page de définition du nouveau mot de passe.
 
-## ⚫ Sprint 6 : Finance & Reporting (L'Argent)
+## 🟠 Sprint 6 : Finance & Reporting (L'Argent) - 🏗️ EN COURS
 
 ### US-33 : Admin - Préparation Facturation
 **Référence Bible :** Section 5.1 & 5.2
@@ -127,6 +127,34 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [ ] Sélecteur de Mois.
 - [ ] KPIs : Nombre missions, Total Km, Total Honoraires (Estimé).
 - [ ] Liste des missions du mois avec détail montant.
+
+## 🔴 Corrections Post-Audit (Janvier 2026) - 🚨 PRIORITAIRE
+
+### Bug-01 : Catalogue Vide & Recherche
+**Symptôme :** Certaines catégories (ex: Développement) affichent "Aucune formation" malgré la présence de données en base. La recherche par mot-clé est absente.
+- [ ] Debugger le filtrage par `categoryId` dans `CatalogueContent.tsx`.
+- [ ] Implémenter la barre de recherche textuelle (Bible 3.1).
+- [ ] Nettoyer les doublons dans le seed (Management 101).
+
+### Bug-02 : Liens Morts & Navigation (404)
+**Symptôme :** Plusieurs liens critiques mènent vers des pages 404.
+- [ ] `/register` : Créer la page d'inscription simplifiée (Bible 3.1) ou rediriger vers le checkout.
+- [ ] `/profile` (Admin) : Rediriger l'admin vers `/admin/profile` ou créer la page.
+- [ ] Bouton "Devenir Client" : Pointe vers `/register` (mort).
+
+### Bug-03 : Checkout & Paiement
+**Symptôme :** Le tunnel de réservation s'arrête après la sélection de date, sans étape de paiement.
+- [ ] Ajouter l'étape de paiement (Stripe/Simulation) (Bible 3.1).
+- [ ] Ajouter le récapitulatif avec calcul du prix HT/TTC.
+
+### Bug-04 : Espace Formateur - Profil & Missions
+**Symptôme :** Gaps avec la Bible Section 3.3.
+- [ ] Ajouter les "Spécialités" (tags) et le "Tarif Journalier" dans le profil formateur.
+- [ ] Ajouter le bouton d'upload pour le "Support de formation finalisé".
+- [ ] Stabiliser l'appel `/auth/me` qui fetch fail parfois au premier chargement.
+
+### Audit-UX-01 : Module Logistique Client
+- [ ] S'assurer que le client peut éditer le lieu/participants/matériel tant que ce n'est pas verrouillé (J-7).
 
 ## 🔵 Sprint 7 : Infrastructure & Mise en Prod
 
@@ -181,3 +209,4 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 
 ### US-Data-01 : Enrichissement Modèle Formation - ✅ TERMINE
 - [x] Mise à jour du modèle Prisma, migrations, DTOs et entités.
+
