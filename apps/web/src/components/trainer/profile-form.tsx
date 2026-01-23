@@ -84,6 +84,23 @@ export function ProfileForm({ trainer }: { trainer: any }) {
                 </div>
             </div>
 
+            {/* Read-Only Specialties Section */}
+            {trainer.expertises && trainer.expertises.length > 0 && (
+                <div className="border-b pb-6">
+                    <h3 className="text-sm font-medium text-gray-700 mb-3">Mes Spécialités (Formations Habilitées)</h3>
+                    <div className="flex flex-wrap gap-2">
+                        {trainer.expertises.flatMap((e: any) => e.formations).map((formation: any) => (
+                            <span
+                                key={formation.id}
+                                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                            >
+                                {formation.title}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Biographie</label>

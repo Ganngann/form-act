@@ -9,13 +9,26 @@ async function getData() {
   const token = cookieStore.get('Authentication')?.value;
   if (!token) return { trainer: null, calendarUrl: null };
 
-  const meRes = await fetch(`${API_URL}/auth/me`, {
-    headers: { Cookie: `Authentication=${token}` },
-    cache: 'no-store',
-  });
+  let meRes;
+  let attempts = 0;
+  const maxAttempts = 3;
 
-  if (!meRes.ok) {
-     console.error('Profile Fetch Error Me:', meRes.status);
+  while (attempts < maxAttempts) {
+    try {
+      meRes = await fetch(`${API_URL}/auth/me`, {
+        headers: { Cookie: `Authentication=${token}` },
+        cache: 'no-store',
+      });
+      if (meRes.ok) break;
+    } catch (e) {
+      console.warn(`Attempt ${attempts + 1} failed for /auth/me`, e);
+    }
+    attempts++;
+    if (attempts < maxAttempts) await new Promise(r => setTimeout(r, 500)); // Wait 500ms
+  }
+
+  if (!meRes || !meRes.ok) {
+     console.error('Profile Fetch Error Me:', meRes?.status);
      return { trainer: null, calendarUrl: null };
   }
 
