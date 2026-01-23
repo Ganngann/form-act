@@ -165,5 +165,54 @@ describe("CheckoutService", () => {
         expect.any(String),
       );
     });
+
+    it("should process checkout without trainerId (Manual Booking)", async () => {
+      const manualDto = { ...mockDto, trainerId: undefined };
+      jest.spyOn(prisma.user, "findUnique").mockResolvedValue(null);
+
+      const mockUser = { id: "user-1", email: manualDto.email };
+      const mockClient = { id: "client-1", ...manualDto, userId: "user-1" };
+      const mockSession = { id: "session-1", status: "PENDING_ASSIGNMENT" };
+
+      mockTx.user.create.mockResolvedValue(mockUser);
+      mockTx.client.findUnique.mockResolvedValue(null);
+      mockTx.client.create.mockResolvedValue(mockClient);
+      // No conflict check should happen if trainerId is missing
+      mockTx.session.create.mockResolvedValue(mockSession);
+
+      const result = await service.processCheckout(manualDto);
+
+      expect(mockTx.session.findFirst).not.toHaveBeenCalled();
+      expect(result.session.status).toBe("PENDING_ASSIGNMENT");
+    });
+
+    it("should check for conflicts correctly when slot is ALL_DAY", async () => {
+      const allDayDto = { ...mockDto, slot: "ALL_DAY" };
+      jest.spyOn(prisma.user, "findUnique").mockResolvedValue(null);
+
+      const mockUser = { id: "user-1", email: allDayDto.email };
+      const mockClient = { id: "client-1", ...allDayDto, userId: "user-1" };
+
+      mockTx.user.create.mockResolvedValue(mockUser);
+      mockTx.client.findUnique.mockResolvedValue(null);
+      mockTx.client.create.mockResolvedValue(mockClient);
+
+      // Conflict check should include AM and PM
+      mockTx.session.findFirst.mockResolvedValue(null);
+      mockTx.session.create.mockResolvedValue({ id: "s1" });
+
+      await service.processCheckout(allDayDto);
+
+      expect(mockTx.session.findFirst).toHaveBeenCalledWith(expect.objectContaining({
+        where: expect.objectContaining({
+          OR: expect.arrayContaining([
+            { slot: "ALL_DAY" },
+            { slot: "ALL_DAY" },
+            { slot: "AM" },
+            { slot: "PM" }
+          ])
+        })
+      }));
+    });
   });
 });
