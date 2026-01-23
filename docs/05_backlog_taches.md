@@ -130,11 +130,11 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 
 ## 🔴 Corrections Post-Audit (Janvier 2026) - 🚨 PRIORITAIRE
 
-### Bug-01 : Catalogue Vide & Recherche
+### Bug-01 : Catalogue Vide & Recherche - ✅ TERMINE
 **Symptôme :** Certaines catégories (ex: Développement) affichent "Aucune formation" malgré la présence de données en base. La recherche par mot-clé est absente.
-- [ ] Debugger le filtrage par `categoryId` dans `CatalogueContent.tsx`.
-- [ ] Implémenter la barre de recherche textuelle (Bible 3.1).
-- [ ] Nettoyer les doublons dans le seed (Management 101).
+- [x] Debugger le filtrage par `categoryId` dans `CatalogueContent.tsx`.
+- [x] Implémenter la barre de recherche textuelle (Bible 3.1).
+- [x] Nettoyer les doublons dans le seed (Management 101).
 
 ### Bug-02 : Liens Morts & Navigation (404)
 **Symptôme :** Plusieurs liens critiques mènent vers des pages 404.

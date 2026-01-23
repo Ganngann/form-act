@@ -157,7 +157,7 @@ async function main() {
 
   // Management Formation
   const managementTitle = 'Management 101';
-  await prisma.formation.upsert({
+  const mgtFormation = await prisma.formation.upsert({
       where: { id: 'management-101' },
       update: {
         category: { connect: { name: 'Management' } }
@@ -173,29 +173,6 @@ async function main() {
           category: { connect: { name: 'Management' } }
       }
   });
-
-  const mgtFormation = await prisma.formation.findFirst({ where: { title: managementTitle } });
-  if (!mgtFormation) {
-      await prisma.formation.create({
-          data: {
-              title: managementTitle,
-              description: 'Basics of Team Management',
-              level: 'Beginner',
-              duration: '1 jour',
-              expertise: {
-                  connect: { name: 'Management' }
-              },
-              category: { connect: { name: 'Management' } }
-          }
-      });
-  } else {
-    await prisma.formation.update({
-      where: { id: mgtFormation.id },
-      data: {
-        category: { connect: { name: 'Management' } }
-      }
-    });
-  }
 
   // Excel (Bureautique)
   const excelTitle = 'Excel Basics';
