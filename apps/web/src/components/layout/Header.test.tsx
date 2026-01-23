@@ -2,9 +2,16 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { Header } from "./Header";
 import { vi } from "vitest";
 
-// Mock usePathname
+// Mock next/navigation
 vi.mock("next/navigation", () => ({
   usePathname: () => "/",
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    refresh: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+  }),
 }));
 
 describe("Header", () => {
