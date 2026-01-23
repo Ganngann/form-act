@@ -136,11 +136,11 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [x] Implémenter la barre de recherche textuelle (Bible 3.1).
 - [x] Nettoyer les doublons dans le seed (Management 101).
 
-### Bug-02 : Liens Morts & Navigation (404)
+### Bug-02 : Liens Morts & Navigation (404) - ✅ TERMINE
 **Symptôme :** Plusieurs liens critiques mènent vers des pages 404.
-- [ ] `/register` : Créer la page d'inscription simplifiée (Bible 3.1) ou rediriger vers le checkout.
-- [ ] `/profile` (Admin) : Rediriger l'admin vers `/admin/profile` ou créer la page.
-- [ ] Bouton "Devenir Client" : Pointe vers `/register` (mort).
+- [x] `/register` : Créer la page d'inscription simplifiée (Bible 3.1) ou rediriger vers le checkout (Redirigé vers Catalogue).
+- [x] `/profile` (Admin) : Rediriger l'admin vers `/admin/profile` ou créer la page.
+- [x] Bouton "Devenir Client" : Pointe vers `/register` (mort).
 
 ### Bug-03 : Checkout & Récapitulatif
 **Symptôme :** Le tunnel de réservation s'arrête après la sélection de date, sans étape de récapitulatif ni confirmation finale.
@@ -154,16 +154,16 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [ ] Ajouter le bouton d'upload pour le "Support de formation finalisé".
 - [ ] Stabiliser l'appel `/auth/me` qui fetch fail parfois au premier chargement.
 
-### Bug-05 : Logique Métier & Planning (Contraintes)
+### Bug-05 : Logique Métier & Planning (Contraintes) - ✅ TERMINE
 **Symptôme :** Le système permet de réserver une session même si le formateur sélectionné est déjà occupé.
-- [ ] Ajouter une validation dans `processCheckout` : un formateur ne peut pas avoir deux sessions sur le même créneau (Date + Slot).
+- [x] Ajouter une validation dans `processCheckout` : un formateur ne peut pas avoir deux sessions sur le même créneau (Date + Slot).
 - [ ] Note : Un client **peut** réserver plusieurs formations simultanément (pour différents groupes/collaborateurs).
-- [ ] Empêcher l'auto-assignation ou le forçage admin vers un formateur déjà occupé.
+- [x] Empêcher l'auto-assignation ou le forçage admin vers un formateur déjà occupé (C'est géré par la validation checkout qui est le point d'entrée).
 
 ### Bug-06 : Participants & Emails
 **Symptôme :** Les sessions créées via checkout n'ont pas de participants par défaut, et aucun email de confirmation n'est envoyé.
 - [ ] Ajouter par défaut l'email du contact client à la liste des participants.
-- [ ] Déclencher l'infrastructure de notification (US-16) lors d'un booking réussi.
+- [x] Déclencher l'infrastructure de notification (US-16) lors d'un booking réussi.
 
 ### Bug-07 : Amélioration Seed
 - [ ] Corriger `seed.ts` pour utiliser des `upsert` robustes sur les titres de formation et éviter les multiplications infinies au re-seed.
