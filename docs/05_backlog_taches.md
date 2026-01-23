@@ -153,8 +153,23 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [ ] Ajouter le bouton d'upload pour le "Support de formation finalisé".
 - [ ] Stabiliser l'appel `/auth/me` qui fetch fail parfois au premier chargement.
 
+### Bug-05 : Logique Métier & Planning (Contraintes)
+**Symptôme :** Le système permet de réserver une session même si le formateur sélectionné est déjà occupé.
+- [ ] Ajouter une validation dans `processCheckout` : un formateur ne peut pas avoir deux sessions sur le même créneau (Date + Slot).
+- [ ] Note : Un client **peut** réserver plusieurs formations simultanément (pour différents groupes/collaborateurs).
+- [ ] Empêcher l'auto-assignation ou le forçage admin vers un formateur déjà occupé.
+
+### Bug-06 : Participants & Emails
+**Symptôme :** Les sessions créées via checkout n'ont pas de participants par défaut, et aucun email de confirmation n'est envoyé.
+- [ ] Ajouter par défaut l'email du contact client à la liste des participants.
+- [ ] Déclencher l'infrastructure de notification (US-16) lors d'un booking réussi.
+
+### Bug-07 : Amélioration Seed
+- [ ] Corriger `seed.ts` pour utiliser des `upsert` robustes sur les titres de formation et éviter les multiplications infinies au re-seed.
+
 ### Audit-UX-01 : Module Logistique Client
 - [ ] S'assurer que le client peut éditer le lieu/participants/matériel tant que ce n'est pas verrouillé (J-7).
+- [ ] Ajouter un champ "Participants" (liste email/nom) dans le tunnel de checkout ou l'espace client.
 
 ## 🔵 Sprint 7 : Infrastructure & Mise en Prod
 
