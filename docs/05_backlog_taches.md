@@ -148,11 +148,12 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [ ] Préciser au client que la facturation sera effectuée via Odoo après la prestation.
 - [ ] Ajouter le récapitulatif avec calcul du prix HT/TTC (estimation des frais de déplacement inclus).
 
-### Bug-04 : Espace Formateur - Profil & Missions
+### Bug-04 : Espace Formateur - Profil & Missions - ✅ TERMINE
 **Symptôme :** Gaps avec la Bible Section 3.3.
-- [ ] Ajouter les "Spécialités" (tags) et le "Tarif Journalier" dans le profil formateur.
-- [ ] Ajouter le bouton d'upload pour le "Support de formation finalisé".
-- [ ] Stabiliser l'appel `/auth/me` qui fetch fail parfois au premier chargement.
+- [x] Ajouter les "Spécialités" (Formations associées via Expertise) dans le profil formateur (Lecture Seule).
+- [ ] ~Ajouter le "Tarif Journalier"~ (Abandonné sur demande client).
+- [ ] ~Ajouter le bouton d'upload pour le "Support de formation finalisé"~ (Abandonné sur demande client).
+- [x] Stabiliser l'appel `/auth/me` qui fetch fail parfois au premier chargement (Retry logic).
 
 ### Bug-05 : Logique Métier & Planning (Contraintes) - ✅ TERMINE
 **Symptôme :** Le système permet de réserver une session même si le formateur sélectionné est déjà occupé.
