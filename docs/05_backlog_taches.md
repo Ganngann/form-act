@@ -142,10 +142,11 @@ Ce document centralise toutes les tâches du projet. Il sert de "cerveau" pour p
 - [ ] `/profile` (Admin) : Rediriger l'admin vers `/admin/profile` ou créer la page.
 - [ ] Bouton "Devenir Client" : Pointe vers `/register` (mort).
 
-### Bug-03 : Checkout & Paiement
-**Symptôme :** Le tunnel de réservation s'arrête après la sélection de date, sans étape de paiement.
-- [ ] Ajouter l'étape de paiement (Stripe/Simulation) (Bible 3.1).
-- [ ] Ajouter le récapitulatif avec calcul du prix HT/TTC.
+### Bug-03 : Checkout & Récapitulatif
+**Symptôme :** Le tunnel de réservation s'arrête après la sélection de date, sans étape de récapitulatif ni confirmation finale.
+- [ ] Ajouter l'étape de confirmation finale (Bible 3.1).
+- [ ] Préciser au client que la facturation sera effectuée via Odoo après la prestation.
+- [ ] Ajouter le récapitulatif avec calcul du prix HT/TTC (estimation des frais de déplacement inclus).
 
 ### Bug-04 : Espace Formateur - Profil & Missions
 **Symptôme :** Gaps avec la Bible Section 3.3.
