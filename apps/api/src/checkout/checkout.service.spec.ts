@@ -11,6 +11,13 @@ describe("CheckoutService", () => {
   let prisma: PrismaService;
   let authService: AuthService;
 
+  // Mock transaction client
+  const mockTx = {
+    user: { create: jest.fn() },
+    client: { findUnique: jest.fn(), create: jest.fn() },
+    session: { create: jest.fn() },
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -24,7 +31,7 @@ describe("CheckoutService", () => {
             client: {
               findUnique: jest.fn(),
             },
-            $transaction: jest.fn(),
+            $transaction: jest.fn().mockImplementation((cb) => cb(mockTx)),
           },
         },
         {
@@ -39,6 +46,8 @@ describe("CheckoutService", () => {
     service = module.get<CheckoutService>(CheckoutService);
     prisma = module.get<PrismaService>(PrismaService);
     authService = module.get<AuthService>(AuthService);
+
+    jest.clearAllMocks();
   });
 
   it("should be defined", () => {
@@ -58,21 +67,37 @@ describe("CheckoutService", () => {
       trainerId: "trainer-1",
     };
 
-    it("should throw BadRequestException if user already exists", async () => {
+    it("should use existing user if user already exists", async () => {
+      // User exists outside transaction
+      const existingUser = { id: "1", email: "test@example.com" } as User;
       jest
         .spyOn(prisma.user, "findUnique")
-        .mockResolvedValue({ id: "1", email: "test@example.com" } as User);
+        .mockResolvedValue(existingUser);
 
-      await expect(service.processCheckout(mockDto)).rejects.toThrow(
-        BadRequestException,
-      );
+      // Client does not exist
+      mockTx.client.findUnique.mockResolvedValue(null);
+      mockTx.client.create.mockResolvedValue({ id: "c1", userId: "1" });
+      mockTx.session.create.mockResolvedValue({ id: "s1" });
+
+      await expect(service.processCheckout(mockDto)).resolves.not.toThrow();
+
+      // Should not create user
+      expect(mockTx.user.create).not.toHaveBeenCalled();
+      // Should create client
+      expect(mockTx.client.create).toHaveBeenCalled();
     });
 
-    it("should throw BadRequestException if client already exists", async () => {
+    it("should throw BadRequestException if client already exists and belongs to another user", async () => {
+      // User does not exist
       jest.spyOn(prisma.user, "findUnique").mockResolvedValue(null);
-      jest
-        .spyOn(prisma.client, "findUnique")
-        .mockResolvedValue({ id: "1", vatNumber: "VAT123" } as Client);
+
+      // Inside tx:
+      // Create user returns new user
+      const newUser = { id: "new-user-id", email: mockDto.email };
+      mockTx.user.create.mockResolvedValue(newUser);
+
+      // Client exists but belongs to "other-user-id"
+      mockTx.client.findUnique.mockResolvedValue({ id: "1", vatNumber: "VAT123", userId: "other-user-id" } as Client);
 
       await expect(service.processCheckout(mockDto)).rejects.toThrow(
         BadRequestException,
@@ -81,26 +106,18 @@ describe("CheckoutService", () => {
 
     it("should successfully process checkout", async () => {
       jest.spyOn(prisma.user, "findUnique").mockResolvedValue(null);
-      jest.spyOn(prisma.client, "findUnique").mockResolvedValue(null);
       jest
         .spyOn(authService, "hashPassword")
         .mockResolvedValue("hashed_password");
 
       const mockUser = { id: "user-1", email: mockDto.email };
-      const mockClient = { id: "client-1", ...mockDto };
+      const mockClient = { id: "client-1", ...mockDto, userId: "user-1" };
       const mockSession = { id: "session-1", status: "CONFIRMED" };
 
-      jest
-        .spyOn(prisma, "$transaction")
-        .mockImplementation(async (callback) => {
-          const tx = {
-            user: { create: jest.fn().mockResolvedValue(mockUser) },
-            client: { create: jest.fn().mockResolvedValue(mockClient) },
-            session: { create: jest.fn().mockResolvedValue(mockSession) },
-          };
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          return callback(tx as any);
-        });
+      mockTx.user.create.mockResolvedValue(mockUser);
+      mockTx.client.findUnique.mockResolvedValue(null);
+      mockTx.client.create.mockResolvedValue(mockClient);
+      mockTx.session.create.mockResolvedValue(mockSession);
 
       const result = await service.processCheckout(mockDto);
 
