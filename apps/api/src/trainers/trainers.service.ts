@@ -53,6 +53,11 @@ export class TrainersService {
         user: true,
         predilectionZones: true,
         expertiseZones: true,
+        expertises: {
+          include: {
+            formations: true,
+          },
+        },
       },
     });
     if (!formateur) throw new BadRequestException("Trainer not found");
