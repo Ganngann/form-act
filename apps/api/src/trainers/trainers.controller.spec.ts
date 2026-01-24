@@ -71,7 +71,7 @@ describe("TrainersController", () => {
         avatarUrl: "url",
       });
       // Ensure sensitive data is NOT present
-      expect((result as any).email).toBeUndefined();
+      expect((result as unknown as { email?: string }).email).toBeUndefined();
     });
   });
 
