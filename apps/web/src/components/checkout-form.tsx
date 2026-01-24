@@ -155,7 +155,7 @@ export function CheckoutForm({ formationId, trainerId, date, slot, isLoggedIn, f
                                 <span>{formationPrice ? `${formationPrice} € HTVA` : "Sur devis"}</span>
                             </div>
                             <div className="bg-yellow-50 text-yellow-800 p-3 rounded-md mt-4 text-sm">
-                                <p><strong>Note importante :</strong> Le prix final incluant les frais de déplacement exacts sera validé par l'admin à la facturation.</p>
+                        <p><strong>Note importante :</strong> Le prix final incluant les frais de déplacement exacts sera validé par l&apos;admin à la facturation.</p>
                                 <p className="mt-1">La facturation sera effectuée via Odoo après la prestation.</p>
                             </div>
                         </div>
