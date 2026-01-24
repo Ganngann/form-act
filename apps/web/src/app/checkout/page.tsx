@@ -12,6 +12,20 @@ interface CheckoutPageProps {
   }
 }
 
+async function getFormation(id: string) {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
+  const res = await fetch(`${API_URL}/formations/${id}`, { cache: "no-store" })
+  if (!res.ok) return undefined
+  return res.json()
+}
+
+async function getTrainer(id: string) {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
+  const res = await fetch(`${API_URL}/trainers/${id}/public`, { cache: "no-store" })
+  if (!res.ok) return undefined
+  return res.json()
+}
+
 export default async function CheckoutPage({ searchParams }: CheckoutPageProps) {
   const { formationId, trainerId, date, slot } = searchParams
 
@@ -39,21 +53,22 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
     )
   }
 
+  const formation = await getFormation(formationId)
+  const trainer = trainerId ? await getTrainer(trainerId) : null
+
+  if (!formation) {
+      return (
+        <div className="container mx-auto py-10">
+          <h1 className="text-2xl font-bold text-red-500">Formation introuvable</h1>
+        </div>
+      )
+  }
+
   return (
     <div className="container mx-auto py-10 px-4 max-w-2xl">
       <h1 className="text-3xl font-bold mb-6">
         {trainerId ? "Finaliser votre réservation" : "Demande de prise en charge"}
       </h1>
-      <div className="bg-secondary/20 p-4 rounded-lg mb-8">
-        <h2 className="font-semibold">Récapitulatif</h2>
-        <p>Date: {date}</p>
-        <p>Créneau: {slot}</p>
-        {!trainerId && (
-          <p className="text-amber-600 font-medium mt-2">
-            ⚠️ Aucun formateur sélectionné. Votre demande sera traitée manuellement par notre équipe.
-          </p>
-        )}
-      </div>
 
       <CheckoutForm
         formationId={formationId}
@@ -61,6 +76,9 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
         date={date}
         slot={slot}
         isLoggedIn={!!userRole}
+        formationTitle={formation.title}
+        formationPrice={formation.price}
+        trainerName={trainer ? `${trainer.firstName} ${trainer.lastName}` : undefined}
       />
     </div>
   )
