@@ -37,7 +37,7 @@ export default async function AdminDashboard() {
 
       <div className="grid grid-cols-1 gap-8">
         {/* Calendrier Principal */}
-        <section>
+        <section className="overflow-hidden">
           <MasterCalendar />
         </section>
 
