@@ -1,5 +1,9 @@
 import Link from 'next/link';
+<<<<<<< HEAD
 import { Users, LayoutDashboard, BookOpen } from 'lucide-react';
+=======
+import { Users, LayoutDashboard, BookOpen, Calendar } from 'lucide-react';
+>>>>>>> 5de36c41870330207a2d22f594d9c5ea644f4144
 import { cn } from '@/lib/utils';
 
 export function Sidebar() {
@@ -19,6 +23,13 @@ export function Sidebar() {
           >
             <LayoutDashboard className="h-4 w-4" />
             Sessions
+          </Link>
+          <Link
+            href="/admin/calendar"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+          >
+            <Calendar className="h-4 w-4" />
+            Calendrier
           </Link>
           <Link
             href="/admin/trainers"

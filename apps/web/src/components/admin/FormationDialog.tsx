@@ -124,7 +124,11 @@ export function FormationDialog({
       const payload = {
         ...data,
         expertiseId: data.expertiseId === "none" ? undefined : data.expertiseId,
+<<<<<<< HEAD
         price: data.price === undefined || isNaN(data.price) ? undefined : data.price,
+=======
+        price: data.price || undefined, // Handle 0 or undefined
+>>>>>>> 5de36c41870330207a2d22f594d9c5ea644f4144
       }
 
       if (formation) {
