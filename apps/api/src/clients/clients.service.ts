@@ -4,7 +4,7 @@ import { UpdateClientProfileDto } from "./dto/update-client-profile.dto";
 
 @Injectable()
 export class ClientsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async findAll() {
     return this.prisma.client.findMany({
@@ -27,6 +27,24 @@ export class ClientsService {
       include: { user: { select: { email: true } } },
     });
     if (!client) throw new NotFoundException("Client profile not found");
+    return client;
+  }
+
+  async findOne(id: string) {
+    const client = await this.prisma.client.findUnique({
+      where: { id },
+      include: {
+        user: { select: { email: true } },
+        sessions: {
+          include: {
+            formation: true,
+            trainer: true,
+          },
+          orderBy: { date: 'desc' }
+        }
+      },
+    });
+    if (!client) throw new NotFoundException("Client not found");
     return client;
   }
 
@@ -96,6 +114,49 @@ export class ClientsService {
       // Update Client data
       return tx.client.update({
         where: { id: client.id },
+        data: {
+          companyName: data.companyName,
+          vatNumber: data.vatNumber,
+          address: data.address,
+          auditLog: updatedLog,
+        },
+      });
+    });
+  }
+
+  async updateById(id: string, data: UpdateClientProfileDto, modifierName: string) {
+    const client = await this.findOne(id);
+    const changes = [];
+
+    if (data.companyName !== client.companyName) {
+      changes.push({ field: "Nom Entreprise", old: client.companyName, new: data.companyName });
+    }
+    if (data.vatNumber !== client.vatNumber) {
+      changes.push({ field: "TVA", old: client.vatNumber, new: data.vatNumber });
+    }
+    if (data.address !== client.address) {
+      changes.push({ field: "Adresse", old: client.address, new: data.address });
+    }
+    if (data.email && data.email !== client.user.email) {
+      changes.push({ field: "Email", old: client.user.email, new: data.email });
+    }
+
+    if (changes.length === 0) return client;
+
+    const currentLog = client.auditLog ? JSON.parse(client.auditLog) : [];
+    const newEntry = { date: new Date(), by: modifierName, changes };
+    const updatedLog = JSON.stringify([newEntry, ...currentLog]);
+
+    return this.prisma.$transaction(async (tx) => {
+      if (data.email && data.email !== client.user.email) {
+        await tx.user.update({
+          where: { id: client.userId },
+          data: { email: data.email },
+        });
+      }
+
+      return tx.client.update({
+        where: { id },
         data: {
           companyName: data.companyName,
           vatNumber: data.vatNumber,

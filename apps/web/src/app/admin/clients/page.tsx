@@ -1,6 +1,7 @@
 import { API_URL } from '@/lib/config';
 import { cookies } from 'next/headers';
 import { LogoutButton } from '@/components/LogoutButton';
+import Link from 'next/link';
 
 async function getClients() {
   const cookieStore = cookies();
@@ -47,6 +48,7 @@ export default async function ClientsPage() {
               <th className="px-6 py-3 font-medium text-gray-500">TVA</th>
               <th className="px-6 py-3 font-medium text-gray-500">Email (User)</th>
               <th className="px-6 py-3 font-medium text-gray-500">Inscription</th>
+              <th className="px-6 py-3 font-medium text-gray-500 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -57,6 +59,14 @@ export default async function ClientsPage() {
                 <td className="px-6 py-4 text-gray-500">{client.user?.email || 'N/A'}</td>
                 <td className="px-6 py-4 text-gray-500">
                   {new Date(client.createdAt).toLocaleDateString('fr-FR')}
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <Link
+                    href={`/admin/clients/${client.id}`}
+                    className="text-blue-600 hover:text-blue-900 font-medium"
+                  >
+                    Détails
+                  </Link>
                 </td>
               </tr>
             ))}
