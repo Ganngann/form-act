@@ -8,9 +8,9 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 ### Bug-03 : Checkout & Récapitulatif (Estimation)
 **Référence Bible :** Section 3.1
 **Symptôme :** Le tunnel de réservation s'arrête brutalement sans étape de confirmation.
-- [ ] Ajouter une étape de confirmation finale avant validation.
-- [ ] Afficher un récapitulatif avec mention explicite **"Estimation Tarifaire"** (Le prix final incluant les frais de déplacement exacts sera validé par l'admin à la facturation, cf. Bible 5.1).
-- [ ] Préciser au client que la facturation sera effectuée via Odoo après la prestation.
+- [x] Ajouter une étape de confirmation finale avant validation.
+- [x] Afficher un récapitulatif avec mention explicite **"Estimation Tarifaire"** (Le prix final incluant les frais de déplacement exacts sera validé par l'admin à la facturation, cf. Bible 5.1).
+- [x] Préciser au client que la facturation sera effectuée via Odoo après la prestation.
 
 ### Audit-UX-01 : Module Logistique Client
 **Référence Bible :** Section 4.2 (Verrou J-7)
