@@ -38,7 +38,7 @@ describe("FormationsController", () => {
       const result = await controller.findAll();
 
       expect(result).toEqual(formations);
-      expect(service.findAll).toHaveBeenCalledWith(undefined);
+      expect(service.findAll).toHaveBeenCalledWith(undefined, undefined);
     });
 
     it("should pass categoryId if provided", async () => {
@@ -47,7 +47,7 @@ describe("FormationsController", () => {
 
       await controller.findAll("cat1");
 
-      expect(service.findAll).toHaveBeenCalledWith("cat1");
+      expect(service.findAll).toHaveBeenCalledWith("cat1", undefined);
     });
   });
 

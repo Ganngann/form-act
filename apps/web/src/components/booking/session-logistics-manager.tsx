@@ -29,6 +29,7 @@ import { API_URL } from "@/lib/config";
 const participantSchema = z.object({
     firstName: z.string().optional(),
     lastName: z.string().optional(),
+    email: z.string().email("Email invalide").or(z.literal("")).optional(),
 });
 
 const logisticsSchema = z.object({
@@ -71,7 +72,7 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
             wifi: initialLogistics.wifi || "no",
             subsidies: initialLogistics.subsidies || "no",
             accessDetails: initialLogistics.accessDetails || "",
-            participants: initialParticipants.length > 0 ? initialParticipants : [{ firstName: "", lastName: "" }],
+            participants: initialParticipants.length > 0 ? initialParticipants : [{ firstName: "", lastName: "", email: "" }],
         },
     });
 
@@ -315,7 +316,7 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <Label className="text-base">Participants</Label>
-                                <Button type="button" variant="outline" size="sm" onClick={() => append({ firstName: "", lastName: "" })}>
+                                <Button type="button" variant="outline" size="sm" onClick={() => append({ firstName: "", lastName: "", email: "" })}>
                                     <Plus className="h-4 w-4 mr-2" />
                                     Ajouter
                                 </Button>
@@ -324,7 +325,7 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
                             <div className="space-y-3">
                                 {fields.map((field, index) => (
                                     <div key={field.id} className="flex gap-2 items-start">
-                                        <div className="grid grid-cols-2 gap-2 flex-1">
+                                        <div className="grid grid-cols-3 gap-2 flex-1">
                                             <div className="space-y-1">
                                                 <Input {...form.register(`participants.${index}.firstName`)} placeholder="Prénom" aria-label="Prénom" />
                                                 {form.formState.errors.participants?.[index]?.firstName && (
@@ -335,6 +336,12 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
                                                 <Input {...form.register(`participants.${index}.lastName`)} placeholder="Nom" aria-label="Nom" />
                                                 {form.formState.errors.participants?.[index]?.lastName && (
                                                     <p className="text-xs text-red-500">{form.formState.errors.participants[index]?.lastName?.message}</p>
+                                                )}
+                                            </div>
+                                            <div className="space-y-1">
+                                                <Input {...form.register(`participants.${index}.email`)} placeholder="Email" aria-label="Email" />
+                                                {form.formState.errors.participants?.[index]?.email && (
+                                                    <p className="text-xs text-red-500">{form.formState.errors.participants[index]?.email?.message}</p>
                                                 )}
                                             </div>
                                         </div>
