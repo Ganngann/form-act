@@ -173,7 +173,7 @@ describe("ClientsService", () => {
         user: { email: "old@test.com" },
       } as unknown as Client & { user: { email: string } };
 
-      jest.spyOn(service, "findOne").mockResolvedValue(mockClient);
+      jest.spyOn(service, "findOne").mockResolvedValue(mockClient as any);
       jest.spyOn(prisma.client, "update").mockResolvedValue(mockClient);
       jest.spyOn(prisma.user, "update").mockResolvedValue({} as User);
 
