@@ -1,9 +1,5 @@
 import Link from 'next/link';
-<<<<<<< HEAD
-import { Users, LayoutDashboard, BookOpen } from 'lucide-react';
-=======
 import { Users, LayoutDashboard, BookOpen, Calendar } from 'lucide-react';
->>>>>>> 5de36c41870330207a2d22f594d9c5ea644f4144
 import { cn } from '@/lib/utils';
 
 export function Sidebar() {

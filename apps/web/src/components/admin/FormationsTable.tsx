@@ -30,11 +30,7 @@ export function FormationsTable({
   const router = useRouter()
   const [formations] = useState(initialFormations) // We rely on router.refresh usually, but props update automatically?
   // Actually, if we use router.refresh(), server comp re-renders, passing new initialFormations.
-<<<<<<< HEAD
 
-=======
-
->>>>>>> 5de36c41870330207a2d22f594d9c5ea644f4144
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedFormation, setSelectedFormation] = useState<Formation | null>(null)
 
