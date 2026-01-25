@@ -14,7 +14,7 @@ import { UpdateClientProfileDto } from "./dto/update-client-profile.dto";
 
 @Controller("clients")
 export class ClientsController {
-  constructor(private readonly clientsService: ClientsService) { }
+  constructor(private readonly clientsService: ClientsService) {}
 
   @UseGuards(AuthGuard("jwt"))
   @Get()
@@ -54,7 +54,11 @@ export class ClientsController {
 
   @UseGuards(AuthGuard("jwt"))
   @Patch(":id")
-  async update(@Request() req, @Param("id") id: string, @Body() body: UpdateClientProfileDto) {
+  async update(
+    @Request() req,
+    @Param("id") id: string,
+    @Body() body: UpdateClientProfileDto,
+  ) {
     if (req.user.role !== "ADMIN") {
       throw new ForbiddenException("Access denied");
     }

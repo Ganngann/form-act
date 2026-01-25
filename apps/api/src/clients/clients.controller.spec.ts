@@ -82,11 +82,11 @@ describe("ClientsController", () => {
 
     it("should deny non-ADMIN", async () => {
       await expect(
-        controller.update(
-          { user: { role: "CLIENT" } },
-          "1",
-          { companyName: "A", vatNumber: "B", address: "C" },
-        ),
+        controller.update({ user: { role: "CLIENT" } }, "1", {
+          companyName: "A",
+          vatNumber: "B",
+          address: "C",
+        }),
       ).rejects.toThrow(ForbiddenException);
     });
   });

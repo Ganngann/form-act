@@ -4,7 +4,7 @@ import { UpdateClientProfileDto } from "./dto/update-client-profile.dto";
 
 @Injectable()
 export class ClientsService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async findAll() {
     return this.prisma.client.findMany({
@@ -40,8 +40,8 @@ export class ClientsService {
             formation: true,
             trainer: true,
           },
-          orderBy: { date: 'desc' }
-        }
+          orderBy: { date: "desc" },
+        },
       },
     });
     if (!client) throw new NotFoundException("Client not found");
@@ -124,18 +124,34 @@ export class ClientsService {
     });
   }
 
-  async updateById(id: string, data: UpdateClientProfileDto, modifierName: string) {
+  async updateById(
+    id: string,
+    data: UpdateClientProfileDto,
+    modifierName: string,
+  ) {
     const client = await this.findOne(id);
     const changes = [];
 
     if (data.companyName !== client.companyName) {
-      changes.push({ field: "Nom Entreprise", old: client.companyName, new: data.companyName });
+      changes.push({
+        field: "Nom Entreprise",
+        old: client.companyName,
+        new: data.companyName,
+      });
     }
     if (data.vatNumber !== client.vatNumber) {
-      changes.push({ field: "TVA", old: client.vatNumber, new: data.vatNumber });
+      changes.push({
+        field: "TVA",
+        old: client.vatNumber,
+        new: data.vatNumber,
+      });
     }
     if (data.address !== client.address) {
-      changes.push({ field: "Adresse", old: client.address, new: data.address });
+      changes.push({
+        field: "Adresse",
+        old: client.address,
+        new: data.address,
+      });
     }
     if (data.email && data.email !== client.user.email) {
       changes.push({ field: "Email", old: client.user.email, new: data.email });

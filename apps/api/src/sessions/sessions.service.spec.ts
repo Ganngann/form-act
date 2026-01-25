@@ -115,16 +115,17 @@ describe("SessionsService", () => {
     });
 
     it("should handle MISSING_LOGISTICS filter", async () => {
-      await service.findAll(undefined, undefined, undefined, "MISSING_LOGISTICS");
+      await service.findAll(
+        undefined,
+        undefined,
+        undefined,
+        "MISSING_LOGISTICS",
+      );
       expect(prisma.session.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
             status: "CONFIRMED",
-            OR: [
-              { logistics: null },
-              { logistics: "" },
-              { logistics: "{}" },
-            ],
+            OR: [{ logistics: null }, { logistics: "" }, { logistics: "{}" }],
           }),
         }),
       );
