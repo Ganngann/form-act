@@ -1,0 +1,23 @@
+
+> web@0.1.0 dev /app/apps/web
+> next dev
+
+   ▲ Next.js 14.1.0
+   - Local:        http://localhost:3000
+
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+ ✓ Ready in 1977ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 7.4s (604 modules)
+ ✓ Compiled in 735ms (269 modules)
+ ○ Compiling /src/middleware ...
+ ✓ Compiled /src/middleware in 692ms (130 modules)
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 2.7s (1711 modules)
+ ○ Compiling /dashboard/sessions/[id] ...
+ ✓ Compiled /dashboard/sessions/[id] in 4.8s (2639 modules)
+[?25h

@@ -10,7 +10,7 @@ const TestDialog = () => {
     <div>
       <button onClick={() => setOpen(true)}>Open</button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent aria-describedby={undefined}>
           <DialogTitle>Dialog Title</DialogTitle>
           <p>Dialog Content</p>
         </DialogContent>

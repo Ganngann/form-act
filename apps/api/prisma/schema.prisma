@@ -73,7 +73,7 @@ model Category {
 
 model Formation {
   id          String     @id @default(uuid())
-  title       String
+  title       String     @unique
   description String
   level       String
   duration    String
