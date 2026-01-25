@@ -16,7 +16,7 @@ interface MasterCalendarProps { }
 
 export function MasterCalendar({ }: MasterCalendarProps) {
   const [currentDate, setCurrentDate] = React.useState(new Date())
-  const [viewMode, setViewMode] = React.useState<"month" | "week">("month")
+  const [viewMode, setViewMode] = React.useState<"month" | "week">("week")
   const [selectedSession, setSelectedSession] = React.useState<SessionData | null>(null)
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
 
