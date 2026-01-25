@@ -27,18 +27,18 @@ import { API_URL } from "@/lib/config";
 // --- Types & Schema ---
 
 const participantSchema = z.object({
-    firstName: z.string().min(1, "Prénom requis"),
-    lastName: z.string().min(1, "Nom requis"),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
 });
 
 const logisticsSchema = z.object({
-    location: z.string().min(5, "Adresse requise"),
+    location: z.string().optional(),
     videoMaterial: z.array(z.string()).optional(),
     writingMaterial: z.array(z.string()).optional(),
-    wifi: z.enum(["yes", "no"]),
-    subsidies: z.enum(["yes", "no"]),
+    wifi: z.enum(["yes", "no"]).nullable().optional().or(z.literal("")),
+    subsidies: z.enum(["yes", "no"]).nullable().optional().or(z.literal("")),
     accessDetails: z.string().optional(),
-    participants: z.array(participantSchema).min(1, "Au moins un participant requis"),
+    participants: z.array(participantSchema).optional(),
 });
 
 type LogisticsFormValues = z.infer<typeof logisticsSchema>;
