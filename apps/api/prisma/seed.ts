@@ -76,29 +76,29 @@ async function main() {
   const formateurEmail = 'jean.dupont@example.com';
   // Ensure user exists for formateur
   const formateurUser = await prisma.user.upsert({
-      where: { email: formateurEmail },
-      update: { role: 'TRAINER' },
-      create: {
-          email: formateurEmail,
-          name: 'Jean Dupont',
-          password: hashedPassword, // Same password for testing
-          role: 'TRAINER'
-      }
+    where: { email: formateurEmail },
+    update: { role: 'TRAINER' },
+    create: {
+      email: formateurEmail,
+      name: 'Jean Dupont',
+      password: hashedPassword, // Same password for testing
+      role: 'TRAINER'
+    }
   });
 
   const formateur = await prisma.formateur.upsert({
     where: { email: formateurEmail },
     update: {
-       userId: formateurUser.id,
-       predilectionZones: {
-         set: [{ code: 'BRU' }, { code: 'BW' }]
-       },
-       expertiseZones: {
-         set: [{ code: 'BRU' }, { code: 'BW' }, { code: 'LIE' }, { code: 'NAM' }]
-       },
-       expertises: {
-         set: [{ name: 'NestJS' }, { name: 'Bureautique' }]
-       }
+      userId: formateurUser.id,
+      predilectionZones: {
+        set: [{ code: 'BRU' }, { code: 'BW' }]
+      },
+      expertiseZones: {
+        set: [{ code: 'BRU' }, { code: 'BW' }, { code: 'LIE' }, { code: 'NAM' }]
+      },
+      expertises: {
+        set: [{ name: 'NestJS' }, { name: 'Bureautique' }]
+      }
     },
     create: {
       firstName: 'Jean',
@@ -189,51 +189,51 @@ async function main() {
   // Client
   const clientEmail = 'client@company.com';
   const clientUser = await prisma.user.upsert({
-      where: { email: clientEmail },
-      update: { role: 'CLIENT' },
-      create: {
-          email: clientEmail,
-          name: 'Client User',
-          password: hashedPassword,
-          role: 'CLIENT'
-      }
+    where: { email: clientEmail },
+    update: { role: 'CLIENT' },
+    create: {
+      email: clientEmail,
+      name: 'Client User',
+      password: hashedPassword,
+      role: 'CLIENT'
+    }
   });
 
   const client = await prisma.client.upsert({
-      where: { userId: clientUser.id },
-      update: {},
-      create: {
-          companyName: 'Acme Corp',
-          vatNumber: 'BE0000000001',
-          address: 'Rue de la Loi 16, 1000 Bruxelles',
-          userId: clientUser.id,
-          createdAt: new Date('2023-01-01')
-      }
+    where: { userId: clientUser.id },
+    update: {},
+    create: {
+      companyName: 'Acme Corp',
+      vatNumber: 'BE0000000001',
+      address: 'Rue de la Loi 16, 1000 Bruxelles',
+      userId: clientUser.id,
+      createdAt: new Date('2023-01-01')
+    }
   });
 
   // Client Recent
   const clientRecentEmail = 'newclient@startup.com';
   const clientRecentUser = await prisma.user.upsert({
-      where: { email: clientRecentEmail },
-      update: { role: 'CLIENT' },
-      create: {
-          email: clientRecentEmail,
-          name: 'New Client',
-          password: hashedPassword,
-          role: 'CLIENT'
-      }
+    where: { email: clientRecentEmail },
+    update: { role: 'CLIENT' },
+    create: {
+      email: clientRecentEmail,
+      name: 'New Client',
+      password: hashedPassword,
+      role: 'CLIENT'
+    }
   });
 
   await prisma.client.upsert({
-      where: { userId: clientRecentUser.id },
-      update: {},
-      create: {
-          companyName: 'Startup Inc',
-          vatNumber: 'BE0999999999',
-          address: 'Avenue Louise 100, 1050 Bruxelles',
-          userId: clientRecentUser.id,
-          createdAt: new Date('2023-11-15')
-      }
+    where: { userId: clientRecentUser.id },
+    update: {},
+    create: {
+      companyName: 'Startup Inc',
+      vatNumber: 'BE0999999999',
+      address: 'Avenue Louise 100, 1050 Bruxelles',
+      userId: clientRecentUser.id,
+      createdAt: new Date('2023-11-15')
+    }
   });
 
   // --- SESSIONS SEEDING ---
@@ -242,7 +242,7 @@ async function main() {
   await prisma.session.deleteMany({ where: { trainerId: formateur.id } });
 
   const today = new Date();
-  today.setHours(0,0,0,0);
+  today.setHours(0, 0, 0, 0);
 
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
@@ -254,7 +254,7 @@ async function main() {
   dayAfter.setDate(today.getDate() + 2);
 
   const nextWeek = new Date(today);
-  nextWeek.setDate(today.getDate() + 7);
+  nextWeek.setDate(today.getDate() + 14);
 
   // 1. Past Session (Yesterday) - Confirmed
   await prisma.session.create({
@@ -266,7 +266,7 @@ async function main() {
       formation: { connect: { id: formation.id } }, // NestJS
       client: { connect: { id: client.id } },
       location: 'Rue de la Loi 16, 1000 Bruxelles',
-      participants: JSON.stringify([{ name: 'Alice', email: 'alice@acme.com' }])
+      participants: JSON.stringify([{ firstName: 'Alice', lastName: 'Acme' }])
     }
   });
 
@@ -281,7 +281,7 @@ async function main() {
       client: { connect: { id: client.id } },
       location: 'Rue de la Loi 16, 1000 Bruxelles',
       logistics: JSON.stringify({ wifi: 'Yes', projector: 'Needed', access: 'Badge required' }),
-      participants: JSON.stringify([{ name: 'Alice', email: 'alice@acme.com' }, { name: 'Bob', email: 'bob@acme.com' }])
+      participants: JSON.stringify([{ firstName: 'Alice', lastName: 'Acme' }, { firstName: 'Bob', lastName: 'Builders' }])
     }
   });
 

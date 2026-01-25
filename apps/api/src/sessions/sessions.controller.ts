@@ -23,7 +23,7 @@ import { AuthGuard } from "@nestjs/passport";
 
 @Controller("sessions")
 export class SessionsController {
-  constructor(private readonly sessionsService: SessionsService) {}
+  constructor(private readonly sessionsService: SessionsService) { }
 
   @UseGuards(AuthGuard("jwt"))
   @Get("me")
@@ -103,11 +103,14 @@ export class SessionsController {
         throw new ForbiddenException("Access denied");
       }
 
-      // Locking logic: J-7
+      // Locking logic: J-7 (Calendar days)
       const now = new Date();
+      now.setHours(0, 0, 0, 0);
       const sessionDate = new Date(session.date);
+      sessionDate.setHours(0, 0, 0, 0);
+
       const diffTime = sessionDate.getTime() - now.getTime();
-      const diffDays = diffTime / (1000 * 3600 * 24);
+      const diffDays = Math.round(diffTime / (1000 * 3600 * 24));
 
       // Check if unlocked by admin
       if (diffDays < 7 && !session.isLogisticsOpen) {

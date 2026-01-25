@@ -6,8 +6,11 @@ export class FormationsController {
   constructor(private readonly formationsService: FormationsService) {}
 
   @Get()
-  findAll(@Query("categoryId") categoryId?: string) {
-    return this.formationsService.findAll(categoryId);
+  findAll(
+    @Query("categoryId") categoryId?: string,
+    @Query("search") search?: string,
+  ) {
+    return this.formationsService.findAll(categoryId, search);
   }
 
   @Get(":id")

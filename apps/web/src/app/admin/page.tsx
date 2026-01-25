@@ -48,7 +48,11 @@ export default async function AdminDashboard() {
         ) : (
           <div className="space-y-4">
             {sessions.slice(0, 5).map((session: any) => (
-              <div key={session.id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
+              <Link
+                key={session.id}
+                href={`/admin/sessions/${session.id}`}
+                className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0 hover:bg-gray-50 transition-colors p-2 rounded-lg"
+              >
                 <div>
                   <h3 className="font-medium">{session.formation.title}</h3>
                   <p className="text-sm text-gray-500">
@@ -56,7 +60,7 @@ export default async function AdminDashboard() {
                   </p>
                 </div>
                 <StatusBadge status={session.status} />
-              </div>
+              </Link>
             ))}
           </div>
         )}
