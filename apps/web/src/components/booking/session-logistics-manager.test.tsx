@@ -73,6 +73,38 @@ describe('SessionLogisticsManager', () => {
     expect(screen.getByText(/Verrouillé/)).toBeDefined();
   });
 
+  it('allows edit when locked but isLogisticsOpen is true (Admin override)', () => {
+     const overrideSession = {
+      ...mockSession,
+      date: new Date(Date.now() + 86400000 * 2).toISOString(), // 2 days from now
+      isLogisticsOpen: true,
+    };
+    render(<SessionLogisticsManager session={overrideSession} />);
+    expect(screen.getByText('Modifier')).toBeDefined();
+    expect(screen.queryByText(/Verrouillé/)).toBeNull();
+  });
+
+  it('handles missing logistics and participants data gracefully', () => {
+    const emptySession = {
+        ...mockSession,
+        logistics: null,
+        participants: null,
+        location: null
+    };
+
+    render(<SessionLogisticsManager session={emptySession} />);
+
+    expect(screen.getByText(/Aucune information logistique renseignée/)).toBeDefined();
+    expect(screen.getByText(/Aucun participant encodé/)).toBeDefined();
+    expect(screen.getByText(/À confirmer/)).toBeDefined();
+
+    // Open edit to check default values
+    fireEvent.click(screen.getByText('Modifier'));
+
+    // Check that participant list starts with one empty row
+    expect(screen.getAllByLabelText('Prénom')).toHaveLength(1);
+  });
+
   it('opens dialog and submits form', async () => {
     (global.fetch as any).mockResolvedValue({ ok: true });
 
@@ -107,6 +139,21 @@ describe('SessionLogisticsManager', () => {
     const emails = screen.getAllByLabelText('Email');
     fireEvent.change(emails[1], { target: { value: 'jane@example.com' } });
 
+    // Remove first participant
+    const trashButtons = screen.getAllByRole('button').filter(btn => btn.querySelector('.text-destructive')); // Find trash icons
+    // Note: Radix Dialog X button might interfere if we just search by role button.
+    // The component uses Trash2 icon inside a ghost button.
+    // Let's use specific selector logic or just keep it simple.
+    // The "Remove" button has `disabled={fields.length === 1}`.
+    // We added one, so now we have 2. Both should be enabled.
+
+    // Actually, finding by icon class is brittle.
+    // Let's assume the first trash button corresponds to the first row.
+    // We need to be careful not to click the dialog close X.
+
+    // Let's just submit with 2 participants to verify the add.
+    // Testing remove specifically might require more precise selectors (e.g., test-id).
+
     // Submit
     fireEvent.click(screen.getByText('Enregistrer les modifications'));
 
@@ -127,5 +174,23 @@ describe('SessionLogisticsManager', () => {
     expect(participants[1].firstName).toBe('Jane');
 
     expect(mockRefresh).toHaveBeenCalled();
+  });
+
+  it('handles API error on submit', async () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+      (global.fetch as any).mockRejectedValue(new Error('API Error'));
+
+      render(<SessionLogisticsManager session={mockSession} />);
+      fireEvent.click(screen.getByText('Modifier'));
+      fireEvent.click(screen.getByText('Enregistrer les modifications'));
+
+      await waitFor(() => {
+          expect(consoleSpy).toHaveBeenCalled();
+          expect(alertSpy).toHaveBeenCalledWith("Une erreur est survenue lors de l'enregistrement.");
+      });
+
+      consoleSpy.mockRestore();
+      alertSpy.mockRestore();
   });
 });
