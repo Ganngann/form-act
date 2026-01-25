@@ -1,13 +1,63 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { Prisma } from "@prisma/client";
+import { CreateFormationDto } from "./dto/create-formation.dto";
+import { UpdateFormationDto } from "./dto/update-formation.dto";
 
 @Injectable()
 export class FormationsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(categoryId?: string, search?: string) {
+  async create(data: CreateFormationDto) {
+    const existing = await this.prisma.formation.findUnique({
+      where: { title: data.title },
+    });
+    if (existing) {
+      throw new BadRequestException("Formation with this title already exists");
+    }
+
+    return this.prisma.formation.create({
+      data,
+    });
+  }
+
+  async update(id: string, data: UpdateFormationDto) {
+    if (data.title) {
+      const existing = await this.prisma.formation.findUnique({
+        where: { title: data.title },
+      });
+      if (existing && existing.id !== id) {
+        throw new BadRequestException(
+          "Formation with this title already exists",
+        );
+      }
+    }
+    return this.prisma.formation.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async remove(id: string) {
+    const sessionCount = await this.prisma.session.count({
+      where: { formationId: id },
+    });
+    if (sessionCount > 0) {
+      throw new BadRequestException(
+        "Cannot delete formation with linked sessions. Archive it instead.",
+      );
+    }
+    return this.prisma.formation.delete({
+      where: { id },
+    });
+  }
+
+  async findAll(categoryId?: string, search?: string, includeHidden: boolean = false) {
     const where: Prisma.FormationWhereInput = {};
+
+    if (!includeHidden) {
+      where.isPublished = true;
+    }
 
     if (categoryId) {
       where.categoryId = categoryId;

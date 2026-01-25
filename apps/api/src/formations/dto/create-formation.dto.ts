@@ -1,12 +1,4 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  IsNumber,
-  Min,
-  IsUrl,
-  IsUUID,
-} from "class-validator";
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Min, IsUrl } from "class-validator";
 
 export class CreateFormationDto {
   @IsString()
@@ -26,25 +18,26 @@ export class CreateFormationDto {
   duration: string;
 
   @IsString()
-  @IsOptional()
-  durationType?: string;
-
-  @IsUrl()
-  @IsOptional()
-  programLink?: string;
-
-  @IsUUID()
-  @IsOptional()
-  expertiseId?: string;
+  @IsNotEmpty()
+  durationType: string;
 
   @IsUUID()
   @IsOptional()
   categoryId?: string;
 
-  @IsNumber()
-  @Min(0)
+  @IsUUID()
   @IsOptional()
+  expertiseId?: string;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
   price?: number;
+
+  @IsString()
+  @IsOptional()
+  @IsUrl()
+  programLink?: string;
 
   @IsString()
   @IsOptional()
@@ -58,7 +51,12 @@ export class CreateFormationDto {
   @IsOptional()
   agreementCode?: string;
 
-  @IsUrl()
+  @IsString()
   @IsOptional()
+  @IsUrl()
   imageUrl?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isPublished?: boolean;
 }
