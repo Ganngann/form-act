@@ -50,10 +50,11 @@ export class SessionsController {
     @Query("start") start?: string,
     @Query("end") end?: string,
     @Query("status") status?: string,
+    @Query("filter") filter?: string,
   ) {
     const startDate = start ? new Date(start) : undefined;
     const endDate = end ? new Date(end) : undefined;
-    return this.sessionsService.findAll(startDate, endDate, status);
+    return this.sessionsService.findAll(startDate, endDate, status, filter);
   }
 
   @UseGuards(AuthGuard("jwt"))

@@ -28,7 +28,7 @@ export class SessionsService {
     return session;
   }
 
-  async findAll(start?: Date, end?: Date, status?: string) {
+  async findAll(start?: Date, end?: Date, status?: string, filter?: string) {
     const where: Prisma.SessionWhereInput = {};
 
     if (start && end) {
@@ -44,6 +44,30 @@ export class SessionsService {
 
     if (status) {
       where.status = status;
+    }
+
+    // Admin Specific Filters
+    if (filter === 'NO_TRAINER') {
+      where.status = 'CONFIRMED';
+      where.trainerId = null;
+    } else if (filter === 'MISSING_LOGISTICS') {
+      const now = new Date();
+      const in7Days = new Date();
+      in7Days.setDate(now.getDate() + 7);
+      where.status = 'CONFIRMED';
+      where.date = { gte: now, lte: in7Days };
+      where.OR = [
+        { logistics: null },
+        { logistics: "" },
+        { logistics: "{}" }
+      ];
+    } else if (filter === 'MISSING_PROOF') {
+      where.date = { lt: new Date() };
+      where.status = 'CONFIRMED';
+      where.proofUrl = null;
+    } else if (filter === 'READY_TO_BILL') {
+      where.proofUrl = { not: null };
+      where.billedAt = null;
     }
 
     return this.prisma.session.findMany({
