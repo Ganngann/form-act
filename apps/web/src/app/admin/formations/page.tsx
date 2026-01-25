@@ -14,8 +14,7 @@ async function getData() {
   ]);
 
   if (!formationsRes.ok) {
-     console.error("Failed to fetch formations", await formationsRes.text());
-     return { formations: [], categories: [], expertises: [] };
+     throw new Error(`Failed to fetch formations: ${formationsRes.statusText}`);
   }
 
   const formations = await formationsRes.json();

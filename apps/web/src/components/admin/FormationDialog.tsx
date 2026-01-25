@@ -135,7 +135,6 @@ export function FormationDialog({
       onSuccess()
       onOpenChange(false)
     } catch (error) {
-      console.error(error)
       // Ideally show toast
       alert("Une erreur est survenue")
     }
