@@ -4,9 +4,10 @@ import { notFound } from 'next/navigation';
 import { StatusBadge } from '@/components/ui/status-badge';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, User, MapPin, Info } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Info } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { SessionLogisticsManager } from '@/components/booking/session-logistics-manager';
 
 async function getSession(id: string) {
     const cookieStore = cookies();
@@ -79,41 +80,7 @@ export default async function ClientSessionDetailPage({ params }: { params: { id
                         </div>
                     </section>
 
-                    {/* Logistics */}
-                    <section className="bg-white p-6 rounded-xl border shadow-sm space-y-4">
-                        <div className="flex items-center gap-2 mb-2">
-                            <MapPin className="h-5 w-5 text-primary" />
-                            <h3 className="font-bold text-lg">Lieu et Logistique</h3>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div>
-                                <span className="block text-xs font-semibold text-gray-500 uppercase mb-1">Lieu de la formation</span>
-                                <p className="font-medium bg-gray-50 p-3 rounded border">
-                                    {session.location || "À confirmer - L'adresse de votre entreprise sera utilisée par défaut."}
-                                </p>
-                            </div>
-
-                            <div>
-                                <span className="block text-xs font-semibold text-gray-500 uppercase mb-1">Détails logistiques</span>
-                                <div className="bg-gray-50 p-4 rounded border text-sm whitespace-pre-wrap min-h-[100px]">
-                                    {(() => {
-                                        if (!session.logistics) return "Aucune information logistique renseignée pour le moment.";
-                                        try {
-                                            const logObj = JSON.parse(session.logistics);
-                                            return Object.entries(logObj).map(([key, val]) => (
-                                                <div key={key} className="mb-2 last:mb-0">
-                                                    <span className="font-bold capitalize">{key}:</span> {String(val)}
-                                                </div>
-                                            ));
-                                        } catch (e) {
-                                            return session.logistics;
-                                        }
-                                    })()}
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+                    <SessionLogisticsManager session={session} />
                 </div>
 
                 {/* Sidebar */}
