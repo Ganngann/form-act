@@ -3,8 +3,6 @@ import { API_URL } from '@/lib/config';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { MasterCalendar } from '@/components/admin/master-calendar';
-import { PriorityActions } from '@/components/admin/priority-actions';
 
 async function getUpcomingSessions() {
   const cookieStore = cookies();
@@ -28,7 +26,7 @@ export default async function AdminDashboard() {
   const sessions = await getUpcomingSessions();
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
@@ -36,49 +34,36 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-8">
-        {/* Actions Prioritaires */}
-        <section className="space-y-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Actions Prioritaires</h2>
-          <PriorityActions />
-        </section>
-
-        {/* Calendrier Principal */}
-        <section className="overflow-hidden">
-          <MasterCalendar />
-        </section>
-
-        {/* Widget Prochaines Sessions */}
-        <div className="bg-white rounded-lg border shadow-sm p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Prochaines Sessions Confirmées</h2>
-            <Link href="/admin/calendar" className="text-sm text-blue-600 hover:underline">
-              Voir tout le calendrier
-            </Link>
-          </div>
-
-          {sessions.length === 0 ? (
-            <p className="text-muted-foreground text-sm">Aucune session confirmée à venir.</p>
-          ) : (
-            <div className="space-y-4">
-              {sessions.slice(0, 5).map((session: any) => (
-                <Link
-                  key={session.id}
-                  href={`/admin/sessions/${session.id}`}
-                  className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0 hover:bg-gray-50 transition-colors p-2 rounded-lg"
-                >
-                  <div>
-                    <h3 className="font-medium">{session.formation.title}</h3>
-                    <p className="text-sm text-gray-500">
-                      {new Date(session.date).toLocaleDateString('fr-FR')} • {session.client?.companyName}
-                    </p>
-                  </div>
-                  <StatusBadge status={session.status} />
-                </Link>
-              ))}
-            </div>
-          )}
+      {/* Widget Prochaines Sessions */}
+      <div className="bg-white rounded-lg border shadow-sm p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">Prochaines Sessions Confirmées</h2>
+          <Link href="/admin/calendar" className="text-sm text-blue-600 hover:underline">
+            Voir tout le calendrier
+          </Link>
         </div>
+
+        {sessions.length === 0 ? (
+          <p className="text-muted-foreground text-sm">Aucune session confirmée à venir.</p>
+        ) : (
+          <div className="space-y-4">
+            {sessions.slice(0, 5).map((session: any) => (
+              <Link
+                key={session.id}
+                href={`/admin/sessions/${session.id}`}
+                className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0 hover:bg-gray-50 transition-colors p-2 rounded-lg"
+              >
+                <div>
+                  <h3 className="font-medium">{session.formation.title}</h3>
+                  <p className="text-sm text-gray-500">
+                    {new Date(session.date).toLocaleDateString('fr-FR')} • {session.client?.companyName}
+                  </p>
+                </div>
+                <StatusBadge status={session.status} />
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -60,7 +60,7 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
   const expertiseIds = watch('expertiseZones') || [];
 
   useEffect(() => {
-    fetch(`${API_URL}/zones`, { credentials: "include" })
+    fetch(`${API_URL}/zones`)
       .then((res) => res.json())
       .then((data) => setZones(data))
       .catch((err) => console.error('Failed to fetch zones', err));
@@ -102,7 +102,6 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        credentials: "include",
         body: JSON.stringify(data),
       });
 

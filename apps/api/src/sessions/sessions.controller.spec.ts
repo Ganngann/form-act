@@ -13,7 +13,6 @@ describe("SessionsController", () => {
     update: jest.fn(),
     updateProof: jest.fn(),
     adminUpdate: jest.fn(),
-    getAdminStats: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -36,30 +35,18 @@ describe("SessionsController", () => {
   });
 
   describe("findAll", () => {
-    it("should parse dates and status", async () => {
+    it("should parse dates", async () => {
       await controller.findAll("2023-01-01", "2023-01-02", "PENDING");
       expect(service.findAll).toHaveBeenCalledWith(
         new Date("2023-01-01"),
         new Date("2023-01-02"),
         "PENDING",
-        undefined,
       );
     });
 
-    it("should handle filters", async () => {
-      await controller.findAll(undefined, undefined, undefined, "NO_TRAINER");
-      expect(service.findAll).toHaveBeenCalledWith(
-        undefined,
-        undefined,
-        undefined,
-        "NO_TRAINER",
-      );
-    });
-
-    it("should handle missing dates and filters", async () => {
+    it("should handle missing dates", async () => {
       await controller.findAll();
       expect(service.findAll).toHaveBeenCalledWith(
-        undefined,
         undefined,
         undefined,
         undefined,
@@ -221,20 +208,6 @@ describe("SessionsController", () => {
       mockSessionsService.adminUpdate.mockResolvedValue({});
       await controller.adminUpdate("1", {}, { user: { role: "ADMIN" } });
       expect(service.adminUpdate).toHaveBeenCalled();
-    });
-  });
-
-  describe("getAdminStats", () => {
-    it("should allow ADMIN", async () => {
-      mockSessionsService.getAdminStats = jest.fn().mockResolvedValue({});
-      await controller.getAdminStats({ user: { role: "ADMIN" } });
-      expect(service.getAdminStats).toHaveBeenCalled();
-    });
-
-    it("should deny non-ADMIN", async () => {
-      await expect(
-        controller.getAdminStats({ user: { role: "CLIENT" } }),
-      ).rejects.toThrow(ForbiddenException);
     });
   });
 });

@@ -6,7 +6,6 @@ import {
   ForbiddenException,
   Patch,
   Body,
-  Param,
 } from "@nestjs/common";
 import { ClientsService } from "./clients.service";
 import { AuthGuard } from "@nestjs/passport";
@@ -40,32 +39,6 @@ export class ClientsController {
       req.user.userId,
       body,
       req.user.email, // Use email as "modifierName" for audit log
-    );
-  }
-
-  @UseGuards(AuthGuard("jwt"))
-  @Get(":id")
-  async findOne(@Request() req, @Param("id") id: string) {
-    if (req.user.role !== "ADMIN") {
-      throw new ForbiddenException("Access denied");
-    }
-    return this.clientsService.findOne(id);
-  }
-
-  @UseGuards(AuthGuard("jwt"))
-  @Patch(":id")
-  async update(
-    @Request() req,
-    @Param("id") id: string,
-    @Body() body: UpdateClientProfileDto,
-  ) {
-    if (req.user.role !== "ADMIN") {
-      throw new ForbiddenException("Access denied");
-    }
-    return this.clientsService.updateById(
-      id,
-      body,
-      `ADMIN (${req.user.email})`,
     );
   }
 }

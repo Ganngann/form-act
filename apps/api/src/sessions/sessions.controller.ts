@@ -23,21 +23,12 @@ import { AuthGuard } from "@nestjs/passport";
 
 @Controller("sessions")
 export class SessionsController {
-  constructor(private readonly sessionsService: SessionsService) {}
+  constructor(private readonly sessionsService: SessionsService) { }
 
   @UseGuards(AuthGuard("jwt"))
   @Get("me")
   async findMySessions(@Request() req) {
     return this.sessionsService.findByUserId(req.user.userId, req.user.role);
-  }
-
-  @UseGuards(AuthGuard("jwt"))
-  @Get("admin/stats")
-  async getAdminStats(@Request() req) {
-    if (req.user.role !== "ADMIN") {
-      throw new ForbiddenException("Access denied");
-    }
-    return this.sessionsService.getAdminStats();
   }
 
   @Get(":id")
@@ -50,11 +41,10 @@ export class SessionsController {
     @Query("start") start?: string,
     @Query("end") end?: string,
     @Query("status") status?: string,
-    @Query("filter") filter?: string,
   ) {
     const startDate = start ? new Date(start) : undefined;
     const endDate = end ? new Date(end) : undefined;
-    return this.sessionsService.findAll(startDate, endDate, status, filter);
+    return this.sessionsService.findAll(startDate, endDate, status);
   }
 
   @UseGuards(AuthGuard("jwt"))

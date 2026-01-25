@@ -237,9 +237,9 @@ async function main() {
   });
 
   // --- SESSIONS SEEDING ---
-  console.log('Seeding sessions for Priority Actions scenarios...');
-  // Clear all existing sessions to start clean
-  await prisma.session.deleteMany({});
+  console.log('Seeding sessions for Jean Dupont...');
+  // Clear existing sessions for this trainer to avoid duplicates during dev re-seed
+  await prisma.session.deleteMany({ where: { trainerId: formateur.id } });
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -247,92 +247,69 @@ async function main() {
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
 
-  const plus3Days = new Date(today);
-  plus3Days.setDate(today.getDate() + 3);
-
-  const plus10Days = new Date(today);
-  plus10Days.setDate(today.getDate() + 10);
-
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
 
-  const longAgo = new Date(today);
-  longAgo.setDate(today.getDate() - 20);
+  const dayAfter = new Date(today);
+  dayAfter.setDate(today.getDate() + 2);
 
-  // 1. Demandes à valider (PENDING)
-  await prisma.session.create({
-    data: {
-      date: plus10Days,
-      slot: 'ALL_DAY',
-      status: 'PENDING',
-      formation: { connect: { id: formation.id } },
-      client: { connect: { id: client.id } },
-    }
-  });
+  const nextWeek = new Date(today);
+  nextWeek.setDate(today.getDate() + 14);
 
-  const startupInc = await prisma.client.findUnique({ where: { userId: clientRecentUser.id } });
-
-  await prisma.session.create({
-    data: {
-      date: plus3Days,
-      slot: 'AM',
-      status: 'PENDING',
-      formation: { connect: { id: mgtFormation.id } },
-      client: { connect: { id: startupInc.id } },
-    }
-  });
-
-  // 2. Sessions sans formateur (CONFIRMED et trainerId est null)
-  await prisma.session.create({
-    data: {
-      date: plus10Days,
-      slot: 'ALL_DAY',
-      status: 'CONFIRMED',
-      formation: { connect: { id: excelFormation.id } },
-      client: { connect: { id: client.id } },
-    }
-  });
-
-  // 3. Logistique manquante (J-7, status CONFIRMED et logistics est null)
-  await prisma.session.create({
-    data: {
-      date: plus3Days,
-      slot: 'ALL_DAY',
-      status: 'CONFIRMED',
-      trainer: { connect: { id: formateur.id } },
-      formation: { connect: { id: formation.id } },
-      client: { connect: { id: client.id } },
-      logistics: null,
-    }
-  });
-
-  // 4. Feuilles de présence manquantes (Session passée, status CONFIRMED, proofUrl null)
+  // 1. Past Session (Yesterday) - Confirmed
   await prisma.session.create({
     data: {
       date: yesterday,
       slot: 'ALL_DAY',
       status: 'CONFIRMED',
       trainer: { connect: { id: formateur.id } },
-      formation: { connect: { id: formation.id } },
+      formation: { connect: { id: formation.id } }, // NestJS
       client: { connect: { id: client.id } },
-      proofUrl: null
+      location: 'Rue de la Loi 16, 1000 Bruxelles',
+      participants: JSON.stringify([{ firstName: 'Alice', lastName: 'Acme' }])
     }
   });
 
-  // 5. À Facturer (Session passée, proofUrl présent, mais billedAt null)
+  // 2. Tomorrow: FULL_DAY session (Next Mission) - Confirmed
   await prisma.session.create({
     data: {
-      date: longAgo,
+      date: tomorrow,
       slot: 'ALL_DAY',
       status: 'CONFIRMED',
       trainer: { connect: { id: formateur.id } },
-      formation: { connect: { id: mgtFormation.id } },
+      formation: { connect: { id: formation.id } }, // NestJS
       client: { connect: { id: client.id } },
-      proofUrl: "/files/proofs/attendance-sheet.pdf",
-      billedAt: null
+      location: 'Rue de la Loi 16, 1000 Bruxelles',
+      logistics: JSON.stringify({ wifi: 'Yes', projector: 'Needed', access: 'Badge required' }),
+      participants: JSON.stringify([{ firstName: 'Alice', lastName: 'Acme' }, { firstName: 'Bob', lastName: 'Builders' }])
     }
   });
 
+  // 3. Day After: AM session - Confirmed
+  await prisma.session.create({
+    data: {
+      date: dayAfter,
+      slot: 'AM',
+      status: 'CONFIRMED',
+      trainer: { connect: { id: formateur.id } },
+      formation: { connect: { id: formation.id } },
+      client: { connect: { id: client.id } },
+    }
+  });
+
+  // 4. Next Week: PM session - Pending
+  await prisma.session.create({
+    data: {
+      date: nextWeek,
+      slot: 'PM',
+      status: 'PENDING',
+      trainer: { connect: { id: formateur.id } },
+      formation: { connect: { id: mgtFormation.id } }, // Management
+      client: { connect: { id: client.id } },
+    }
+  });
+
+  console.log({ formateur, formation });
   console.log('Seeding finished.');
 }
 

@@ -1,14 +1,28 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { StatusBadge } from "@/components/ui/status-badge"
 import { API_URL } from "@/lib/config"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
 import Link from "next/link"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { SessionCard, Session } from "@/components/dashboard/session-card"
-import { DashboardAlerts } from "@/components/dashboard/dashboard-alerts"
-import { User, FileText } from "lucide-react"
-import { differenceInCalendarDays } from "date-fns"
+import { Button } from "@/components/ui/button"
+import { LogoutButton } from "@/components/LogoutButton"
+
+type Session = {
+    id: string
+    date: string
+    slot: string
+    status: string
+    formation: {
+        title: string
+    }
+    trainer?: {
+        firstName: string
+        lastName: string
+    }
+}
 
 export default function ClientDashboard() {
     const [sessions, setSessions] = useState<Session[]>([])
@@ -30,154 +44,66 @@ export default function ClientDashboard() {
             })
     }, [])
 
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-
-    const isMissingParticipants = (s: Session) => {
-        return !s.participants || s.participants === '[]' || s.participants === '{}';
-    };
-
-    const isMissingLogistics = (s: Session) => {
-        return !s.logistics || s.logistics === '{}';
-    };
-
-    const isActionRequired = (s: Session) => {
-        if (s.status !== 'CONFIRMED') return false;
-        const sessionDate = new Date(s.date);
-        sessionDate.setHours(0, 0, 0, 0);
-
-        // Past sessions are not "Action Required" for logistics (unless proof is missing, but that's trainer side)
-        // Actually, the prompt implies "Upcoming" context for "Action Required".
-        if (sessionDate < now) return false;
-
-        const daysDiff = differenceInCalendarDays(sessionDate, now);
-
-        // 1. Missing Logistics (Always urgent if confirmed)
-        if (isMissingLogistics(s)) return true;
-
-        // 2. Missing Participants (Urgent if < J-15)
-        if (isMissingParticipants(s) && daysDiff < 15) return true;
-
-        return false;
-    };
-
-    const actionRequiredSessions = sessions.filter(isActionRequired);
-
-    const upcomingSessions = sessions.filter(s => {
-        const sessionDate = new Date(s.date);
-        sessionDate.setHours(0, 0, 0, 0);
-        return sessionDate >= now && !isActionRequired(s);
-    });
-
-    const completedSessions = sessions.filter(s => {
-        const sessionDate = new Date(s.date);
-        sessionDate.setHours(0, 0, 0, 0);
-        return sessionDate < now;
-    });
-
-    // Alert Logic
-    const participantAlerts = sessions.filter(s => {
-        const sessionDate = new Date(s.date);
-        sessionDate.setHours(0, 0, 0, 0);
-        const daysDiff = differenceInCalendarDays(sessionDate, now);
-
-        return sessionDate >= now && daysDiff < 15 && isMissingParticipants(s);
-    });
-
-    const alerts = [];
-    if (participantAlerts.length > 0) {
-        alerts.push({
-            type: 'missing-participants' as const,
-            count: participantAlerts.length,
-            earliestDate: new Date(Math.min(...participantAlerts.map(s => new Date(s.date).getTime())))
-        });
-    }
-
     return (
         <div className="container mx-auto py-10 px-4">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold">Mon Espace Client</h1>
-
-                <Link href="/dashboard/profile" className="w-full md:w-auto">
-                    <div className="flex items-center gap-3 bg-white border rounded-lg p-3 hover:bg-slate-50 transition-colors shadow-sm cursor-pointer">
-                        <div className="bg-primary/10 p-2 rounded-full text-primary">
-                            <User size={20} />
-                        </div>
-                        <div>
-                            <p className="font-semibold text-sm">Mon Profil & Facturation</p>
-                            <p className="text-xs text-muted-foreground">TVA, Adresse, Email</p>
-                        </div>
-                    </div>
-                </Link>
             </div>
 
-            <DashboardAlerts alerts={alerts} />
-
             <div className="grid gap-6">
+                <h2 className="text-xl font-semibold">Mes Sessions de Formation</h2>
+
                 {loading ? (
                     <p>Chargement de vos formations...</p>
+                ) : sessions.length > 0 ? (
+                    <div className="grid gap-4">
+                        {sessions.map((session) => (
+                            <Card key={session.id}>
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                    <CardTitle className="text-lg font-bold">
+                                        {session.formation.title}
+                                    </CardTitle>
+                                    <StatusBadge status={session.status} />
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mt-2">
+                                        <div>
+                                            <p className="text-muted-foreground">Date & Créneau</p>
+                                            <p className="font-medium">
+                                                {format(new Date(session.date), "EEEE d MMMM yyyy", { locale: fr })}
+                                                <br />
+                                                <span className="text-xs uppercase px-1.5 py-0.5 bg-secondary rounded mt-1 inline-block">
+                                                    {session.slot}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-muted-foreground">Formateur</p>
+                                            <p className="font-medium">
+                                                {session.trainer
+                                                    ? `${session.trainer.firstName} ${session.trainer.lastName}`
+                                                    : "En attente d'assignation"}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-end justify-end">
+                                            <Link href={`/dashboard/sessions/${session.id}`}>
+                                                <Button variant="outline" size="sm">Détails</Button>
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
                 ) : (
-                    <Tabs defaultValue={actionRequiredSessions.length > 0 ? "actions" : "upcoming"} className="w-full">
-                        <TabsList className="grid w-full grid-cols-3 mb-8">
-                            <TabsTrigger value="actions" className="relative">
-                                ⚠️ Action requise
-                                {actionRequiredSessions.length > 0 && (
-                                    <span className="ml-2 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">
-                                        {actionRequiredSessions.length}
-                                    </span>
-                                )}
-                            </TabsTrigger>
-                            <TabsTrigger value="upcoming">📅 À venir</TabsTrigger>
-                            <TabsTrigger value="completed">✅ Terminées</TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="actions">
-                            {actionRequiredSessions.length > 0 ? (
-                                <div className="grid gap-4">
-                                    {actionRequiredSessions.map((session) => (
-                                        <SessionCard key={session.id} session={session} isActionRequired={true} />
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-12 bg-slate-50 rounded-lg border border-dashed">
-                                    <p className="text-muted-foreground">Aucune action requise pour le moment.</p>
-                                </div>
-                            )}
-                        </TabsContent>
-
-                        <TabsContent value="upcoming">
-                            {upcomingSessions.length > 0 ? (
-                                <div className="grid gap-4">
-                                    {upcomingSessions.map((session) => (
-                                        <SessionCard key={session.id} session={session} />
-                                    ))}
-                                </div>
-                            ) : (
-                                <Card>
-                                    <CardContent className="py-10 text-center text-muted-foreground">
-                                        <p className="mb-4">Vous n&apos;avez pas de sessions à venir.</p>
-                                        <Link href="/catalogue" className="text-primary hover:underline font-medium">
-                                            Parcourir le catalogue
-                                        </Link>
-                                    </CardContent>
-                                </Card>
-                            )}
-                        </TabsContent>
-
-                        <TabsContent value="completed">
-                            {completedSessions.length > 0 ? (
-                                <div className="grid gap-4 opacity-75">
-                                    {completedSessions.map((session) => (
-                                        <SessionCard key={session.id} session={session} />
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-12">
-                                    <p className="text-muted-foreground">Aucune session terminée.</p>
-                                </div>
-                            )}
-                        </TabsContent>
-                    </Tabs>
+                    <Card>
+                        <CardContent className="py-10 text-center text-muted-foreground">
+                            <p className="mb-4">Vous n&apos;avez pas encore de sessions de formation réservées.</p>
+                            <Link href="/catalogue" className="text-primary hover:underline font-medium">
+                                Parcourir le catalogue
+                            </Link>
+                        </CardContent>
+                    </Card>
                 )}
             </div>
         </div>
