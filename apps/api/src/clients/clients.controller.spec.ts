@@ -9,6 +9,8 @@ describe("ClientsController", () => {
 
   const mockClientsService = {
     findAll: jest.fn(),
+    findOne: jest.fn(),
+    updateById: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -46,6 +48,46 @@ describe("ClientsController", () => {
       const req = { user: { role: "TRAINER" } };
 
       await expect(controller.findAll(req)).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("findOne", () => {
+    it("should allow ADMIN", async () => {
+      mockClientsService.findOne.mockResolvedValue({ id: "1" });
+      await controller.findOne({ user: { role: "ADMIN" } }, "1");
+      expect(service.findOne).toHaveBeenCalledWith("1");
+    });
+
+    it("should deny non-ADMIN", async () => {
+      await expect(
+        controller.findOne({ user: { role: "CLIENT" } }, "1"),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("update", () => {
+    it("should allow ADMIN", async () => {
+      mockClientsService.updateById.mockResolvedValue({ id: "1" });
+      await controller.update(
+        { user: { role: "ADMIN", email: "a@a.be" } },
+        "1",
+        { companyName: "New", vatNumber: "123", address: "Addr" },
+      );
+      expect(service.updateById).toHaveBeenCalledWith(
+        "1",
+        { companyName: "New", vatNumber: "123", address: "Addr" },
+        "ADMIN (a@a.be)",
+      );
+    });
+
+    it("should deny non-ADMIN", async () => {
+      await expect(
+        controller.update(
+          { user: { role: "CLIENT" } },
+          "1",
+          { companyName: "A", vatNumber: "B", address: "C" },
+        ),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 });

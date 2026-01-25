@@ -146,4 +146,49 @@ describe("ClientsService", () => {
       expect(prisma.client.update).not.toHaveBeenCalled();
     });
   });
+
+  describe("findOne", () => {
+    it("should return client by id", async () => {
+      const mockClient = { id: "c1" } as Client;
+      jest.spyOn(prisma.client, "findUnique").mockResolvedValue(mockClient);
+
+      const result = await service.findOne("c1");
+      expect(result).toBe(mockClient);
+    });
+
+    it("should throw if not found", async () => {
+      jest.spyOn(prisma.client, "findUnique").mockResolvedValue(null);
+      await expect(service.findOne("c1")).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe("updateById", () => {
+    it("should update any client by id", async () => {
+      const mockClient = {
+        id: "c1",
+        userId: "u1",
+        companyName: "Old",
+        vatNumber: "123",
+        address: "Addr",
+        user: { email: "old@test.com" },
+      } as unknown as Client & { user: { email: string } };
+
+      jest.spyOn(service, "findOne").mockResolvedValue(mockClient as any);
+      jest.spyOn(prisma.client, "update").mockResolvedValue({} as any);
+      jest.spyOn(prisma.user, "update").mockResolvedValue({} as any);
+
+      await service.updateById(
+        "c1",
+        { companyName: "New", vatNumber: "123", address: "Addr" },
+        "Admin",
+      );
+
+      expect(prisma.client.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: "c1" },
+          data: expect.objectContaining({ companyName: "New" }),
+        }),
+      );
+    });
+  });
 });

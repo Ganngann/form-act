@@ -21,6 +21,7 @@ describe("SessionsService", () => {
               findUnique: jest.fn(),
               findMany: jest.fn(),
               update: jest.fn(),
+              count: jest.fn(),
             },
           },
         },
@@ -99,6 +100,83 @@ describe("SessionsService", () => {
           where: { date: { gte: start, lte: end } },
         }),
       );
+    });
+
+    it("should handle NO_TRAINER filter", async () => {
+      await service.findAll(undefined, undefined, undefined, "NO_TRAINER");
+      expect(prisma.session.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            status: "CONFIRMED",
+            trainerId: null,
+          }),
+        }),
+      );
+    });
+
+    it("should handle MISSING_LOGISTICS filter", async () => {
+      await service.findAll(undefined, undefined, undefined, "MISSING_LOGISTICS");
+      expect(prisma.session.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            status: "CONFIRMED",
+            OR: [
+              { logistics: null },
+              { logistics: "" },
+              { logistics: "{}" },
+            ],
+          }),
+        }),
+      );
+    });
+
+    it("should handle MISSING_PROOF filter", async () => {
+      await service.findAll(undefined, undefined, undefined, "MISSING_PROOF");
+      expect(prisma.session.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            status: "CONFIRMED",
+            proofUrl: null,
+          }),
+        }),
+      );
+    });
+
+    it("should handle READY_TO_BILL filter", async () => {
+      await service.findAll(undefined, undefined, undefined, "READY_TO_BILL");
+      expect(prisma.session.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            proofUrl: { not: null },
+            billedAt: null,
+          }),
+        }),
+      );
+    });
+  });
+
+  describe("findByUserId", () => {
+    it("should return client sessions", async () => {
+      await service.findByUserId("u1", "CLIENT");
+      expect(prisma.session.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { client: { userId: "u1" } },
+        }),
+      );
+    });
+
+    it("should return trainer sessions", async () => {
+      await service.findByUserId("u2", "TRAINER");
+      expect(prisma.session.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { trainer: { userId: "u2" } },
+        }),
+      );
+    });
+
+    it("should return empty array for other roles", async () => {
+      const result = await service.findByUserId("u3", "ADMIN");
+      expect(result).toEqual([]);
     });
   });
 
@@ -204,6 +282,24 @@ describe("SessionsService", () => {
       await service.adminUpdate("1", { status: "CANCELLED" });
 
       expect(emailService.sendEmail).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("getAdminStats", () => {
+    it("should return counts", async () => {
+      jest.spyOn(prisma.session, "count").mockResolvedValue(5);
+
+      const result = await service.getAdminStats();
+
+      expect(result).toEqual({
+        pendingRequests: 5,
+        noTrainer: 5,
+        missingLogistics: 5,
+        missingProof: 5,
+        readyToBill: 5,
+      });
+      // Called 5 times for 5 metrics
+      expect(prisma.session.count).toHaveBeenCalledTimes(5);
     });
   });
 });
