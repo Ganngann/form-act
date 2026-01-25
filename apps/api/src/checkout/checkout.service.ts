@@ -10,13 +10,13 @@ export class CheckoutService {
     private prisma: PrismaService,
     private authService: AuthService,
     private emailService: EmailService,
-  ) { }
+  ) {}
 
   async processCheckout(data: CreateBookingDto) {
     // Check if user exists
     let user = await this.prisma.user.findUnique({
       where: { email: data.email },
-      include: { client: true }
+      include: { client: true },
     });
 
     if (!user && !data.password) {
@@ -27,21 +27,25 @@ export class CheckoutService {
     const result = await this.prisma.$transaction(async (tx) => {
       // 1. Get or Create User
       if (!user) {
-        const hashedPassword = await this.authService.hashPassword(data.password!);
+        const hashedPassword = await this.authService.hashPassword(
+          data.password!,
+        );
         user = await tx.user.create({
           data: {
             email: data.email,
             name: data.companyName,
             password: hashedPassword,
           },
-          include: { client: true }
+          include: { client: true },
         });
       }
 
       // 2. Get or Create Client
-      let client = user.client || await tx.client.findUnique({
-        where: { vatNumber: data.vatNumber }
-      });
+      let client =
+        user.client ||
+        (await tx.client.findUnique({
+          where: { vatNumber: data.vatNumber },
+        }));
 
       if (!client) {
         client = await tx.client.create({
@@ -53,7 +57,9 @@ export class CheckoutService {
           },
         });
       } else if (client.userId !== user.id) {
-        throw new BadRequestException("VAT number already associated with another account.");
+        throw new BadRequestException(
+          "VAT number already associated with another account.",
+        );
       }
 
       // 2.5 Check for conflicts if trainer is assigned

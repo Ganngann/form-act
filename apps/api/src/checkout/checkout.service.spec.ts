@@ -79,9 +79,7 @@ describe("CheckoutService", () => {
     it("should use existing user if user already exists", async () => {
       // User exists outside transaction
       const existingUser = { id: "1", email: "test@example.com" } as User;
-      jest
-        .spyOn(prisma.user, "findUnique")
-        .mockResolvedValue(existingUser);
+      jest.spyOn(prisma.user, "findUnique").mockResolvedValue(existingUser);
 
       // Client does not exist
       mockTx.client.findUnique.mockResolvedValue(null);
@@ -107,7 +105,11 @@ describe("CheckoutService", () => {
       mockTx.user.create.mockResolvedValue(newUser);
 
       // Client exists but belongs to "other-user-id"
-      mockTx.client.findUnique.mockResolvedValue({ id: "1", vatNumber: "VAT123", userId: "other-user-id" } as Client);
+      mockTx.client.findUnique.mockResolvedValue({
+        id: "1",
+        vatNumber: "VAT123",
+        userId: "other-user-id",
+      } as Client);
 
       await expect(service.processCheckout(mockDto)).rejects.toThrow(
         BadRequestException,
@@ -203,16 +205,18 @@ describe("CheckoutService", () => {
 
       await service.processCheckout(allDayDto);
 
-      expect(mockTx.session.findFirst).toHaveBeenCalledWith(expect.objectContaining({
-        where: expect.objectContaining({
-          OR: expect.arrayContaining([
-            { slot: "ALL_DAY" },
-            { slot: "ALL_DAY" },
-            { slot: "AM" },
-            { slot: "PM" }
-          ])
-        })
-      }));
+      expect(mockTx.session.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            OR: expect.arrayContaining([
+              { slot: "ALL_DAY" },
+              { slot: "ALL_DAY" },
+              { slot: "AM" },
+              { slot: "PM" },
+            ]),
+          }),
+        }),
+      );
     });
   });
 });

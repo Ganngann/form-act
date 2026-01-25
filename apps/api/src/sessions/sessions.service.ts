@@ -9,7 +9,7 @@ export class SessionsService {
   constructor(
     private prisma: PrismaService,
     private emailService: EmailService,
-  ) { }
+  ) {}
 
   async findOne(id: string) {
     const session = await this.prisma.session.findUnique({

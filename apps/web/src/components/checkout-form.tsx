@@ -26,11 +26,14 @@ interface CheckoutFormProps {
     date: string
     slot: string
     isLoggedIn?: boolean
+    formationTitle?: string
+    formationPrice?: string | number | null
+    trainerName?: string
 }
 
-export function CheckoutForm({ formationId, trainerId, date, slot, isLoggedIn }: CheckoutFormProps) {
+export function CheckoutForm({ formationId, trainerId, date, slot, isLoggedIn, formationTitle, formationPrice, trainerName }: CheckoutFormProps) {
     const pathname = usePathname()
-
+    const [step, setStep] = useState(1)
     const [loadingVat, setLoadingVat] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState("")
@@ -80,7 +83,13 @@ export function CheckoutForm({ formationId, trainerId, date, slot, isLoggedIn }:
         }
     }
 
-    const onSubmit = async (data: FormData) => {
+    const onSubmitStep1 = (data: FormData) => {
+        setStep(2)
+        window.scrollTo(0, 0)
+    }
+
+    const handleConfirm = async () => {
+        const data = getValues()
         setSubmitting(true)
         setError("")
 
@@ -115,8 +124,60 @@ export function CheckoutForm({ formationId, trainerId, date, slot, isLoggedIn }:
 
     const labelClass = "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
 
+    if (step === 2) {
+        const data = getValues()
+        return (
+            <div className="space-y-6">
+                <Card>
+                    <CardContent className="pt-6 space-y-4">
+                        <h2 className="text-xl font-bold">Récapitulatif de la commande</h2>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <h3 className="font-semibold mb-2">Session</h3>
+                                <p><span className="font-medium">Formation :</span> {formationTitle}</p>
+                                <p><span className="font-medium">Date :</span> {date}</p>
+                                <p><span className="font-medium">Créneau :</span> {slot}</p>
+                                <p><span className="font-medium">Formateur :</span> {trainerName || "Non attribué"}</p>
+                            </div>
+                            <div>
+                                <h3 className="font-semibold mb-2">Facturation</h3>
+                                <p><span className="font-medium">Entreprise :</span> {data.companyName}</p>
+                                <p><span className="font-medium">TVA :</span> {data.vatNumber}</p>
+                                <p><span className="font-medium">Adresse :</span> {data.address}</p>
+                                <p><span className="font-medium">Email :</span> {data.email}</p>
+                            </div>
+                        </div>
+
+                        <div className="border-t pt-4 mt-4">
+                            <div className="flex justify-between items-center text-lg font-bold">
+                                <span>Estimation Tarifaire</span>
+                                <span>{formationPrice ? `${formationPrice} € HTVA` : "Sur devis"}</span>
+                            </div>
+                            <div className="bg-yellow-50 text-yellow-800 p-3 rounded-md mt-4 text-sm">
+                        <p><strong>Note importante :</strong> Le prix final incluant les frais de déplacement exacts sera validé par l&apos;admin à la facturation.</p>
+                                <p className="mt-1">La facturation sera effectuée via Odoo après la prestation.</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {error && <div className="p-3 bg-red-100 text-red-700 rounded">{error}</div>}
+
+                <div className="flex gap-4">
+                    <Button variant="outline" onClick={() => setStep(1)} disabled={submitting} className="w-full">
+                        Retour
+                    </Button>
+                    <Button onClick={handleConfirm} disabled={submitting} className="w-full">
+                        {submitting ? "Traitement..." : "Valider ma demande de prestation"}
+                    </Button>
+                </div>
+            </div>
+        )
+    }
+
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmitStep1)} className="space-y-6">
             <Card>
                 <CardContent className="pt-6 space-y-4">
                     <div className="flex gap-2 items-end">
@@ -177,7 +238,7 @@ export function CheckoutForm({ formationId, trainerId, date, slot, isLoggedIn }:
             {error && <div className="p-3 bg-red-100 text-red-700 rounded">{error}</div>}
 
             <Button type="submit" className="w-full" disabled={submitting}>
-                {submitting ? "Traitement..." : "Confirmer la réservation"}
+                {submitting ? "Traitement..." : "Vérifier et continuer"}
             </Button>
         </form>
     )

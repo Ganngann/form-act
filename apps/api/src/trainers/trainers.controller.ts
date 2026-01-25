@@ -37,6 +37,18 @@ export class TrainersController {
     return this.trainersService.getMissions(id);
   }
 
+  @Get(":id/public")
+  async findOnePublic(@Param("id") id: string) {
+    const trainer = await this.trainersService.findOne(id);
+    return {
+      id: trainer.id,
+      firstName: trainer.firstName,
+      lastName: trainer.lastName,
+      bio: trainer.bio,
+      avatarUrl: trainer.avatarUrl,
+    };
+  }
+
   @UseGuards(AuthGuard("jwt"))
   @Get(":id")
   async findOne(@Param("id") id: string, @Request() req) {

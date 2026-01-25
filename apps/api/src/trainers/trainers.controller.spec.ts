@@ -49,6 +49,32 @@ describe("TrainersController", () => {
     });
   });
 
+  describe("findOnePublic", () => {
+    it("should return filtered public info", async () => {
+      mockTrainersService.findOne.mockResolvedValue({
+        id: "1",
+        firstName: "John",
+        lastName: "Doe",
+        bio: "Bio",
+        avatarUrl: "url",
+        email: "secret@email.com",
+        userId: "u1",
+      });
+
+      const result = await controller.findOnePublic("1");
+
+      expect(result).toEqual({
+        id: "1",
+        firstName: "John",
+        lastName: "Doe",
+        bio: "Bio",
+        avatarUrl: "url",
+      });
+      // Ensure sensitive data is NOT present
+      expect((result as unknown as { email?: string }).email).toBeUndefined();
+    });
+  });
+
   describe("findOne", () => {
     it("should return trainer for ADMIN", async () => {
       mockTrainersService.findOne.mockResolvedValue({

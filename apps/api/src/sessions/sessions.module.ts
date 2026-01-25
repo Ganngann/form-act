@@ -10,4 +10,4 @@ import { EmailModule } from "../email/email.module";
   providers: [SessionsService],
   exports: [SessionsService],
 })
-export class SessionsModule { }
+export class SessionsModule {}
