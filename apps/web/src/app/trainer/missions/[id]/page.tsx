@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { API_URL } from '@/lib/config';
-import { LogoutButton } from '@/components/LogoutButton';
+
 import { ProofUploadWidget } from '@/components/trainer/proof-upload-widget';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -72,7 +72,7 @@ export default async function MissionDetailsPage({ params }: { params: { id: str
                             )}
                         </div>
                     </div>
-                    <LogoutButton />
+
                 </div>
             </div>
 
