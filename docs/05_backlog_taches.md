@@ -17,10 +17,10 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 - [x] S'assurer que le client peut éditer le lieu/participants/matériel tant que ce n'est pas verrouillé (J-7).
 
 ### Bug-07 : Amélioration Seed (Dette Technique)
-- [ ] Corriger `seed.ts` pour utiliser des `upsert` robustes sur les titres de formation et éviter les multiplications infinies au re-seed.
+- [x] Corriger `seed.ts` pour utiliser des `upsert` robustes sur les titres de formation et éviter les multiplications infinies au re-seed.
 
 ### Tech-01 : Refactorisation Dialog UI (Dette Technique)
-- [ ] Le composant `apps/web/src/components/ui/dialog.tsx` est une implémentation "maison" simplifiée qui n'utilise pas les primitives complètes de `@radix-ui/react-dialog` (Portal, Overlay). Il faudrait le migrer vers l'implémentation standard shadcn/ui pour garantir une accessibilité et une gestion du focus optimales.
+- [x] Le composant `apps/web/src/components/ui/dialog.tsx` est une implémentation "maison" simplifiée qui n'utilise pas les primitives complètes de `@radix-ui/react-dialog` (Portal, Overlay). Il faudrait le migrer vers l'implémentation standard shadcn/ui pour garantir une accessibilité et une gestion du focus optimales.
 
 ---
 
