@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MapPin, Calendar, Clock, User } from 'lucide-react';
+import { MapPin, Calendar, Clock, User, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface NextMissionCardProps {
@@ -8,6 +8,14 @@ interface NextMissionCardProps {
 
 export function NextMissionCard({ mission }: NextMissionCardProps) {
   if (!mission) return null;
+
+  let participantCount = 0;
+  try {
+    const participants = mission.participants ? JSON.parse(mission.participants) : [];
+    participantCount = participants.length;
+  } catch (e) {
+    console.error('Failed to parse participants', e);
+  }
 
   const address = mission.location || mission.client?.address || 'Adresse manquante';
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
@@ -44,7 +52,11 @@ export function NextMissionCard({ mission }: NextMissionCardProps) {
                 'Journée (09:00 - 17:00)'}
           </span>
         </div>
-        <div className="flex items-center gap-3 md:col-span-2">
+        <div className="flex items-center gap-3">
+          <Users className="h-5 w-5 opacity-80" />
+          <span>{participantCount} participant{participantCount !== 1 ? 's' : ''}</span>
+        </div>
+        <div className="flex items-center gap-3">
           <MapPin className="h-5 w-5 opacity-80" />
           <span className="truncate">{address}</span>
         </div>

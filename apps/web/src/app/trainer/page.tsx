@@ -77,38 +77,54 @@ export default async function TrainerPage() {
                         Aucune mission à venir pour le moment.
                     </div>
                 ) : (
-                    missions.map((mission: any) => (
-                        <Link
-                            href={`/trainer/missions/${mission.id}`}
-                            key={mission.id}
-                            className="block bg-white p-6 border rounded-lg shadow-sm hover:shadow-md hover:border-blue-500 transition-all duration-200 group"
-                        >
-                            <div className="flex justify-between items-start">
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">
-                                            {new Date(mission.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })}
-                                        </span>
-                                        {mission.slot && (
-                                            <span className="text-gray-500 text-sm border px-2 py-0.5 rounded">
-                                                {mission.slot}
+                    missions.map((mission: any) => {
+                        let participantCount = 0;
+                        try {
+                            const participants = mission.participants ? JSON.parse(mission.participants) : [];
+                            participantCount = participants.length;
+                        } catch (e) {
+                            console.error('Failed to parse participants', e);
+                        }
+
+                        return (
+                            <Link
+                                href={`/trainer/missions/${mission.id}`}
+                                key={mission.id}
+                                className="block bg-white p-6 border rounded-lg shadow-sm hover:shadow-md hover:border-blue-500 transition-all duration-200 group"
+                            >
+                                <div className="flex justify-between items-start">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">
+                                                {new Date(mission.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })}
                                             </span>
-                                        )}
+                                            {mission.slot && (
+                                                <span className="text-gray-500 text-sm border px-2 py-0.5 rounded">
+                                                    {mission.slot}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <h2 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                            {mission.formation.title}
+                                        </h2>
+                                        <div className="flex flex-wrap gap-4 mt-2 text-gray-600">
+                                            <p className="flex items-center gap-2">
+                                                <span className="font-medium">Client :</span>
+                                                {mission.client?.companyName || 'N/A'}
+                                            </p>
+                                            <p className="flex items-center gap-2">
+                                                <span className="font-medium">Participants :</span>
+                                                {participantCount}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <h2 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                                        {mission.formation.title}
-                                    </h2>
-                                    <p className="text-gray-600 mt-2 flex items-center gap-2">
-                                        <span className="font-medium">Client :</span>
-                                        {mission.client?.companyName || 'N/A'}
-                                    </p>
+                                    <div className="text-gray-400 group-hover:text-blue-500">
+                                        →
+                                    </div>
                                 </div>
-                                <div className="text-gray-400 group-hover:text-blue-500">
-                                    →
-                                </div>
-                            </div>
-                        </Link>
-                    ))
+                            </Link>
+                        );
+                    })
                 )}
             </div>
         </div>
