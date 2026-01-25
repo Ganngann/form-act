@@ -9,7 +9,7 @@ export class SessionsService {
   constructor(
     private prisma: PrismaService,
     private emailService: EmailService,
-  ) {}
+  ) { }
 
   async findOne(id: string) {
     const session = await this.prisma.session.findUnique({
@@ -148,5 +148,63 @@ export class SessionsService {
     }
 
     return updatedSession;
+  }
+
+  async getAdminStats() {
+    const now = new Date();
+    const in7Days = new Date();
+    in7Days.setDate(now.getDate() + 7);
+
+    const [
+      pendingRequests,
+      noTrainer,
+      missingLogistics,
+      missingProof,
+      readyToBill
+    ] = await Promise.all([
+      // 1. Demandes à valider (PENDING)
+      this.prisma.session.count({ where: { status: 'PENDING' } }),
+
+      // 2. Sessions sans formateur (CONFIRMED et trainerId est null)
+      this.prisma.session.count({ where: { status: 'CONFIRMED', trainerId: null } }),
+
+      // 3. Logistique manquante (J-7, status CONFIRMED et logistics est null/vide)
+      this.prisma.session.count({
+        where: {
+          status: 'CONFIRMED',
+          date: { gte: now, lte: in7Days },
+          OR: [
+            { logistics: null },
+            { logistics: "" },
+            { logistics: "{}" }
+          ]
+        }
+      }),
+
+      // 4. Feuilles de présence manquantes (Session passée, status CONFIRMED ou PROOF_RECEIVED, mais proofUrl null)
+      this.prisma.session.count({
+        where: {
+          date: { lt: now },
+          status: 'CONFIRMED',
+          proofUrl: null
+        }
+      }),
+
+      // 5. À Facturer (Session passée, proofUrl présent, mais billedAt null)
+      this.prisma.session.count({
+        where: {
+          proofUrl: { not: null },
+          billedAt: null
+        }
+      })
+    ]);
+
+    return {
+      pendingRequests,
+      noTrainer,
+      missingLogistics,
+      missingProof,
+      readyToBill
+    };
   }
 }

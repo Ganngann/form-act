@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { MasterCalendar } from '@/components/admin/master-calendar';
+import { PriorityActions } from '@/components/admin/priority-actions';
 
 async function getUpcomingSessions() {
   const cookieStore = cookies();
@@ -36,6 +37,12 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-8">
+        {/* Actions Prioritaires */}
+        <section className="space-y-4">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Actions Prioritaires</h2>
+          <PriorityActions />
+        </section>
+
         {/* Calendrier Principal */}
         <section className="overflow-hidden">
           <MasterCalendar />

@@ -31,6 +31,15 @@ export class SessionsController {
     return this.sessionsService.findByUserId(req.user.userId, req.user.role);
   }
 
+  @UseGuards(AuthGuard("jwt"))
+  @Get("admin/stats")
+  async getAdminStats(@Request() req) {
+    if (req.user.role !== "ADMIN") {
+      throw new ForbiddenException("Access denied");
+    }
+    return this.sessionsService.getAdminStats();
+  }
+
   @Get(":id")
   async findOne(@Param("id") id: string) {
     return this.sessionsService.findOne(id);
