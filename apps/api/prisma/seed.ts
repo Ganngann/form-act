@@ -118,88 +118,73 @@ async function main() {
   });
 
   const formationTitle = 'Introduction to NestJS';
-  let formation = await prisma.formation.findFirst({
+  const formation = await prisma.formation.upsert({
     where: { title: formationTitle },
-  });
-
-  if (!formation) {
-    formation = await prisma.formation.create({
-      data: {
-        title: formationTitle,
-        description: 'Learn the basics of NestJS framework.',
-        level: 'Beginner',
-        duration: '2 jours',
-        durationType: 'FULL_DAY',
-        expertise: {
-          connect: { name: 'NestJS' },
-        },
-        category: {
-          connect: { name: 'Développement' },
-        }
+    update: {
+      duration: '2 jours',
+      durationType: 'FULL_DAY',
+      expertise: {
+        connect: { name: 'NestJS' },
       },
-    });
-  } else {
-    // Update existing if needed (e.g. if duration was missing)
-    await prisma.formation.update({
-      where: { id: formation.id },
-      data: {
-        duration: '2 jours',
-        durationType: 'FULL_DAY',
-        expertise: {
-          connect: { name: 'NestJS' },
-        },
-        category: {
-          connect: { name: 'Développement' },
-        }
-      }
-    });
-  }
+      category: {
+        connect: { name: 'Développement' },
+      },
+    },
+    create: {
+      title: formationTitle,
+      description: 'Learn the basics of NestJS framework.',
+      level: 'Beginner',
+      duration: '2 jours',
+      durationType: 'FULL_DAY',
+      expertise: {
+        connect: { name: 'NestJS' },
+      },
+      category: {
+        connect: { name: 'Développement' },
+      },
+    },
+  });
 
   // Management Formation
   const managementTitle = 'Management 101';
   const mgtFormation = await prisma.formation.upsert({
-    where: { id: 'management-101' },
+    where: { title: managementTitle },
     update: {
-      category: { connect: { name: 'Management' } }
+      category: { connect: { name: 'Management' } },
     },
     create: {
+      id: 'management-101',
       title: managementTitle,
       description: 'Basics of Team Management',
       level: 'Beginner',
       duration: '1 jour',
       expertise: {
-        connect: { name: 'Management' }
+        connect: { name: 'Management' },
       },
-      category: { connect: { name: 'Management' } }
-    }
+      category: { connect: { name: 'Management' } },
+    },
   });
 
   // Excel (Bureautique)
   const excelTitle = 'Excel Basics';
-  const excelFormation = await prisma.formation.findFirst({ where: { title: excelTitle } });
-  if (!excelFormation) {
-    await prisma.formation.create({
-      data: {
-        title: excelTitle,
-        description: 'Spreadsheets for everyone',
-        level: 'Beginner',
-        duration: '3 jours',
-        durationType: 'HALF_DAY',
-        expertise: {
-          connect: { name: 'Bureautique' }
-        },
-        category: { connect: { name: 'Bureautique' } }
-      }
-    });
-  } else {
-    await prisma.formation.update({
-      where: { id: excelFormation.id },
-      data: {
-        durationType: 'HALF_DAY',
-        category: { connect: { name: 'Bureautique' } }
-      }
-    });
-  }
+  const excelFormation = await prisma.formation.upsert({
+    where: { title: excelTitle },
+    update: {
+      durationType: 'HALF_DAY',
+      category: { connect: { name: 'Bureautique' } },
+    },
+    create: {
+      title: excelTitle,
+      description: 'Spreadsheets for everyone',
+      level: 'Beginner',
+      duration: '3 jours',
+      durationType: 'HALF_DAY',
+      expertise: {
+        connect: { name: 'Bureautique' },
+      },
+      category: { connect: { name: 'Bureautique' } },
+    },
+  });
 
   // Client
   const clientEmail = 'client@company.com';
