@@ -171,10 +171,10 @@ describe("ClientsService", () => {
         vatNumber: "123",
         address: "Addr",
         user: { email: "old@test.com" },
-      } as unknown as Client & { user: { email: string } };
+        sessions: [],
+      } as unknown as Awaited<ReturnType<ClientsService["findOne"]>>;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      jest.spyOn(service, "findOne").mockResolvedValue(mockClient as any);
+      jest.spyOn(service, "findOne").mockResolvedValue(mockClient);
       jest.spyOn(prisma.client, "update").mockResolvedValue(mockClient);
       jest.spyOn(prisma.user, "update").mockResolvedValue({} as User);
 
