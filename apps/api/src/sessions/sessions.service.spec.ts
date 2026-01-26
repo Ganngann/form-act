@@ -3,7 +3,7 @@ import { SessionsService } from "./sessions.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { EmailService } from "../email/email.service";
 import { NotFoundException } from "@nestjs/common";
-import { Session } from "@prisma/client";
+import { Session, Formation } from "@prisma/client";
 
 describe("SessionsService", () => {
   let service: SessionsService;
@@ -357,7 +357,7 @@ describe("SessionsService", () => {
         const session = {
           id: "1",
           formation: { price: "100" },
-        } as unknown as Session & { formation: Formation };
+        } as unknown as Awaited<ReturnType<SessionsService["findOne"]>>;
         jest.spyOn(service, "findOne").mockResolvedValue(session);
 
         const result = await service.getBillingPreview("1");
@@ -371,7 +371,7 @@ describe("SessionsService", () => {
           id: "1",
           client: { user: { email: "c@test.com" } },
           formation: { title: "Formation" },
-        } as unknown as Session & { formation: Formation };
+        } as unknown as Awaited<ReturnType<SessionsService["findOne"]>>;
 
         const billingData = {
           basePrice: 100,
@@ -408,7 +408,7 @@ describe("SessionsService", () => {
           id: "1",
           client: { user: { email: "c@test.com" } },
           formation: { title: "Formation" },
-        } as unknown as Session & { formation: Formation };
+        } as unknown as Awaited<ReturnType<SessionsService["findOne"]>>;
 
         const billingData = {
           basePrice: 100,
