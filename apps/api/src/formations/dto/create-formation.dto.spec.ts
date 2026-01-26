@@ -8,6 +8,7 @@ describe("CreateFormationDto", () => {
     dto.description = "Description";
     dto.level = "Beginner";
     dto.duration = "1 Day";
+    dto.durationType = "HALF_DAY";
     dto.price = 100;
     dto.methodology = "Agile";
     dto.inclusions = "Slides";
@@ -32,6 +33,7 @@ describe("CreateFormationDto", () => {
     dto.description = "Desc";
     dto.level = "Beginner";
     dto.duration = "1 Day";
+    dto.durationType = "HALF_DAY";
     dto.price = -10;
 
     const errors = await validate(dto);
@@ -45,6 +47,7 @@ describe("CreateFormationDto", () => {
     dto.description = "Desc";
     dto.level = "Beginner";
     dto.duration = "1 Day";
+    dto.durationType = "HALF_DAY";
     dto.imageUrl = "not-a-url";
 
     const errors = await validate(dto);

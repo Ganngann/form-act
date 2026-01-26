@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { API_URL } from "@/lib/config";
 import { Button } from "@/components/ui/button";
@@ -47,11 +47,7 @@ export default function AdminClientDetailPage() {
         email: "",
     });
 
-    useEffect(() => {
-        fetchClient();
-    }, [id]);
-
-    const fetchClient = async () => {
+    const fetchClient = useCallback(async () => {
         try {
             const res = await fetch(`${API_URL}/clients/${id}`, { credentials: "include" });
             if (!res.ok) throw new Error("Client introuvable");
@@ -68,7 +64,11 @@ export default function AdminClientDetailPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id]);
+
+    useEffect(() => {
+        fetchClient();
+    }, [fetchClient]);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();

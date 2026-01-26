@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Users, LayoutDashboard, Calendar } from 'lucide-react';
+import { Users, LayoutDashboard, BookOpen, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function Sidebar() {
@@ -40,6 +40,13 @@ export function Sidebar() {
           >
             <Users className="h-4 w-4" />
             Clients
+          </Link>
+          <Link
+            href="/admin/formations"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+          >
+            <BookOpen className="h-4 w-4" />
+            Formations
           </Link>
         </nav>
       </div>
