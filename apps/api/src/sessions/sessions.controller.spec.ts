@@ -14,6 +14,8 @@ describe("SessionsController", () => {
     updateProof: jest.fn(),
     adminUpdate: jest.fn(),
     getAdminStats: jest.fn(),
+    getBillingPreview: jest.fn(),
+    billSession: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -234,6 +236,53 @@ describe("SessionsController", () => {
     it("should deny non-ADMIN", async () => {
       await expect(
         controller.getAdminStats({ user: { role: "CLIENT" } }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("getBillingPreview", () => {
+    it("should allow ADMIN", async () => {
+      mockSessionsService.getBillingPreview.mockResolvedValue({});
+      await controller.getBillingPreview("1", { user: { role: "ADMIN" } });
+      expect(service.getBillingPreview).toHaveBeenCalledWith("1");
+    });
+
+    it("should deny non-ADMIN", async () => {
+      await expect(
+        controller.getBillingPreview("1", { user: { role: "CLIENT" } }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("billSession", () => {
+    it("should allow ADMIN", async () => {
+      mockSessionsService.billSession.mockResolvedValue({});
+      const dto = {
+        basePrice: 100,
+        optionsFee: 0,
+        optionsDetails: [],
+        distanceFee: 0,
+        adminAdjustment: 0,
+        finalPrice: 100,
+      };
+      await controller.billSession("1", dto, { user: { role: "ADMIN" } });
+      expect(service.billSession).toHaveBeenCalledWith("1", dto);
+    });
+
+    it("should deny non-ADMIN", async () => {
+      await expect(
+        controller.billSession(
+          "1",
+          {
+            basePrice: 100,
+            optionsFee: 0,
+            optionsDetails: [],
+            distanceFee: 0,
+            adminAdjustment: 0,
+            finalPrice: 100,
+          },
+          { user: { role: "CLIENT" } },
+        ),
       ).rejects.toThrow(ForbiddenException);
     });
   });
