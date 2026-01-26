@@ -40,6 +40,10 @@ describe("SessionsService", () => {
     emailService = module.get<EmailService>(EmailService);
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("should be defined", () => {
     expect(service).toBeDefined();
   });
@@ -404,6 +408,7 @@ describe("SessionsService", () => {
       });
 
       it("should not fail if email sending fails", async () => {
+        jest.spyOn(console, "error").mockImplementation();
         const session = {
           id: "1",
           client: { user: { email: "c@test.com" } },

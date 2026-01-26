@@ -16,6 +16,10 @@ describe("CompanyService", () => {
     global.fetch = jest.fn();
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("should be defined", () => {
     expect(service).toBeDefined();
   });
@@ -68,6 +72,7 @@ describe("CompanyService", () => {
     });
 
     it("should throw BAD_GATEWAY if VIES API errors", async () => {
+      jest.spyOn(console, "error").mockImplementation();
       (global.fetch as jest.Mock).mockResolvedValue({
         ok: false,
         status: 500,
@@ -80,6 +85,7 @@ describe("CompanyService", () => {
     });
 
     it("should throw INTERNAL_SERVER_ERROR on network exception", async () => {
+      jest.spyOn(console, "error").mockImplementation();
       (global.fetch as jest.Mock).mockRejectedValue(new Error("Network error"));
 
       await expect(service.validateVat("BE123456789")).rejects.toThrow(

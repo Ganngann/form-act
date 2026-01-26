@@ -1,5 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { EmailService } from "./email.service";
+import { Logger } from "@nestjs/common";
 import * as nodemailer from "nodemailer";
 
 jest.mock("nodemailer");
@@ -21,6 +22,10 @@ describe("EmailService", () => {
     service = module.get<EmailService>(EmailService);
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("should be defined", () => {
     expect(service).toBeDefined();
   });
@@ -39,6 +44,7 @@ describe("EmailService", () => {
     });
 
     it("should throw error if sending fails", async () => {
+      jest.spyOn(Logger.prototype, "error").mockImplementation();
       sendMailMock.mockRejectedValue(new Error("Fail"));
       await expect(
         service.sendEmail("to@test.com", "Subject", "Body"),
@@ -64,6 +70,7 @@ describe("EmailService", () => {
     });
 
     it("should throw error if sending fails", async () => {
+      jest.spyOn(Logger.prototype, "error").mockImplementation();
       sendMailMock.mockRejectedValue(new Error("Fail"));
       await expect(
         service.sendEmailWithAttachments("to@test.com", "S", "B", []),
