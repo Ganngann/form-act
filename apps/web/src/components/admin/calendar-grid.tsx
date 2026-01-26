@@ -37,7 +37,12 @@ export function CalendarGrid({ days, trainers, sessions, onSessionClick }: Calen
   // Value: SessionData[]
   const sessionsMap = useMemo(() => {
     const map: Record<string, SessionData[]> = {};
+    if (!Array.isArray(sessions)) {
+      console.warn("CalendarGrid: sessions prop is not an array", sessions);
+      return map;
+    }
     for (const session of sessions) {
+      if (!session || !session.date) continue;
       const dateKey = format(new Date(session.date), "yyyy-MM-dd");
       const key = `${session.trainerId}-${dateKey}`;
       if (!map[key]) {
@@ -78,7 +83,7 @@ export function CalendarGrid({ days, trainers, sessions, onSessionClick }: Calen
           </tr>
         </thead>
         <tbody>
-          {trainers.map((trainer) => (
+          {(Array.isArray(trainers) ? trainers : []).map((trainer) => (
             <tr key={trainer.id} className="hover:bg-slate-50/50 group">
               <td className="sticky left-0 bg-white z-10 p-3 border-r border-b font-semibold text-slate-700 truncate max-w-[12rem] shadow-[2px_0_5px_rgba(0,0,0,0.05)]">
                 {trainer.firstName} {trainer.lastName}
@@ -108,7 +113,7 @@ export function CalendarGrid({ days, trainers, sessions, onSessionClick }: Calen
               })}
             </tr>
           ))}
-          {trainers.length === 0 && (
+          {(!Array.isArray(trainers) || trainers.length === 0) && (
             <tr>
               <td colSpan={days.length + 1} className="p-8 text-center text-muted-foreground">
                 Aucun formateur trouvé.
