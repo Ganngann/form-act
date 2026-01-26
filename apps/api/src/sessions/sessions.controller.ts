@@ -16,6 +16,7 @@ import {
 import { SessionsService } from "./sessions.service";
 import { UpdateSessionDto } from "./dto/update-session.dto";
 import { AdminUpdateSessionDto } from "./dto/admin-update-session.dto";
+import { AdminBillSessionDto } from "./dto/admin-bill-session.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
@@ -150,5 +151,27 @@ export class SessionsController {
       throw new ForbiddenException("Access denied");
     }
     return this.sessionsService.adminUpdate(id, body);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get(":id/billing-preview")
+  async getBillingPreview(@Param("id") id: string, @Request() req) {
+    if (req.user.role !== "ADMIN") {
+      throw new ForbiddenException("Access denied");
+    }
+    return this.sessionsService.getBillingPreview(id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Post(":id/bill")
+  async billSession(
+    @Param("id") id: string,
+    @Body() body: AdminBillSessionDto,
+    @Request() req,
+  ) {
+    if (req.user.role !== "ADMIN") {
+      throw new ForbiddenException("Access denied");
+    }
+    return this.sessionsService.billSession(id, body);
   }
 }

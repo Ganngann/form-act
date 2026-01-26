@@ -52,7 +52,11 @@ export class FormationsService {
     });
   }
 
-  async findAll(categoryId?: string, search?: string, includeHidden: boolean = false) {
+  async findAll(
+    categoryId?: string,
+    search?: string,
+    includeHidden: boolean = false,
+  ) {
     const where: Prisma.FormationWhereInput = {};
 
     if (!includeHidden) {

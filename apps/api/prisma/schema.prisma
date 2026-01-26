@@ -39,6 +39,7 @@ model Formateur {
   firstName         String
   lastName          String
   email             String      @unique
+  address           String?
   userId            String?     @unique
   user              User?       @relation(fields: [userId], references: [id])
   predilectionZones Zone[]      @relation("Predilection")
@@ -112,6 +113,7 @@ model Session {
   participants String?   // JSON string: [ { name, email }, ... ]
   proofUrl     String?   // URL to the signed attendance sheet
   billedAt     DateTime? // When the session was marked as billed
+  billingData  String?   // JSON string: Snapshot of financial data (basePrice, adjustment, finalPrice, etc.)
 }
 
 model NotificationLog {
