@@ -307,48 +307,57 @@ describe("SessionsService", () => {
   describe("Billing", () => {
     describe("calculatePricing", () => {
       it("should return base price and defaults", () => {
-        const session = { formation: { price: "100" }, logistics: null } as any;
+        const session = {
+          formation: { price: "100" },
+          logistics: null,
+        } as unknown as Session & { formation: Formation };
         const result = service.calculatePricing(session);
         expect(result).toEqual({
-            basePrice: 100,
-            distanceFee: 0,
-            optionsFee: 0,
-            optionsDetails: [],
-            total: 100
+          basePrice: 100,
+          distanceFee: 0,
+          optionsFee: 0,
+          optionsDetails: [],
+          total: 100,
         });
       });
 
       it("should detect video material option", () => {
         const session = {
-            formation: { price: "100" },
-            logistics: JSON.stringify({ videoMaterial: ["Projector"] })
-        } as any;
+          formation: { price: "100" },
+          logistics: JSON.stringify({ videoMaterial: ["Projector"] }),
+        } as unknown as Session & { formation: Formation };
         const result = service.calculatePricing(session);
         expect(result).toEqual({
-            basePrice: 100,
-            distanceFee: 0,
-            optionsFee: 20,
-            optionsDetails: ["Kit Vidéo (20€)"],
-            total: 120
+          basePrice: 100,
+          distanceFee: 0,
+          optionsFee: 20,
+          optionsDetails: ["Kit Vidéo (20€)"],
+          total: 120,
         });
       });
 
       it("should handle invalid JSON logistics", () => {
-        const session = { formation: { price: "100" }, logistics: "invalid" } as any;
+        const session = {
+          formation: { price: "100" },
+          logistics: "invalid",
+        } as unknown as Session & { formation: Formation };
         const result = service.calculatePricing(session);
         expect(result).toEqual({
-            basePrice: 100,
-            distanceFee: 0,
-            optionsFee: 0,
-            optionsDetails: [],
-            total: 100
+          basePrice: 100,
+          distanceFee: 0,
+          optionsFee: 0,
+          optionsDetails: [],
+          total: 100,
         });
       });
     });
 
     describe("getBillingPreview", () => {
       it("should return pricing for session", async () => {
-        const session = { id: "1", formation: { price: "100" } } as any;
+        const session = {
+          id: "1",
+          formation: { price: "100" },
+        } as unknown as Session & { formation: Formation };
         jest.spyOn(service, "findOne").mockResolvedValue(session);
 
         const result = await service.getBillingPreview("1");
@@ -359,12 +368,19 @@ describe("SessionsService", () => {
     describe("billSession", () => {
       it("should update session and send email", async () => {
         const session = {
-            id: "1",
-            client: { user: { email: "c@test.com" } },
-            formation: { title: "Formation" }
-        } as any;
+          id: "1",
+          client: { user: { email: "c@test.com" } },
+          formation: { title: "Formation" },
+        } as unknown as Session & { formation: Formation };
 
-        const billingData = { finalPrice: 150 };
+        const billingData = {
+          basePrice: 100,
+          optionsFee: 0,
+          optionsDetails: [],
+          distanceFee: 0,
+          adminAdjustment: 50,
+          finalPrice: 150,
+        };
         const updatedSession = { ...session, billedAt: new Date() };
 
         jest.spyOn(service, "findOne").mockResolvedValue(session);
@@ -373,35 +389,46 @@ describe("SessionsService", () => {
         await service.billSession("1", billingData);
 
         expect(prisma.session.update).toHaveBeenCalledWith(
-            expect.objectContaining({
-                data: expect.objectContaining({
-                    billingData: JSON.stringify(billingData),
-                    billedAt: expect.any(Date)
-                })
-            })
+          expect.objectContaining({
+            data: expect.objectContaining({
+              billingData: JSON.stringify(billingData),
+              billedAt: expect.any(Date),
+            }),
+          }),
         );
         expect(emailService.sendEmail).toHaveBeenCalledWith(
-            "c@test.com",
-            expect.stringContaining("Facture disponible"),
-            expect.stringContaining("150")
+          "c@test.com",
+          expect.stringContaining("Facture disponible"),
+          expect.stringContaining("150"),
         );
       });
 
       it("should not fail if email sending fails", async () => {
         const session = {
-            id: "1",
-            client: { user: { email: "c@test.com" } },
-            formation: { title: "Formation" }
-        } as any;
+          id: "1",
+          client: { user: { email: "c@test.com" } },
+          formation: { title: "Formation" },
+        } as unknown as Session & { formation: Formation };
 
-        const billingData = { finalPrice: 150 };
+        const billingData = {
+          basePrice: 100,
+          optionsFee: 0,
+          optionsDetails: [],
+          distanceFee: 0,
+          adminAdjustment: 50,
+          finalPrice: 150,
+        };
         const updatedSession = { ...session, billedAt: new Date() };
 
         jest.spyOn(service, "findOne").mockResolvedValue(session);
         jest.spyOn(prisma.session, "update").mockResolvedValue(updatedSession);
-        jest.spyOn(emailService, "sendEmail").mockRejectedValue(new Error("Email error"));
+        jest
+          .spyOn(emailService, "sendEmail")
+          .mockRejectedValue(new Error("Email error"));
 
-        await expect(service.billSession("1", billingData)).resolves.toEqual(updatedSession);
+        await expect(service.billSession("1", billingData)).resolves.toEqual(
+          updatedSession,
+        );
       });
     });
   });

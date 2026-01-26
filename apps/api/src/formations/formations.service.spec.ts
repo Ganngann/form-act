@@ -7,15 +7,28 @@ const mockPrismaService = {
   formation: {
     findMany: jest.fn().mockResolvedValue([
       { id: "1", title: "NestJS Intro", categoryId: "dev", isPublished: true },
-      { id: "2", title: "Management 101", categoryId: "mgt", isPublished: true },
+      {
+        id: "2",
+        title: "Management 101",
+        categoryId: "mgt",
+        isPublished: true,
+      },
     ]),
     findUnique: jest.fn().mockImplementation(({ where }) => {
-       if (where.id === "1") return Promise.resolve({ id: "1", title: "NestJS Intro" });
-       if (where.title === "NestJS Intro") return Promise.resolve({ id: "1", title: "NestJS Intro" });
-       return Promise.resolve(null);
+      if (where.id === "1")
+        return Promise.resolve({ id: "1", title: "NestJS Intro" });
+      if (where.title === "NestJS Intro")
+        return Promise.resolve({ id: "1", title: "NestJS Intro" });
+      return Promise.resolve(null);
     }),
-    create: jest.fn().mockImplementation(({ data }) => Promise.resolve({ id: "3", ...data })),
-    update: jest.fn().mockImplementation(({ where, data }) => Promise.resolve({ id: where.id, ...data })),
+    create: jest
+      .fn()
+      .mockImplementation(({ data }) => Promise.resolve({ id: "3", ...data })),
+    update: jest
+      .fn()
+      .mockImplementation(({ where, data }) =>
+        Promise.resolve({ id: where.id, ...data }),
+      ),
     delete: jest.fn().mockResolvedValue({ id: "1" }),
   },
   session: {
@@ -86,41 +99,45 @@ describe("FormationsService", () => {
   });
 
   describe("create", () => {
-      it("should create a formation", async () => {
-          const dto = {
-              title: "New Formation",
-              description: "Desc",
-              level: "Beginner",
-              duration: "1 day",
-              durationType: "FULL_DAY",
-              isPublished: true
-          };
-          await service.create(dto);
-          expect(mockPrismaService.formation.create).toHaveBeenCalledWith({ data: dto });
+    it("should create a formation", async () => {
+      const dto = {
+        title: "New Formation",
+        description: "Desc",
+        level: "Beginner",
+        duration: "1 day",
+        durationType: "FULL_DAY",
+        isPublished: true,
+      };
+      await service.create(dto);
+      expect(mockPrismaService.formation.create).toHaveBeenCalledWith({
+        data: dto,
       });
+    });
 
-      it("should throw if title exists", async () => {
-          const dto = {
-              title: "NestJS Intro", // Exists in mock
-              description: "Desc",
-              level: "Beginner",
-              duration: "1 day",
-              durationType: "FULL_DAY"
-          };
-          await expect(service.create(dto)).rejects.toThrow(BadRequestException);
-      });
+    it("should throw if title exists", async () => {
+      const dto = {
+        title: "NestJS Intro", // Exists in mock
+        description: "Desc",
+        level: "Beginner",
+        duration: "1 day",
+        durationType: "FULL_DAY",
+      };
+      await expect(service.create(dto)).rejects.toThrow(BadRequestException);
+    });
   });
 
   describe("remove", () => {
-      it("should remove if no sessions linked", async () => {
-          mockPrismaService.session.count.mockResolvedValue(0);
-          await service.remove("1");
-          expect(mockPrismaService.formation.delete).toHaveBeenCalledWith({ where: { id: "1" } });
+    it("should remove if no sessions linked", async () => {
+      mockPrismaService.session.count.mockResolvedValue(0);
+      await service.remove("1");
+      expect(mockPrismaService.formation.delete).toHaveBeenCalledWith({
+        where: { id: "1" },
       });
+    });
 
-      it("should throw if sessions linked", async () => {
-          mockPrismaService.session.count.mockResolvedValue(1);
-          await expect(service.remove("1")).rejects.toThrow(BadRequestException);
-      });
+    it("should throw if sessions linked", async () => {
+      mockPrismaService.session.count.mockResolvedValue(1);
+      await expect(service.remove("1")).rejects.toThrow(BadRequestException);
+    });
   });
 });
