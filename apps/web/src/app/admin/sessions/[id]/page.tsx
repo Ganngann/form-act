@@ -2,6 +2,7 @@ import { API_URL } from '@/lib/config';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { AdminSessionControls } from '@/components/admin/admin-session-controls';
+import { AdminBillingControls } from '@/components/admin/admin-billing-controls';
 import { StatusBadge } from '@/components/ui/status-badge';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -154,7 +155,8 @@ export default async function SessionDetailPage({ params }: { params: { id: stri
                 </div>
 
                 {/* Controls */}
-                <div>
+                <div className="space-y-6">
+                    <AdminBillingControls session={session} />
                     <AdminSessionControls session={session} trainers={trainers} />
                 </div>
             </div>

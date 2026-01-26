@@ -151,4 +151,22 @@ export class SessionsController {
     }
     return this.sessionsService.adminUpdate(id, body);
   }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get(":id/billing-preview")
+  async getBillingPreview(@Param("id") id: string, @Request() req) {
+    if (req.user.role !== "ADMIN") {
+      throw new ForbiddenException("Access denied");
+    }
+    return this.sessionsService.getBillingPreview(id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Post(":id/bill")
+  async billSession(@Param("id") id: string, @Body() body: any, @Request() req) {
+    if (req.user.role !== "ADMIN") {
+      throw new ForbiddenException("Access denied");
+    }
+    return this.sessionsService.billSession(id, body);
+  }
 }

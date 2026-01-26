@@ -117,6 +117,72 @@ export class SessionsService {
     });
   }
 
+  calculatePricing(session: any) {
+    const basePrice = session.formation.price ? Number(session.formation.price) : 0;
+
+    // Options Logic
+    let optionsFee = 0;
+    let optionsDetails = [];
+
+    if (session.logistics) {
+      try {
+        const log = JSON.parse(session.logistics);
+        if (log.videoMaterial && log.videoMaterial.length > 0) {
+           optionsFee += 20;
+           optionsDetails.push("Kit Vidéo (20€)");
+        }
+        // Add other options logic here if needed
+      } catch (e) {
+        // invalid json, ignore
+      }
+    }
+
+    return {
+      basePrice,
+      distanceFee: 0, // Manual input required
+      optionsFee,
+      optionsDetails,
+      total: basePrice + optionsFee
+    };
+  }
+
+  async getBillingPreview(id: string) {
+    const session = await this.findOne(id);
+    return this.calculatePricing(session);
+  }
+
+  async billSession(id: string, billingData: any) {
+     const session = await this.findOne(id);
+
+     const updated = await this.prisma.session.update({
+       where: { id },
+       data: {
+         billedAt: new Date(),
+         billingData: JSON.stringify(billingData),
+         // Status could optionally be changed to CLOSED or BILLED if that enum existed,
+         // but 'billedAt' presence is the marker.
+       },
+       include: { client: { include: { user: true } }, formation: true }
+     });
+
+     // Notify Client
+     if (updated.client?.user?.email) {
+       try {
+         await this.emailService.sendEmail(
+           updated.client.user.email,
+           `Facture disponible : ${updated.formation.title}`,
+           `<p>La session du ${new Date(updated.date).toLocaleDateString()} a été validée pour facturation.</p>
+            <p>Montant Final : ${billingData.finalPrice} €</p>`
+         );
+       } catch (e) {
+         console.error("Failed to send billing email:", e);
+         // Continue, do not fail the request
+       }
+     }
+
+     return updated;
+  }
+
   async update(id: string, data: Prisma.SessionUpdateInput) {
     return this.prisma.session.update({
       where: { id },

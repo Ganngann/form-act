@@ -104,6 +104,7 @@ async function main() {
       firstName: 'Jean',
       lastName: 'Dupont',
       email: formateurEmail,
+      address: 'Rue de la Gare 15, 1000 Bruxelles',
       userId: formateurUser.id,
       predilectionZones: {
         connect: [{ code: 'BRU' }, { code: 'BW' }]
