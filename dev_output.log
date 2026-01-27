@@ -1,0 +1,131 @@
+
+> form-act-monorepo@0.0.0 dev
+> turbo run dev
+
+• turbo 2.7.4
+• Packages in scope: @form-act/shared-types, api, web
+• Running dev in 3 packages
+• Remote caching disabled
+web:dev: cache bypass, force executing 26eae15b6a872992
+api:dev: cache bypass, force executing 8825f36f2531a131
+api:dev:
+api:dev: > api@0.0.1 dev /app/apps/api
+api:dev: > nest start --watch
+api:dev:
+web:dev:
+web:dev: > web@0.1.0 dev /app/apps/web
+web:dev: > next dev
+web:dev:
+api:dev: [2J[3J[H[[90m7:42:44 AM[0m] Starting compilation in watch mode...
+api:dev:
+web:dev:    ▲ Next.js 14.1.0
+web:dev:    - Local:        http://localhost:3000
+web:dev:    - Environments: .env.local
+web:dev:
+web:dev: Attention: Next.js now collects completely anonymous telemetry regarding usage.
+web:dev: This information is used to shape Next.js' roadmap and prioritize features.
+web:dev: You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+web:dev: https://nextjs.org/telemetry
+web:dev:
+web:dev:  ✓ Ready in 2.1s
+api:dev: [[90m7:42:49 AM[0m] Found 0 errors. Watching for file changes.
+api:dev:
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +40ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mEmailModule dependencies initialized[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCompanyModule dependencies initialized[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDiscoveryModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCategoriesModule dependencies initialized[39m[38;5;3m +3ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCalendarModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDispatcherModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mZonesModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mScheduleModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mNotificationsModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCheckoutModule dependencies initialized[39m[38;5;3m +2ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFormationsModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mClientsModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFilesModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mExpertisesModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSessionsModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTrainersModule dependencies initialized[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/}:[39m[38;5;3m +6ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/, GET} route[39m[38;5;3m +3ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDispatcherController {/dispatcher}:[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/dispatcher/trainers, GET} route[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mZonesController {/zones}:[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/zones, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mFormationsController {/formations}:[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/formations, GET} route[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/formations/:id, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAdminFormationsController {/admin/formations}:[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/admin/formations, GET} route[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/admin/formations, POST} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/admin/formations/:id, PATCH} route[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/admin/formations/:id, DELETE} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCategoriesController {/categories}:[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/categories, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mClientsController {/clients}:[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/clients, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/clients/me, GET} route[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/clients/me, PATCH} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/clients/:id, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/clients/:id, PATCH} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mTrainersController {/trainers}:[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/trainers/:id/availability, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/trainers/:id/missions, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/trainers/:id/public, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/trainers/:id, GET} route[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/trainers/:id, PATCH} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/trainers/:id/avatar, POST} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/trainers/:id/calendar-url, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAdminTrainersController {/admin/trainers}:[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/admin/trainers, GET} route[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/admin/trainers/:id, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/admin/trainers, POST} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/admin/trainers/:id, PATCH} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/admin/trainers/:id, DELETE} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthController {/auth}:[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/forgot-password, POST} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/reset-password, POST} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/login, POST} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/logout, POST} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/me, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCompanyController {/company}:[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/company/check-vat/:vatNumber, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCheckoutController {/checkout}:[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/checkout, POST} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSessionsController {/sessions}:[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/me, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/admin/stats, GET} route[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/proof, POST} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id, PATCH} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/admin-update, PATCH} route[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/billing-preview, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/sessions/:id/bill, POST} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mFilesController {/files}:[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/files/:type/:filename, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCalendarController {/calendars}:[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/calendars/:token/events.ics, GET} route[39m[38;5;3m +1ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mExpertisesController {/expertises}:[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/expertises, GET} route[39m[38;5;3m +0ms[39m
+api:dev: [32m[Nest] 6225  - [39m01/27/2026, 7:42:50 AM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +34ms[39m
+api:dev: Application is running on: http://[::1]:3001
+web:dev:  ○ Compiling /not-found ...
+web:dev:  ✓ Compiled /not-found in 10s (597 modules)
+web:dev:  ✓ Compiled in 635ms (265 modules)
+web:dev:  ○ Compiling /login ...
+web:dev:  ✓ Compiled /login in 632ms (584 modules)
+web:dev:  ○ Compiling /src/middleware ...
+web:dev:  ✓ Compiled /src/middleware in 635ms (130 modules)
+web:dev:  ○ Compiling /admin ...
+web:dev:  ✓ Compiled /admin in 4.2s (1912 modules)
+web:dev:  ○ Compiling /admin/sessions ...
+web:dev:  ✓ Compiled /admin/sessions in 719ms (1913 modules)
+web:dev:  ○ Compiling /admin/sessions/[id] ...
+web:dev:  ✓ Compiled /admin/sessions/[id] in 1395ms (1993 modules)
