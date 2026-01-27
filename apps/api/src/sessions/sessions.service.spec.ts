@@ -129,6 +129,7 @@ describe("SessionsService", () => {
         expect.objectContaining({
           where: expect.objectContaining({
             status: "CONFIRMED",
+            createdAt: expect.objectContaining({ lte: expect.any(Date) }),
             OR: [{ logistics: null }, { logistics: "" }, { logistics: "{}" }],
           }),
         }),
@@ -243,6 +244,27 @@ describe("SessionsService", () => {
         expect.objectContaining({
           data: expect.objectContaining({
             trainer: { disconnect: true },
+          }),
+        }),
+      );
+    });
+
+    it("should auto-confirm PENDING session when trainer is assigned", async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mockSession = { id: "1", status: "PENDING" } as any;
+      jest.spyOn(service, "findOne").mockResolvedValue(mockSession);
+      jest.spyOn(prisma.session, "update").mockResolvedValue({
+        ...mockSession,
+        status: "CONFIRMED",
+      });
+
+      await service.adminUpdate("1", { trainerId: "t1" });
+
+      expect(prisma.session.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            trainer: { connect: { id: "t1" } },
+            status: "CONFIRMED",
           }),
         }),
       );

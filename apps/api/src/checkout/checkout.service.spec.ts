@@ -174,7 +174,7 @@ describe("CheckoutService", () => {
 
       const mockUser = { id: "user-1", email: manualDto.email };
       const mockClient = { id: "client-1", ...manualDto, userId: "user-1" };
-      const mockSession = { id: "session-1", status: "PENDING_ASSIGNMENT" };
+      const mockSession = { id: "session-1", status: "PENDING" };
 
       mockTx.user.create.mockResolvedValue(mockUser);
       mockTx.client.findUnique.mockResolvedValue(null);
@@ -185,7 +185,7 @@ describe("CheckoutService", () => {
       const result = await service.processCheckout(manualDto);
 
       expect(mockTx.session.findFirst).not.toHaveBeenCalled();
-      expect(result.session.status).toBe("PENDING_ASSIGNMENT");
+      expect(result.session.status).toBe("PENDING");
     });
 
     it("should check for conflicts correctly when slot is ALL_DAY", async () => {

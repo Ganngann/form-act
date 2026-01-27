@@ -53,10 +53,12 @@ export class SessionsService {
       where.trainerId = null;
     } else if (filter === "MISSING_LOGISTICS") {
       const now = new Date();
-      const in7Days = new Date();
-      in7Days.setDate(now.getDate() + 7);
+      const twoDaysAgo = new Date(now);
+      twoDaysAgo.setHours(now.getHours() - 48);
+
       where.status = "CONFIRMED";
-      where.date = { gte: now, lte: in7Days };
+      where.date = { gte: now };
+      where.createdAt = { lte: twoDaysAgo };
       where.OR = [{ logistics: null }, { logistics: "" }, { logistics: "{}" }];
     } else if (filter === "MISSING_PROOF") {
       where.date = { lt: new Date() };
@@ -203,6 +205,15 @@ export class SessionsService {
       updateData.isLogisticsOpen = data.isLogisticsOpen;
     if (data.status !== undefined) updateData.status = data.status;
 
+    // Auto-confirm if assigning trainer to a PENDING session
+    if (
+      session.status === "PENDING" &&
+      data.trainerId &&
+      !data.status
+    ) {
+      updateData.status = "CONFIRMED";
+    }
+
     const updatedSession = await this.prisma.session.update({
       where: { id },
       data: updateData,
@@ -256,11 +267,14 @@ export class SessionsService {
         where: { status: "CONFIRMED", trainerId: null },
       }),
 
-      // 3. Logistique manquante (J-7, status CONFIRMED et logistics est null/vide)
+      // 3. Logistique manquante (T+48h, status CONFIRMED et logistics est null/vide)
       this.prisma.session.count({
         where: {
           status: "CONFIRMED",
-          date: { gte: now, lte: in7Days },
+          date: { gte: now },
+          createdAt: {
+            lte: new Date(new Date().setHours(new Date().getHours() - 48)),
+          },
           OR: [{ logistics: null }, { logistics: "" }, { logistics: "{}" }],
         },
       }),
