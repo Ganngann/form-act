@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Progress } from "@/components/ui/progress";
 import { API_URL } from "@/lib/config";
 
 // --- Types & Schema ---
@@ -69,8 +70,8 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
             location: session.location || "",
             videoMaterial: initialLogistics.videoMaterial || [],
             writingMaterial: initialLogistics.writingMaterial || [],
-            wifi: initialLogistics.wifi || "no",
-            subsidies: initialLogistics.subsidies || "no",
+            wifi: initialLogistics.wifi || undefined, // undefined for radio group reset
+            subsidies: initialLogistics.subsidies || undefined,
             accessDetails: initialLogistics.accessDetails || "",
             participants: initialParticipants.length > 0 ? initialParticipants : [{ firstName: "", lastName: "", email: "" }],
         },
@@ -83,7 +84,42 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
 
     // Locking Logic
     const daysUntilSession = differenceInCalendarDays(new Date(session.date), new Date());
-    const isLocked = daysUntilSession < 7 && !session.isLogisticsOpen;
+    const isLocked = daysUntilSession <= 7 && !session.isLogisticsOpen; // Fixed to <= 7
+
+    const watchedValues = form.watch();
+
+    // Calculate Completion Rate
+    const calculateCompletion = () => {
+        let score = 0;
+        const total = 5;
+
+        // 1. Location
+        if (watchedValues.location && watchedValues.location.trim().length > 0) score++;
+
+        // 2. Wifi
+        if (watchedValues.wifi === "yes" || watchedValues.wifi === "no") score++;
+
+        // 3. Subsides
+        if (watchedValues.subsidies === "yes" || watchedValues.subsidies === "no") score++;
+
+        // 4. Material
+        const hasVideo = watchedValues.videoMaterial && watchedValues.videoMaterial.length > 0;
+        const hasWriting = watchedValues.writingMaterial && watchedValues.writingMaterial.length > 0;
+        const hasNone = watchedValues.videoMaterial?.includes("NONE");
+
+        if (hasVideo || hasWriting || hasNone) score++;
+
+        // 5. Participants
+        if (watchedValues.participants && watchedValues.participants.length > 0) {
+            // Check if at least one participant has a name
+            const validPart = watchedValues.participants.some(p => p.firstName || p.lastName || p.email);
+            if (validPart) score++;
+        }
+
+        return Math.round((score / total) * 100);
+    };
+
+    const completionRate = calculateCompletion();
 
     const onSubmit = async (data: LogisticsFormValues) => {
         setLoading(true);
@@ -121,6 +157,40 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
         }
     };
 
+    const handleMaterialChange = (type: 'video' | 'writing', item: string, checked: boolean | string) => {
+        if (type === 'video' && item === 'NONE') {
+            if (checked) {
+                // Clear all others and set NONE
+                form.setValue('videoMaterial', ['NONE']);
+                form.setValue('writingMaterial', []);
+            } else {
+                form.setValue('videoMaterial', []);
+            }
+        } else {
+            // Normal item check
+            if (checked) {
+                // Remove NONE if it exists
+                const currentVideo = form.getValues('videoMaterial') || [];
+                if (currentVideo.includes('NONE')) {
+                    form.setValue('videoMaterial', []);
+                }
+
+                const currentList = form.getValues(type === 'video' ? 'videoMaterial' : 'writingMaterial') || [];
+                // If checking a normal item, add it (and ensure NONE is gone from videoMaterial if we are editing writingMaterial)
+                 if (type === 'writing') {
+                     const vid = form.getValues('videoMaterial') || [];
+                     if (vid.includes('NONE')) form.setValue('videoMaterial', []);
+                 }
+
+                form.setValue(type === 'video' ? 'videoMaterial' : 'writingMaterial', [...(type === 'video' ? form.getValues('videoMaterial') || [] : form.getValues('writingMaterial') || []), item]);
+
+            } else {
+                const currentList = form.getValues(type === 'video' ? 'videoMaterial' : 'writingMaterial') || [];
+                form.setValue(type === 'video' ? 'videoMaterial' : 'writingMaterial', currentList.filter((v) => v !== item));
+            }
+        }
+    };
+
     return (
         <div className="space-y-8">
             {/* Display View */}
@@ -136,10 +206,21 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
                             <span>Verrouillé (J-7)</span>
                         </div>
                     ) : (
-                        <Button variant="outline" size="sm" onClick={() => setOpen(true)} className="gap-2">
-                            <Edit2 className="h-4 w-4" />
-                            Modifier
-                        </Button>
+                        <div className="flex items-center gap-4">
+                             {completionRate < 100 && (
+                                <div className="hidden md:flex flex-col w-32 gap-1">
+                                    <div className="flex justify-between text-[10px] text-muted-foreground uppercase font-bold">
+                                        <span>Complété</span>
+                                        <span>{completionRate}%</span>
+                                    </div>
+                                    <Progress value={completionRate} className="h-2" />
+                                </div>
+                            )}
+                            <Button variant="outline" size="sm" onClick={() => setOpen(true)} className="gap-2">
+                                <Edit2 className="h-4 w-4" />
+                                Modifier
+                            </Button>
+                        </div>
                     )}
                 </div>
 
@@ -157,14 +238,22 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
                             <div className="bg-gray-50 p-4 rounded border text-sm space-y-2 min-h-[100px]">
                                 {session.logistics ? (
                                     <>
-                                        {initialLogistics.videoMaterial?.length > 0 && (
-                                            <p><strong>Vidéo:</strong> {initialLogistics.videoMaterial.join(", ")}</p>
+                                        {initialLogistics.videoMaterial?.includes('NONE') ? (
+                                             <p className="font-semibold text-muted-foreground">Aucun matériel disponible sur place.</p>
+                                        ) : (
+                                            <>
+                                                {initialLogistics.videoMaterial?.length > 0 && (
+                                                    <p><strong>Vidéo:</strong> {initialLogistics.videoMaterial.join(", ")}</p>
+                                                )}
+                                                {initialLogistics.writingMaterial?.length > 0 && (
+                                                    <p><strong>Écrit:</strong> {initialLogistics.writingMaterial.join(", ")}</p>
+                                                )}
+                                            </>
                                         )}
-                                        {initialLogistics.writingMaterial?.length > 0 && (
-                                            <p><strong>Écrit:</strong> {initialLogistics.writingMaterial.join(", ")}</p>
-                                        )}
-                                        <p><strong>Wifi:</strong> {initialLogistics.wifi === "yes" ? "Oui" : "Non"}</p>
-                                        <p><strong>Subsides:</strong> {initialLogistics.subsidies === "yes" ? "Oui" : "Non"}</p>
+
+                                        <p><strong>Wifi:</strong> {initialLogistics.wifi === "yes" ? "Oui" : initialLogistics.wifi === "no" ? "Non" : "-"}</p>
+                                        <p><strong>Subsides:</strong> {initialLogistics.subsidies === "yes" ? "Oui" : initialLogistics.subsidies === "no" ? "Non" : "-"}</p>
+
                                         {initialLogistics.accessDetails && (
                                             <div className="pt-2 border-t mt-2">
                                                 <strong>Accès:</strong>
@@ -209,11 +298,24 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
                         </DialogDescription>
                     </DialogHeader>
 
+                    <div className="w-full bg-slate-50 p-4 rounded-lg border mb-4">
+                        <div className="flex justify-between text-sm font-medium mb-2">
+                            <span>Complétion du dossier</span>
+                            <span>{completionRate}%</span>
+                        </div>
+                        <Progress value={completionRate} className="h-3" />
+                        {completionRate < 100 && (
+                             <p className="text-xs text-muted-foreground mt-2">
+                                 Il manque encore des informations pour valider ce dossier.
+                             </p>
+                        )}
+                    </div>
+
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-4">
 
                         {/* Location */}
                         <div className="space-y-2">
-                            <Label htmlFor="location">Adresse de la prestation</Label>
+                            <Label htmlFor="location">Adresse de la prestation *</Label>
                             <Input id="location" {...form.register("location")} placeholder="Rue, Ville, Code Postal" />
                             {form.formState.errors.location && (
                                 <p className="text-red-500 text-sm">{form.formState.errors.location.message}</p>
@@ -223,20 +325,26 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Material */}
                             <div className="space-y-4">
-                                <Label className="text-base">Matériel nécessaire</Label>
+                                <Label className="text-base">Matériel présent *</Label>
 
                                 <div className="space-y-3 border p-3 rounded-md">
+                                    <div className="flex items-center space-x-2 pb-2 border-b mb-2">
+                                        <Checkbox
+                                            id="video-NONE"
+                                            checked={form.watch("videoMaterial")?.includes("NONE")}
+                                            onCheckedChange={(c) => handleMaterialChange('video', 'NONE', c)}
+                                        />
+                                        <Label htmlFor="video-NONE" className="font-bold text-gray-700">Aucun matériel disponible sur place</Label>
+                                    </div>
+
                                     <Label className="text-xs uppercase text-muted-foreground">Vidéo</Label>
                                     {["Projecteur", "Écran TV", "Apporté par le formateur"].map((item) => (
                                         <div key={item} className="flex items-center space-x-2">
                                             <Checkbox
                                                 id={`video-${item}`}
                                                 checked={form.watch("videoMaterial")?.includes(item)}
-                                                onCheckedChange={(checked) => {
-                                                    const current = form.getValues("videoMaterial") || [];
-                                                    if (checked) form.setValue("videoMaterial", [...current, item]);
-                                                    else form.setValue("videoMaterial", current.filter((v) => v !== item));
-                                                }}
+                                                onCheckedChange={(c) => handleMaterialChange('video', item, c)}
+                                                disabled={form.watch("videoMaterial")?.includes("NONE")}
                                             />
                                             <Label htmlFor={`video-${item}`} className="font-normal">{item}</Label>
                                         </div>
@@ -250,11 +358,8 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
                                             <Checkbox
                                                 id={`writing-${item}`}
                                                 checked={form.watch("writingMaterial")?.includes(item)}
-                                                onCheckedChange={(checked) => {
-                                                    const current = form.getValues("writingMaterial") || [];
-                                                    if (checked) form.setValue("writingMaterial", [...current, item]);
-                                                    else form.setValue("writingMaterial", current.filter((v) => v !== item));
-                                                }}
+                                                onCheckedChange={(c) => handleMaterialChange('writing', item, c)}
+                                                disabled={form.watch("videoMaterial")?.includes("NONE")}
                                             />
                                             <Label htmlFor={`writing-${item}`} className="font-normal">{item}</Label>
                                         </div>
@@ -265,10 +370,10 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
                             {/* Wifi & Subsides */}
                             <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <Label>Connexion Wi-Fi disponible ?</Label>
+                                    <Label>Connexion Wi-Fi disponible ? *</Label>
                                     <RadioGroup
                                         onValueChange={(val) => form.setValue("wifi", val as "yes" | "no")}
-                                        value={form.watch("wifi")}
+                                        value={form.watch("wifi") || ""}
                                         className="flex flex-col space-y-1"
                                     >
                                         <div className="flex items-center space-x-2">
@@ -283,10 +388,10 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label>Dossier Subsides (FormTS) ?</Label>
+                                    <Label>Dossier Subsides (FormTS) ? *</Label>
                                     <RadioGroup
                                         onValueChange={(val) => form.setValue("subsidies", val as "yes" | "no")}
-                                        value={form.watch("subsidies")}
+                                        value={form.watch("subsidies") || ""}
                                         className="flex flex-col space-y-1"
                                     >
                                         <div className="flex items-center space-x-2">
@@ -315,7 +420,7 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
                         {/* Participants */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <Label className="text-base">Participants</Label>
+                                <Label className="text-base">Participants *</Label>
                                 <Button type="button" variant="outline" size="sm" onClick={() => append({ firstName: "", lastName: "", email: "" })}>
                                     <Plus className="h-4 w-4 mr-2" />
                                     Ajouter

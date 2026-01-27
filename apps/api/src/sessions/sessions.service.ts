@@ -59,7 +59,8 @@ export class SessionsService {
       where.status = "CONFIRMED";
       where.date = { gte: now };
       where.createdAt = { lte: twoDaysAgo };
-      where.OR = [{ logistics: null }, { logistics: "" }, { logistics: "{}" }];
+      // Remove basic DB check to perform strict JS check
+      // where.OR = [{ logistics: null }, { logistics: "" }, { logistics: "{}" }];
     } else if (filter === "MISSING_PROOF") {
       where.date = { lt: new Date() };
       where.status = "CONFIRMED";
@@ -69,7 +70,7 @@ export class SessionsService {
       where.billedAt = null;
     }
 
-    return this.prisma.session.findMany({
+    const sessions = await this.prisma.session.findMany({
       where,
       include: {
         client: {
@@ -82,6 +83,12 @@ export class SessionsService {
         date: "asc",
       },
     });
+
+    if (filter === "MISSING_LOGISTICS") {
+      return sessions.filter((s) => !this.isLogisticsStrictlyComplete(s));
+    }
+
+    return sessions;
   }
 
   async findByUserId(userId: string, role: string) {
@@ -267,17 +274,22 @@ export class SessionsService {
         where: { status: "CONFIRMED", trainerId: null },
       }),
 
-      // 3. Logistique manquante (T+48h, status CONFIRMED et logistics est null/vide)
-      this.prisma.session.count({
-        where: {
-          status: "CONFIRMED",
-          date: { gte: now },
-          createdAt: {
-            lte: new Date(new Date().setHours(new Date().getHours() - 48)),
+      // 3. Logistique manquante (T+48h, status CONFIRMED et logistique incomplete)
+      // Note: We count in JS because of JSON parsing complexity
+      this.prisma.session
+        .findMany({
+          where: {
+            status: "CONFIRMED",
+            date: { gte: now },
+            createdAt: {
+              lte: new Date(new Date().setHours(new Date().getHours() - 48)),
+            },
           },
-          OR: [{ logistics: null }, { logistics: "" }, { logistics: "{}" }],
-        },
-      }),
+        })
+        .then(
+          (sessions) =>
+            sessions.filter((s) => !this.isLogisticsStrictlyComplete(s)).length,
+        ),
 
       // 4. Feuilles de présence manquantes (Session passée, status CONFIRMED ou PROOF_RECEIVED, mais proofUrl null)
       this.prisma.session.count({
@@ -304,5 +316,45 @@ export class SessionsService {
       missingProof,
       readyToBill,
     };
+  }
+
+  isLogisticsStrictlyComplete(session: Session): boolean {
+    // 1. Location present
+    if (!session.location || session.location.trim() === "") return false;
+
+    // 2. Participants present
+    if (!session.participants) return false;
+    try {
+      const participants = JSON.parse(session.participants);
+      if (!Array.isArray(participants) || participants.length === 0)
+        return false;
+    } catch {
+      return false;
+    }
+
+    if (!session.logistics) return false;
+
+    try {
+      const log = JSON.parse(session.logistics);
+
+      // 3. Wifi present (yes/no)
+      if (log.wifi !== "yes" && log.wifi !== "no") return false;
+
+      // 4. Subsides present (yes/no)
+      if (log.subsidies !== "yes" && log.subsidies !== "no") return false;
+
+      // 5. Material present (Video OR Writing OR NONE flag)
+      // "NONE" is stored as ['NONE'] in videoMaterial by the frontend
+      const hasVideo =
+        Array.isArray(log.videoMaterial) && log.videoMaterial.length > 0;
+      const hasWriting =
+        Array.isArray(log.writingMaterial) && log.writingMaterial.length > 0;
+
+      if (!hasVideo && !hasWriting) return false;
+
+      return true;
+    } catch {
+      return false; // Invalid JSON means incomplete
+    }
   }
 }

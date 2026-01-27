@@ -33,12 +33,37 @@ export default function ClientDashboard() {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
 
-    const isMissingParticipants = (s: Session) => {
-        return !s.participants || s.participants === '[]' || s.participants === '{}';
+    const isParticipantsIncomplete = (s: Session) => {
+        if (!s.participants) return true;
+        try {
+            const parsed = JSON.parse(s.participants);
+            return !Array.isArray(parsed) || parsed.length === 0;
+        } catch {
+            return true;
+        }
     };
 
-    const isMissingLogistics = (s: Session) => {
-        return !s.logistics || s.logistics === '{}';
+    const isLogisticsStrictlyIncomplete = (s: Session) => {
+        // 1. Location
+        if (!s.location || s.location.trim() === '') return true;
+
+        if (!s.logistics) return true;
+        try {
+            const log = JSON.parse(s.logistics);
+            // 2. Wifi
+            if (log.wifi !== 'yes' && log.wifi !== 'no') return true;
+            // 3. Subsides
+            if (log.subsidies !== 'yes' && log.subsidies !== 'no') return true;
+            // 4. Material
+            // Note: 'NONE' in videoMaterial is handled as valid by length > 0
+            const hasVideo = Array.isArray(log.videoMaterial) && log.videoMaterial.length > 0;
+            const hasWriting = Array.isArray(log.writingMaterial) && log.writingMaterial.length > 0;
+            if (!hasVideo && !hasWriting) return true;
+
+            return false;
+        } catch {
+            return true;
+        }
     };
 
     const isActionRequired = (s: Session) => {
@@ -53,10 +78,10 @@ export default function ClientDashboard() {
         const daysDiff = differenceInCalendarDays(sessionDate, now);
 
         // 1. Missing Logistics (Always urgent if confirmed)
-        if (isMissingLogistics(s)) return true;
+        if (isLogisticsStrictlyIncomplete(s)) return true;
 
         // 2. Missing Participants (Urgent if < J-15)
-        if (isMissingParticipants(s) && daysDiff < 15) return true;
+        if (isParticipantsIncomplete(s) && daysDiff < 15) return true;
 
         return false;
     };
@@ -81,7 +106,7 @@ export default function ClientDashboard() {
         sessionDate.setHours(0, 0, 0, 0);
         const daysDiff = differenceInCalendarDays(sessionDate, now);
 
-        return sessionDate >= now && daysDiff < 15 && isMissingParticipants(s);
+        return sessionDate >= now && daysDiff < 15 && isParticipantsIncomplete(s);
     });
 
     const alerts = [];

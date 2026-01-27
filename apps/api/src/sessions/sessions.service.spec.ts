@@ -119,6 +119,7 @@ describe("SessionsService", () => {
     });
 
     it("should handle MISSING_LOGISTICS filter", async () => {
+      jest.spyOn(prisma.session, "findMany").mockResolvedValue([]);
       await service.findAll(
         undefined,
         undefined,
@@ -130,7 +131,7 @@ describe("SessionsService", () => {
           where: expect.objectContaining({
             status: "CONFIRMED",
             createdAt: expect.objectContaining({ lte: expect.any(Date) }),
-            OR: [{ logistics: null }, { logistics: "" }, { logistics: "{}" }],
+            // OR clause removed, we filter in JS
           }),
         }),
       );
@@ -315,18 +316,147 @@ describe("SessionsService", () => {
   describe("getAdminStats", () => {
     it("should return counts", async () => {
       jest.spyOn(prisma.session, "count").mockResolvedValue(5);
+      jest.spyOn(prisma.session, "findMany").mockResolvedValue([
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        { id: "1", location: "", logistics: null } as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        { id: "2", location: "Loc", logistics: null } as any, // Incomplete (no wifi/subsides)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        {
+          id: "3",
+          location: "Loc",
+          participants: '[{"name":"A"}]',
+          logistics: JSON.stringify({
+            wifi: "yes",
+            subsidies: "no",
+            videoMaterial: ["None"],
+          }),
+        } as any, // Complete
+      ]);
 
       const result = await service.getAdminStats();
 
       expect(result).toEqual({
         pendingRequests: 5,
         noTrainer: 5,
-        missingLogistics: 5,
+        missingLogistics: 2, // 2 incomplete sessions
         missingProof: 5,
         readyToBill: 5,
       });
-      // Called 5 times for 5 metrics
-      expect(prisma.session.count).toHaveBeenCalledTimes(5);
+      // Called 4 times for other metrics
+      expect(prisma.session.count).toHaveBeenCalledTimes(4);
+      expect(prisma.session.findMany).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("isLogisticsStrictlyComplete", () => {
+    const validLogistics = JSON.stringify({
+      wifi: "yes",
+      subsidies: "no",
+      videoMaterial: ["A"],
+    });
+    const validParticipants = '[{"name":"John"}]';
+
+    it("should return false if no location", () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const s = {
+        location: "",
+        participants: validParticipants,
+        logistics: validLogistics,
+      } as any;
+      expect(service.isLogisticsStrictlyComplete(s)).toBe(false);
+    });
+
+    it("should return false if no participants", () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const s = {
+        location: "Loc",
+        participants: "[]",
+        logistics: validLogistics,
+      } as any;
+      expect(service.isLogisticsStrictlyComplete(s)).toBe(false);
+    });
+
+    it("should return false if invalid json", () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const s = {
+        location: "Loc",
+        participants: validParticipants,
+        logistics: "invalid",
+      } as any;
+      expect(service.isLogisticsStrictlyComplete(s)).toBe(false);
+    });
+
+    it("should return false if no wifi", () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const s = {
+        location: "Loc",
+        participants: validParticipants,
+        logistics: JSON.stringify({ subsidies: "yes", videoMaterial: ["A"] }),
+      } as any;
+      expect(service.isLogisticsStrictlyComplete(s)).toBe(false);
+    });
+
+    it("should return false if no subsidies", () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const s = {
+        location: "Loc",
+        participants: validParticipants,
+        logistics: JSON.stringify({ wifi: "yes", videoMaterial: ["A"] }),
+      } as any;
+      expect(service.isLogisticsStrictlyComplete(s)).toBe(false);
+    });
+
+    it("should return false if no material", () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const s = {
+        location: "Loc",
+        participants: validParticipants,
+        logistics: JSON.stringify({ wifi: "yes", subsidies: "yes" }),
+      } as any;
+      expect(service.isLogisticsStrictlyComplete(s)).toBe(false);
+    });
+
+    it("should return true if all present (video)", () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const s = {
+        location: "Loc",
+        participants: validParticipants,
+        logistics: JSON.stringify({
+          wifi: "yes",
+          subsidies: "no",
+          videoMaterial: ["A"],
+        }),
+      } as any;
+      expect(service.isLogisticsStrictlyComplete(s)).toBe(true);
+    });
+
+    it("should return true if all present (writing)", () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const s = {
+        location: "Loc",
+        participants: validParticipants,
+        logistics: JSON.stringify({
+          wifi: "no",
+          subsidies: "yes",
+          writingMaterial: ["A"],
+        }),
+      } as any;
+      expect(service.isLogisticsStrictlyComplete(s)).toBe(true);
+    });
+
+    it("should return true if all present (none)", () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const s = {
+        location: "Loc",
+        participants: validParticipants,
+        logistics: JSON.stringify({
+          wifi: "no",
+          subsidies: "yes",
+          videoMaterial: ["NONE"],
+        }),
+      } as any;
+      expect(service.isLogisticsStrictlyComplete(s)).toBe(true);
     });
   });
 
