@@ -33,6 +33,7 @@ describe("NotificationsService", () => {
           provide: SessionsService,
           useValue: {
             findAll: jest.fn(),
+            isLogisticsStrictlyComplete: jest.fn(),
           },
         },
         {
@@ -111,6 +112,9 @@ describe("NotificationsService", () => {
       const session = createSession({ logistics: null });
 
       jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
+      jest
+        .spyOn(sessionsService, "isLogisticsStrictlyComplete")
+        .mockReturnValue(false);
       jest.spyOn(logService, "hasLog").mockResolvedValue(false);
 
       await service.handleCron();
@@ -133,6 +137,10 @@ describe("NotificationsService", () => {
       });
 
       jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
+      jest
+        .spyOn(sessionsService, "isLogisticsStrictlyComplete")
+        .mockReturnValue(true);
+
       await service.handleCron();
       expect(emailService.sendEmail).not.toHaveBeenCalled();
     });
@@ -147,6 +155,10 @@ describe("NotificationsService", () => {
       });
 
       jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
+      jest
+        .spyOn(sessionsService, "isLogisticsStrictlyComplete")
+        .mockReturnValue(false);
+
       await service.handleCron();
       expect(emailService.sendEmail).not.toHaveBeenCalled();
     });

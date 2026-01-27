@@ -23,6 +23,7 @@ export type Session = {
     }
     logistics?: string | null
     participants?: string | null
+    location?: string | null
 }
 
 interface SessionCardProps {

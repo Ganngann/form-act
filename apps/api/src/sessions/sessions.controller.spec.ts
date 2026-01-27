@@ -142,6 +142,20 @@ describe("SessionsController", () => {
       ).rejects.toThrow(ForbiddenException);
     });
 
+    it("should deny CLIENT if session IS EXACTLY 7 days away", async () => {
+      const nearFuture = new Date();
+      nearFuture.setDate(nearFuture.getDate() + 7); // 7 days away
+      mockSessionsService.findOne.mockResolvedValue({
+        date: nearFuture.toISOString(),
+        client: { userId: "u1" },
+        isLogisticsOpen: false,
+      });
+
+      await expect(
+        controller.update("1", {}, { user: { role: "CLIENT", userId: "u1" } }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
     it("should allow CLIENT if session < 7 days away BUT unlocked", async () => {
       const nearFuture = new Date();
       nearFuture.setDate(nearFuture.getDate() + 2); // 2 days away

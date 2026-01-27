@@ -124,7 +124,7 @@ export class SessionsController {
       const diffDays = Math.round(diffTime / (1000 * 3600 * 24));
 
       // Check if unlocked by admin
-      if (diffDays < 7 && !session.isLogisticsOpen) {
+      if (diffDays <= 7 && !session.isLogisticsOpen) {
         throw new ForbiddenException(
           "Modifications are locked 7 days before the session",
         );

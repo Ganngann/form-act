@@ -48,7 +48,7 @@ export class NotificationsService {
     session: SessionWithRelations,
     now: Date,
   ) {
-    if (!this.isEmpty(session.logistics)) return;
+    if (this.sessionsService.isLogisticsStrictlyComplete(session)) return;
 
     const createdAt = new Date(session.createdAt);
     const hoursDiff = (now.getTime() - createdAt.getTime()) / (1000 * 3600);

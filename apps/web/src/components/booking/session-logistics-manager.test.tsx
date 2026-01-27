@@ -117,12 +117,12 @@ describe('SessionLogisticsManager', () => {
     expect(screen.getByText('Modifier la logistique')).toBeDefined();
 
     // Modify location
-    const locationInput = screen.getByLabelText('Adresse de la prestation');
+    const locationInput = screen.getByLabelText('Adresse de la prestation *');
     fireEvent.change(locationInput, { target: { value: 'New Address' } });
 
     // Modify Wifi (Radio)
     // Find the container for Wifi
-    const wifiLabel = screen.getByText('Connexion Wi-Fi disponible ?');
+    const wifiLabel = screen.getByText('Connexion Wi-Fi disponible ? *');
     const wifiContainer = wifiLabel.parentElement!;
     const wifiNo = within(wifiContainer).getByLabelText('Non');
     fireEvent.click(wifiNo);
