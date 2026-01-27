@@ -30,3 +30,9 @@ export type Formation = {
 
 export type CreateFormationData = Omit<Formation, 'id' | 'category' | 'expertise'>;
 export type UpdateFormationData = Partial<CreateFormationData>;
+
+export type CreateCategoryData = {
+  name: string;
+};
+
+export type UpdateCategoryData = Partial<CreateCategoryData>;

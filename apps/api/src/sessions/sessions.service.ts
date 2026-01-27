@@ -206,11 +206,7 @@ export class SessionsService {
     if (data.status !== undefined) updateData.status = data.status;
 
     // Auto-confirm if assigning trainer to a PENDING session
-    if (
-      session.status === "PENDING" &&
-      data.trainerId &&
-      !data.status
-    ) {
+    if (session.status === "PENDING" && data.trainerId && !data.status) {
       updateData.status = "CONFIRMED";
     }
 
