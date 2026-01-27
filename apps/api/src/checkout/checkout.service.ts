@@ -94,7 +94,7 @@ export class CheckoutService {
           formationId: data.formationId,
           trainerId: data.trainerId,
           clientId: client.id,
-          status: data.trainerId ? "CONFIRMED" : "PENDING_ASSIGNMENT",
+          status: data.trainerId ? "CONFIRMED" : "PENDING",
         },
       });
 
