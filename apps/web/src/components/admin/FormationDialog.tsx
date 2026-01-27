@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select"
 import { adminFormationsService } from "@/services/admin-formations"
 import { Formation, Category, Expertise } from "@/types/formation"
+import { Plus, Trash2 } from "lucide-react"
 
 const schema = z.object({
   title: z.string().min(1, "Le titre est requis"),
@@ -39,7 +40,7 @@ const schema = z.object({
   methodology: z.string().optional(),
   inclusions: z.string().optional(),
   imageUrl: z.string().optional(),
-  agreementCode: z.string().optional(),
+  agreementCodes: z.string().optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -53,6 +54,11 @@ interface FormationDialogProps {
   onSuccess: () => void
 }
 
+type Agreement = {
+  region: string
+  code: string
+}
+
 export function FormationDialog({
   open,
   onOpenChange,
@@ -61,6 +67,8 @@ export function FormationDialog({
   expertises,
   onSuccess,
 }: FormationDialogProps) {
+  const [agreements, setAgreements] = useState<Agreement[]>([])
+
   const {
     register,
     handleSubmit,
@@ -97,8 +105,22 @@ export function FormationDialog({
         methodology: formation.methodology || "",
         inclusions: formation.inclusions || "",
         imageUrl: formation.imageUrl || "",
-        agreementCode: formation.agreementCode || "",
+        agreementCodes: formation.agreementCodes || "",
       })
+
+      if (formation.agreementCodes) {
+        try {
+          const parsed = JSON.parse(formation.agreementCodes)
+          if (Array.isArray(parsed)) {
+            setAgreements(parsed)
+          }
+        } catch (e) {
+          console.error("Failed to parse agreement codes", e)
+          setAgreements([])
+        }
+      } else {
+        setAgreements([])
+      }
     } else {
       reset({
         title: "",
@@ -114,17 +136,35 @@ export function FormationDialog({
         methodology: "",
         inclusions: "",
         imageUrl: "",
-        agreementCode: "",
+        agreementCodes: "",
       })
+      setAgreements([])
     }
   }, [formation, reset, open])
 
+  const addAgreement = () => {
+    setAgreements([...agreements, { region: "", code: "" }])
+  }
+
+  const updateAgreement = (index: number, field: keyof Agreement, value: string) => {
+    const newAgreements = [...agreements]
+    newAgreements[index][field] = value
+    setAgreements(newAgreements)
+  }
+
+  const removeAgreement = (index: number) => {
+    setAgreements(agreements.filter((_, i) => i !== index))
+  }
+
   const onSubmit = async (data: FormData) => {
     try {
+      const validAgreements = agreements.filter(a => a.region && a.code)
+
       const payload = {
         ...data,
         expertiseId: data.expertiseId === "none" ? undefined : data.expertiseId,
         price: data.price === undefined || isNaN(data.price) ? undefined : data.price,
+        agreementCodes: validAgreements.length > 0 ? JSON.stringify(validAgreements) : undefined
       }
 
       if (formation) {
@@ -135,7 +175,6 @@ export function FormationDialog({
       onSuccess()
       onOpenChange(false)
     } catch (error) {
-      // Ideally show toast
       alert("Une erreur est survenue")
     }
   }
@@ -283,6 +322,48 @@ export function FormationDialog({
              {errors.description && (
                 <p className="text-sm text-red-500">{errors.description.message}</p>
               )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+             <div className="space-y-2">
+               <Label htmlFor="imageUrl">URL Image</Label>
+               <Input id="imageUrl" {...register("imageUrl")} placeholder="https://..." />
+             </div>
+             <div className="space-y-2">
+               <Label htmlFor="programLink">URL Programme (PDF)</Label>
+               <Input id="programLink" {...register("programLink")} placeholder="https://..." />
+             </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+               <Label>Agréments / Codes Subsides</Label>
+               <Button type="button" variant="outline" size="sm" onClick={addAgreement}>
+                 <Plus className="h-4 w-4 mr-1" /> Ajouter
+               </Button>
+            </div>
+            {agreements.length === 0 && (
+               <p className="text-sm text-muted-foreground italic">Aucun agrément configuré.</p>
+            )}
+            <div className="space-y-2">
+              {agreements.map((agreement, index) => (
+                <div key={index} className="flex gap-2 items-center">
+                  <Input
+                    placeholder="Région / Type (ex: Wallonie)"
+                    value={agreement.region}
+                    onChange={(e) => updateAgreement(index, 'region', e.target.value)}
+                  />
+                  <Input
+                    placeholder="Code (ex: 123-456)"
+                    value={agreement.code}
+                    onChange={(e) => updateAgreement(index, 'code', e.target.value)}
+                  />
+                  <Button type="button" variant="ghost" size="icon" onClick={() => removeAgreement(index)}>
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-2">
