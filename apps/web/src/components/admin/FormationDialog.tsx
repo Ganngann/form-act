@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { adminFormationsService } from "@/services/admin-formations"
-import { Formation, Category, Trainer } from "@/types/formation"
+import { Formation, Category, Expertise } from "@/types/formation"
 import { Plus, Trash2 } from "lucide-react"
 
 const schema = z.object({
@@ -34,8 +34,7 @@ const schema = z.object({
   durationType: z.enum(["HALF_DAY", "FULL_DAY"]),
   price: z.coerce.number().min(0, "Le prix doit être positif").optional(),
   categoryId: z.string().uuid("La catégorie est requise"),
-  isExpertise: z.boolean(),
-  trainerIds: z.array(z.string()).optional(),
+  expertiseId: z.string().optional(),
   isPublished: z.boolean(),
   programLink: z.string().optional(),
   methodology: z.string().optional(),
@@ -51,7 +50,7 @@ interface FormationDialogProps {
   onOpenChange: (open: boolean) => void
   formation: Formation | null
   categories: Category[]
-  trainers: Trainer[]
+  expertises: Expertise[]
   onSuccess: () => void
 }
 
@@ -65,7 +64,7 @@ export function FormationDialog({
   onOpenChange,
   formation,
   categories,
-  trainers,
+  expertises,
   onSuccess,
 }: FormationDialogProps) {
   const [agreements, setAgreements] = useState<Agreement[]>([])
@@ -75,7 +74,6 @@ export function FormationDialog({
     handleSubmit,
     control,
     reset,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema) as any,
@@ -87,12 +85,9 @@ export function FormationDialog({
       durationType: "HALF_DAY",
       isPublished: true,
       categoryId: undefined,
-      isExpertise: false,
-      trainerIds: [],
+      expertiseId: "none",
     },
   })
-
-  const isExpertise = watch("isExpertise");
 
   useEffect(() => {
     if (formation) {
@@ -104,8 +99,7 @@ export function FormationDialog({
         durationType: formation.durationType,
         price: formation.price,
         categoryId: formation.categoryId,
-        isExpertise: formation.isExpertise,
-        trainerIds: formation.trainers?.map(t => t.id) || [],
+        expertiseId: formation.expertiseId || "none",
         isPublished: formation.isPublished,
         programLink: formation.programLink || "",
         methodology: formation.methodology || "",
@@ -136,8 +130,7 @@ export function FormationDialog({
         durationType: "HALF_DAY",
         isPublished: true,
         categoryId: undefined,
-        isExpertise: false,
-        trainerIds: [],
+        expertiseId: "none",
         price: undefined,
         programLink: "",
         methodology: "",
@@ -169,6 +162,7 @@ export function FormationDialog({
 
       const payload = {
         ...data,
+        expertiseId: data.expertiseId === "none" ? undefined : data.expertiseId,
         price: data.price === undefined || isNaN(data.price) ? undefined : data.price,
         agreementCodes: validAgreements.length > 0 ? JSON.stringify(validAgreements) : undefined
       }
@@ -235,58 +229,30 @@ export function FormationDialog({
               )}
             </div>
 
-            <div className="col-span-2 space-y-4 border p-4 rounded-md">
-                <div className="flex items-center space-x-2">
-                  <Controller
-                    control={control}
-                    name="isExpertise"
-                    render={({ field }) => (
-                      <Checkbox
-                        id="isExpertise"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    )}
-                  />
-                  <Label htmlFor="isExpertise" className="font-bold">Cette formation est une Expertise</Label>
-               </div>
-               <p className="text-xs text-muted-foreground">Une expertise requiert des formateurs spécifiques et active la "Zone d'Expertise" (Longue distance).</p>
-
-               {isExpertise && (
-                   <div className="space-y-2 mt-2">
-                       <Label>Formateurs habilités</Label>
-                       <div className="border rounded-md p-2 h-40 overflow-y-auto grid grid-cols-2 gap-2">
-                            {trainers.length === 0 && <p className="text-sm text-muted-foreground p-2">Aucun formateur trouvé.</p>}
-                            <Controller
-                                control={control}
-                                name="trainerIds"
-                                render={({ field }) => (
-                                    <>
-                                        {trainers.map(trainer => (
-                                            <div key={trainer.id} className="flex items-center space-x-2">
-                                                <Checkbox
-                                                    id={`trainer-${trainer.id}`}
-                                                    checked={field.value?.includes(trainer.id)}
-                                                    onCheckedChange={(checked) => {
-                                                        const current = field.value || [];
-                                                        if (checked) {
-                                                            field.onChange([...current, trainer.id]);
-                                                        } else {
-                                                            field.onChange(current.filter(id => id !== trainer.id));
-                                                        }
-                                                    }}
-                                                />
-                                                <Label htmlFor={`trainer-${trainer.id}`} className="text-sm font-normal cursor-pointer">
-                                                    {trainer.firstName} {trainer.lastName}
-                                                </Label>
-                                            </div>
-                                        ))}
-                                    </>
-                                )}
-                            />
-                       </div>
-                   </div>
-               )}
+            <div className="space-y-2">
+              <Label htmlFor="expertise">Expertise</Label>
+              <Controller
+                control={control}
+                name="expertiseId"
+                render={({ field }) => (
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value || "none"}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Aucune (Standard)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Aucune (Standard)</SelectItem>
+                      {expertises.map((e) => (
+                        <SelectItem key={e.id} value={e.id}>
+                          {e.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </div>
 
             <div className="space-y-2">

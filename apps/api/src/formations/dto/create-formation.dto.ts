@@ -64,7 +64,7 @@ export class CreateFormationDto {
 
   @IsString()
   @IsOptional()
-  agreementCodes?: string;
+  agreementCodes?: string; // JSON string
 
   @IsString()
   @IsOptional()

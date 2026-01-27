@@ -16,6 +16,7 @@ interface BookingWidgetProps {
     id: string
     title: string
     durationType: string // 'HALF_DAY' | 'FULL_DAY'
+    expertise?: { id: string }
   }
 }
 

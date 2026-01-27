@@ -11,6 +11,7 @@ interface UseBookingLogicProps {
     id: string
     title: string
     durationType: string // 'HALF_DAY' | 'FULL_DAY'
+    expertise?: { id: string }
   }
 }
 
@@ -51,7 +52,10 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
     setAvailability([])
     setSelectedDate(undefined)
 
-    const url = `${API_URL}/dispatcher/trainers?zoneId=${selectedZone}&formationId=${formation.id}`
+    let url = `${API_URL}/dispatcher/trainers?zoneId=${selectedZone}`
+    if (formation.expertise?.id) {
+        url += `&expertiseId=${formation.expertise.id}`
+    }
 
     fetch(url)
       .then((res) => res.json())
@@ -63,7 +67,7 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
         console.error(err)
         setLoadingTrainers(false)
       })
-  }, [selectedZone, formation.id])
+  }, [selectedZone, formation.expertise?.id])
 
   useEffect(() => {
     if (!selectedTrainer) return

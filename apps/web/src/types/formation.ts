@@ -3,6 +3,9 @@ export type Category = {
   name: string;
 };
 
+export type CreateCategoryData = Omit<Category, 'id'>;
+export type UpdateCategoryData = Partial<CreateCategoryData>;
+
 export type Trainer = {
   id: string;
   firstName: string;
@@ -31,9 +34,3 @@ export type Formation = {
 
 export type CreateFormationData = Omit<Formation, 'id' | 'category' | 'trainers'> & { trainerIds?: string[] };
 export type UpdateFormationData = Partial<CreateFormationData>;
-
-export type CreateCategoryData = {
-  name: string;
-};
-
-export type UpdateCategoryData = Partial<CreateCategoryData>;
