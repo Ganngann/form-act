@@ -34,10 +34,10 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 **Afin de** préparer l'encodage comptable dans Odoo.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Liste des sessions terminées avec preuve validée (`PROOF_RECEIVED` ou `VALIDATED`).
-- [ ] Calcul automatique du prix : Base + Distance (Matrix) + Options.
-- [ ] **Champ "Ajustement Admin"** éditable (Positif ou Négatif) pour figer le Prix Final (Bible 5.1).
-- [ ] Vue synthétique des données de facturation (TVA, Adresse).
+- [x] Liste des sessions terminées avec preuve validée (`PROOF_RECEIVED` ou `VALIDATED`).
+- [x] Calcul automatique du prix : Base + Distance (Matrix) + Options.
+- [x] **Champ "Ajustement Admin"** éditable (Positif ou Négatif) pour figer le Prix Final (Bible 5.1).
+- [x] Vue synthétique des données de facturation (TVA, Adresse).
 
 ### US-34 : Admin - Clôture Facturation
 **Référence Bible :** Section 5.2 (Odoo Prep)
@@ -46,9 +46,9 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 **Afin de** notifier le client et archiver le dossier.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Action "Marquer comme Facturé".
-- [ ] Envoi email notification client.
-- [ ] Archivage de la session (Lecture seule / Statut `INVOICED`).
+- [x] Action "Marquer comme Facturé".
+- [x] Envoi email notification client.
+- [x] Archivage de la session (Lecture seule / Statut `INVOICED`).
 
 ### US-35 : Formateur - Reporting & Honoraires
 **Référence Bible :** Section 3.3 (Reporting)

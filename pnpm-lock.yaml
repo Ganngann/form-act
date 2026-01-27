@@ -59,6 +59,9 @@ importers:
       ical-generator:
         specifier: ^10.0.0
         version: 10.0.0(@types/luxon@3.7.1)(@types/node@20.19.30)(luxon@3.7.2)
+      multer:
+        specifier: ^2.0.2
+        version: 2.0.2
       nodemailer:
         specifier: ^7.0.12
         version: 7.0.12

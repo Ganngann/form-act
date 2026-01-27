@@ -160,8 +160,7 @@ export class SessionsService {
       data: {
         billedAt: new Date(),
         billingData: JSON.stringify(billingData),
-        // Status could optionally be changed to CLOSED or BILLED if that enum existed,
-        // but 'billedAt' presence is the marker.
+        status: "INVOICED",
       },
       include: { client: { include: { user: true } }, formation: true },
     });
