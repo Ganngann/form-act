@@ -6,14 +6,11 @@ const mockPrismaService = {
   formateur: {
     findMany: jest.fn(),
   },
-  formation: {
-    findUnique: jest.fn(),
-  },
 };
 
 describe("DispatcherService", () => {
   let service: DispatcherService;
-  let prisma: typeof mockPrismaService;
+  let prisma: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,8 +24,7 @@ describe("DispatcherService", () => {
     }).compile();
 
     service = module.get<DispatcherService>(DispatcherService);
-    prisma = module.get(PrismaService);
-    jest.clearAllMocks();
+    prisma = module.get<PrismaService>(PrismaService);
   });
 
   it("should be defined", () => {
@@ -36,13 +32,10 @@ describe("DispatcherService", () => {
   });
 
   describe("findAvailableTrainers", () => {
-    it("should query predilectionZones for Standard formation (no formationId)", async () => {
+    it("should query predilectionZones for Standard formation (no expertiseId)", async () => {
       const zoneId = "zone-1";
       const date = new Date();
-
-      // Standard flow when no formationId provided (or formation not found/not expertise)
       await service.findAvailableTrainers(date, zoneId);
-
       expect(prisma.formateur.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
@@ -54,51 +47,28 @@ describe("DispatcherService", () => {
       );
     });
 
-    it("should query predilectionZones for Standard formation (formation is not expertise)", async () => {
+    it("should query expertiseZones OR predilectionZones for Expertise formation (Inheritance Rule)", async () => {
       const zoneId = "zone-1";
+      const expertiseId = "exp-1";
       const date = new Date();
-      const formationId = "form-std";
-
-      prisma.formation.findUnique.mockResolvedValue({
-        id: formationId,
-        isExpertise: false,
-        trainers: []
-      });
-
-      await service.findAvailableTrainers(date, zoneId, formationId);
-
+      await service.findAvailableTrainers(date, zoneId, expertiseId);
       expect(prisma.formateur.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
-            predilectionZones: {
-              some: { id: zoneId },
+            expertises: {
+              some: { id: expertiseId },
             },
-          },
-        }),
-      );
-    });
-
-    it("should query expertiseZones OR predilectionZones for Expertise formation (Inheritance Rule) AND filter by whitelist", async () => {
-      const zoneId = "zone-1";
-      const formationId = "form-exp";
-      const date = new Date();
-      const allowedTrainerIds = ["t1", "t2"];
-
-      prisma.formation.findUnique.mockResolvedValue({
-        id: formationId,
-        isExpertise: true,
-        trainers: [{ id: "t1" }, { id: "t2" }]
-      });
-
-      await service.findAvailableTrainers(date, zoneId, formationId);
-
-      expect(prisma.formateur.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: {
-            id: { in: allowedTrainerIds },
             OR: [
-              { expertiseZones: { some: { id: zoneId } } },
-              { predilectionZones: { some: { id: zoneId } } },
+              {
+                expertiseZones: {
+                  some: { id: zoneId },
+                },
+              },
+              {
+                predilectionZones: {
+                  some: { id: zoneId },
+                },
+              },
             ],
           },
         }),

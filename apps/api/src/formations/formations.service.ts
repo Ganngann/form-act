@@ -16,17 +16,8 @@ export class FormationsService {
       throw new BadRequestException("Formation with this title already exists");
     }
 
-    const { trainerIds, ...formationData } = data;
-
     return this.prisma.formation.create({
-      data: {
-        ...formationData,
-        trainers: trainerIds
-          ? {
-              connect: trainerIds.map((id) => ({ id })),
-            }
-          : undefined,
-      },
+      data,
     });
   }
 
@@ -41,19 +32,9 @@ export class FormationsService {
         );
       }
     }
-
-    const { trainerIds, ...formationData } = data;
-
     return this.prisma.formation.update({
       where: { id },
-      data: {
-        ...formationData,
-        trainers: trainerIds
-          ? {
-              set: trainerIds.map((id) => ({ id })),
-            }
-          : undefined,
-      },
+      data,
     });
   }
 
@@ -100,8 +81,7 @@ export class FormationsService {
       where,
       include: {
         category: true,
-        // Removed expertise include as the relation is gone
-        trainers: true, // Optional: verify if we want to return trainers list in findAll
+        expertise: true,
       },
     });
   }
@@ -111,8 +91,7 @@ export class FormationsService {
       where: { id },
       include: {
         category: true,
-        // Removed expertise include
-        trainers: true,
+        expertise: true,
       },
     });
   }

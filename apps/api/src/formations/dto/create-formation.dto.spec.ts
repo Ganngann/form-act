@@ -12,7 +12,7 @@ describe("CreateFormationDto", () => {
     dto.price = 100;
     dto.methodology = "Agile";
     dto.inclusions = "Slides";
-    dto.agreementCodes = "CODE123";
+    dto.agreementCode = "CODE123";
     dto.imageUrl = "https://example.com/image.jpg";
 
     const errors = await validate(dto);

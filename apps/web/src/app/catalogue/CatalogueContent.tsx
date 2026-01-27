@@ -24,7 +24,6 @@ type Formation = {
   title: string
   description: string
   duration: string
-  imageUrl?: string
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
@@ -143,22 +142,12 @@ export default function CatalogueContent() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {formations.length > 0 ? (
             formations.map((formation) => (
-              <Card key={formation.id} className="hover:shadow-lg transition-shadow overflow-hidden">
-                {formation.imageUrl && (
-                  <div className="h-48 w-full relative">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={formation.imageUrl}
-                      alt={formation.title}
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
-                )}
+              <Card key={formation.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <CardTitle>{formation.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4 line-clamp-3">{formation.description}</p>
+                  <p className="text-muted-foreground mb-4">{formation.description}</p>
                   <div className="flex justify-between items-center">
                     <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
                       {formation.duration}

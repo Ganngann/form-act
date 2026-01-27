@@ -44,7 +44,7 @@ model Formateur {
   user              User?       @relation(fields: [userId], references: [id])
   predilectionZones Zone[]      @relation("Predilection")
   expertiseZones    Zone[]      @relation("Expertise")
-  formations        Formation[]
+  expertises        Expertise[]
   sessions          Session[]
   bio               String?
   avatarUrl         String?
@@ -57,6 +57,13 @@ model Zone {
   code                   String?     @unique
   formateursPredilection Formateur[] @relation("Predilection")
   formateursExpertise    Formateur[] @relation("Expertise")
+}
+
+model Expertise {
+  id         String      @id @default(uuid())
+  name       String      @unique
+  formateurs Formateur[]
+  formations Formation[]
 }
 
 model Category {
@@ -76,14 +83,14 @@ model Formation {
   price       Decimal?   // Standard amount in Euros (HTVA)
   methodology String?    // Pedagogical approach description
   inclusions  String?    // List of included material
-  agreementCodes String? // JSON string: Array of { region, code }
+  agreementCode String?  // Service Voucher agreement number
   imageUrl    String?    // URL of illustration image
+  expertiseId String?
+  expertise   Expertise? @relation(fields: [expertiseId], references: [id])
   categoryId  String?
   category    Category?  @relation(fields: [categoryId], references: [id])
   sessions    Session[]
   isPublished Boolean    @default(true)
-  isExpertise Boolean    @default(false)
-  trainers    Formateur[]
 }
 
 model Session {

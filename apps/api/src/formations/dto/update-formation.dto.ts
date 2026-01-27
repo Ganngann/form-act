@@ -6,7 +6,6 @@ import {
   IsUUID,
   Min,
   IsUrl,
-  IsArray,
 } from "class-validator";
 
 export class UpdateFormationDto {
@@ -34,14 +33,9 @@ export class UpdateFormationDto {
   @IsOptional()
   categoryId?: string;
 
-  @IsBoolean()
+  @IsUUID()
   @IsOptional()
-  isExpertise?: boolean;
-
-  @IsArray()
-  @IsUUID("4", { each: true })
-  @IsOptional()
-  trainerIds?: string[];
+  expertiseId?: string;
 
   @IsNumber()
   @IsOptional()
@@ -63,7 +57,7 @@ export class UpdateFormationDto {
 
   @IsString()
   @IsOptional()
-  agreementCodes?: string; // JSON string
+  agreementCode?: string;
 
   @IsString()
   @IsOptional()
