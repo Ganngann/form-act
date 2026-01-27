@@ -19,7 +19,7 @@ export type Formation = {
   programLink?: string;
   methodology?: string;
   inclusions?: string;
-  agreementCode?: string;
+  agreementCodes?: string;
   imageUrl?: string;
   categoryId?: string;
   expertiseId?: string;

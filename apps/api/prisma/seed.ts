@@ -130,6 +130,10 @@ async function main() {
       category: {
         connect: { name: 'Développement' },
       },
+      agreementCodes: JSON.stringify([
+        { region: 'Wallonie', code: 'NEST-001' },
+        { region: 'Bruxelles', code: 'BXL-NEST' }
+      ]),
     },
     create: {
       title: formationTitle,
@@ -143,6 +147,10 @@ async function main() {
       category: {
         connect: { name: 'Développement' },
       },
+      agreementCodes: JSON.stringify([
+        { region: 'Wallonie', code: 'NEST-001' },
+        { region: 'Bruxelles', code: 'BXL-NEST' }
+      ]),
     },
   });
 
