@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExpertisesController } from './expertises.controller';
-import { ExpertisesService } from './expertises.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { ExpertisesController } from "./expertises.controller";
+import { ExpertisesService } from "./expertises.service";
 
-describe('ExpertisesController', () => {
+describe("ExpertisesController", () => {
   let controller: ExpertisesController;
   let service: ExpertisesService;
 
@@ -25,15 +25,15 @@ describe('ExpertisesController', () => {
     service = module.get<ExpertisesService>(ExpertisesService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 
-  describe('findAll', () => {
-    it('should return an array of expertises', async () => {
+  describe("findAll", () => {
+    it("should return an array of expertises", async () => {
       const expertises = [
-        { id: 1, name: 'Communication' },
-        { id: 2, name: 'Management' },
+        { id: 1, name: "Communication" },
+        { id: 2, name: "Management" },
       ];
 
       mockExpertisesService.findAll.mockResolvedValue(expertises);
