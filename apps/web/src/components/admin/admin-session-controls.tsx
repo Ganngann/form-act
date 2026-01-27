@@ -19,6 +19,7 @@ interface Session {
   status: string;
   isLogisticsOpen: boolean;
   trainer: Trainer | null;
+  billedAt?: string | null;
 }
 
 export function AdminSessionControls({ session, trainers }: { session: Session; trainers: Trainer[] }) {
@@ -26,6 +27,8 @@ export function AdminSessionControls({ session, trainers }: { session: Session; 
   const [loading, setLoading] = useState(false);
   const [selectedTrainer, setSelectedTrainer] = useState<string>(session.trainerId || "unassigned");
   const [isLogisticsOpen, setIsLogisticsOpen] = useState(session.isLogisticsOpen);
+
+  const isLocked = session.status === "INVOICED" || !!session.billedAt;
 
   const handleUpdate = async (updates: any) => {
     setLoading(true);
@@ -67,7 +70,7 @@ export function AdminSessionControls({ session, trainers }: { session: Session; 
         <CardContent className="space-y-4">
              <div className="flex gap-4 items-center">
                  <div className="flex-1">
-                     <Select value={selectedTrainer} onValueChange={handleTrainerChange} disabled={loading}>
+                     <Select value={selectedTrainer} onValueChange={handleTrainerChange} disabled={loading || isLocked}>
                         <SelectTrigger>
                             <SelectValue placeholder="Choisir un formateur" />
                         </SelectTrigger>
@@ -100,12 +103,12 @@ export function AdminSessionControls({ session, trainers }: { session: Session; 
                     className="h-6 w-6"
                     checked={isLogisticsOpen}
                     onChange={(e) => handleLogisticsToggle(e.target.checked)}
-                    disabled={loading}
+                    disabled={loading || isLocked}
                  />
              </div>
 
              <div className="pt-4 border-t">
-                 <Button variant="destructive" onClick={handleCancel} disabled={loading || session.status === 'CANCELLED'}>
+                 <Button variant="destructive" onClick={handleCancel} disabled={loading || session.status === 'CANCELLED' || isLocked}>
                      {session.status === 'CANCELLED' ? "Session Annulée" : "Annuler la Session"}
                  </Button>
              </div>

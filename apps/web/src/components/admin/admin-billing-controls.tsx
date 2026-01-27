@@ -132,6 +132,19 @@ export function AdminBillingControls({ session }: { session: any }) {
               </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+              {/* Client Billing Info */}
+              <div className="bg-white p-3 rounded border text-sm space-y-1 mb-4">
+                  <p className="font-semibold text-gray-700">Données de Facturation</p>
+                  <div className="grid grid-cols-2 gap-x-2">
+                      <span className="text-muted-foreground">Client:</span>
+                      <span>{session.client?.companyName}</span>
+                      <span className="text-muted-foreground">TVA:</span>
+                      <span>{session.client?.vatNumber}</span>
+                      <span className="text-muted-foreground">Adresse:</span>
+                      <span className="truncate" title={session.client?.address}>{session.client?.address}</span>
+                  </div>
+              </div>
+
               {/* Base Info */}
               <div className="grid grid-cols-2 gap-2 text-sm">
                   <span className="text-muted-foreground">Prix Catalogue:</span>

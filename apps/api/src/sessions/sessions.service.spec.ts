@@ -393,6 +393,7 @@ describe("SessionsService", () => {
             data: expect.objectContaining({
               billingData: JSON.stringify(billingData),
               billedAt: expect.any(Date),
+              status: "INVOICED",
             }),
           }),
         );
