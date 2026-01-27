@@ -113,7 +113,11 @@ async function main() {
       },
       trainers: {
         connect: { id: formateur.id }
-      }
+      },
+      agreementCodes: JSON.stringify([
+        { region: 'Wallonie', code: 'NEST-001' },
+        { region: 'Bruxelles', code: 'BXL-NEST' }
+      ]),
     },
     create: {
       title: formationTitle,
@@ -127,7 +131,11 @@ async function main() {
       },
       trainers: {
         connect: { id: formateur.id }
-      }
+      },
+      agreementCodes: JSON.stringify([
+        { region: 'Wallonie', code: 'NEST-001' },
+        { region: 'Bruxelles', code: 'BXL-NEST' }
+      ]),
     },
   });
 

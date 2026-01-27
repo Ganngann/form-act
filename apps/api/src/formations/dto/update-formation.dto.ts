@@ -63,7 +63,7 @@ export class UpdateFormationDto {
 
   @IsString()
   @IsOptional()
-  agreementCode?: string;
+  agreementCodes?: string;
 
   @IsString()
   @IsOptional()

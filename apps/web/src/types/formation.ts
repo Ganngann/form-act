@@ -20,7 +20,7 @@ export type Formation = {
   programLink?: string;
   methodology?: string;
   inclusions?: string;
-  agreementCode?: string;
+  agreementCodes?: string;
   imageUrl?: string;
   categoryId?: string;
   category?: Category;
@@ -31,3 +31,9 @@ export type Formation = {
 
 export type CreateFormationData = Omit<Formation, 'id' | 'category' | 'trainers'> & { trainerIds?: string[] };
 export type UpdateFormationData = Partial<CreateFormationData>;
+
+export type CreateCategoryData = {
+  name: string;
+};
+
+export type UpdateCategoryData = Partial<CreateCategoryData>;

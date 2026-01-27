@@ -76,7 +76,7 @@ model Formation {
   price       Decimal?   // Standard amount in Euros (HTVA)
   methodology String?    // Pedagogical approach description
   inclusions  String?    // List of included material
-  agreementCode String?  // Service Voucher agreement number
+  agreementCodes String? // JSON string: List of agreement codes [{ region: "Wallonie", code: "..." }]
   imageUrl    String?    // URL of illustration image
   categoryId  String?
   category    Category?  @relation(fields: [categoryId], references: [id])
