@@ -12,9 +12,9 @@ export default {
   coverageThreshold: {
     global: {
       branches: 82.5,
-      functions: 83.01,
-      lines: 81.35,
-      statements: 79.11,
+      functions: 85.9,
+      lines: 83.0,
+      statements: 81.0,
     },
   },
   testEnvironment: 'node',
