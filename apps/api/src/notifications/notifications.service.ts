@@ -270,5 +270,4 @@ export class NotificationsService {
     }
     return false;
   }
-
 }

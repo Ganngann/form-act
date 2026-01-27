@@ -217,9 +217,9 @@ describe("SessionsService", () => {
 
   describe("adminUpdate", () => {
     it("should update trainer connect", async () => {
+      const mockSession = { id: "1" } as Session;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const mockSession = { id: "1" } as any;
-      jest.spyOn(service, "findOne").mockResolvedValue(mockSession);
+      jest.spyOn(service, "findOne").mockResolvedValue(mockSession as any);
       jest.spyOn(prisma.session, "update").mockResolvedValue(mockSession);
 
       await service.adminUpdate("1", { trainerId: "t1" });
@@ -234,9 +234,9 @@ describe("SessionsService", () => {
     });
 
     it("should update trainer disconnect", async () => {
+      const mockSession = { id: "1" } as Session;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const mockSession = { id: "1" } as any;
-      jest.spyOn(service, "findOne").mockResolvedValue(mockSession);
+      jest.spyOn(service, "findOne").mockResolvedValue(mockSession as any);
       jest.spyOn(prisma.session, "update").mockResolvedValue(mockSession);
 
       await service.adminUpdate("1", { trainerId: "" }); // Empty string -> disconnect
@@ -251,9 +251,9 @@ describe("SessionsService", () => {
     });
 
     it("should auto-confirm PENDING session when trainer is assigned", async () => {
+      const mockSession = { id: "1", status: "PENDING" } as Session;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const mockSession = { id: "1", status: "PENDING" } as any;
-      jest.spyOn(service, "findOne").mockResolvedValue(mockSession);
+      jest.spyOn(service, "findOne").mockResolvedValue(mockSession as any);
       jest.spyOn(prisma.session, "update").mockResolvedValue({
         ...mockSession,
         status: "CONFIRMED",
@@ -272,18 +272,17 @@ describe("SessionsService", () => {
     });
 
     it("should send email on cancellation", async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const mockSession = { id: "1", status: "CONFIRMED" } as any;
+      const mockSession = { id: "1", status: "CONFIRMED" } as Session;
       const updatedSession = {
         ...mockSession,
         status: "CANCELLED",
         formation: { title: "Formation" },
         client: { user: { email: "client@test.com" } },
         trainer: { email: "trainer@test.com" },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any;
+      } as unknown as Session;
 
-      jest.spyOn(service, "findOne").mockResolvedValue(mockSession);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      jest.spyOn(service, "findOne").mockResolvedValue(mockSession as any);
       jest.spyOn(prisma.session, "update").mockResolvedValue(updatedSession);
 
       await service.adminUpdate("1", { status: "CANCELLED" });
@@ -302,9 +301,9 @@ describe("SessionsService", () => {
     });
 
     it("should NOT send email if already cancelled", async () => {
+      const mockSession = { id: "1", status: "CANCELLED" } as Session;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const mockSession = { id: "1", status: "CANCELLED" } as any;
-      jest.spyOn(service, "findOne").mockResolvedValue(mockSession);
+      jest.spyOn(service, "findOne").mockResolvedValue(mockSession as any);
       jest.spyOn(prisma.session, "update").mockResolvedValue(mockSession);
 
       await service.adminUpdate("1", { status: "CANCELLED" });
@@ -317,11 +316,8 @@ describe("SessionsService", () => {
     it("should return counts", async () => {
       jest.spyOn(prisma.session, "count").mockResolvedValue(5);
       jest.spyOn(prisma.session, "findMany").mockResolvedValue([
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        { id: "1", location: "", logistics: null } as any,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        { id: "2", location: "Loc", logistics: null } as any, // Incomplete (no wifi/subsides)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        { id: "1", location: "", logistics: null } as Session,
+        { id: "2", location: "Loc", logistics: null } as Session,
         {
           id: "3",
           location: "Loc",
@@ -331,7 +327,7 @@ describe("SessionsService", () => {
             subsidies: "no",
             videoMaterial: ["None"],
           }),
-        } as any, // Complete
+        } as Session,
       ]);
 
       const result = await service.getAdminStats();
@@ -358,67 +354,66 @@ describe("SessionsService", () => {
     const validParticipants = '[{"name":"John"}]';
 
     it("should return false if no location", () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const s = {
         location: "",
         participants: validParticipants,
         logistics: validLogistics,
-      } as any;
-      expect(service.isLogisticsStrictlyComplete(s)).toBe(false);
+      } as Session;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(service.isLogisticsStrictlyComplete(s as any)).toBe(false);
     });
 
     it("should return false if no participants", () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const s = {
         location: "Loc",
         participants: "[]",
         logistics: validLogistics,
-      } as any;
-      expect(service.isLogisticsStrictlyComplete(s)).toBe(false);
+      } as Session;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(service.isLogisticsStrictlyComplete(s as any)).toBe(false);
     });
 
     it("should return false if invalid json", () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const s = {
         location: "Loc",
         participants: validParticipants,
         logistics: "invalid",
-      } as any;
-      expect(service.isLogisticsStrictlyComplete(s)).toBe(false);
+      } as Session;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(service.isLogisticsStrictlyComplete(s as any)).toBe(false);
     });
 
     it("should return false if no wifi", () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const s = {
         location: "Loc",
         participants: validParticipants,
         logistics: JSON.stringify({ subsidies: "yes", videoMaterial: ["A"] }),
-      } as any;
-      expect(service.isLogisticsStrictlyComplete(s)).toBe(false);
+      } as Session;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(service.isLogisticsStrictlyComplete(s as any)).toBe(false);
     });
 
     it("should return false if no subsidies", () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const s = {
         location: "Loc",
         participants: validParticipants,
         logistics: JSON.stringify({ wifi: "yes", videoMaterial: ["A"] }),
-      } as any;
-      expect(service.isLogisticsStrictlyComplete(s)).toBe(false);
+      } as Session;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(service.isLogisticsStrictlyComplete(s as any)).toBe(false);
     });
 
     it("should return false if no material", () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const s = {
         location: "Loc",
         participants: validParticipants,
         logistics: JSON.stringify({ wifi: "yes", subsidies: "yes" }),
-      } as any;
-      expect(service.isLogisticsStrictlyComplete(s)).toBe(false);
+      } as Session;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(service.isLogisticsStrictlyComplete(s as any)).toBe(false);
     });
 
     it("should return true if all present (video)", () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const s = {
         location: "Loc",
         participants: validParticipants,
@@ -427,12 +422,12 @@ describe("SessionsService", () => {
           subsidies: "no",
           videoMaterial: ["A"],
         }),
-      } as any;
-      expect(service.isLogisticsStrictlyComplete(s)).toBe(true);
+      } as Session;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(service.isLogisticsStrictlyComplete(s as any)).toBe(true);
     });
 
     it("should return true if all present (writing)", () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const s = {
         location: "Loc",
         participants: validParticipants,
@@ -441,12 +436,12 @@ describe("SessionsService", () => {
           subsidies: "yes",
           writingMaterial: ["A"],
         }),
-      } as any;
-      expect(service.isLogisticsStrictlyComplete(s)).toBe(true);
+      } as Session;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(service.isLogisticsStrictlyComplete(s as any)).toBe(true);
     });
 
     it("should return true if all present (none)", () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const s = {
         location: "Loc",
         participants: validParticipants,
@@ -455,8 +450,9 @@ describe("SessionsService", () => {
           subsidies: "yes",
           videoMaterial: ["NONE"],
         }),
-      } as any;
-      expect(service.isLogisticsStrictlyComplete(s)).toBe(true);
+      } as Session;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(service.isLogisticsStrictlyComplete(s as any)).toBe(true);
     });
   });
 

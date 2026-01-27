@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExpertisesService } from './expertises.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { ExpertisesService } from "./expertises.service";
+import { PrismaService } from "../prisma/prisma.service";
 
-describe('ExpertisesService', () => {
+describe("ExpertisesService", () => {
   let service: ExpertisesService;
   let prisma: PrismaService;
 
@@ -27,15 +27,15 @@ describe('ExpertisesService', () => {
     prisma = module.get<PrismaService>(PrismaService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  describe('findAll', () => {
-    it('should return an array of expertises ordered by name', async () => {
+  describe("findAll", () => {
+    it("should return an array of expertises ordered by name", async () => {
       const expertises = [
-        { id: 1, name: 'Communication' },
-        { id: 2, name: 'Management' },
+        { id: 1, name: "Communication" },
+        { id: 2, name: "Management" },
       ];
 
       (prisma.expertise.findMany as jest.Mock).mockResolvedValue(expertises);
@@ -44,7 +44,7 @@ describe('ExpertisesService', () => {
 
       expect(prisma.expertise.findMany).toHaveBeenCalledWith({
         orderBy: {
-          name: 'asc',
+          name: "asc",
         },
       });
       expect(result).toEqual(expertises);
