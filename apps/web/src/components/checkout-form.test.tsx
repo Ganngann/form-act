@@ -1,10 +1,16 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { CheckoutForm } from "./checkout-form";
 import { vi } from "vitest";
 
 // Mock API_URL
 vi.mock("@/lib/config", () => ({
   API_URL: "http://localhost:3000",
+}));
+
+// Mock next/navigation
+vi.mock("next/navigation", () => ({
+    usePathname: () => "/checkout",
+    useSearchParams: () => new URLSearchParams(),
 }));
 
 describe("CheckoutForm", () => {
@@ -25,17 +31,19 @@ describe("CheckoutForm", () => {
     window.scrollTo = vi.fn();
     // Mock window.location
     Object.defineProperty(window, 'location', {
-        value: { href: '' },
+        value: { href: '', search: '' },
         writable: true
     });
   });
 
-  const fillForm = () => {
+  const fillForm = async () => {
     fireEvent.change(screen.getByLabelText(/Numéro de TVA/i), { target: { value: "BE0123456789" } });
     fireEvent.change(screen.getByLabelText(/Nom de l'entreprise/i), { target: { value: "My Company" } });
     fireEvent.change(screen.getByLabelText(/Adresse/i), { target: { value: "Street 1" } });
     fireEvent.change(screen.getByLabelText(/Email professionnel/i), { target: { value: "test@example.com" } });
-    fireEvent.change(screen.getByLabelText(/Mot de passe/i), { target: { value: "password123" } });
+    // Password might not be present if logged in
+    const pwd = screen.queryByLabelText(/Mot de passe/i);
+    if (pwd) fireEvent.change(pwd, { target: { value: "password123" } });
   }
 
   it("renders form fields", () => {
@@ -74,9 +82,43 @@ describe("CheckoutForm", () => {
       });
   });
 
+  it("check VAT error (fetch fails)", async () => {
+      (global.fetch as any).mockRejectedValue(new Error("Network"));
+      render(<CheckoutForm {...defaultProps} />);
+      const vatInput = screen.getByLabelText(/Numéro de TVA/i);
+      fireEvent.change(vatInput, { target: { value: "BE12345" } });
+      fireEvent.click(screen.getByText("Vérifier"));
+
+      await waitFor(() => {
+          expect(global.alert).toHaveBeenCalledWith("Impossible de vérifier le numéro de TVA.");
+      });
+  });
+
+  it("check VAT error (response not ok)", async () => {
+      (global.fetch as any).mockResolvedValue({ ok: false });
+      render(<CheckoutForm {...defaultProps} />);
+      const vatInput = screen.getByLabelText(/Numéro de TVA/i);
+      fireEvent.change(vatInput, { target: { value: "BE12345" } });
+      fireEvent.click(screen.getByText("Vérifier"));
+
+      await waitFor(() => {
+          expect(global.alert).toHaveBeenCalledWith("Impossible de vérifier le numéro de TVA.");
+      });
+  });
+
+  it("skips VAT check if too short", async () => {
+      render(<CheckoutForm {...defaultProps} />);
+      const vatInput = screen.getByLabelText(/Numéro de TVA/i);
+      fireEvent.change(vatInput, { target: { value: "BE" } });
+      fireEvent.click(screen.getByText("Vérifier"));
+
+      // Should not call fetch
+      expect(global.fetch).not.toHaveBeenCalled();
+  });
+
   it("transitions to step 2", async () => {
       render(<CheckoutForm {...defaultProps} />);
-      fillForm();
+      await fillForm();
       fireEvent.click(screen.getByText("Vérifier et continuer"));
 
       await waitFor(() => {
@@ -89,7 +131,7 @@ describe("CheckoutForm", () => {
 
   it("handles manual trainer display", async () => {
       render(<CheckoutForm {...defaultProps} trainerName={undefined} trainerId="" />);
-      fillForm();
+      await fillForm();
       fireEvent.click(screen.getByText("Vérifier et continuer"));
 
       await waitFor(() => {
@@ -104,7 +146,7 @@ describe("CheckoutForm", () => {
     });
 
     render(<CheckoutForm {...defaultProps} />);
-    fillForm();
+    await fillForm();
     fireEvent.click(screen.getByText("Vérifier et continuer"));
 
     await waitFor(() => {
@@ -118,9 +160,30 @@ describe("CheckoutForm", () => {
     });
   });
 
+  it("submits form success from step 2", async () => {
+    (global.fetch as any).mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({}),
+    });
+
+    render(<CheckoutForm {...defaultProps} />);
+    await fillForm();
+    fireEvent.click(screen.getByText("Vérifier et continuer"));
+
+    await waitFor(() => {
+        expect(screen.getByText("Valider ma demande de prestation")).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByText("Valider ma demande de prestation"));
+
+    await waitFor(() => {
+        expect(window.location.href).toBe("/checkout/success");
+    });
+  });
+
   it("back button works", async () => {
       render(<CheckoutForm {...defaultProps} />);
-      fillForm();
+      await fillForm();
       fireEvent.click(screen.getByText("Vérifier et continuer"));
 
       await waitFor(() => {
@@ -132,5 +195,58 @@ describe("CheckoutForm", () => {
       await waitFor(() => {
            expect(screen.getByLabelText(/Numéro de TVA/i)).toBeDefined();
       });
+  });
+
+  it("pre-fills user data when logged in", async () => {
+      (global.fetch as any).mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve({
+              email: "user@test.com",
+              client: {
+                  vatNumber: "BE999",
+                  companyName: "User Co",
+                  address: "User Addr"
+              }
+          })
+      });
+
+      render(<CheckoutForm {...defaultProps} isLoggedIn={true} />);
+
+      await waitFor(() => {
+          expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("/auth/me"), expect.anything());
+          expect(screen.getByDisplayValue("user@test.com")).toBeDefined();
+          expect(screen.getByDisplayValue("User Co")).toBeDefined();
+      });
+
+      // Password field should not exist
+      expect(screen.queryByLabelText(/Mot de passe/i)).toBeNull();
+  });
+
+  it("pre-fills user data when logged in (no client data)", async () => {
+      (global.fetch as any).mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve({
+              email: "user@test.com",
+              client: null
+          })
+      });
+
+      render(<CheckoutForm {...defaultProps} isLoggedIn={true} />);
+
+      await waitFor(() => {
+          expect(screen.getByDisplayValue("user@test.com")).toBeDefined();
+      });
+  });
+
+  it("handles fetch user profile error", async () => {
+      const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+      (global.fetch as any).mockRejectedValue(new Error("Profile Error"));
+
+      render(<CheckoutForm {...defaultProps} isLoggedIn={true} />);
+
+      await waitFor(() => {
+          expect(spy).toHaveBeenCalledWith("Error fetching user profile:", expect.any(Error));
+      });
+      spy.mockRestore();
   });
 });
