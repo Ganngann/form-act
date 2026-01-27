@@ -11,25 +11,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table" // Assuming these exist, if not I'll check.
-import { Formation, Category, Expertise } from "@/types/formation"
+} from "@/components/ui/table"
+import { Formation, Category, Trainer } from "@/types/formation"
 import { FormationDialog } from "@/components/admin/FormationDialog"
 import { adminFormationsService } from "@/services/admin-formations"
 
 interface FormationsTableProps {
   initialFormations: Formation[]
   categories: Category[]
-  expertises: Expertise[]
+  trainers: Trainer[]
 }
 
 export function FormationsTable({
   initialFormations,
   categories,
-  expertises,
+  trainers,
 }: FormationsTableProps) {
   const router = useRouter()
-  const [formations] = useState(initialFormations) // We rely on router.refresh usually, but props update automatically?
-  // Actually, if we use router.refresh(), server comp re-renders, passing new initialFormations.
+  const [formations] = useState(initialFormations)
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedFormation, setSelectedFormation] = useState<Formation | null>(null)
@@ -75,7 +74,7 @@ export function FormationsTable({
             <TableRow>
               <TableHead>Titre</TableHead>
               <TableHead>Catégorie</TableHead>
-              <TableHead>Expertise</TableHead>
+              <TableHead>Type</TableHead>
               <TableHead>Prix</TableHead>
               <TableHead>État</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -86,7 +85,17 @@ export function FormationsTable({
               <TableRow key={formation.id}>
                 <TableCell className="font-medium">{formation.title}</TableCell>
                 <TableCell>{formation.category?.name || "-"}</TableCell>
-                <TableCell>{formation.expertise?.name || "Standard"}</TableCell>
+                <TableCell>
+                    {formation.isExpertise ? (
+                        <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                            Expertise
+                        </span>
+                    ) : (
+                        <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                            Standard
+                        </span>
+                    )}
+                </TableCell>
                 <TableCell>{formation.price ? `${formation.price} €` : "-"}</TableCell>
                 <TableCell>
                   {formation.isPublished ? (
@@ -123,7 +132,7 @@ export function FormationsTable({
         onOpenChange={setIsDialogOpen}
         formation={selectedFormation}
         categories={categories}
-        expertises={expertises}
+        trainers={trainers}
         onSuccess={handleSuccess}
       />
     </div>

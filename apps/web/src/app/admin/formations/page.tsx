@@ -7,10 +7,10 @@ async function getData() {
   const token = cookieStore.get('Authentication')?.value;
   const headers = { Cookie: `Authentication=${token}` };
 
-  const [formationsRes, categoriesRes, expertisesRes] = await Promise.all([
+  const [formationsRes, categoriesRes, trainersRes] = await Promise.all([
     fetch(`${API_URL}/admin/formations`, { headers, cache: 'no-store' }),
     fetch(`${API_URL}/categories`, { headers, cache: 'no-store' }),
-    fetch(`${API_URL}/expertises`, { headers, cache: 'no-store' }),
+    fetch(`${API_URL}/admin/trainers?take=100`, { headers, cache: 'no-store' }),
   ]);
 
   if (!formationsRes.ok) {
@@ -19,13 +19,14 @@ async function getData() {
 
   const formations = await formationsRes.json();
   const categories = await categoriesRes.json();
-  const expertises = await expertisesRes.json();
+  const trainersData = await trainersRes.json();
+  const trainers = trainersData.data || [];
 
-  return { formations, categories, expertises };
+  return { formations, categories, trainers };
 }
 
 export default async function AdminFormationsPage() {
-  const { formations, categories, expertises } = await getData();
+  const { formations, categories, trainers } = await getData();
 
   return (
     <div className="space-y-6">
@@ -33,7 +34,7 @@ export default async function AdminFormationsPage() {
       <FormationsTable
         initialFormations={formations}
         categories={categories}
-        expertises={expertises}
+        trainers={trainers}
       />
     </div>
   );

@@ -63,7 +63,7 @@ describe("FormationsService", () => {
       await service.findAll();
       expect(mockPrismaService.formation.findMany).toHaveBeenCalledWith({
         where: { isPublished: true },
-        include: { category: true, expertise: true },
+        include: { category: true, trainers: true },
       });
     });
 
@@ -71,7 +71,7 @@ describe("FormationsService", () => {
       await service.findAll(undefined, undefined, true);
       expect(mockPrismaService.formation.findMany).toHaveBeenCalledWith({
         where: {},
-        include: { category: true, expertise: true },
+        include: { category: true, trainers: true },
       });
     });
 
@@ -79,7 +79,7 @@ describe("FormationsService", () => {
       await service.findAll("dev");
       expect(mockPrismaService.formation.findMany).toHaveBeenCalledWith({
         where: { categoryId: "dev", isPublished: true },
-        include: { category: true, expertise: true },
+        include: { category: true, trainers: true },
       });
     });
 
@@ -93,7 +93,7 @@ describe("FormationsService", () => {
             { description: { contains: "Nest" } },
           ],
         },
-        include: { category: true, expertise: true },
+        include: { category: true, trainers: true },
       });
     });
   });

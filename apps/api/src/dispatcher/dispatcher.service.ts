@@ -6,48 +6,52 @@ export class DispatcherService {
   constructor(private prisma: PrismaService) {}
 
   /**
-   * Finds available trainers based on zone and optional expertise.
+   * Finds available trainers based on zone and formation requirements.
    *
    * @param date - The date of the formation.
-   *               TODO: Currently ignored. Temporal availability filtering will be implemented
-   *               once the Calendar/Session models are available (Sprint 1, US-03/04).
    * @param zoneId - The ID of the zone where the formation takes place.
-   * @param expertiseId - (Optional) The ID of the expertise required.
+   * @param formationId - (Optional) The ID of the formation to check for specific expertise requirements.
    */
   async findAvailableTrainers(
     date: Date,
     zoneId: string,
-    expertiseId?: string,
+    formationId?: string,
   ) {
-    if (expertiseId) {
-      // Expertise Formation: Check if trainer has the expertise AND the zone is in (expertiseZones OR predilectionZones)
-      // "Bible 2.2: Toute zone 'Prédilection' est incluse d'office dans 'Expertise'."
+    let isExpertise = false;
+    let allowedTrainerIds: string[] = [];
+
+    if (formationId) {
+      const formation = await this.prisma.formation.findUnique({
+        where: { id: formationId },
+        include: { trainers: true },
+      });
+      if (formation && formation.isExpertise) {
+        isExpertise = true;
+        allowedTrainerIds = formation.trainers.map((t) => t.id);
+      }
+    }
+
+    if (isExpertise) {
+      // Expertise Formation:
+      // 1. Must be in the allowed list (allowedTrainerIds)
+      // 2. Must cover the zone in ExpertiseZones (or PredilectionZones, inherited)
       return this.prisma.formateur.findMany({
         where: {
-          expertises: {
-            some: { id: expertiseId },
-          },
+          id: { in: allowedTrainerIds },
           OR: [
-            {
-              expertiseZones: {
-                some: { id: zoneId },
-              },
-            },
-            {
-              predilectionZones: {
-                some: { id: zoneId },
-              },
-            },
+            { expertiseZones: { some: { id: zoneId } } },
+            { predilectionZones: { some: { id: zoneId } } },
           ],
         },
         include: {
           predilectionZones: true,
           expertiseZones: true,
-          expertises: true,
+          formations: true,
         },
       });
     } else {
-      // Standard Formation: Check if zone is in predilectionZones
+      // Standard Formation:
+      // Any trainer covering the zone in PredilectionZones
       return this.prisma.formateur.findMany({
         where: {
           predilectionZones: {
@@ -57,7 +61,7 @@ export class DispatcherService {
         include: {
           predilectionZones: true,
           expertiseZones: true,
-          expertises: true,
+          formations: true,
         },
       });
     }

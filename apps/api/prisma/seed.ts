@@ -31,19 +31,7 @@ async function main() {
     zones.push(zone);
   }
 
-  // Expertises
-  const expertisesData = ['Bureautique', 'Management', 'Vente', 'NestJS'];
-  const expertises = [];
-  for (const e of expertisesData) {
-    const exp = await prisma.expertise.upsert({
-      where: { name: e },
-      update: {},
-      create: { name: e },
-    });
-    expertises.push(exp);
-  }
-
-  // Categories
+  // Categories (Thèmes)
   const categoriesData = ['Bureautique', 'Management', 'Développement', 'Soft Skills'];
   const categories = [];
   for (const c of categoriesData) {
@@ -72,7 +60,7 @@ async function main() {
     },
   });
 
-  // Formateur
+  // Formateur (Creation first, we will link formations later)
   const formateurEmail = 'jean.dupont@example.com';
   // Ensure user exists for formateur
   const formateurUser = await prisma.user.upsert({
@@ -95,9 +83,6 @@ async function main() {
       },
       expertiseZones: {
         set: [{ code: 'BRU' }, { code: 'BW' }, { code: 'LIE' }, { code: 'NAM' }]
-      },
-      expertises: {
-        set: [{ name: 'NestJS' }, { name: 'Bureautique' }]
       }
     },
     create: {
@@ -111,25 +96,24 @@ async function main() {
       },
       expertiseZones: {
         connect: [{ code: 'BRU' }, { code: 'BW' }, { code: 'LIE' }, { code: 'NAM' }]
-      },
-      expertises: {
-        connect: [{ name: 'NestJS' }, { name: 'Bureautique' }]
       }
     },
   });
 
+  // Formation: Introduction to NestJS (Expertise)
   const formationTitle = 'Introduction to NestJS';
   const formation = await prisma.formation.upsert({
     where: { title: formationTitle },
     update: {
       duration: '2 jours',
       durationType: 'FULL_DAY',
-      expertise: {
-        connect: { name: 'NestJS' },
-      },
+      isExpertise: true,
       category: {
         connect: { name: 'Développement' },
       },
+      trainers: {
+        connect: { id: formateur.id }
+      }
     },
     create: {
       title: formationTitle,
@@ -137,21 +121,26 @@ async function main() {
       level: 'Beginner',
       duration: '2 jours',
       durationType: 'FULL_DAY',
-      expertise: {
-        connect: { name: 'NestJS' },
-      },
+      isExpertise: true,
       category: {
         connect: { name: 'Développement' },
       },
+      trainers: {
+        connect: { id: formateur.id }
+      }
     },
   });
 
-  // Management Formation
+  // Management Formation (Expertise)
   const managementTitle = 'Management 101';
   const mgtFormation = await prisma.formation.upsert({
     where: { title: managementTitle },
     update: {
       category: { connect: { name: 'Management' } },
+      isExpertise: true,
+      trainers: {
+        connect: { id: formateur.id }
+      }
     },
     create: {
       id: 'management-101',
@@ -159,20 +148,22 @@ async function main() {
       description: 'Basics of Team Management',
       level: 'Beginner',
       duration: '1 jour',
-      expertise: {
-        connect: { name: 'Management' },
-      },
       category: { connect: { name: 'Management' } },
+      isExpertise: true,
+      trainers: {
+        connect: { id: formateur.id }
+      }
     },
   });
 
-  // Excel (Bureautique)
+  // Excel (Bureautique) - Standard
   const excelTitle = 'Excel Basics';
   const excelFormation = await prisma.formation.upsert({
     where: { title: excelTitle },
     update: {
       durationType: 'HALF_DAY',
       category: { connect: { name: 'Bureautique' } },
+      isExpertise: false
     },
     create: {
       title: excelTitle,
@@ -180,9 +171,7 @@ async function main() {
       level: 'Beginner',
       duration: '3 jours',
       durationType: 'HALF_DAY',
-      expertise: {
-        connect: { name: 'Bureautique' },
-      },
+      isExpertise: false,
       category: { connect: { name: 'Bureautique' } },
     },
   });
