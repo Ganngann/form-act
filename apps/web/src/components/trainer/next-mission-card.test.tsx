@@ -10,6 +10,7 @@ describe('NextMissionCard', () => {
     location: 'Brussels',
     formation: { title: 'JS Training' },
     client: { companyName: 'Acme', address: 'Rue 1' },
+    participants: JSON.stringify([{ name: 'John' }]),
   };
 
   it('renders correctly', () => {
@@ -18,6 +19,7 @@ describe('NextMissionCard', () => {
     expect(screen.getByText('Acme')).toBeDefined();
     expect(screen.getByText(/Matin/)).toBeDefined();
     expect(screen.getByText('Brussels')).toBeDefined();
+    expect(screen.getByText('1 participant')).toBeDefined();
   });
 
   it('handles null mission', () => {
