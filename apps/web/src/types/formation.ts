@@ -3,9 +3,10 @@ export type Category = {
   name: string;
 };
 
-export type Expertise = {
+export type Trainer = {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
 };
 
 export type Formation = {
@@ -22,13 +23,15 @@ export type Formation = {
   agreementCodes?: string;
   imageUrl?: string;
   categoryId?: string;
-  expertiseId?: string;
   category?: Category;
-  expertise?: Expertise;
   isPublished: boolean;
+  isExpertise: boolean;
+  authorizedTrainers?: Trainer[];
 };
 
-export type CreateFormationData = Omit<Formation, 'id' | 'category' | 'expertise'>;
+export type CreateFormationData = Omit<Formation, 'id' | 'category' | 'authorizedTrainers'> & {
+  authorizedTrainerIds?: string[];
+};
 export type UpdateFormationData = Partial<CreateFormationData>;
 
 export type CreateCategoryData = {

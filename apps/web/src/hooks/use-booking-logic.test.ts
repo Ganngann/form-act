@@ -12,6 +12,7 @@ describe('useBookingLogic', () => {
     id: 'f1',
     title: 'Test Formation',
     durationType: 'HALF_DAY',
+    isExpertise: false,
   };
 
   const mockZones = [{ id: 'z1', name: 'Zone 1' }];
@@ -83,6 +84,23 @@ describe('useBookingLogic', () => {
 
     expect(result.current.trainers).toEqual(mockTrainers);
     expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('/dispatcher/trainers?zoneId=z1'));
+  });
+
+  it('should include formationId in trainer fetch even if isExpertise is false', async () => {
+    const stdFormation = { ...mockFormation, isExpertise: false };
+    const { result } = renderHook(() => useBookingLogic({ formation: stdFormation }));
+
+    await waitFor(() => expect(result.current.loadingZones).toBe(false));
+
+    act(() => {
+      result.current.setSelectedZone('z1');
+    });
+
+    await waitFor(() => {
+      expect(result.current.loadingTrainers).toBe(false);
+    });
+
+    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('formationId=f1'));
   });
 
   it('should fetch availability when trainer is selected', async () => {

@@ -35,18 +35,18 @@ model Client {
 }
 
 model Formateur {
-  id                String      @id @default(uuid())
-  firstName         String
-  lastName          String
-  email             String      @unique
-  address           String?
-  userId            String?     @unique
-  user              User?       @relation(fields: [userId], references: [id])
-  predilectionZones Zone[]      @relation("Predilection")
-  expertiseZones    Zone[]      @relation("Expertise")
-  expertises        Expertise[]
-  sessions          Session[]
-  bio               String?
+  id                 String      @id @default(uuid())
+  firstName          String
+  lastName           String
+  email              String      @unique
+  address            String?
+  userId             String?     @unique
+  user               User?       @relation(fields: [userId], references: [id])
+  predilectionZones  Zone[]      @relation("Predilection")
+  expertiseZones     Zone[]      @relation("Expertise")
+  authorizedFormations Formation[] @relation("AuthorizedTrainers")
+  sessions           Session[]
+  bio                String?
   avatarUrl         String?
   calendarToken     String?     @unique
 }
@@ -59,13 +59,6 @@ model Zone {
   formateursExpertise    Formateur[] @relation("Expertise")
 }
 
-model Expertise {
-  id         String      @id @default(uuid())
-  name       String      @unique
-  formateurs Formateur[]
-  formations Formation[]
-}
-
 model Category {
   id         String      @id @default(uuid())
   name       String      @unique
@@ -73,24 +66,24 @@ model Category {
 }
 
 model Formation {
-  id          String     @id @default(uuid())
-  title       String     @unique
-  description String
-  level       String
-  duration    String
-  durationType String @default("HALF_DAY")
-  programLink String?    // URL to the PDF program
-  price       Decimal?   // Standard amount in Euros (HTVA)
-  methodology String?    // Pedagogical approach description
-  inclusions  String?    // List of included material
-  agreementCodes String? // JSON string: List of agreement codes [{ region: "Wallonie", code: "..." }]
-  imageUrl    String?    // URL of illustration image
-  expertiseId String?
-  expertise   Expertise? @relation(fields: [expertiseId], references: [id])
-  categoryId  String?
-  category    Category?  @relation(fields: [categoryId], references: [id])
-  sessions    Session[]
-  isPublished Boolean    @default(true)
+  id                 String      @id @default(uuid())
+  title              String      @unique
+  description        String
+  level              String
+  duration           String
+  durationType       String      @default("HALF_DAY")
+  programLink        String?     // URL to the PDF program
+  price              Decimal?    // Standard amount in Euros (HTVA)
+  methodology        String?     // Pedagogical approach description
+  inclusions         String?     // List of included material
+  agreementCodes     String?     // JSON string: List of agreement codes [{ region: "Wallonie", code: "..." }]
+  imageUrl           String?     // URL of illustration image
+  isExpertise        Boolean     @default(false)
+  authorizedTrainers Formateur[] @relation("AuthorizedTrainers")
+  categoryId         String?
+  category           Category?   @relation(fields: [categoryId], references: [id])
+  sessions           Session[]
+  isPublished        Boolean     @default(true)
 }
 
 model Session {

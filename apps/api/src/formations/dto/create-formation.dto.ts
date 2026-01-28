@@ -34,9 +34,13 @@ export class CreateFormationDto {
   @IsOptional()
   categoryId?: string;
 
-  @IsUUID()
+  @IsBoolean()
   @IsOptional()
-  expertiseId?: string;
+  isExpertise?: boolean;
+
+  @IsOptional()
+  @IsUUID("4", { each: true })
+  authorizedTrainerIds?: string[];
 
   @IsNumber()
   @IsOptional()

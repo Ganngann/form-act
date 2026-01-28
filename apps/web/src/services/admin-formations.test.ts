@@ -57,18 +57,6 @@ describe('adminFormationsService', () => {
     });
   });
 
-  describe('getExpertises', () => {
-    it('should fetch expertises successfully', async () => {
-      const mockData = [{ id: '1', name: 'Expertise' }];
-      mockSuccess(mockData);
-
-      const result = await adminFormationsService.getExpertises();
-
-      expect(result).toEqual(mockData);
-      expect(mockFetch).toHaveBeenCalledWith(`${API_URL}/expertises`, expect.anything());
-    });
-  });
-
   describe('getCategories', () => {
     it('should fetch categories successfully', async () => {
       const mockData = [{ id: '1', name: 'Category' }];

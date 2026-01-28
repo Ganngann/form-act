@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { adminFormationsService } from "@/services/admin-formations"
-import { Formation, Category, Expertise } from "@/types/formation"
+import { Formation, Category, Trainer } from "@/types/formation"
 import { Plus, Trash2 } from "lucide-react"
 
 const schema = z.object({
@@ -34,7 +34,8 @@ const schema = z.object({
   durationType: z.enum(["HALF_DAY", "FULL_DAY"]),
   price: z.coerce.number().min(0, "Le prix doit être positif").optional(),
   categoryId: z.string().uuid("La catégorie est requise"),
-  expertiseId: z.string().optional(),
+  isExpertise: z.boolean(),
+  authorizedTrainerIds: z.array(z.string()).optional(),
   isPublished: z.boolean(),
   programLink: z.string().optional(),
   methodology: z.string().optional(),
@@ -50,7 +51,7 @@ interface FormationDialogProps {
   onOpenChange: (open: boolean) => void
   formation: Formation | null
   categories: Category[]
-  expertises: Expertise[]
+  trainers: Trainer[]
   onSuccess: () => void
 }
 
@@ -64,7 +65,7 @@ export function FormationDialog({
   onOpenChange,
   formation,
   categories,
-  expertises,
+  trainers,
   onSuccess,
 }: FormationDialogProps) {
   const [agreements, setAgreements] = useState<Agreement[]>([])
@@ -74,6 +75,8 @@ export function FormationDialog({
     handleSubmit,
     control,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema) as any,
@@ -85,9 +88,13 @@ export function FormationDialog({
       durationType: "HALF_DAY",
       isPublished: true,
       categoryId: undefined,
-      expertiseId: "none",
+      isExpertise: false,
+      authorizedTrainerIds: [],
     },
   })
+
+  const isExpertise = watch("isExpertise");
+  const authorizedTrainerIds = watch("authorizedTrainerIds");
 
   useEffect(() => {
     if (formation) {
@@ -99,7 +106,8 @@ export function FormationDialog({
         durationType: formation.durationType,
         price: formation.price,
         categoryId: formation.categoryId,
-        expertiseId: formation.expertiseId || "none",
+        isExpertise: formation.isExpertise,
+        authorizedTrainerIds: formation.authorizedTrainers?.map(t => t.id) || [],
         isPublished: formation.isPublished,
         programLink: formation.programLink || "",
         methodology: formation.methodology || "",
@@ -130,7 +138,8 @@ export function FormationDialog({
         durationType: "HALF_DAY",
         isPublished: true,
         categoryId: undefined,
-        expertiseId: "none",
+        isExpertise: false,
+        authorizedTrainerIds: [],
         price: undefined,
         programLink: "",
         methodology: "",
@@ -162,7 +171,7 @@ export function FormationDialog({
 
       const payload = {
         ...data,
-        expertiseId: data.expertiseId === "none" ? undefined : data.expertiseId,
+        authorizedTrainerIds: data.isExpertise ? data.authorizedTrainerIds : [],
         price: data.price === undefined || isNaN(data.price) ? undefined : data.price,
         agreementCodes: validAgreements.length > 0 ? JSON.stringify(validAgreements) : undefined
       }
@@ -230,32 +239,6 @@ export function FormationDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="expertise">Expertise</Label>
-              <Controller
-                control={control}
-                name="expertiseId"
-                render={({ field }) => (
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value || "none"}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Aucune (Standard)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">Aucune (Standard)</SelectItem>
-                      {expertises.map((e) => (
-                        <SelectItem key={e.id} value={e.id}>
-                          {e.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="level">Niveau *</Label>
               <Input id="level" {...register("level")} />
                {errors.level && (
@@ -315,6 +298,53 @@ export function FormationDialog({
                </div>
             </div>
           </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Controller
+                control={control}
+                name="isExpertise"
+                render={({ field }) => (
+                  <Checkbox
+                    id="isExpertise"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
+              <Label htmlFor="isExpertise">Est une expertise ? (Restreint aux formateurs habilités)</Label>
+            </div>
+          </div>
+
+          {isExpertise && (
+            <div className="space-y-2 border p-4 rounded-md bg-gray-50">
+              <Label>Formateurs habilités</Label>
+              <div className="h-40 overflow-y-auto space-y-2">
+                {trainers.map((trainer) => (
+                  <div key={trainer.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`trainer-${trainer.id}`}
+                      checked={authorizedTrainerIds?.includes(trainer.id)}
+                      onCheckedChange={(checked) => {
+                        const current = authorizedTrainerIds || [];
+                        if (checked) {
+                          setValue("authorizedTrainerIds", [...current, trainer.id]);
+                        } else {
+                          setValue(
+                            "authorizedTrainerIds",
+                            current.filter((id) => id !== trainer.id)
+                          );
+                        }
+                      }}
+                    />
+                    <Label htmlFor={`trainer-${trainer.id}`}>
+                      {trainer.firstName} {trainer.lastName}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="description">Description *</Label>

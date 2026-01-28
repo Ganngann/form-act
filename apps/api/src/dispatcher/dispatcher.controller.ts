@@ -8,16 +8,16 @@ export class DispatcherController {
   @Get("trainers")
   async findTrainers(
     @Query("zoneId") zoneId: string,
-    @Query("expertiseId") expertiseId?: string,
+    @Query("formationId") formationId: string,
   ) {
-    if (!zoneId) {
+    if (!zoneId || !formationId) {
       return [];
     }
     // Date is ignored by the service for now
     return this.dispatcherService.findAvailableTrainers(
       new Date(),
       zoneId,
-      expertiseId,
+      formationId,
     );
   }
 }

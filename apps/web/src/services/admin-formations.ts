@@ -1,5 +1,5 @@
 import { API_URL } from '@/lib/config';
-import { Formation, CreateFormationData, UpdateFormationData, Category, Expertise } from '@/types/formation';
+import { Formation, CreateFormationData, UpdateFormationData, Category } from '@/types/formation';
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   const res = await fetch(`${API_URL}${endpoint}`, {
@@ -21,8 +21,6 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
 
 export const adminFormationsService = {
   getFormations: (): Promise<Formation[]> => fetchWithAuth('/admin/formations'),
-
-  getExpertises: (): Promise<Expertise[]> => fetchWithAuth('/expertises'),
 
   getCategories: (): Promise<Category[]> => fetchWithAuth('/categories'),
 
