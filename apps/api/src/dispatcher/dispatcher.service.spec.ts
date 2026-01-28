@@ -6,6 +6,9 @@ const mockPrismaService = {
   formateur: {
     findMany: jest.fn(),
   },
+  formation: {
+    findUnique: jest.fn(),
+  },
 };
 
 describe("DispatcherService", () => {
@@ -25,6 +28,7 @@ describe("DispatcherService", () => {
 
     service = module.get<DispatcherService>(DispatcherService);
     prisma = module.get<PrismaService>(PrismaService);
+    jest.clearAllMocks();
   });
 
   it("should be defined", () => {
@@ -32,31 +36,48 @@ describe("DispatcherService", () => {
   });
 
   describe("findAvailableTrainers", () => {
-    it("should query predilectionZones for Standard formation (no expertiseId)", async () => {
+    it("should query predilectionZones for Standard formation", async () => {
       const zoneId = "zone-1";
       const date = new Date();
-      await service.findAvailableTrainers(date, zoneId);
+      const formationId = "f-std";
+
+      (prisma.formation.findUnique as jest.Mock).mockResolvedValue({
+        id: formationId,
+        isExpertise: false,
+      });
+
+      await service.findAvailableTrainers(date, zoneId, formationId);
+
+      expect(prisma.formation.findUnique).toHaveBeenCalledWith({ where: { id: formationId } });
       expect(prisma.formateur.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: {
+          where: expect.objectContaining({
             predilectionZones: {
               some: { id: zoneId },
             },
-          },
+          }),
         }),
       );
     });
 
-    it("should query expertiseZones OR predilectionZones for Expertise formation (Inheritance Rule)", async () => {
+    it("should query expertiseZones OR predilectionZones AND restrict to authorized trainers for Expertise formation", async () => {
       const zoneId = "zone-1";
-      const expertiseId = "exp-1";
       const date = new Date();
-      await service.findAvailableTrainers(date, zoneId, expertiseId);
+      const formationId = "f-exp";
+
+      (prisma.formation.findUnique as jest.Mock).mockResolvedValue({
+        id: formationId,
+        isExpertise: true,
+      });
+
+      await service.findAvailableTrainers(date, zoneId, formationId);
+
+      expect(prisma.formation.findUnique).toHaveBeenCalledWith({ where: { id: formationId } });
       expect(prisma.formateur.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: {
-            expertises: {
-              some: { id: expertiseId },
+          where: expect.objectContaining({
+            authorizedFormations: {
+                some: { id: formationId }
             },
             OR: [
               {
@@ -70,21 +91,19 @@ describe("DispatcherService", () => {
                 },
               },
             ],
-          },
+          }),
         }),
       );
     });
 
-    it("should return empty array if no trainer matches zone (Desert Rule)", async () => {
-      const zoneId = "desert-zone";
-      const date = new Date();
+    it("should throw if formation not found", async () => {
+       const zoneId = "zone-1";
+       const date = new Date();
+       const formationId = "f-missing";
 
-      // Mock Prisma to return empty array
-      (prisma.formateur.findMany as jest.Mock).mockResolvedValue([]);
+       (prisma.formation.findUnique as jest.Mock).mockResolvedValue(null);
 
-      const result = await service.findAvailableTrainers(date, zoneId);
-      expect(result).toEqual([]);
-      expect(prisma.formateur.findMany).toHaveBeenCalled();
+       await expect(service.findAvailableTrainers(date, zoneId, formationId)).rejects.toThrow();
     });
   });
 });

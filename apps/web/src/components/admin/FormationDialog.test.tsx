@@ -21,7 +21,7 @@ global.ResizeObserver = class ResizeObserver {
 
 describe("FormationDialog", () => {
   const mockCategories = [{ id: "cat-1", name: "Category 1" }];
-  const mockExpertises = [{ id: "exp-1", name: "Expertise 1" }];
+  const mockTrainers = [{ id: "tr-1", firstName: "John", lastName: "Doe" }];
   const onSuccess = vi.fn();
   const onOpenChange = vi.fn();
 
@@ -32,7 +32,7 @@ describe("FormationDialog", () => {
         onOpenChange={onOpenChange}
         formation={null}
         categories={mockCategories}
-        expertises={mockExpertises}
+        trainers={mockTrainers}
         onSuccess={onSuccess}
       />
     );
@@ -50,7 +50,8 @@ describe("FormationDialog", () => {
       duration: "1 day",
       durationType: "HALF_DAY",
       categoryId: "cat-1",
-      expertiseId: "exp-1",
+      isExpertise: true,
+      authorizedTrainers: [{ id: "tr-1", firstName: "John", lastName: "Doe" }],
       isPublished: true,
       agreementCodes: JSON.stringify([{ region: "Wallonie", code: "W-123" }]),
       imageUrl: "http://img.com/1.jpg",
@@ -63,7 +64,7 @@ describe("FormationDialog", () => {
         onOpenChange={onOpenChange}
         formation={formation as any}
         categories={mockCategories}
-        expertises={mockExpertises}
+        trainers={mockTrainers}
         onSuccess={onSuccess}
       />
     );
@@ -81,7 +82,7 @@ describe("FormationDialog", () => {
         onOpenChange={onOpenChange}
         formation={null}
         categories={mockCategories}
-        expertises={mockExpertises}
+        trainers={mockTrainers}
         onSuccess={onSuccess}
       />
     );
@@ -115,7 +116,7 @@ describe("FormationDialog", () => {
         onOpenChange={onOpenChange}
         formation={null}
         categories={mockCategories}
-        expertises={mockExpertises}
+        trainers={mockTrainers}
         onSuccess={onSuccess}
       />
     );

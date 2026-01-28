@@ -9,6 +9,7 @@ export class FormationsService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: CreateFormationDto) {
+    const { authorizedTrainerIds, ...rest } = data;
     const existing = await this.prisma.formation.findUnique({
       where: { title: data.title },
     });
@@ -16,12 +17,20 @@ export class FormationsService {
       throw new BadRequestException("Formation with this title already exists");
     }
 
+    const createData: Prisma.FormationCreateInput = {
+      ...rest,
+      authorizedTrainers: authorizedTrainerIds?.length
+        ? { connect: authorizedTrainerIds.map((id) => ({ id })) }
+        : undefined,
+    };
+
     return this.prisma.formation.create({
-      data,
+      data: createData,
     });
   }
 
   async update(id: string, data: UpdateFormationDto) {
+    const { authorizedTrainerIds, ...rest } = data;
     if (data.title) {
       const existing = await this.prisma.formation.findUnique({
         where: { title: data.title },
@@ -32,9 +41,20 @@ export class FormationsService {
         );
       }
     }
+
+    const updateData: Prisma.FormationUpdateInput = {
+      ...rest,
+    };
+
+    if (authorizedTrainerIds) {
+      updateData.authorizedTrainers = {
+        set: authorizedTrainerIds.map((id) => ({ id })),
+      };
+    }
+
     return this.prisma.formation.update({
       where: { id },
-      data,
+      data: updateData,
     });
   }
 
@@ -81,7 +101,7 @@ export class FormationsService {
       where,
       include: {
         category: true,
-        expertise: true,
+        authorizedTrainers: true,
       },
     });
   }
@@ -91,7 +111,7 @@ export class FormationsService {
       where: { id },
       include: {
         category: true,
-        expertise: true,
+        authorizedTrainers: true,
       },
     });
   }

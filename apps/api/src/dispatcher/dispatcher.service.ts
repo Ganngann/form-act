@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
@@ -6,26 +6,31 @@ export class DispatcherService {
   constructor(private prisma: PrismaService) {}
 
   /**
-   * Finds available trainers based on zone and optional expertise.
+   * Finds available trainers based on zone and formation type (Expertise vs Standard).
    *
    * @param date - The date of the formation.
-   *               TODO: Currently ignored. Temporal availability filtering will be implemented
-   *               once the Calendar/Session models are available (Sprint 1, US-03/04).
    * @param zoneId - The ID of the zone where the formation takes place.
-   * @param expertiseId - (Optional) The ID of the expertise required.
+   * @param formationId - The ID of the formation to be dispensed.
    */
   async findAvailableTrainers(
     date: Date,
     zoneId: string,
-    expertiseId?: string,
+    formationId: string,
   ) {
-    if (expertiseId) {
-      // Expertise Formation: Check if trainer has the expertise AND the zone is in (expertiseZones OR predilectionZones)
-      // "Bible 2.2: Toute zone 'Prédilection' est incluse d'office dans 'Expertise'."
+    const formation = await this.prisma.formation.findUnique({
+      where: { id: formationId },
+    });
+
+    if (!formation) {
+      throw new BadRequestException("Formation not found");
+    }
+
+    if (formation.isExpertise) {
+      // Expertise Formation: Check if trainer is authorized AND the zone is in (expertiseZones OR predilectionZones)
       return this.prisma.formateur.findMany({
         where: {
-          expertises: {
-            some: { id: expertiseId },
+          authorizedFormations: {
+            some: { id: formationId },
           },
           OR: [
             {
@@ -43,7 +48,6 @@ export class DispatcherService {
         include: {
           predilectionZones: true,
           expertiseZones: true,
-          expertises: true,
         },
       });
     } else {
@@ -57,7 +61,6 @@ export class DispatcherService {
         include: {
           predilectionZones: true,
           expertiseZones: true,
-          expertises: true,
         },
       });
     }
