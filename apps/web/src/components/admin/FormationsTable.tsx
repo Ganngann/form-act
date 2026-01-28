@@ -15,7 +15,6 @@ import {
 import { Formation, Category, Trainer } from "@/types/formation"
 import { FormationDialog } from "@/components/admin/FormationDialog"
 import { adminFormationsService } from "@/services/admin-formations"
-import { Badge } from "@/components/ui/badge" // Assuming badge exists
 
 interface FormationsTableProps {
   initialFormations: Formation[]
