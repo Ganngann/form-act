@@ -15,6 +15,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'json-summary'],
       thresholds: {
+        // Enforce minimum coverage thresholds
         lines: 43.65,
         functions: 52.73,
         branches: 72.58,
