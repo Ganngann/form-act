@@ -9,6 +9,7 @@ export default {
   collectCoverage: true,
   coverageDirectory: '../coverage',
   coverageReporters: ['text', 'json-summary', 'lcov'],
+  // Enforce minimum coverage to prevent regression
   coverageThreshold: {
     global: {
       branches: 82.73,

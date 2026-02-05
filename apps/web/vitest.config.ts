@@ -14,6 +14,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'json-summary'],
+      // Enforce minimum coverage to prevent regression
       thresholds: {
         lines: 43.65,
         functions: 52.73,
