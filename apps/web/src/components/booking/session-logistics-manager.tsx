@@ -273,8 +273,8 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
 
                                         {initialLogistics.accessDetails && (
                                             <div className="pt-3 border-t border-border/50 mt-3">
-                                                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-1">Détails d'accès:</span>
-                                                <p className="font-medium text-foreground/80 leading-relaxed italic">"{initialLogistics.accessDetails}"</p>
+                                                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-1">Détails d&apos;accès:</span>
+                                                <p className="font-medium text-foreground/80 leading-relaxed italic">&quot;{initialLogistics.accessDetails}&quot;</p>
                                             </div>
                                         )}
                                     </div>

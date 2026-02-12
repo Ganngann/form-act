@@ -69,7 +69,7 @@ export function TrainerSidebar() {
             <Card className="rounded-[1.5rem] border-primary/10 bg-gradient-to-br from-primary/5 to-transparent overflow-hidden">
                 <CardContent className="p-6 relative">
                     <div className="absolute top-0 right-0 w-20 h-20 bg-primary/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
-                    <h3 className="text-sm font-black uppercase tracking-widest text-primary mb-2">Besoin d'aide ?</h3>
+                    <h3 className="text-sm font-black uppercase tracking-widest text-primary mb-2">Besoin d&apos;aide ?</h3>
                     <p className="text-xs text-muted-foreground font-medium mb-4 leading-relaxed">
                         Consultez notre base de connaissances ou contactez le support.
                     </p>

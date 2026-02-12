@@ -234,7 +234,7 @@ export default async function MissionDetailsPage({ params }: { params: { id: str
                                 ) : (
                                     <div className="text-center py-10">
                                         <Users className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3" />
-                                        <p className="text-muted-foreground font-medium text-sm">La liste des participants n'a pas encore été communiquée.</p>
+                                        <p className="text-muted-foreground font-medium text-sm">La liste des participants n&apos;a pas encore été communiquée.</p>
                                     </div>
                                 )}
                             </CardContent>

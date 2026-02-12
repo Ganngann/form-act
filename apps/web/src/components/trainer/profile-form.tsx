@@ -98,7 +98,7 @@ export function ProfileForm({ trainer }: { trainer: any }) {
                         {uploadingAvatar && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                        Cliquez sur l'image pour modifier. Format JPG, PNG ou GIF.
+                        Cliquez sur l&apos;image pour modifier. Format JPG, PNG ou GIF.
                     </p>
                 </div>
             </div>

@@ -95,7 +95,7 @@ export default async function TrainerSettingsPage() {
                         </div>
                         <h3 className="text-lg font-bold text-gray-900 mb-2">Bientôt disponible...</h3>
                         <p className="text-muted-foreground max-w-sm mx-auto">
-                            D'autres paramètres de notifications et de préférences seront ajoutés prochainement.
+                            D&apos;autres paramètres de notifications et de préférences seront ajoutés prochainement.
                         </p>
                     </CardContent>
                 </Card>

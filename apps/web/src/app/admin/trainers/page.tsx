@@ -2,8 +2,11 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { API_URL } from '@/lib/config';
-import { Plus, Pencil } from 'lucide-react';
-import { DeleteTrainerButton } from '@/components/admin/DeleteTrainerButton';
+import { Plus, Users, Search } from 'lucide-react';
+import { TrainerActions } from '@/components/admin/TrainerActions';
+import { Card } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 async function getTrainers(page: number = 0, search: string = '') {
   const res = await fetch(`${API_URL}/admin/trainers?skip=${page * 10}&take=10&search=${search}`, {
@@ -23,69 +26,112 @@ export default async function TrainersPage({
   const { data: trainers, total } = await getTrainers(page, search);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold md:text-2xl">Formateurs</h1>
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+            Formateurs <Badge variant="secondary" className="rounded-full px-2 bg-gray-100 text-gray-600 border-transparent text-xs">{total}</Badge>
+          </h2>
+          <p className="text-muted-foreground font-medium mt-1">Gérez votre équipe pédagogique.</p>
+        </div>
         <Link href="/admin/trainers/new">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Ajouter
+          <Button className="rounded-xl font-bold h-11 px-6 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all">
+            <Plus className="mr-2 h-5 w-5" />
+            Nouveau Formateur
           </Button>
         </Link>
       </div>
 
-      <div className="flex items-center gap-2">
-         <form className="flex gap-2 w-full md:w-auto">
-           <Input name="q" placeholder="Rechercher..." defaultValue={search} className="max-w-xs" />
-           <Button type="submit" variant="secondary">Rechercher</Button>
-         </form>
-      </div>
+      <Card className="border-none shadow-xl bg-white/50 backdrop-blur-sm rounded-[2.5rem] overflow-hidden">
+        <div className="p-6 border-b border-gray-100">
+          <form className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              name="q"
+              placeholder="Rechercher un formateur..."
+              defaultValue={search}
+              className="pl-10 h-11 rounded-xl bg-white border-transparent shadow-sm focus-visible:ring-primary/20 font-medium"
+            />
+          </form>
+        </div>
 
-      <div className="rounded-md border">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b bg-muted/50 text-left hover:bg-muted/50">
-              <th className="p-4 font-medium">Nom</th>
-              <th className="p-4 font-medium">Email</th>
-              <th className="p-4 font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {trainers.map((trainer: any) => (
-              <tr key={trainer.id} className="border-b hover:bg-muted/50">
-                <td className="p-4">{trainer.firstName} {trainer.lastName}</td>
-                <td className="p-4">{trainer.email}</td>
-                <td className="p-4 flex gap-2">
-                   <Link href={`/admin/trainers/${trainer.id}`}>
-                     <Button size="icon" variant="ghost">
-                        <Pencil className="h-4 w-4" />
-                     </Button>
-                   </Link>
-                   <DeleteTrainerButton id={trainer.id} />
-                </td>
+        <div className="p-0">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-gray-50/50 text-gray-600 uppercase text-xs tracking-wider font-bold">
+              <tr>
+                <th className="pl-8 py-4 h-14">Profil</th>
+                <th className="py-4 h-14">Contact</th>
+                <th className="py-4 h-14">Spécialité</th>
+                <th className="py-4 h-14">Status</th>
+                <th className="pr-8 py-4 h-14 text-right">Actions</th>
               </tr>
-            ))}
-            {trainers.length === 0 && (
-                <tr>
-                    <td colSpan={3} className="p-4 text-center text-muted-foreground">Aucun formateur trouvé.</td>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {trainers.map((trainer: any) => (
+                <tr key={trainer.id} className="group hover:bg-blue-50/30 transition-colors">
+                  <td className="pl-8 py-4 flex items-center gap-3">
+                    <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
+                      <AvatarImage src={trainer.avatarUrl} />
+                      <AvatarFallback className="font-bold text-primary bg-primary/10">
+                        {trainer.firstName[0]}{trainer.lastName[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-bold text-gray-900 group-hover:text-primary transition-colors">{trainer.firstName} {trainer.lastName}</p>
+                      <p className="text-xs text-muted-foreground font-medium">ID: {trainer.id.slice(0, 8)}</p>
+                    </div>
+                  </td>
+                  <td className="py-4 font-medium text-gray-600">
+                    {trainer.email}
+                    {trainer.phone && <div className="text-xs text-muted-foreground mt-0.5">{trainer.phone}</div>}
+                  </td>
+                  <td className="py-4">
+                    {trainer.speciality ? (
+                      <Badge variant="outline" className="rounded-lg font-medium border-blue-200 text-blue-700 bg-blue-50">{trainer.speciality}</Badge>
+                    ) : (
+                      <span className="text-muted-foreground text-xs italic">Non renseigné</span>
+                    )}
+                  </td>
+                  <td className="py-4">
+                    <div className="flex items-center gap-1.5">
+                      <div className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
+                      <span className="text-xs font-bold text-green-700">Actif</span>
+                    </div>
+                  </td>
+                  <td className="pr-8 py-4 text-right">
+                    <TrainerActions trainerId={trainer.id} />
+                  </td>
                 </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              ))}
+              {trainers.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="h-32 text-center text-muted-foreground font-medium">
+                    Aucun formateur trouvé.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
 
-       <div className="flex items-center gap-2 justify-end">
+      <div className="flex items-center justify-between pt-4">
+        <p className="text-sm text-muted-foreground font-medium pl-2">
+          Affichage {trainers.length} sur {total} résultats
+        </p>
+        <div className="flex gap-2">
           {page > 0 && (
             <Link href={`/admin/trainers?page=${page - 1}&q=${search}`}>
-              <Button variant="outline">Précédent</Button>
+              <Button variant="outline" className="rounded-xl font-bold">Précédent</Button>
             </Link>
           )}
           {(page + 1) * 10 < total && (
             <Link href={`/admin/trainers?page=${page + 1}&q=${search}`}>
-               <Button variant="outline">Suivant</Button>
+              <Button variant="outline" className="rounded-xl font-bold">Suivant</Button>
             </Link>
           )}
-       </div>
+        </div>
+      </div>
     </div>
   );
 }

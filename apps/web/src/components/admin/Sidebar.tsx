@@ -70,7 +70,7 @@ export function Sidebar() {
             <div className="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-full blur-2xl -mr-8 -mt-8"></div>
             <h3 className="text-xs font-black uppercase tracking-widest text-primary mb-2">Support</h3>
             <p className="text-[11px] text-muted-foreground font-medium mb-3 leading-relaxed">
-              Besoin d'aide technique ou d'une nouvelle fonctionnalité ?
+              Besoin d&apos;aide technique ou d&apos;une nouvelle fonctionnalité ?
             </p>
             <Link href="/contact" className="text-[11px] font-bold text-primary hover:underline">
               Contacter le support →

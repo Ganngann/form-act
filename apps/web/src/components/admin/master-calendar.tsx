@@ -105,7 +105,7 @@ export function MasterCalendar({ }: MasterCalendarProps) {
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="sm" onClick={handleToday} className="h-7 px-3 text-xs font-bold rounded-md hover:bg-white hover:shadow-sm">
-              Aujourd'hui
+              Aujourd&apos;hui
             </Button>
             <Button variant="ghost" size="icon" onClick={handleNext} className="h-7 w-7 rounded-md hover:bg-white hover:shadow-sm">
               <ChevronRight className="h-4 w-4" />

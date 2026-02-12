@@ -14,7 +14,7 @@ async function getData() {
   ]);
 
   if (!formationsRes.ok) {
-     throw new Error(`Failed to fetch formations: ${formationsRes.statusText}`);
+    throw new Error(`Failed to fetch formations: ${formationsRes.statusText}`);
   }
 
   const formations = await formationsRes.json();
@@ -29,7 +29,6 @@ export default async function AdminFormationsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Gestion des Formations</h1>
       <FormationsTable
         initialFormations={formations}
         categories={categories}

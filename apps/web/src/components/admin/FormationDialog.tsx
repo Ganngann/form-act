@@ -22,9 +22,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
 import { adminFormationsService } from "@/services/admin-formations"
 import { Formation, Category, Trainer } from "@/types/formation"
-import { Plus, Trash2 } from "lucide-react"
+import { Plus, Trash2, FileText, Settings, Image as ImageIcon, BookOpen, Users } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 const schema = z.object({
   title: z.string().min(1, "Le titre est requis"),
@@ -69,6 +72,7 @@ export function FormationDialog({
   onSuccess,
 }: FormationDialogProps) {
   const [agreements, setAgreements] = useState<Agreement[]>([])
+  const [activeTab, setActiveTab] = useState("general")
 
   const {
     register,
@@ -190,230 +194,279 @@ export function FormationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby={undefined}>
-        <DialogHeader>
-          <DialogTitle>
-            {formation ? "Modifier la formation" : "Nouvelle formation"}
-          </DialogTitle>
-          <DialogDescription>
-            Remplissez les informations ci-dessous pour {formation ? "modifier" : "créer"} une formation.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="max-w-3xl max-h-[90vh] p-0 overflow-hidden bg-white/95 backdrop-blur-md rounded-[2.5rem] border-0 shadow-2xl flex flex-col">
+        <div className="px-8 pt-8 pb-4 border-b border-border/50 shrink-0">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                <BookOpen className="h-5 w-5" />
+              </div>
+              {formation ? "Modifier la formation" : "Nouvelle formation"}
+            </DialogTitle>
+            <DialogDescription className="text-base font-medium text-muted-foreground ml-14">
+              {formation ? "Mettez à jour les détails du module." : "Configurez une nouvelle offre de formation."}
+            </DialogDescription>
+          </DialogHeader>
+        </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Titre *</Label>
-              <Input id="title" {...register("title")} />
-              {errors.title && (
-                <p className="text-sm text-red-500">{errors.title.message}</p>
-              )}
+        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-auto flex flex-col min-h-0">
+          <Tabs defaultValue="general" className="flex-1 flex flex-col" value={activeTab} onValueChange={setActiveTab}>
+            <div className="px-8 pt-2 shrink-0">
+              <TabsList className="bg-muted/50 p-1 rounded-xl w-full justify-start h-auto">
+                <TabsTrigger value="general" className="rounded-lg px-4 py-2 text-sm font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all flex items-center gap-2">
+                  <FileText className="h-4 w-4" /> Général
+                </TabsTrigger>
+                <TabsTrigger value="details" className="rounded-lg px-4 py-2 text-sm font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all flex items-center gap-2">
+                  <Settings className="h-4 w-4" /> Détails &amp; Config
+                </TabsTrigger>
+                <TabsTrigger value="media" className="rounded-lg px-4 py-2 text-sm font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all flex items-center gap-2">
+                  <ImageIcon className="h-4 w-4" /> Médias &amp; Divers
+                </TabsTrigger>
+              </TabsList>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="category">Catégorie *</Label>
-              <Controller
-                control={control}
-                name="categoryId"
-                render={({ field }) => (
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((c) => (
-                        <SelectItem key={c.id} value={c.id}>
-                          {c.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.categoryId && (
-                <p className="text-sm text-red-500">{errors.categoryId.message}</p>
-              )}
-            </div>
+            <div className="flex-1 overflow-auto p-8">
+              <TabsContent value="general" className="space-y-6 m-0 h-full focus-visible:ring-0">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2 col-span-2">
+                    <Label htmlFor="title" className="text-sm font-black uppercase text-gray-500 tracking-wide">Titre de la formation</Label>
+                    <Input id="title" {...register("title")} className="h-12 rounded-xl border-border bg-white font-bold text-lg focus-visible:ring-primary/20" placeholder="Ex: Leadership Avancé..." />
+                    {errors.title && <p className="text-xs font-bold text-red-500">{errors.title.message}</p>}
+                  </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="level">Niveau *</Label>
-              <Input id="level" {...register("level")} />
-               {errors.level && (
-                <p className="text-sm text-red-500">{errors.level.message}</p>
-              )}
-            </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="category" className="text-sm font-black uppercase text-gray-500 tracking-wide">Catégorie</Label>
+                    <Controller
+                      control={control}
+                      name="categoryId"
+                      render={({ field }) => (
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <SelectTrigger className="h-12 rounded-xl border-border bg-white font-medium">
+                            <SelectValue placeholder="Sélectionner..." />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-xl border-border shadow-xl">
+                            {categories.map((c) => (
+                              <SelectItem key={c.id} value={c.id} className="font-medium">{c.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.categoryId && <p className="text-xs font-bold text-red-500">{errors.categoryId.message}</p>}
+                  </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="duration">Durée (texte) *</Label>
-              <Input id="duration" {...register("duration")} placeholder="Ex: 2 jours" />
-               {errors.duration && (
-                <p className="text-sm text-red-500">{errors.duration.message}</p>
-              )}
-            </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="level" className="text-sm font-black uppercase text-gray-500 tracking-wide">Niveau</Label>
+                    <Input id="level" {...register("level")} className="h-12 rounded-xl border-border bg-white font-medium" placeholder="Ex: Débutant, Avancé..." />
+                    {errors.level && <p className="text-xs font-bold text-red-500">{errors.level.message}</p>}
+                  </div>
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="durationType">Type de Durée *</Label>
-              <Controller
-                control={control}
-                name="durationType"
-                render={({ field }) => (
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="HALF_DAY">Demi-journée (AM/PM)</SelectItem>
-                      <SelectItem value="FULL_DAY">Journée complète (6h)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-sm font-black uppercase text-gray-500 tracking-wide">Description courte</Label>
+                  <Textarea id="description" {...register("description")} className="min-h-[120px] rounded-xl border-border bg-white font-medium resize-none p-4" placeholder="Décrivez les objectifs et le contenu..." />
+                  {errors.description && <p className="text-xs font-bold text-red-500">{errors.description.message}</p>}
+                </div>
 
-             <div className="space-y-2">
-              <Label htmlFor="price">Prix (€ HTVA)</Label>
-              <Input id="price" type="number" step="0.01" {...register("price")} />
-            </div>
-
-            <div className="space-y-2 flex flex-col justify-end">
-               <div className="flex items-center space-x-2">
+                <div className="bg-muted/30 p-4 rounded-2xl border border-border/50 flex flex-col sm:flex-row justify-between items-center gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`h-10 w-10 rounded-full flex items-center justify-center ${watch('isPublished') ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
+                      <BookOpen className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <Label htmlFor="isPublished" className="font-bold text-gray-900 cursor-pointer">Publication Catalogue</Label>
+                      <p className="text-xs text-muted-foreground font-medium">Rendre cette formation visible aux clients</p>
+                    </div>
+                  </div>
                   <Controller
                     control={control}
                     name="isPublished"
                     render={({ field }) => (
-                      <Checkbox
+                      <Switch
                         id="isPublished"
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
                     )}
                   />
-                  <Label htmlFor="isPublished">Publié dans le catalogue</Label>
-               </div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Controller
-                control={control}
-                name="isExpertise"
-                render={({ field }) => (
-                  <Checkbox
-                    id="isExpertise"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                )}
-              />
-              <Label htmlFor="isExpertise">Est une expertise ? (Restreint aux formateurs habilités)</Label>
-            </div>
-          </div>
-
-          {isExpertise && (
-            <div className="space-y-2 border p-4 rounded-md bg-gray-50">
-              <Label>Formateurs habilités</Label>
-              <div className="h-40 overflow-y-auto space-y-2">
-                {trainers.map((trainer) => (
-                  <div key={trainer.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`trainer-${trainer.id}`}
-                      checked={authorizedTrainerIds?.includes(trainer.id)}
-                      onCheckedChange={(checked) => {
-                        const current = authorizedTrainerIds || [];
-                        if (checked) {
-                          setValue("authorizedTrainerIds", [...current, trainer.id]);
-                        } else {
-                          setValue(
-                            "authorizedTrainerIds",
-                            current.filter((id) => id !== trainer.id)
-                          );
-                        }
-                      }}
-                    />
-                    <Label htmlFor={`trainer-${trainer.id}`}>
-                      {trainer.firstName} {trainer.lastName}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="space-y-2">
-            <Label htmlFor="description">Description *</Label>
-            <Textarea id="description" {...register("description")} />
-             {errors.description && (
-                <p className="text-sm text-red-500">{errors.description.message}</p>
-              )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-             <div className="space-y-2">
-               <Label htmlFor="imageUrl">URL Image</Label>
-               <Input id="imageUrl" {...register("imageUrl")} placeholder="https://..." />
-             </div>
-             <div className="space-y-2">
-               <Label htmlFor="programLink">URL Programme (PDF)</Label>
-               <Input id="programLink" {...register("programLink")} placeholder="https://..." />
-             </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-               <Label>Agréments / Codes Subsides</Label>
-               <Button type="button" variant="outline" size="sm" onClick={addAgreement}>
-                 <Plus className="h-4 w-4 mr-1" /> Ajouter
-               </Button>
-            </div>
-            {agreements.length === 0 && (
-               <p className="text-sm text-muted-foreground italic">Aucun agrément configuré.</p>
-            )}
-            <div className="space-y-2">
-              {agreements.map((agreement, index) => (
-                <div key={index} className="flex gap-2 items-center">
-                  <Input
-                    placeholder="Région / Type (ex: Wallonie)"
-                    value={agreement.region}
-                    onChange={(e) => updateAgreement(index, 'region', e.target.value)}
-                  />
-                  <Input
-                    placeholder="Code (ex: 123-456)"
-                    value={agreement.code}
-                    onChange={(e) => updateAgreement(index, 'code', e.target.value)}
-                  />
-                  <Button type="button" variant="ghost" size="icon" onClick={() => removeAgreement(index)}>
-                    <Trash2 className="h-4 w-4 text-red-500" />
-                  </Button>
                 </div>
-              ))}
+              </TabsContent>
+
+              <TabsContent value="details" className="space-y-8 m-0 h-full focus-visible:ring-0">
+                {/* Durée & Prix */}
+                <div className="grid md:grid-cols-2 gap-6 p-4 bg-muted/20 rounded-2xl border border-border/50">
+                  <div className="space-y-2">
+                    <Label htmlFor="duration" className="text-xs font-black uppercase text-primary tracking-wide">Durée (Affichage)</Label>
+                    <Input id="duration" {...register("duration")} className="h-10 rounded-lg border-border bg-white" placeholder="Ex: 2 jours" />
+                    {errors.duration && <p className="text-xs font-bold text-red-500">{errors.duration.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="durationType" className="text-xs font-black uppercase text-primary tracking-wide">Format</Label>
+                    <Controller
+                      control={control}
+                      name="durationType"
+                      render={({ field }) => (
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <SelectTrigger className="h-10 rounded-lg border-border bg-white">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="HALF_DAY">Demi-journée (AM/PM)</SelectItem>
+                            <SelectItem value="FULL_DAY">Journée complète (6h)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="price" className="text-xs font-black uppercase text-primary tracking-wide">Prix de base (€ HTVA)</Label>
+                    <Input id="price" type="number" step="0.01" {...register("price")} className="h-10 rounded-lg border-border bg-white font-mono" />
+                  </div>
+                </div>
+
+                {/* Expertise & Formateurs */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Controller
+                      control={control}
+                      name="isExpertise"
+                      render={({ field }) => (
+                        <Switch
+                          id="isExpertise"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="data-[state=checked]:bg-amber-500"
+                        />
+                      )}
+                    />
+                    <div>
+                      <Label htmlFor="isExpertise" className="font-bold text-gray-900">Mode Expertise</Label>
+                      <p className="text-xs text-muted-foreground font-medium">Restreindre cette formation à des formateurs spécifiques</p>
+                    </div>
+                  </div>
+
+                  {isExpertise && (
+                    <div className="border-2 border-amber-100 bg-amber-50/30 rounded-2xl p-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                      <div className="flex items-center gap-2 mb-3 text-amber-700">
+                        <Users className="h-4 w-4" />
+                        <h4 className="font-bold text-sm">Formateurs Habilités</h4>
+                      </div>
+                      <ScrollArea className="h-48 rounded-xl bg-white border border-amber-100 p-2">
+                        <div className="space-y-1">
+                          {trainers.map((trainer) => (
+                            <div key={trainer.id} className="flex items-center gap-3 p-2 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer" onClick={() => {
+                              const current = authorizedTrainerIds || [];
+                              const checked = current.includes(trainer.id);
+                              if (checked) {
+                                setValue("authorizedTrainerIds", current.filter((id) => id !== trainer.id));
+                              } else {
+                                setValue("authorizedTrainerIds", [...current, trainer.id]);
+                              }
+                            }}>
+                              <Checkbox
+                                id={`trainer-${trainer.id}`}
+                                checked={authorizedTrainerIds?.includes(trainer.id)}
+                                onCheckedChange={() => { }} // Handled by parent div for better UX
+                                className="border-amber-300 data-[state=checked]:bg-amber-500 data-[state=checked]:border-amber-500"
+                              />
+                              <div className="flex-1">
+                                <Label htmlFor={`trainer-${trainer.id}`} className="cursor-pointer font-medium text-gray-700">
+                                  {trainer.firstName} {trainer.lastName}
+                                </Label>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    </div>
+                  )}
+                </div>
+
+                {/* Methodo & Inclusions */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="methodology" className="text-sm font-bold text-gray-700">Méthodologie</Label>
+                    <Textarea id="methodology" {...register("methodology")} className="h-24 rounded-xl border-border bg-white text-sm" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="inclusions" className="text-sm font-bold text-gray-700">Inclusions</Label>
+                    <Textarea id="inclusions" {...register("inclusions")} className="h-24 rounded-xl border-border bg-white text-sm" placeholder="Ex: Syllabus, Certificat, Lunch..." />
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="media" className="space-y-8 m-0 h-full focus-visible:ring-0">
+                <div className="space-y-4 bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
+                  <h3 className="font-black text-blue-900 flex items-center gap-2">
+                    <ImageIcon className="h-5 w-5" /> Liens Externes
+                  </h3>
+                  <div className="grid gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="imageUrl" className="text-xs font-bold uppercase text-blue-700">URL Image (Couverture)</Label>
+                      <Input id="imageUrl" {...register("imageUrl")} placeholder="https://..." className="bg-white border-blue-200 focus-visible:ring-blue-400" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="programLink" className="text-xs font-bold uppercase text-blue-700">URL Programme (PDF Download)</Label>
+                      <Input id="programLink" {...register("programLink")} placeholder="https://..." className="bg-white border-blue-200 focus-visible:ring-blue-400" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex justify-between items-end border-b pb-2">
+                    <div className="space-y-1">
+                      <Label className="font-black text-gray-900">Agréments &amp; Subsides</Label>
+                      <p className="text-xs text-muted-foreground font-medium">Codes pour KMO, Chèques-Formation...</p>
+                    </div>
+                    <Button type="button" variant="secondary" size="sm" onClick={addAgreement} className="rounded-full font-bold text-xs h-8">
+                      <Plus className="h-3 w-3 mr-1" /> Ajouter
+                    </Button>
+                  </div>
+
+                  {agreements.length === 0 && (
+                    <div className="text-center p-8 border-2 border-dashed border-gray-200 rounded-2xl text-muted-foreground text-sm font-medium bg-gray-50/50">
+                      Aucun agrément configuré.
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    {agreements.map((agreement, index) => (
+                      <div key={index} className="flex gap-3 items-center bg-white p-2 pr-4 rounded-xl border shadow-sm group">
+                        <div className="h-8 w-8 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 font-black text-xs shrink-0">
+                          {index + 1}
+                        </div>
+                        <Input
+                          placeholder="Région / Type (ex: Wallonie)"
+                          value={agreement.region}
+                          onChange={(e) => updateAgreement(index, 'region', e.target.value)}
+                          className="h-9 border-transparent bg-transparent hover:bg-gray-50 focus:bg-gray-50 transition-colors font-medium rounded-lg"
+                        />
+                        <div className="w-px h-6 bg-gray-200 mx-2"></div>
+                        <Input
+                          placeholder="Code (ex: 123-456)"
+                          value={agreement.code}
+                          onChange={(e) => updateAgreement(index, 'code', e.target.value)}
+                          className="h-9 border-transparent bg-transparent hover:bg-gray-50 focus:bg-gray-50 transition-colors font-mono text-sm rounded-lg"
+                        />
+                        <Button type="button" variant="ghost" size="icon" onClick={() => removeAgreement(index)} className="h-8 w-8 hover:bg-red-50 hover:text-red-500 rounded-lg opacity-0 group-hover:opacity-100 transition-all">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </TabsContent>
             </div>
-          </div>
 
-          <div className="space-y-2">
-             <Label htmlFor="methodology">Méthodologie</Label>
-             <Textarea id="methodology" {...register("methodology")} />
-          </div>
-
-          <div className="space-y-2">
-             <Label htmlFor="inclusions">Inclusions</Label>
-             <Textarea id="inclusions" {...register("inclusions")} placeholder="Ex: Syllabus, Certificat..." />
-          </div>
-
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Annuler
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Enregistrement..." : "Enregistrer"}
-            </Button>
-          </DialogFooter>
+            <DialogFooter className="px-8 py-6 border-t border-border/50 bg-gray-50/50 shrink-0">
+              <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="rounded-xl font-bold text-muted-foreground hover:text-gray-900">
+                Annuler
+              </Button>
+              <Button type="submit" disabled={isSubmitting} className="rounded-xl font-bold px-8 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all">
+                {isSubmitting ? "Enregistrement..." : "Enregistrer la formation"}
+              </Button>
+            </DialogFooter>
+          </Tabs>
         </form>
       </DialogContent>
     </Dialog>
