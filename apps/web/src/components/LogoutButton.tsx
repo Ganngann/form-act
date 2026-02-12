@@ -2,6 +2,7 @@
 import { API_URL } from '@/lib/config';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { LogOut } from 'lucide-react';
 
 export function LogoutButton() {
   const router = useRouter();
@@ -19,5 +20,15 @@ export function LogoutButton() {
     }
   };
 
-  return <Button variant="destructive" onClick={handleLogout}>Déconnexion</Button>;
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="text-muted-foreground hover:text-primary hover:bg-primary/5 font-bold"
+      onClick={handleLogout}
+    >
+      <LogOut className="h-4 w-4 mr-2" />
+      Déconnexion
+    </Button>
+  );
 }

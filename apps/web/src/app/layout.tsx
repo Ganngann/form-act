@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Space_Grotesk } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
 
-const inter = Inter({ subsets: ['latin'] });
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: 'Form-Act',
-    description: 'Plateforme de formation',
+    title: 'Form-Act | Activez votre Expertise',
+    description: 'Plateforme moderne de formation professionnelle',
 };
 
 export default async function RootLayout({
@@ -33,7 +33,7 @@ export default async function RootLayout({
 
     return (
         <html lang="fr">
-            <body className={inter.className}>
+            <body className={spaceGrotesk.className}>
                 <Header userRole={userRole} />
                 {children}
             </body>
