@@ -7,7 +7,8 @@ import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SessionCard, Session } from "@/components/dashboard/session-card"
 import { DashboardAlerts } from "@/components/dashboard/dashboard-alerts"
-import { User, FileText } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { User, FileText, Calendar } from "lucide-react"
 import { differenceInCalendarDays } from "date-fns"
 
 export default function ClientDashboard() {
@@ -119,86 +120,125 @@ export default function ClientDashboard() {
     }
 
     return (
-        <div className="container mx-auto py-10 px-4">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                <h1 className="text-3xl font-bold">Mon Espace Client</h1>
-
-                <Link href="/dashboard/profile" className="w-full md:w-auto">
-                    <div className="flex items-center gap-3 bg-white border rounded-lg p-3 hover:bg-slate-50 transition-colors shadow-sm cursor-pointer">
-                        <div className="bg-primary/10 p-2 rounded-full text-primary">
-                            <User size={20} />
-                        </div>
-                        <div>
-                            <p className="font-semibold text-sm">Mon Profil & Facturation</p>
-                            <p className="text-xs text-muted-foreground">TVA, Adresse, Email</p>
-                        </div>
-                    </div>
-                </Link>
+        <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex flex-col gap-2">
+                <h1 className="text-4xl font-bold tracking-tight">Mon Espace Client.</h1>
+                <p className="text-muted-foreground font-medium">Gérez vos formations et suivez votre budget en temps réel.</p>
             </div>
 
             <DashboardAlerts alerts={alerts} />
 
-            <div className="grid gap-6">
+            {/* Bento Grid Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="card p-8 flex flex-col justify-between h-[200px]">
+                    <div>
+                        <span className="text-[10px] font-black text-primary uppercase tracking-[2px]">Prochaine Session</span>
+                        {upcomingSessions.length > 0 ? (
+                            <h3 className="text-2xl font-bold mt-4 leading-tight truncate">{upcomingSessions[0].formation.title}</h3>
+                        ) : (
+                            <h3 className="text-2xl font-bold mt-4 leading-tight">Aucune session</h3>
+                        )}
+                    </div>
+                    <div className="flex items-center gap-2 mt-4">
+                        <Calendar className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-bold">{upcomingSessions.length > 0 ? new Date(upcomingSessions[0].date).toLocaleDateString('fr-FR') : '--/--/--'}</span>
+                    </div>
+                </div>
+
+                <div className="card p-8 flex flex-col justify-between h-[200px] border-orange-200 bg-orange-50/30">
+                    <div>
+                        <span className="text-[10px] font-black text-orange-600 uppercase tracking-[2px]">Actions Requises</span>
+                        <div className="flex items-baseline gap-2 mt-4">
+                            <span className="text-5xl font-black text-orange-600">{actionRequiredSessions.length}</span>
+                            <span className="text-sm font-bold text-orange-600/60 uppercase">Dossiers</span>
+                        </div>
+                    </div>
+                    <p className="text-xs font-bold text-orange-600/80 uppercase tracking-wider">Mise à jour nécessaire</p>
+                </div>
+
+                <div className="card p-8 flex flex-col justify-center h-[200px]">
+                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[2px]">Satisfaction</span>
+                    <div className="flex items-baseline gap-1 mt-2">
+                        <span className="text-5xl font-black tracking-tighter">98%</span>
+                    </div>
+                    <p className="text-xs font-medium text-muted-foreground mt-2">Score moyen de vos sessions</p>
+                </div>
+            </div>
+
+            <div className="mt-4">
                 {loading ? (
-                    <p>Chargement de vos formations...</p>
+                    <div className="flex items-center justify-center py-20">
+                        <p className="text-muted-foreground animate-pulse font-bold">Chargement de vos formations...</p>
+                    </div>
                 ) : (
                     <Tabs defaultValue={actionRequiredSessions.length > 0 ? "actions" : "upcoming"} className="w-full">
-                        <TabsList className="grid w-full grid-cols-3 mb-8">
-                            <TabsTrigger value="actions" className="relative">
-                                ⚠️ Action requise
+                        <TabsList className="bg-transparent border-b border-border rounded-none h-auto p-0 gap-8 mb-8">
+                            <TabsTrigger
+                                value="actions"
+                                className="relative bg-transparent border-none shadow-none data-[state=active]:shadow-none data-[state=active]:bg-transparent rounded-none px-0 py-4 text-sm font-bold data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary transition-all"
+                            >
+                                Actions requises
                                 {actionRequiredSessions.length > 0 && (
-                                    <span className="ml-2 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+                                    <span className="ml-2 bg-primary text-white text-[10px] px-1.5 py-0.5 rounded-full ring-4 ring-orange-50">
                                         {actionRequiredSessions.length}
                                     </span>
                                 )}
                             </TabsTrigger>
-                            <TabsTrigger value="upcoming">📅 À venir</TabsTrigger>
-                            <TabsTrigger value="completed">✅ Terminées</TabsTrigger>
+                            <TabsTrigger
+                                value="upcoming"
+                                className="bg-transparent border-none shadow-none data-[state=active]:shadow-none data-[state=active]:bg-transparent rounded-none px-0 py-4 text-sm font-bold data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary transition-all"
+                            >
+                                À venir ({upcomingSessions.length})
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="completed"
+                                className="bg-transparent border-none shadow-none data-[state=active]:shadow-none data-[state=active]:bg-transparent rounded-none px-0 py-4 text-sm font-bold data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary transition-all"
+                            >
+                                Historique ({completedSessions.length})
+                            </TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="actions">
+                        <TabsContent value="actions" className="mt-0 outline-none">
                             {actionRequiredSessions.length > 0 ? (
-                                <div className="grid gap-4">
+                                <div className="grid gap-6">
                                     {actionRequiredSessions.map((session) => (
                                         <SessionCard key={session.id} session={session} isActionRequired={true} />
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-12 bg-slate-50 rounded-lg border border-dashed">
-                                    <p className="text-muted-foreground">Aucune action requise pour le moment.</p>
+                                <div className="text-center py-20 bg-muted/20 rounded-[2rem] border border-dashed border-border">
+                                    <p className="text-muted-foreground font-bold italic">Tout est à jour ! Aucune action requise.</p>
                                 </div>
                             )}
                         </TabsContent>
 
-                        <TabsContent value="upcoming">
+                        <TabsContent value="upcoming" className="mt-0 outline-none">
                             {upcomingSessions.length > 0 ? (
-                                <div className="grid gap-4">
+                                <div className="grid gap-6">
                                     {upcomingSessions.map((session) => (
                                         <SessionCard key={session.id} session={session} />
                                     ))}
                                 </div>
                             ) : (
-                                <Card>
-                                    <CardContent className="py-10 text-center text-muted-foreground">
-                                        <p className="mb-4">Vous n&apos;avez pas de sessions à venir.</p>
-                                        <Link href="/catalogue" className="text-primary hover:underline font-medium">
-                                            Parcourir le catalogue
-                                        </Link>
-                                    </CardContent>
-                                </Card>
+                                <div className="py-20 text-center bg-muted/10 rounded-[2rem] border border-border">
+                                    <p className="mb-6 font-bold text-muted-foreground">Vous n&apos;avez pas de sessions à venir.</p>
+                                    <Button asChild className="rounded-xl font-bold shadow-lg shadow-primary/20">
+                                        <Link href="/catalogue">Parcourir le catalogue</Link>
+                                    </Button>
+                                </div>
                             )}
                         </TabsContent>
 
-                        <TabsContent value="completed">
+                        <TabsContent value="completed" className="mt-0 outline-none">
                             {completedSessions.length > 0 ? (
-                                <div className="grid gap-4 opacity-75">
+                                <div className="grid gap-6 transition-all grayscale-[0.5] hover:grayscale-0">
                                     {completedSessions.map((session) => (
                                         <SessionCard key={session.id} session={session} />
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-12">
-                                    <p className="text-muted-foreground">Aucune session terminée.</p>
+                                <div className="text-center py-20">
+                                    <p className="text-muted-foreground font-bold">Aucune session terminée à afficher.</p>
                                 </div>
                             )}
                         </TabsContent>

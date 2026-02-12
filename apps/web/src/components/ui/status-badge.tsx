@@ -5,34 +5,34 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-  let colorClass = "bg-gray-100 text-gray-800";
+  let colorClass = "bg-gray-100 text-gray-800 border-gray-200";
   let label = status;
 
   switch (status) {
     case 'CONFIRMED':
-      colorClass = "bg-green-100 text-green-800";
+      colorClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
       label = "Confirmée";
       break;
     case 'PENDING':
-      colorClass = "bg-yellow-100 text-yellow-800";
+      colorClass = "bg-amber-50 text-amber-700 border-amber-200";
       label = "En attente";
       break;
     case 'COMPLETED':
-      colorClass = "bg-blue-100 text-blue-800";
+      colorClass = "bg-blue-50 text-blue-700 border-blue-200";
       label = "Terminée";
       break;
     case 'CANCELLED':
-      colorClass = "bg-red-100 text-red-800";
+      colorClass = "bg-red-50 text-red-700 border-red-200";
       label = "Annulée";
       break;
     case 'PROOF_RECEIVED':
-      colorClass = "bg-purple-100 text-purple-800";
+      colorClass = "bg-indigo-50 text-indigo-700 border-indigo-200";
       label = "Preuve reçue";
       break;
   }
 
   return (
-    <span className={cn("px-2.5 py-0.5 rounded text-xs font-medium", colorClass)}>
+    <span className={cn("px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border", colorClass)}>
       {label}
     </span>
   );
