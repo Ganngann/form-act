@@ -3,6 +3,9 @@ import { API_URL } from '@/lib/config';
 import { LogoutButton } from '@/components/LogoutButton';
 import Link from 'next/link';
 import { NextMissionCard } from '@/components/trainer/next-mission-card';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Calendar, Clock, MapPin, ArrowRight, User } from 'lucide-react';
 
 async function getTrainerMissions() {
     const cookieStore = cookies();
@@ -38,95 +41,142 @@ export default async function TrainerPage() {
 
     if (!missions) {
         return (
-            <div className="p-8">
-                <h1 className="text-3xl font-bold mb-4">Espace Formateur</h1>
-                <p className="text-red-500">Impossible de charger les informations du formateur.</p>
+            <div className="min-h-screen flex items-center justify-center bg-muted/10 p-4">
+                <div className="text-center space-y-4">
+                    <div className="h-16 w-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <User className="h-8 w-8" />
+                    </div>
+                    <h1 className="text-3xl font-black text-gray-900">Accès Refusé</h1>
+                    <p className="text-muted-foreground font-medium">Impossible de charger les informations du formateur.</p>
+                </div>
             </div>
         );
     }
 
-    // Find next mission: First future mission (missions are already sorted by date asc from API if not we should sort)
-    // Assuming API returns sorted.
-    // We need to filter only missions >= today for the "Next Mission" card logic if the API returns past missions too.
-    // But usually getTrainerMissions returns future missions? Let's check memory or assume standard list.
-    // The API endpoint /trainers/:id/missions usually returns upcoming missions.
-    // We'll take the first one as "Next Mission".
+    // Find next mission
     const nextMission = missions.length > 0 ? missions[0] : null;
 
     return (
-        <div className="p-8 max-w-4xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Tableau de Bord</h1>
-                    <p className="text-gray-500 mt-1">Gérez vos missions et votre activité</p>
-                </div>
-                <div className="flex items-center gap-4">
-                    <Link href="/trainer/profile" className="text-sm font-medium hover:text-blue-600 transition-colors">
-                        Mon Profil
+        <main className="min-h-screen bg-muted/10 pb-20">
+            {/* Header */}
+            <header className="bg-white border-b border-border py-12 px-4 mb-8">
+                <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div>
+                        <span className="inline-block px-3 py-1 rounded-md bg-primary/5 border border-primary/20 text-[10px] font-black uppercase tracking-widest text-primary mb-4">
+                            Espace Formateur
+                        </span>
+                        <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-gray-900 mb-2">
+                            Tableau de Bord
+                        </h1>
+                        <p className="text-muted-foreground font-medium text-lg">
+                            Gérez vos missions, consultez vos plannings et accédez aux documents.
+                        </p>
+                    </div>
+                    <Link
+                        href="/trainer/profile"
+                        className="group flex items-center gap-3 px-6 py-3 bg-white border border-border rounded-xl font-bold shadow-sm hover:border-primary transition-all hover:shadow-md"
+                    >
+                        <div className="h-10 w-10 bg-primary/5 rounded-full flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                            <User className="h-5 w-5" />
+                        </div>
+                        <span>Mon Profil</span>
                     </Link>
                 </div>
-            </div>
+            </header>
 
-            {/* Focus: Prochaine Mission */}
-            {nextMission && <NextMissionCard mission={nextMission} />}
+            <div className="max-w-5xl mx-auto px-4">
 
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Toutes mes missions</h2>
-            <div className="space-y-4">
-                {missions.length === 0 ? (
-                    <div className="bg-white p-6 rounded-lg shadow-sm border text-center text-gray-500">
-                        Aucune mission à venir pour le moment.
+                {/* Focus: Prochaine Mission */}
+                {nextMission && (
+                    <div className="mb-16">
+                        <div className="flex items-center gap-4 mb-6">
+                            <h2 className="text-xl font-black uppercase tracking-widest text-muted-foreground">À Venir</h2>
+                            <div className="h-px flex-1 bg-border"></div>
+                        </div>
+                        <NextMissionCard mission={nextMission} />
                     </div>
-                ) : (
-                    missions.map((mission: any) => {
-                        let participantCount = 0;
-                        try {
-                            const participants = mission.participants ? JSON.parse(mission.participants) : [];
-                            participantCount = participants.length;
-                        } catch (e) {
-                            console.error('Failed to parse participants', e);
-                        }
-
-                        return (
-                            <Link
-                                href={`/trainer/missions/${mission.id}`}
-                                key={mission.id}
-                                className="block bg-white p-6 border rounded-lg shadow-sm hover:shadow-md hover:border-blue-500 transition-all duration-200 group"
-                            >
-                                <div className="flex justify-between items-start">
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">
-                                                {new Date(mission.date).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })}
-                                            </span>
-                                            {mission.slot && (
-                                                <span className="text-gray-500 text-sm border px-2 py-0.5 rounded">
-                                                    {mission.slot}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <h2 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                                            {mission.formation.title}
-                                        </h2>
-                                        <div className="flex flex-wrap gap-4 mt-2 text-gray-600">
-                                            <p className="flex items-center gap-2">
-                                                <span className="font-medium">Client :</span>
-                                                {mission.client?.companyName || 'N/A'}
-                                            </p>
-                                            <p className="flex items-center gap-2">
-                                                <span className="font-medium">Participants :</span>
-                                                {participantCount}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="text-gray-400 group-hover:text-blue-500">
-                                        →
-                                    </div>
-                                </div>
-                            </Link>
-                        );
-                    })
                 )}
+
+                <div>
+                    <div className="flex items-center gap-4 mb-8">
+                        <h2 className="text-xl font-black uppercase tracking-widest text-muted-foreground">Toutes mes missions</h2>
+                        <div className="h-px flex-1 bg-border"></div>
+                        <Badge variant="outline" className="text-xs font-bold px-3 py-1 bg-white border-border text-muted-foreground">
+                            {missions.length} Mission{missions.length > 1 ? 's' : ''}
+                        </Badge>
+                    </div>
+
+                    <div className="grid gap-6">
+                        {missions.length === 0 ? (
+                            <Card className="border-dashed border-2 border-border bg-white/50 p-12 text-center rounded-[2rem]">
+                                <p className="text-muted-foreground font-bold text-lg">Aucune mission planifiée pour le moment.</p>
+                            </Card>
+                        ) : (
+                            missions.map((mission: any) => {
+                                const missionDate = new Date(mission.date);
+                                return (
+                                    <Link
+                                        href={`/trainer/missions/${mission.id}`}
+                                        key={mission.id}
+                                        className="block group"
+                                    >
+                                        <Card className="rounded-[2rem] border-transparent shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-300 bg-white overflow-hidden group-hover:-translate-y-1">
+                                            <CardContent className="p-0 flex flex-col md:flex-row">
+                                                {/* Date Column */}
+                                                <div className="bg-primary/5 min-w-[140px] p-6 flex flex-col items-center justify-center text-center border-r border-primary/5 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                                                    <span className="text-3xl font-black tracking-tighter mb-1">
+                                                        {missionDate.getDate()}
+                                                    </span>
+                                                    <span className="text-xs font-black uppercase tracking-widest opacity-60 mb-2">
+                                                        {missionDate.toLocaleDateString('fr-FR', { month: 'short' })}
+                                                    </span>
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-80 border border-current px-2 py-0.5 rounded-full">
+                                                        {missionDate.getFullYear()}
+                                                    </span>
+                                                </div>
+
+                                                {/* Content */}
+                                                <div className="flex-1 p-6 md:p-8 flex flex-col justify-center">
+                                                    <div className="flex flex-wrap items-center gap-3 mb-3">
+                                                        <Badge variant="secondary" className="bg-muted text-muted-foreground hover:bg-muted font-bold tracking-wide uppercase text-[10px]">
+                                                            {mission.slot === 'AM' ? 'Matin' : mission.slot === 'PM' ? 'Après-midi' : 'Journée'}
+                                                        </Badge>
+                                                        {mission.client?.companyName && (
+                                                            <span className="text-xs font-bold text-primary px-2 py-0.5 rounded bg-primary/5 border border-primary/10">
+                                                                {mission.client.companyName}
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    <h3 className="text-2xl font-bold text-gray-900 group-hover:text-primary transition-colors mb-2">
+                                                        {mission.formation.title}
+                                                    </h3>
+
+                                                    <div className="flex items-center gap-6 text-sm font-medium text-muted-foreground">
+                                                        {mission.location && (
+                                                            <div className="flex items-center gap-2">
+                                                                <MapPin className="h-4 w-4 text-primary/50" />
+                                                                <span className="truncate max-w-[200px]">{mission.location}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {/* Action */}
+                                                <div className="bg-white p-6 flex items-center justify-center md:border-l border-border">
+                                                    <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                                        <ArrowRight className="h-5 w-5" />
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </Link>
+                                );
+                            })
+                        )}
+                    </div>
+                </div>
             </div>
-        </div>
+        </main>
     );
 }
