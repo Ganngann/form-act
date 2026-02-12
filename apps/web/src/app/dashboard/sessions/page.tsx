@@ -54,7 +54,7 @@ export default function SessionsPage() {
         <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex flex-col gap-2">
                 <h1 className="text-4xl font-bold tracking-tight">Mes Sessions.</h1>
-                <p className="text-muted-foreground font-medium">Retrouvez l'historique et le planning de vos formations.</p>
+                <p className="text-muted-foreground font-medium">Retrouvez l&apos;historique et le planning de vos formations.</p>
             </div>
 
             <Tabs defaultValue="upcoming" className="w-full">

@@ -22,7 +22,7 @@ export default function ContactPage() {
                         <span className="text-primary italic">Projet.</span>
                     </h1>
                     <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
-                        Une question sur une formation ? Besoin d'un devis personnalisé ? Notre équipe est à votre écoute pour vous accompagner.
+                        Une question sur une formation ? Besoin d&apos;un devis personnalisé ? Notre équipe est à votre écoute pour vous accompagner.
                     </p>
                 </div>
             </section>
@@ -83,7 +83,7 @@ export default function ContactPage() {
                         <div className="bg-primary text-white p-8 rounded-[2rem] shadow-xl shadow-primary/30 relative overflow-hidden">
                             <div className="relative z-10">
                                 <MessageSquare className="h-8 w-8 mb-4 opacity-80" />
-                                <h3 className="text-2xl font-black tracking-tight mb-2">Besoin d'aide immédiate ?</h3>
+                                <h3 className="text-2xl font-black tracking-tight mb-2">Besoin d&apos;aide immédiate ?</h3>
                                 <p className="text-white/80 font-medium mb-6">Consultez notre FAQ pour trouver des réponses rapides aux questions fréquentes.</p>
                                 <a href="/faq" className="inline-flex items-center font-bold text-sm bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm">
                                     Voir la FAQ

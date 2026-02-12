@@ -193,7 +193,7 @@ export default async function Home() {
             <div className="h-14 w-14 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
               <Users className="h-7 w-7" />
             </div>
-            <h3 className="text-3xl font-bold tracking-tight">Réseau d'Experts <br />Indépendants</h3>
+            <h3 className="text-3xl font-bold tracking-tight">Réseau d&apos;Experts <br />Indépendants</h3>
             <p className="text-muted-foreground font-medium leading-relaxed">Un accès direct aux meilleurs formateurs du marché, sélectionnés pour leur expertise technique et leur pédagogie innovante.</p>
           </div>
           <div className="flex flex-col gap-6">
@@ -201,7 +201,7 @@ export default async function Home() {
               <Zap className="h-7 w-7" />
             </div>
             <h3 className="text-3xl font-bold tracking-tight">Tracking & <br />Reporting Live</h3>
-            <p className="text-muted-foreground font-medium leading-relaxed">Suivez l'impact de vos formations en temps réel grâce à notre dashboard intelligent et nos outils de reporting automatisés.</p>
+            <p className="text-muted-foreground font-medium leading-relaxed">Suivez l&apos;impact de vos formations en temps réel grâce à notre dashboard intelligent et nos outils de reporting automatisés.</p>
           </div>
         </div>
       </section>
@@ -212,7 +212,7 @@ export default async function Home() {
         <div className="container px-4 flex flex-col items-center text-center">
           <Quote className="h-12 w-12 text-primary/20 mb-8" />
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight max-w-4xl text-balance italic">
-            "Form-Act a radicalement changé notre approche de la formation continue. La qualité des intervenants est simplement inégalée."
+            &quot;Form-Act a radicalement changé notre approche de la formation continue. La qualité des intervenants est simplement inégalée.&quot;
           </h2>
           <div className="mt-10">
             <p className="font-black text-xl">Julien Morel</p>

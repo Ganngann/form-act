@@ -74,7 +74,7 @@ export default function FAQPage() {
                 <div className="absolute inset-0 bg-primary/5 -z-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent"></div>
                 <div className="container mx-auto text-center max-w-4xl">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest mb-6">
-                        <HelpCircle className="h-4 w-4" /> Centre d'aide
+                        <HelpCircle className="h-4 w-4" /> Centre d&apos;aide
                     </div>
                     <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-8 text-balance">
                         Questions <br />

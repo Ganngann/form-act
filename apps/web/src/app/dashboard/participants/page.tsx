@@ -16,7 +16,7 @@ export default function ParticipantsPage() {
                 </div>
                 <h2 className="text-2xl font-bold mb-2">Gestion bientôt disponible</h2>
                 <p className="text-muted-foreground text-center max-w-sm">
-                    Cette fonctionnalité est en cours de développement. Vous pourrez bientôt gérer vos participants directement d'ici.
+                    Cette fonctionnalité est en cours de développement. Vous pourrez bientôt gérer vos participants directement d&apos;ici.
                 </p>
             </div>
         </div>

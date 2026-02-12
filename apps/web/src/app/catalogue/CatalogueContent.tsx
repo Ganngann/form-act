@@ -241,7 +241,7 @@ export default function CatalogueContent() {
               </div>
               <h3 className="text-2xl font-bold mb-2">Aucun résultat trouvé</h3>
               <p className="text-muted-foreground max-w-md">
-                Nous n'avons trouvé aucune formation correspondant à votre recherche. Essayez d'autres mots-clés ou parcourez toutes nos thématiques.
+                Nous n&apos;avons trouvé aucune formation correspondant à votre recherche. Essayez d&apos;autres mots-clés ou parcourez toutes nos thématiques.
               </p>
               <Button
                 variant="link"

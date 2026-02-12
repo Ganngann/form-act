@@ -178,7 +178,7 @@ export default function SettingsPage() {
                                     <form onSubmit={handleSubmit} className="space-y-6">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-2">
-                                                <label className="text-xs font-black uppercase tracking-wider text-muted-foreground">Nom de l'entreprise</label>
+                                                <label className="text-xs font-black uppercase tracking-wider text-muted-foreground">Nom de l&apos;entreprise</label>
                                                 <Input
                                                     name="companyName"
                                                     value={formData.companyName}
@@ -246,7 +246,7 @@ export default function SettingsPage() {
                             <div className="card p-8 bg-primary/5 border-primary/10 rounded-[2rem]">
                                 <h4 className="font-black text-primary uppercase text-[10px] tracking-widest mb-4">Note importante</h4>
                                 <p className="text-sm text-primary/80 font-medium leading-relaxed">
-                                    Ces informations servent de base à l'émission de vos factures de formation. Toute modification sera immédiatement appliquée aux prochaines facturations.
+                                    Ces informations servent de base à l&apos;émission de vos factures de formation. Toute modification sera immédiatement appliquée aux prochaines facturations.
                                 </p>
                             </div>
                         </div>
@@ -259,7 +259,7 @@ export default function SettingsPage() {
                             <Shield className="h-12 w-12 text-muted-foreground mb-4 opacity-20" />
                             <h3 className="text-xl font-bold mb-2">Sécurité du compte</h3>
                             <p className="text-muted-foreground font-medium max-w-xs mx-auto">
-                                Le changement de mot de passe et l'authentification à deux facteurs seront disponibles prochainement.
+                                Le changement de mot de passe et l&apos;authentification à deux facteurs seront disponibles prochainement.
                             </p>
                         </CardContent>
                     </Card>

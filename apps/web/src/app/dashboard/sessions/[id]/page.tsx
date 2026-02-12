@@ -102,7 +102,7 @@ export default async function ClientSessionDetailPage({ params }: { params: { id
                             <h3 className="font-black text-primary uppercase text-xs tracking-widest">À noter</h3>
                         </div>
                         <p className="text-sm font-medium text-muted-foreground leading-relaxed italic border-l-2 border-primary/20 pl-4">
-                            "Les modifications logistiques sont possibles jusqu'à 7 jours avant la date de la séance."
+                            &quot;Les modifications logistiques sont possibles jusqu&apos;à 7 jours avant la date de la séance.&quot;
                         </p>
                         <div className="pt-2">
                             <Button variant="outline" className="w-full h-12 rounded-xl border-primary/20 text-primary hover:bg-primary/5 font-bold shadow-none" asChild>
@@ -112,7 +112,7 @@ export default async function ClientSessionDetailPage({ params }: { params: { id
                     </section>
 
                     <div className="text-center p-6 border border-dashed border-border rounded-[2rem] bg-muted/5">
-                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Besoin d'aide ?</p>
+                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Besoin d&apos;aide ?</p>
                         <p className="text-xs font-medium text-muted-foreground/60 mt-1 uppercase tracking-tight">Contactez notre support administratif.</p>
                     </div>
                 </div>

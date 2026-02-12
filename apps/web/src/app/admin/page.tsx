@@ -44,7 +44,7 @@ export default async function AdminDashboard() {
             Dashboard
           </h1>
           <p className="text-muted-foreground font-medium text-lg max-w-2xl">
-            Vue d'ensemble de l'activité, gestion des sessions et suivi des priorités.
+            Vue d&apos;ensemble de l&apos;activité, gestion des sessions et suivi des priorités.
           </p>
         </div>
         <div className="hidden md:block">
