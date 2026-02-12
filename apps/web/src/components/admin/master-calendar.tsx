@@ -95,57 +95,55 @@ export function MasterCalendar({ }: MasterCalendarProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <h2 className="text-2xl font-bold tracking-tight">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 px-8 pt-8 pb-4">
+        <div className="flex items-center gap-4">
+          <h2 className="text-2xl font-black tracking-tight text-gray-900 capitalize">
             {format(currentDate, viewMode === 'month' ? "MMMM yyyy" : "'Semaine du' d MMMM", { locale: fr })}
           </h2>
-          <div className="flex items-center border rounded-md bg-white">
-            <Button variant="ghost" size="icon" onClick={handlePrevious}>
+          <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-lg border border-border/50">
+            <Button variant="ghost" size="icon" onClick={handlePrevious} className="h-7 w-7 rounded-md hover:bg-white hover:shadow-sm">
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleToday}>
-              Aujourd&apos;hui
+            <Button variant="ghost" size="sm" onClick={handleToday} className="h-7 px-3 text-xs font-bold rounded-md hover:bg-white hover:shadow-sm">
+              Aujourd'hui
             </Button>
-            <Button variant="ghost" size="icon" onClick={handleNext}>
+            <Button variant="ghost" size="icon" onClick={handleNext} className="h-7 w-7 rounded-md hover:bg-white hover:shadow-sm">
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
-        <div className="flex space-x-2 bg-slate-100 p-1 rounded-md">
+        <div className="flex space-x-1 bg-muted/50 p-1 rounded-lg border border-border/50">
           <button
             onClick={() => setViewMode("month")}
-            className={`px-3 py-1 text-sm rounded-sm transition-all ${viewMode === 'month' ? 'bg-white shadow text-black' : 'text-slate-500 hover:text-black'}`}
+            className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${viewMode === 'month' ? 'bg-white text-primary shadow-sm' : 'text-muted-foreground hover:text-primary'}`}
           >
             Mois
           </button>
           <button
             onClick={() => setViewMode("week")}
-            className={`px-3 py-1 text-sm rounded-sm transition-all ${viewMode === 'week' ? 'bg-white shadow text-black' : 'text-slate-500 hover:text-black'}`}
+            className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${viewMode === 'week' ? 'bg-white text-primary shadow-sm' : 'text-muted-foreground hover:text-primary'}`}
           >
             Semaine
           </button>
         </div>
       </div>
 
-      <Card>
-        <CardContent className="p-0">
-          {isLoading ? (
-            <div className="h-96 flex items-center justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              <span className="ml-2 text-muted-foreground">Chargement du planning...</span>
-            </div>
-          ) : (
-            <CalendarGrid
-              days={days}
-              trainers={trainers}
-              sessions={sessions}
-              onSessionClick={handleSessionClick}
-            />
-          )}
-        </CardContent>
-      </Card>
+      <div className="bg-white rounded-xl">
+        {isLoading ? (
+          <div className="h-96 flex items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <span className="ml-2 text-muted-foreground">Chargement du planning...</span>
+          </div>
+        ) : (
+          <CalendarGrid
+            days={days}
+            trainers={trainers}
+            sessions={sessions}
+            onSessionClick={handleSessionClick}
+          />
+        )}
+      </div>
 
       <SessionDetailsDialog
         session={selectedSession}

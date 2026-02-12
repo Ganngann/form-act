@@ -2,9 +2,10 @@ import { cn } from "@/lib/utils";
 
 interface StatusBadgeProps {
   status: string;
+  className?: string; // Optional className prop
 }
 
-export function StatusBadge({ status }: StatusBadgeProps) {
+export function StatusBadge({ status, className }: StatusBadgeProps) {
   let colorClass = "bg-gray-100 text-gray-800 border-gray-200";
   let label = status;
 
@@ -32,7 +33,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
   }
 
   return (
-    <span className={cn("px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border", colorClass)}>
+    <span className={cn("px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border", colorClass, className)}>
       {label}
     </span>
   );

@@ -54,7 +54,7 @@ export function CalendarGrid({ days, trainers, sessions, onSessionClick }: Calen
   }, [sessions]);
 
   return (
-    <div ref={containerRef} className="overflow-x-auto border rounded-lg">
+    <div ref={containerRef} className="overflow-x-auto">
       <table className="w-full text-sm border-collapse">
         <thead>
           <tr>

@@ -91,22 +91,25 @@ export function PriorityActions() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {actions.map((action, idx) => (
                 <Link key={idx} href={action.href}>
-                    <Card className={`group h-full hover:shadow-md transition-all border ${action.borderColor} ${action.count > 0 ? 'opacity-100' : 'opacity-60 grayscale-[0.5]'}`}>
-                        <CardContent className="p-4 flex flex-col justify-between h-full">
-                            <div className="flex items-start justify-between mb-4">
-                                <div className={`p-2 rounded-lg ${action.bgColor} ${action.color}`}>
-                                    <action.icon className="h-5 w-5" />
+                    <Card className={`group h-full shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border ${action.borderColor} ${action.count > 0 ? 'opacity-100 bg-white' : 'opacity-60 grayscale-[0.5] bg-muted/20'} rounded-[2rem] overflow-hidden`}>
+                        <CardContent className="p-6 flex flex-col justify-between h-full relative">
+                            {/* Background accent */}
+                            <div className={`absolute top-0 right-0 w-24 h-24 ${action.bgColor} rounded-full blur-3xl -mr-10 -mt-10 opacity-50 group-hover:opacity-100 transition-opacity`}></div>
+
+                            <div className="flex items-start justify-between mb-6 relative z-10">
+                                <div className={`h-12 w-12 rounded-2xl ${action.bgColor} ${action.color} flex items-center justify-center border border-white/50 shadow-sm`}>
+                                    <action.icon className="h-6 w-6" />
                                 </div>
-                                <p className={`text-2xl font-bold ${action.count > 0 ? action.color : 'text-slate-400'}`}>
+                                <div className={`px-3 py-1 rounded-full text-xs font-black ${action.bgColor} ${action.color}`}>
                                     {action.count}
-                                </p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-sm font-bold text-slate-800 flex items-center gap-1 group-hover:text-blue-600 transition-colors">
+
+                            <div className="relative z-10">
+                                <p className="text-lg font-black text-gray-900 group-hover:text-primary transition-colors mb-1 flex items-center gap-2">
                                     {action.title}
-                                    <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-1" />
                                 </p>
-                                <p className="text-[11px] leading-tight text-slate-500 mt-0.5">
+                                <p className="text-sm font-medium text-muted-foreground leading-relaxed">
                                     {action.description}
                                 </p>
                             </div>
