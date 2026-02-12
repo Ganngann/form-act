@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form-Act | Détail Formation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="master.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .formation-header {
+            padding: 100px 0 60px;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .formation-content {
+            line-height: 1.8;
+            color: var(--dim);
+        }
+
+        .formation-content h2 {
+            color: var(--text);
+            margin: 40px 0 20px;
+        }
+
+        .formation-content ul {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-box {
+            position: sticky;
+            top: 140px;
+            padding: 35px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .meta-item i {
+            color: var(--brand);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+            <a href="index.html" class="logo">
+                <div class="logo-icon"><i data-lucide="zap" size="18" color="#fff"></i></div>FORM-ACT
+            </a>
+            <nav>
+                <a href="index.html">Accueil</a>
+                <a href="catalogue.html" class="active">Catalogue</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <a href="login.html" class="btn-outline">Mon Espace</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="formation-header">
+            <div>
+                <a href="catalogue.html"
+                    style="text-decoration:none; color:var(--brand); font-weight:700; font-size:0.8rem; display:flex; align-items:center; gap:8px; margin-bottom:20px;">
+                    <i data-lucide="arrow-left" size="16"></i> RETOUR AU CATALOGUE
+                </a>
+                <h1 style="font-size:4.5rem; margin-bottom:20px;">Intelligence <br>Emotionnelle.</h1>
+                <p style="font-size:1.4rem; color:var(--text); font-weight:300; line-height:1.5;">Propulsez votre
+                    leadership en maîtrisant la gestion des émotions au sein de vos équipes.</p>
+            </div>
+            <div class="card"
+                style="background: linear-gradient(135deg, #FF5C00, #FFD700); height:400px; display:flex; align-items:center; justify-content:center; border:none;">
+                <i data-lucide="brain" color="#fff" size="120" style="opacity:0.6;"></i>
+            </div>
+        </section>
+
+        <div style="display:grid; grid-template-columns: 2fr 1fr; gap:60px; margin-bottom:100px;">
+            <article class="formation-content">
+                <h2>Objectifs de la formation</h2>
+                <p>Ce programme immersif est conçu pour les managers souhaitant transformer leur approche du leadership.
+                    L'intelligence émotionnelle n'est plus une "soft skill" optionnelle, c'est le levier n°1 de la
+                    performance collective.</p>
+                <ul>
+                    <li>Comprendre et réguler ses propres émotions en situation de stress.</li>
+                    <li>Développer une écoute empathique pour désamorcer les conflits.</li>
+                    <li>Inspirer confiance et engagement auprès de ses collaborateurs.</li>
+                    <li>Prendre des décisions plus justes en intégrant les facteurs humains.</li>
+                </ul>
+
+                <h2>Programme détaillé</h2>
+                <div class="card" style="margin-bottom:20px; padding:20px;">
+                    <h4 style="color:var(--brand); margin-bottom:10px;">Jour 1 : L'Auto-conscience</h4>
+                    <p style="font-size:0.9rem;">Cartographie de vos émotions et identification des déclencheurs de
+                        stress.</p>
+                </div>
+                <div class="card" style="margin-bottom:20px; padding:20px;">
+                    <h4 style="color:var(--brand); margin-bottom:10px;">Jour 2 : L'Empathie Sociale</h4>
+                    <p style="font-size:0.9rem;">Techniques d'écoute active et analyse non-verbale des interactions.</p>
+                </div>
+                <div class="card" style="padding:20px;">
+                    <h4 style="color:var(--brand); margin-bottom:10px;">Jour 3 : Leadership Résonnant</h4>
+                    <p style="font-size:0.9rem;">Mise en pratique : piloter une équipe à travers le changement.</p>
+                </div>
+            </article>
+
+            <aside>
+                <div class="card sidebar-box">
+                    <h3 style="margin-bottom:30px;">Informations</h3>
+                    <div class="meta-item"><i data-lucide="clock" size="20"></i> Durée : 3 jours (21h)</div>
+                    <div class="meta-item"><i data-lucide="users" size="20"></i> Groupe : 8 pers. max</div>
+                    <div class="meta-item"><i data-lucide="map-pin" size="20"></i> Paris ou Distanciel</div>
+                    <div class="meta-item"><i data-lucide="award" size="20"></i> Certification Qualiopi</div>
+
+                    <div style="margin-top:40px; padding-top:40px; border-top:1px solid var(--border);">
+                        <div style="font-size:0.7rem; color:var(--dim); text-transform:uppercase; margin-bottom:10px;">
+                            Prix par stagiaire</div>
+                        <div style="font-size:2.5rem; font-weight:700; margin-bottom:30px;">2,150 €</div>
+                        <a href="contact.html" class="btn-primary" style="width:100%; text-align:center;">Réserver cette
+                            session</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer style="background:#fff; border-top:1px solid var(--border); padding:60px 0;">
+        <div class="container" style="text-align:center;">
+            <div class="logo" style="justify-content:center; margin-bottom:20px;">
+                <div class="logo-icon"><i data-lucide="zap" size="18" color="#fff"></i></div>FORM-ACT
+            </div>
+            <p style="color:var(--dim); font-size:0.9rem;">© 2026 Form-Act Strategy. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>lucide.createIcons();</script>
+</body>
+
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form-Act | Facturation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="master.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 40px;
+            padding: 40px 0;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .side-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: var(--dim);
+            border-radius: 12px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .side-link:hover,
+        .side-link.active {
+            background: #fff;
+            color: var(--brand);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            text-align: left;
+            padding: 20px;
+            background: #fafafa;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--dim);
+        }
+
+        td {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+            <a href="index.html" class="logo">
+                <div class="logo-icon"><i data-lucide="zap" size="18" color="#fff"></i></div>FORM-ACT
+            </a>
+            <nav>
+                <a href="index.html">Accueil</a>
+                <a href="catalogue.html">Catalogue</a>
+                <a href="dashboard.html" class="active">Dashboard</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <div
+                style="display:flex; align-items:center; gap:15px; background:#fff; padding:8px 16px; border-radius:100px; border:1px solid var(--border);">
+                <div
+                    style="width:30px; height:30px; border-radius:50%; background:var(--brand); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.75rem;">
+                    JD</div>
+                <span style="font-size:0.85rem; font-weight:600;">John Doe</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="dashboard-layout">
+            <aside>
+                <div class="sidebar-nav">
+                    <a href="dashboard.html" class="side-link"><i data-lucide="layout-dashboard" size="20"></i> Vue
+                        d'ensemble</a>
+                    <a href="sessions.html" class="side-link"><i data-lucide="calendar" size="20"></i> Mes Sessions</a>
+                    <a href="facturation.html" class="side-link active"><i data-lucide="file-text" size="20"></i>
+                        Facturation</a>
+                    <a href="participants.html" class="side-link"><i data-lucide="users" size="20"></i> Participants</a>
+                    <a href="#" class="side-link"><i data-lucide="settings" size="20"></i> Paramètres</a>
+                </div>
+            </aside>
+
+            <section class="main-content">
+                <h2 style="font-size:2rem; margin-bottom:10px;">Comptabilité.</h2>
+                <p style="color:var(--dim); margin-bottom:40px;">Téléchargez vos factures et suivez vos règlements.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N° Facture</th>
+                            <th>Date</th>
+                            <th>Formation</th>
+                            <th>Montant</th>
+                            <th>Statut</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#FA-2026-001</td>
+                            <td>12 Fév 2026</td>
+                            <td>Management Hybride</td>
+                            <td>2,150.00 €</td>
+                            <td><span class="tag">Payé</span></td>
+                            <td><button class="btn-outline" style="padding:6px 12px; font-size:0.8rem;">PDF</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#FA-2025-098</td>
+                            <td>15 Jan 2026</td>
+                            <td>Soft Skills v2</td>
+                            <td>1,800.00 €</td>
+                            <td><span class="tag">Payé</span></td>
+                            <td><button class="btn-outline" style="padding:6px 12px; font-size:0.8rem;">PDF</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+
+</html>

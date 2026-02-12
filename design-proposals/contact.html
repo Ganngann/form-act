@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form-Act | Contact</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="master.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .contact-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            padding: 80px 0;
+            align-items: flex-start;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 4px var(--brand-soft);
+        }
+
+        .contact-info {
+            position: sticky;
+            top: 140px;
+        }
+
+        .contact-method {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            margin-bottom: 40px;
+        }
+
+        .method-icon {
+            width: 50px;
+            height: 50px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+            <a href="index.html" class="logo">
+                <div class="logo-icon"><i data-lucide="zap" size="18" color="#fff"></i></div>FORM-ACT
+            </a>
+            <nav>
+                <a href="index.html">Accueil</a>
+                <a href="catalogue.html">Catalogue</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="contact.html" class="active">Contact</a>
+            </nav>
+            <a href="login.html" class="btn-outline">Mon Espace</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="contact-layout">
+            <section class="contact-form">
+                <h1 style="font-size:3.5rem; margin-bottom:30px;">Parlons de vos <br><span>Projets.</span></h1>
+                <p style="color:var(--dim); font-size:1.1rem; margin-bottom:50px;">Une demande spécifique ? Un besoin
+                    d'accompagnement sur-mesure ? Nos experts vous répondent sous 24h.</p>
+
+                <form class="card">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                        <div class="form-group">
+                            <label>Prénom</label>
+                            <input type="text" placeholder="Jan">
+                        </div>
+                        <div class="form-group">
+                            <label>Nom</label>
+                            <input type="text" placeholder="Doe">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail professionnel</label>
+                        <input type="email" placeholder="jan@company.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Sujet</label>
+                        <select>
+                            <option>Demande de devis</option>
+                            <option>Devenir formateur</option>
+                            <option>Support plateforme</option>
+                            <option>Autre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea rows="5" placeholder="Décrivez votre besoin..."></textarea>
+                    </div>
+                    <button class="btn-primary" style="width:100%; padding:18px;">Envoyer le message</button>
+                </form>
+            </section>
+
+            <section class="contact-info">
+                <div class="contact-method">
+                    <div class="method-icon"><i data-lucide="mail" color="var(--brand)"></i></div>
+                    <div>
+                        <h4 style="margin-bottom:5px;">E-mail</h4>
+                        <p style="color:var(--dim);">contact@form-act.fr</p>
+                    </div>
+                </div>
+                <div class="contact-method">
+                    <div class="method-icon"><i data-lucide="phone" color="var(--brand)"></i></div>
+                    <div>
+                        <h4 style="margin-bottom:5px;">Téléphone</h4>
+                        <p style="color:var(--dim);">+33 (0)1 23 45 67 89</p>
+                    </div>
+                </div>
+                <div class="contact-method">
+                    <div class="method-icon"><i data-lucide="map-pin" color="var(--brand)"></i></div>
+                    <div>
+                        <h4 style="margin-bottom:5px;">Bureaux</h4>
+                        <p style="color:var(--dim);">12 Rue de la Performance,<br>75008 Paris, France</p>
+                    </div>
+                </div>
+
+                <div class="card" style="background:var(--text); color:#fff; border:none; padding:40px;">
+                    <h3 style="margin-bottom:15px;">Certification Qualiopi</h3>
+                    <p style="font-size:0.9rem; opacity:0.7; line-height:1.6; margin-bottom:30px;">Nos processus de
+                        formation sont certifiés conformes aux exigences du référentiel national qualité.</p>
+                    <div
+                        style="background:#fff; border-radius:8px; display:inline-block; padding:10px 20px; color:#000; font-weight:800; font-size:0.8rem;">
+                        LOGO QUALIOPI</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>lucide.createIcons();</script>
+</body>
+
+</html>
