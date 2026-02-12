@@ -16,6 +16,7 @@ export type Session = {
     formation: {
         title: string
         programLink?: string | null
+        durationType?: string
     }
     trainer?: {
         firstName: string

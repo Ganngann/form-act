@@ -45,22 +45,15 @@ export default function ClientDashboard() {
     };
 
     const isLogisticsStrictlyIncomplete = (s: Session) => {
-        // 1. Location
         if (!s.location || s.location.trim() === '') return true;
-
         if (!s.logistics) return true;
         try {
             const log = JSON.parse(s.logistics);
-            // 2. Wifi
             if (log.wifi !== 'yes' && log.wifi !== 'no') return true;
-            // 3. Subsides
             if (log.subsidies !== 'yes' && log.subsidies !== 'no') return true;
-            // 4. Material
-            // Note: 'NONE' in videoMaterial is handled as valid by length > 0
             const hasVideo = Array.isArray(log.videoMaterial) && log.videoMaterial.length > 0;
             const hasWriting = Array.isArray(log.writingMaterial) && log.writingMaterial.length > 0;
             if (!hasVideo && !hasWriting) return true;
-
             return false;
         } catch {
             return true;
@@ -71,29 +64,20 @@ export default function ClientDashboard() {
         if (s.status !== 'CONFIRMED') return false;
         const sessionDate = new Date(s.date);
         sessionDate.setHours(0, 0, 0, 0);
-
-        // Past sessions are not "Action Required" for logistics (unless proof is missing, but that's trainer side)
-        // Actually, the prompt implies "Upcoming" context for "Action Required".
         if (sessionDate < now) return false;
-
         const daysDiff = differenceInCalendarDays(sessionDate, now);
-
-        // 1. Missing Logistics (Always urgent if confirmed)
         if (isLogisticsStrictlyIncomplete(s)) return true;
-
-        // 2. Missing Participants (Urgent if < J-15)
         if (isParticipantsIncomplete(s) && daysDiff < 15) return true;
-
         return false;
     };
 
+    // Data Filtering
     const actionRequiredSessions = sessions.filter(isActionRequired);
-
     const upcomingSessions = sessions.filter(s => {
         const sessionDate = new Date(s.date);
         sessionDate.setHours(0, 0, 0, 0);
         return sessionDate >= now && !isActionRequired(s);
-    });
+    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     const completedSessions = sessions.filter(s => {
         const sessionDate = new Date(s.date);
@@ -101,83 +85,121 @@ export default function ClientDashboard() {
         return sessionDate < now;
     });
 
-    // Alert Logic
-    const participantAlerts = sessions.filter(s => {
-        const sessionDate = new Date(s.date);
-        sessionDate.setHours(0, 0, 0, 0);
-        const daysDiff = differenceInCalendarDays(sessionDate, now);
+    // Stats Calculation
+    const totalParticipants = completedSessions.reduce((acc, s) => {
+        try {
+            const parts = s.participants ? JSON.parse(s.participants) : [];
+            return acc + (Array.isArray(parts) ? parts.length : 0);
+        } catch { return acc; }
+    }, 0);
 
-        return sessionDate >= now && daysDiff < 15 && isParticipantsIncomplete(s);
-    });
+    const totalTrainingDays = completedSessions.reduce((acc, s) => {
+        const type = s.formation.durationType;
+        return acc + (type === 'ALL_DAY' ? 1 : 0.5);
+    }, 0);
 
-    const alerts = [];
-    if (participantAlerts.length > 0) {
-        alerts.push({
-            type: 'missing-participants' as const,
-            count: participantAlerts.length,
-            earliestDate: new Date(Math.min(...participantAlerts.map(s => new Date(s.date).getTime())))
-        });
-    }
+    const nextSessionDays = upcomingSessions.length > 0
+        ? differenceInCalendarDays(new Date(upcomingSessions[0].date), now)
+        : null;
 
     return (
-        <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-bold tracking-tight">Mon Espace Client.</h1>
-                <p className="text-muted-foreground font-medium">Gérez vos formations et suivez votre budget en temps réel.</p>
+        <div className="flex flex-col gap-12 animate-in fade-in duration-700">
+            <div className="flex flex-col gap-2 px-4">
+                <span className="text-[10px] font-black text-primary uppercase tracking-[2px]">Espace Client</span>
+                <h1 className="text-5xl font-bold tracking-tighter">Mon Dashboard.</h1>
             </div>
 
-            <DashboardAlerts alerts={alerts} />
-
-            {/* Bento Grid Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="card p-8 flex flex-col justify-between h-[200px]">
-                    <div>
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[2px]">Prochaine Session</span>
-                        {upcomingSessions.length > 0 ? (
-                            <h3 className="text-2xl font-bold mt-4 leading-tight truncate">{upcomingSessions[0].formation.title}</h3>
-                        ) : (
-                            <h3 className="text-2xl font-bold mt-4 leading-tight">Aucune session</h3>
+            {/* Bento Grid Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6 px-4">
+                {/* Main: Next Session (Col 1-2, Row 1-2) */}
+                <div className="md:col-span-2 md:row-span-2 p-10 bg-white border border-border rounded-[2.5rem] flex flex-col justify-between group hover:border-primary transition-all duration-500 shadow-sm hover:translate-y-[-4px]">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <span className="text-[10px] font-black text-primary uppercase tracking-[2px]">Ma prochaine formation</span>
+                            {upcomingSessions.length > 0 ? (
+                                <h3 className="text-4xl font-bold mt-4 leading-tight group-hover:text-primary transition-colors">
+                                    {upcomingSessions[0].formation.title}
+                                </h3>
+                            ) : (
+                                <h3 className="text-3xl font-bold mt-4 leading-tight text-muted-foreground/30 italic">Aucune session en attente...</h3>
+                            )}
+                        </div>
+                        {nextSessionDays !== null && (
+                            <div className="bg-primary/5 text-primary px-3 py-1.5 rounded-lg font-mono text-sm font-bold border border-primary/20">
+                                J - {nextSessionDays}
+                            </div>
                         )}
                     </div>
-                    <div className="flex items-center gap-2 mt-4">
-                        <Calendar className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-bold">{upcomingSessions.length > 0 ? new Date(upcomingSessions[0].date).toLocaleDateString('fr-FR') : '--/--/--'}</span>
-                    </div>
-                </div>
 
-                <div className="card p-8 flex flex-col justify-between h-[200px] border-orange-200 bg-orange-50/30">
-                    <div>
-                        <span className="text-[10px] font-black text-orange-600 uppercase tracking-[2px]">Actions Requises</span>
-                        <div className="flex items-baseline gap-2 mt-4">
-                            <span className="text-5xl font-black text-orange-600">{actionRequiredSessions.length}</span>
-                            <span className="text-sm font-bold text-orange-600/60 uppercase">Dossiers</span>
+                    <div className="flex items-center gap-4 mt-12 pb-2">
+                        <div className="h-14 w-14 rounded-2xl bg-muted flex items-center justify-center border border-border/50 shadow-inner">
+                            <User className="h-7 w-7 text-muted-foreground/40" />
+                        </div>
+                        <div>
+                            <p className="font-bold text-xl leading-none">
+                                {upcomingSessions[0]?.trainer ? `${upcomingSessions[0].trainer.firstName} ${upcomingSessions[0].trainer.lastName}` : "Expert à venir"}
+                            </p>
+                            <p className="text-sm text-muted-foreground mt-2 font-medium">
+                                {upcomingSessions[0] ? new Date(upcomingSessions[0].date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : "-- -- --"}
+                            </p>
                         </div>
                     </div>
-                    <p className="text-xs font-bold text-orange-600/80 uppercase tracking-wider">Mise à jour nécessaire</p>
                 </div>
 
-                <div className="card p-8 flex flex-col justify-center h-[200px]">
-                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[2px]">Satisfaction</span>
-                    <div className="flex items-baseline gap-1 mt-2">
-                        <span className="text-5xl font-black tracking-tighter">98%</span>
+                {/* Actions: Alert Section (Col 3-4, Row 1) */}
+                <div className="md:col-span-2 p-8 bg-orange-50/20 border border-orange-100 rounded-[2.5rem] flex items-center justify-between group hover:border-primary transition-all">
+                    <div className="flex items-center gap-6">
+                        <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20 shrink-0">
+                            <FileText className="h-7 w-7" />
+                        </div>
+                        <div>
+                            <h4 className="text-xl font-bold leading-tight">Action Requise</h4>
+                            <p className="text-sm text-muted-foreground mt-1 max-w-[200px]">
+                                {actionRequiredSessions.length > 0
+                                    ? `Vous avez ${actionRequiredSessions.length} dossier${actionRequiredSessions.length > 1 ? 's' : ''} à compléter.`
+                                    : "Tous vos dossiers sont à jour."}
+                            </p>
+                        </div>
                     </div>
-                    <p className="text-xs font-medium text-muted-foreground mt-2">Score moyen de vos sessions</p>
+                    {actionRequiredSessions.length > 0 && (
+                        <Button variant="default" className="rounded-xl font-bold shadow-lg shadow-primary/20 px-6">
+                            Remplir maintenant
+                        </Button>
+                    )}
+                </div>
+
+                {/* Stats: Participants (Col 3, Row 2) */}
+                <div className="md:col-span-1 p-8 bg-white border border-border rounded-[2.5rem] flex flex-col justify-center items-center text-center group hover:border-primary transition-all">
+                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[1px] mb-3">Participants</span>
+                    <span className="text-5xl font-black tracking-tighter">{totalParticipants}</span>
+                    <p className="text-[9px] font-bold text-muted-foreground/40 uppercase mt-4 tracking-widest">Experts Formés</p>
+                </div>
+
+                {/* Stats: Volume (Col 4, Row 2) */}
+                <div className="md:col-span-1 p-8 bg-white border border-border rounded-[2.5rem] flex flex-col justify-center items-center text-center group hover:border-primary transition-all">
+                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[1px] mb-3">Volume</span>
+                    <div className="flex items-baseline gap-1">
+                        <span className="text-5xl font-black tracking-tighter">{totalTrainingDays}</span>
+                        <span className="text-lg font-bold text-muted-foreground">j</span>
+                    </div>
+                    <p className="text-[9px] font-bold text-muted-foreground/40 uppercase mt-4 tracking-widest">Temps Formation</p>
                 </div>
             </div>
 
-            <div className="mt-4">
+            {/* Sessions Tabs Section */}
+            <div className="px-4 mt-8">
                 {loading ? (
                     <div className="flex items-center justify-center py-20">
-                        <p className="text-muted-foreground animate-pulse font-bold">Chargement de vos formations...</p>
+                        <p className="text-muted-foreground animate-pulse font-bold tracking-widest uppercase text-xs">Chargement de vos formations...</p>
                     </div>
                 ) : (
                     <Tabs defaultValue={actionRequiredSessions.length > 0 ? "actions" : "upcoming"} className="w-full">
-                        <TabsList className="bg-transparent border-b border-border rounded-none h-auto p-0 gap-8 mb-8">
+                        <TabsList className="bg-transparent border-b border-border rounded-none h-auto p-0 gap-10 mb-10">
                             <TabsTrigger
                                 value="actions"
-                                className="relative bg-transparent border-none shadow-none data-[state=active]:shadow-none data-[state=active]:bg-transparent rounded-none px-0 py-4 text-sm font-bold data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary transition-all"
+                                className="relative bg-transparent border-none shadow-none rounded-none px-0 py-4 text-sm font-black data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary transition-all"
                             >
-                                Actions requises
+                                Urgents
                                 {actionRequiredSessions.length > 0 && (
                                     <span className="ml-2 bg-primary text-white text-[10px] px-1.5 py-0.5 rounded-full ring-4 ring-orange-50">
                                         {actionRequiredSessions.length}
@@ -186,13 +208,13 @@ export default function ClientDashboard() {
                             </TabsTrigger>
                             <TabsTrigger
                                 value="upcoming"
-                                className="bg-transparent border-none shadow-none data-[state=active]:shadow-none data-[state=active]:bg-transparent rounded-none px-0 py-4 text-sm font-bold data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary transition-all"
+                                className="bg-transparent border-none shadow-none rounded-none px-0 py-4 text-sm font-black data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary transition-all"
                             >
                                 À venir ({upcomingSessions.length})
                             </TabsTrigger>
                             <TabsTrigger
                                 value="completed"
-                                className="bg-transparent border-none shadow-none data-[state=active]:shadow-none data-[state=active]:bg-transparent rounded-none px-0 py-4 text-sm font-bold data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary transition-all"
+                                className="bg-transparent border-none shadow-none rounded-none px-0 py-4 text-sm font-black data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary transition-all"
                             >
                                 Historique ({completedSessions.length})
                             </TabsTrigger>
@@ -206,8 +228,8 @@ export default function ClientDashboard() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-20 bg-muted/20 rounded-[2rem] border border-dashed border-border">
-                                    <p className="text-muted-foreground font-bold italic">Tout est à jour ! Aucune action requise.</p>
+                                <div className="text-center py-24 bg-white rounded-[2.5rem] border border-dashed border-border/60">
+                                    <p className="text-muted-foreground font-black uppercase text-xs tracking-widest opacity-40">Tout est à jour !</p>
                                 </div>
                             )}
                         </TabsContent>
@@ -220,10 +242,10 @@ export default function ClientDashboard() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="py-20 text-center bg-muted/10 rounded-[2rem] border border-border">
-                                    <p className="mb-6 font-bold text-muted-foreground">Vous n&apos;avez pas de sessions à venir.</p>
-                                    <Button asChild className="rounded-xl font-bold shadow-lg shadow-primary/20">
-                                        <Link href="/catalogue">Parcourir le catalogue</Link>
+                                <div className="py-24 text-center bg-white rounded-[2.5rem] border border-border/40">
+                                    <p className="mb-8 font-bold text-muted-foreground italic">Aucune session planifiée pour le moment.</p>
+                                    <Button asChild className="rounded-2xl font-black h-14 px-10 shadow-xl shadow-primary/20">
+                                        <Link href="/catalogue">Explorer le catalogue</Link>
                                     </Button>
                                 </div>
                             )}
@@ -231,14 +253,14 @@ export default function ClientDashboard() {
 
                         <TabsContent value="completed" className="mt-0 outline-none">
                             {completedSessions.length > 0 ? (
-                                <div className="grid gap-6 transition-all grayscale-[0.5] hover:grayscale-0">
+                                <div className="grid gap-6 transition-all opacity-80 hover:opacity-100">
                                     {completedSessions.map((session) => (
                                         <SessionCard key={session.id} session={session} />
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-20">
-                                    <p className="text-muted-foreground font-bold">Aucune session terminée à afficher.</p>
+                                <div className="text-center py-24 bg-muted/5 rounded-[2.5rem] border border-border/40">
+                                    <p className="text-muted-foreground font-bold uppercase text-[10px] tracking-widest">Aucune session archivée.</p>
                                 </div>
                             )}
                         </TabsContent>
@@ -248,3 +270,4 @@ export default function ClientDashboard() {
         </div>
     )
 }
+

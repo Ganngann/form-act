@@ -106,7 +106,7 @@ export default async function ClientSessionDetailPage({ params }: { params: { id
                         </p>
                         <div className="pt-2">
                             <Button variant="outline" className="w-full h-12 rounded-xl border-primary/20 text-primary hover:bg-primary/5 font-bold shadow-none" asChild>
-                                <Link href="/catalogue">Voir le programme formation</Link>
+                                <Link href={`/formation/${session.formationId}`}>Voir le programme formation</Link>
                             </Button>
                         </div>
                     </section>
