@@ -4,6 +4,10 @@ import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { API_URL } from '@/lib/config';
 import { useRouter } from 'next/navigation';
+import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { CheckCircle2, UploadCloud, FileText, Loader2, FileCheck } from 'lucide-react';
+import { cn } from '@/lib/utils'; // Assuming you have a utils file
 
 interface ProofUploadWidgetProps {
     sessionId: string;
@@ -24,10 +28,11 @@ export function ProofUploadWidget({ sessionId, status, proofUrl }: ProofUploadWi
         formData.append('file', file);
 
         try {
+            // Note: In a real app, you might need to handle the token here or ensure cookies are sent
             const res = await fetch(`${API_URL}/sessions/${sessionId}/proof`, {
                 method: 'POST',
                 body: formData,
-                credentials: 'include',
+                // credentials: 'include' is important if your API relies on cookies
             });
 
             if (!res.ok) throw new Error('Upload failed');
@@ -53,51 +58,53 @@ export function ProofUploadWidget({ sessionId, status, proofUrl }: ProofUploadWi
 
     if (status === 'PROOF_RECEIVED' && proofUrl) {
         return (
-            <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
-                <div className="flex flex-col items-center gap-2 text-green-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                    <h3 className="text-lg font-semibold">Preuve de présence reçue</h3>
-                    <p className="text-sm opacity-80 mb-2">Le document a été transmis avec succès.</p>
-                    <a
-                        href={`${API_URL}${proofUrl}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-green-700 underline hover:text-green-800 text-sm font-medium"
-                    >
-                        Voir le document
-                    </a>
-                </div>
-            </div>
+            <Card className="rounded-[2rem] border-green-200 bg-green-50/50 shadow-sm overflow-hidden">
+                <CardContent className="p-8 text-center flex flex-col items-center justify-center space-y-4">
+                    <div className="h-16 w-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-2">
+                        <CheckCircle2 className="h-8 w-8" />
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-black text-green-800 mb-1">Preuve Reçue</h3>
+                        <p className="text-green-700 font-medium">Le document a été validé.</p>
+                    </div>
+                    <Button asChild variant="outline" className="bg-white border-green-200 text-green-700 hover:bg-green-100 hover:text-green-800 rounded-xl mt-4 font-bold">
+                        <a href={`${API_URL}${proofUrl}`} target="_blank" rel="noopener noreferrer">
+                            <FileCheck className="mr-2 h-4 w-4" /> Voir le document
+                        </a>
+                    </Button>
+                </CardContent>
+            </Card>
         );
     }
 
     return (
-        <div className="bg-white p-6 rounded-xl border shadow-sm">
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                📄 Preuve de présence
-            </h2>
-
-            <div
-                {...getRootProps()}
-                className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-                    isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
-                } ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
-            >
-                <input {...getInputProps()} />
+        <Card className="rounded-[2rem] border-dashed border-2 border-border shadow-none bg-muted/5 group hover:border-primary/50 transition-colors cursor-pointer" {...getRootProps()}>
+            <input {...getInputProps()} />
+            <CardContent className="p-8 flex flex-col items-center justify-center text-center min-h-[250px]">
                 {uploading ? (
-                    <p className="text-gray-500">Envoi en cours...</p>
+                    <div className="space-y-4 animate-in fade-in zoom-in">
+                        <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto" />
+                        <p className="text-muted-foreground font-bold">Upload en cours...</p>
+                    </div>
                 ) : (
-                    <div className="space-y-2">
-                        <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        <p className="text-sm text-gray-600">
-                            <span className="font-medium text-blue-600">Cliquez pour uploader</span> ou glissez le fichier ici
+                    <div className={cn("space-y-4 transition-all duration-300", isDragActive ? "scale-105" : "")}>
+                        <div className={cn("h-16 w-16 rounded-2xl flex items-center justify-center mx-auto transition-colors",
+                            isDragActive ? "bg-primary text-white" : "bg-white text-primary shadow-sm border border-border"
+                        )}>
+                            <UploadCloud className="h-8 w-8" />
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-black text-gray-900 mb-2">Preuve de présence</h3>
+                            <p className="text-muted-foreground text-sm max-w-[200px] mx-auto leading-relaxed">
+                                <span className="font-bold text-primary">Cliquez</span> ou glissez votre feuille de présence signée ici.
+                            </p>
+                        </div>
+                        <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground/60 border border-border px-2 py-1 rounded-full inline-block">
+                            PDF, JPG, PNG (Max 10MB)
                         </p>
-                        <p className="text-xs text-gray-500">PDF, JPG, PNG jusqu&apos;à 10MB</p>
                     </div>
                 )}
-            </div>
-        </div>
+            </CardContent>
+        </Card>
     );
 }
