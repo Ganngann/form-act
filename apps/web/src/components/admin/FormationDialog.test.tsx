@@ -12,6 +12,19 @@ vi.mock("@/services/admin-formations", () => ({
   },
 }));
 
+// Mock Select components with native select for easier testing in JSDOM
+vi.mock("@/components/ui/select", () => ({
+  Select: ({ children, onValueChange, value }: any) => (
+    <select value={value} onChange={(e) => onValueChange(e.target.value)}>
+      {children}
+    </select>
+  ),
+  SelectTrigger: ({ children }: any) => <div>{children}</div>,
+  SelectValue: ({ placeholder }: any) => <span>{placeholder}</span>,
+  SelectContent: ({ children }: any) => <>{children}</>,
+  SelectItem: ({ children, value }: any) => <option value={value}>{children}</option>,
+}));
+
 // Mock UI components that might cause issues in JSDOM
 // Using standard inputs is usually fine, but Select/Dialog sometimes need resize observer.
 global.ResizeObserver = class ResizeObserver {
@@ -19,6 +32,13 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() { }
   disconnect() { }
 };
+
+// Fix Radix Select issue in JSDOM
+if (typeof window !== 'undefined') {
+  HTMLElement.prototype.hasPointerCapture = vi.fn();
+  HTMLElement.prototype.setPointerCapture = vi.fn();
+  HTMLElement.prototype.releasePointerCapture = vi.fn();
+}
 
 describe("FormationDialog", () => {
   const mockCategories = [{ id: "cat-1", name: "Category 1" }];
@@ -161,8 +181,5 @@ describe("FormationDialog", () => {
     // Submit
     const submitBtn = screen.getByText(/Enregistrer/i);
     await user.click(submitBtn);
-
-    // If category isn't selected, it might stay open.
-    // Testing Radix Select is complex, but we've exercised the tab switching and field entry logic.
   });
 });

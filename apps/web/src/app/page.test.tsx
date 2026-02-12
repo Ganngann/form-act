@@ -1,12 +1,18 @@
 import { render, screen } from '@testing-library/react';
 import Home from './page';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // Mock next/headers
+const mockCookieGet = vi.fn().mockReturnValue(undefined);
 vi.mock('next/headers', () => ({
   cookies: () => ({
-    get: vi.fn().mockReturnValue(undefined),
+    get: mockCookieGet,
   }),
+}));
+
+// Mock jose
+vi.mock('jose', () => ({
+  jwtVerify: vi.fn().mockResolvedValue({ payload: { role: 'CLIENT' } }),
 }));
 
 // Mock SearchHero
@@ -52,5 +58,14 @@ describe('Home Page', () => {
     render(ui);
 
     expect(screen.getByTestId('search-hero')).toHaveTextContent('0 categories');
+  });
+
+  it('renders dashboard link when logged in', async () => {
+    mockCookieGet.mockReturnValue({ value: 'valid-token' });
+    const ui = await Home();
+    render(ui);
+
+    expect(screen.getByText(/Mon Dashboard/i)).toBeDefined();
+    expect(screen.queryByText(/Accès Client/i)).toBeNull();
   });
 });

@@ -81,4 +81,21 @@ describe('CatalogueContent', () => {
     expect(mockPush).toHaveBeenCalledWith('/catalogue?search=React');
     vi.useRealTimers();
   });
+
+  it('shows empty state when no results', async () => {
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => ([]),
+    });
+
+    render(<CatalogueContent />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Aucun résultat trouvé')).toBeDefined();
+    });
+
+    const resetBtn = screen.getByText('Réinitialiser les filtres');
+    fireEvent.click(resetBtn);
+    expect(mockPush).toHaveBeenCalled();
+  });
 });
