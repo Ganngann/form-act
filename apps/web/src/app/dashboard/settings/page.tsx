@@ -45,6 +45,8 @@ export default function SettingsPage() {
         email: "",
     });
 
+    const [loadingVat, setLoadingVat] = useState(false);
+
     useEffect(() => {
         fetchProfile();
     }, []);
@@ -70,6 +72,36 @@ export default function SettingsPage() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const checkVat = async () => {
+        const vat = formData.vatNumber;
+        if (!vat || vat.length < 4) return;
+
+        setLoadingVat(true);
+        setError("");
+        setSuccess("");
+        try {
+            const res = await fetch(`${API_URL}/company/check-vat/${vat}`);
+            if (!res.ok) throw new Error("Erreur vérification TVA");
+            const data = await res.json();
+
+            if (data.isValid) {
+                setFormData({
+                    ...formData,
+                    companyName: data.companyName,
+                    address: data.address,
+                    vatNumber: data.vatNumber
+                });
+            } else {
+                setError("Numéro de TVA non valide ou non trouvé.");
+            }
+        } catch (e) {
+            console.error(e);
+            setError("Impossible de vérifier le numéro de TVA.");
+        } finally {
+            setLoadingVat(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -157,13 +189,25 @@ export default function SettingsPage() {
                                             </div>
                                             <div className="space-y-2">
                                                 <label className="text-xs font-black uppercase tracking-wider text-muted-foreground">Numéro de TVA</label>
-                                                <Input
-                                                    name="vatNumber"
-                                                    value={formData.vatNumber}
-                                                    onChange={handleChange}
-                                                    className="rounded-xl border-border bg-muted/5 focus:bg-white transition-all font-medium py-6"
-                                                    required
-                                                />
+                                                <div className="relative">
+                                                    <Input
+                                                        name="vatNumber"
+                                                        value={formData.vatNumber}
+                                                        onChange={handleChange}
+                                                        className="rounded-xl border-border bg-muted/5 focus:bg-white transition-all font-medium py-6 pr-24"
+                                                        placeholder="ex: BE0..."
+                                                        required
+                                                    />
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        onClick={checkVat}
+                                                        disabled={loadingVat}
+                                                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 hover:text-primary rounded-lg px-3"
+                                                    >
+                                                        {loadingVat ? "..." : "Vérifier"}
+                                                    </Button>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="space-y-2">
