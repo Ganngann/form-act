@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 interface Category {
   id: string;
@@ -34,23 +35,29 @@ export function SearchHero({ categories }: SearchHeroProps) {
   };
 
   return (
-    <div className="flex w-full max-w-sm items-center space-x-2 bg-background/95 p-2 rounded-lg border shadow-sm">
-      <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-        <SelectTrigger className="w-full border-0 focus:ring-0 focus:ring-offset-0">
-          <SelectValue placeholder="Choisir un thème..." />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Tous les thèmes</SelectItem>
-          {categories.map((category) => (
-            <SelectItem key={category.id} value={category.id}>
-              {category.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Button onClick={handleSearch} size="icon">
-        <Search className="h-4 w-4" />
-        <span className="sr-only">Rechercher</span>
+    <div className="flex w-full max-w-2xl items-center space-x-3 bg-white/80 backdrop-blur-md p-3 rounded-[2rem] border border-border shadow-2xl shadow-primary/10">
+      <div className="flex-1 flex items-center px-4">
+        <Search className="h-5 w-5 text-muted-foreground mr-3" />
+        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+          <SelectTrigger className="w-full border-0 focus:ring-0 focus:ring-offset-0 bg-transparent text-lg font-bold h-12">
+            <SelectValue placeholder="Quelle compétence recherchez-vous ?" />
+          </SelectTrigger>
+          <SelectContent className="rounded-2xl border-border shadow-2xl">
+            <SelectItem value="all" className="font-bold py-3">Toutes les thématiques</SelectItem>
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.id} className="font-bold py-3">
+                {category.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <Button
+        onClick={handleSearch}
+        size="lg"
+        className="h-14 px-10 rounded-2xl font-black text-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+      >
+        Rechercher
       </Button>
     </div>
   );
