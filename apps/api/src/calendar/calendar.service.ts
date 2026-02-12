@@ -35,6 +35,8 @@ export class CalendarService {
       timezone: "Europe/Brussels",
     });
 
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+
     for (const session of trainer.sessions) {
       const { start, end, allDay } = this.calculateTimes(
         session.date,
@@ -69,7 +71,7 @@ export class CalendarService {
           : "Mission Form-Act",
         description: descriptionParts.join("\n"),
         location: session.location || session.client?.address,
-        // url: `https://app.form-act.com/trainer/missions`, // TODO: Make base URL configurable
+        url: `${frontendUrl}/trainer/missions`,
       });
     }
 
