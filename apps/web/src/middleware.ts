@@ -21,38 +21,41 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    const secret = new TextEncoder().encode(
-      process.env.JWT_SECRET || 'super-secret-key'
-    );
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret && process.env.NODE_ENV === 'production') {
+      throw new Error('JWT_SECRET is not defined in production environment.');
+    }
+
+    const secret = new TextEncoder().encode(jwtSecret || 'super-secret-key');
     const { payload } = await jwtVerify(token, secret);
     const role = payload.role as string;
 
     if (isAdminPath && role !== 'ADMIN') {
-        return redirectBasedOnRole(role, request);
+      return redirectBasedOnRole(role, request);
     }
     if (isTrainerPath && role !== 'TRAINER') {
-        return redirectBasedOnRole(role, request);
+      return redirectBasedOnRole(role, request);
     }
     if (isClientPath && role !== 'CLIENT') {
-        return redirectBasedOnRole(role, request);
+      return redirectBasedOnRole(role, request);
     }
 
     return NextResponse.next();
-
   } catch (error) {
+    console.error('Middleware authentication error:', error);
     // Invalid token
     return NextResponse.redirect(new URL('/login', request.url));
   }
 }
 
 function redirectBasedOnRole(role: string, request: NextRequest) {
-    if (role === 'ADMIN') {
-        return NextResponse.redirect(new URL('/admin', request.url));
-    } else if (role === 'TRAINER') {
-        return NextResponse.redirect(new URL('/trainer', request.url));
-    } else {
-        return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
+  if (role === 'ADMIN') {
+    return NextResponse.redirect(new URL('/admin', request.url));
+  } else if (role === 'TRAINER') {
+    return NextResponse.redirect(new URL('/trainer', request.url));
+  } else {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
 }
 
 export const config = {

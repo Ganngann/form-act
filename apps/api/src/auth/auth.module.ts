@@ -6,6 +6,7 @@ import { AuthService } from "./auth.service";
 import { JwtStrategy } from "./jwt.strategy";
 import { AuthController } from "./auth.controller";
 import { EmailModule } from "../email/email.module";
+import { getJwtSecret } from "./jwt.config";
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { EmailModule } from "../email/email.module";
     PassportModule,
     EmailModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || "super-secret-key",
+      secret: getJwtSecret(),
       signOptions: { expiresIn: "1d" },
     }),
   ],
