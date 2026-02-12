@@ -72,15 +72,6 @@ export default async function TrainerPage() {
                             Gérez vos missions, consultez vos plannings et accédez aux documents.
                         </p>
                     </div>
-                    <Link
-                        href="/trainer/profile"
-                        className="group flex items-center gap-3 px-6 py-3 bg-white border border-border rounded-xl font-bold shadow-sm hover:border-primary transition-all hover:shadow-md"
-                    >
-                        <div className="h-10 w-10 bg-primary/5 rounded-full flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                            <User className="h-5 w-5" />
-                        </div>
-                        <span>Mon Profil</span>
-                    </Link>
                 </div>
             </header>
 

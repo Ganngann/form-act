@@ -4,11 +4,18 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { API_URL } from '@/lib/config';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { UploadCloud, Save, Loader2, Camera } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function ProfileForm({ trainer }: { trainer: any }) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const { register, handleSubmit } = useForm({
         defaultValues: {
             bio: trainer.bio || '',
@@ -44,6 +51,7 @@ export function ProfileForm({ trainer }: { trainer: any }) {
         const formData = new FormData();
         formData.append('file', file);
 
+        setUploadingAvatar(true);
         try {
             const res = await fetch(`${API_URL}/trainers/${trainer.id}/avatar`, {
                 method: 'POST',
@@ -57,70 +65,97 @@ export function ProfileForm({ trainer }: { trainer: any }) {
         } catch (e) {
             console.error(e);
             alert('Erreur lors de l\'upload de l\'avatar');
+        } finally {
+            setUploadingAvatar(false);
         }
     };
 
+    const initials = `${trainer.firstName[0]}${trainer.lastName[0]}`.toUpperCase();
+
     return (
-        <div className="bg-white p-6 rounded-lg border shadow-sm space-y-6">
-            <div className="flex items-center gap-6">
-                <div className="relative group">
-                    <div className="w-24 h-24 rounded-full overflow-hidden border bg-gray-100 relative">
-                        <Image
-                            src={trainer.avatarUrl ? `${API_URL}${trainer.avatarUrl}` : "https://via.placeholder.com/150?text=Avatar"}
-                            alt="Avatar"
-                            fill
-                            className="object-cover"
-                            unoptimized
-                        />
+        <div className="space-y-8">
+            {/* Avatar Upload Section */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 bg-muted/5 p-6 rounded-2xl border border-dashed border-border">
+                <div className="relative group shrink-0">
+                    <Avatar className="h-20 w-20 border-2 border-white shadow-sm">
+                        <AvatarImage src={trainer.avatarUrl ? `${API_URL}${trainer.avatarUrl}` : undefined} className="object-cover" />
+                        <AvatarFallback className="bg-primary/10 text-primary font-bold">{initials}</AvatarFallback>
+                    </Avatar>
+                    <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Camera className="h-6 w-6 text-white" />
                     </div>
-                     <label className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 shadow-md transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
-                        <input type="file" className="hidden" accept="image/*" onChange={handleAvatarUpload} />
-                    </label>
+                    <input
+                        type="file"
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        accept="image/*"
+                        onChange={handleAvatarUpload}
+                        disabled={uploadingAvatar}
+                    />
                 </div>
-                <div>
-                    <h2 className="text-xl font-bold text-gray-900">{trainer.firstName} {trainer.lastName}</h2>
-                    <p className="text-gray-500">{trainer.email}</p>
+                <div className="space-y-1">
+                    <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                        Photo de profil
+                        {uploadingAvatar && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                        Cliquez sur l'image pour modifier. Format JPG, PNG ou GIF.
+                    </p>
                 </div>
             </div>
 
-            {/* Read-Only Specialties Section */}
-            {trainer.expertises && trainer.expertises.length > 0 && (
-                <div className="border-b pb-6">
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Mes Spécialités (Formations Habilitées)</h3>
-                    <div className="flex flex-wrap gap-2">
-                        {trainer.expertises.flatMap((e: any) => e.formations).map((formation: any) => (
-                            <span
-                                key={formation.id}
-                                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                            >
-                                {formation.title}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            )}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Biographie</label>
-                    <textarea
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <div className="space-y-2">
+                    <Label htmlFor="bio" className="text-sm font-bold text-gray-700">Biographie</Label>
+                    <Textarea
+                        id="bio"
                         {...register('bio')}
-                        rows={5}
-                        className="w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
-                        placeholder="Parlez de votre expérience, vos spécialités..."
+                        rows={6}
+                        className="bg-muted/5 border-border focus:bg-white transition-colors p-4 rounded-xl resize-none"
+                        placeholder="Parlez de votre expérience, votre parcours et vos méthodes pédagogiques..."
                     />
+                    <p className="text-xs text-muted-foreground text-right">
+                        Cette description sera visible par les administrateurs et clients potentiels.
+                    </p>
                 </div>
-                <div className="flex justify-end">
-                    <button
+
+                {/* Read-Only Specialties Section */}
+                {trainer.expertises && trainer.expertises.length > 0 && (
+                    <div className="space-y-3 pt-2">
+                        <Label className="text-sm font-bold text-gray-700">Expertises validées</Label>
+                        <div className="flex flex-wrap gap-2 p-4 bg-muted/5 rounded-xl border border-border/50">
+                            {trainer.expertises.flatMap((e: any) => e.formations).map((formation: any) => (
+                                <Badge
+                                    key={formation.id}
+                                    variant="secondary"
+                                    className="bg-white hover:bg-white text-muted-foreground border border-border shadow-sm px-3 py-1 text-xs"
+                                >
+                                    {formation.title}
+                                </Badge>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                <div className="flex justify-end pt-4">
+                    <Button
                         type="submit"
                         disabled={loading}
-                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium transition-colors"
+                        className="font-bold px-8 rounded-xl h-11"
                     >
-                        {loading ? 'Enregistrement...' : 'Enregistrer les modifications'}
-                    </button>
+                        {loading ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enregistrement...
+                            </>
+                        ) : (
+                            <>
+                                <Save className="mr-2 h-4 w-4" /> Enregistrer les modifications
+                            </>
+                        )}
+                    </Button>
                 </div>
             </form>
         </div>
     );
 }
+
