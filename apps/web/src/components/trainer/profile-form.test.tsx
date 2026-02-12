@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ProfileForm } from './profile-form';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
 
 // Mock next/navigation
@@ -13,7 +13,8 @@ vi.mock('next/navigation', () => ({
 
 // Mock next/image
 vi.mock('next/image', () => ({
-    default: (props: any) => <img {...props} />
+  /* eslint-disable-next-line @next/next/no-img-element */
+  default: (props: any) => <img {...props} alt={props.alt || ''} />
 }));
 
 // Mock API_URL
@@ -38,7 +39,7 @@ describe('ProfileForm', () => {
 
   it('renders initial data', () => {
     render(<ProfileForm trainer={trainer} />);
-    expect(screen.getByText('John Doe')).toBeDefined();
+    expect(screen.getByText('JD')).toBeDefined();
     expect(screen.getByDisplayValue('My bio')).toBeDefined();
   });
 
@@ -54,13 +55,13 @@ describe('ProfileForm', () => {
     await user.click(screen.getByRole('button', { name: /Enregistrer/i }));
 
     await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-            'http://api.test/trainers/1',
-            expect.objectContaining({
-                method: 'PATCH',
-                body: JSON.stringify({ bio: 'New bio' }),
-            })
-        );
+      expect(global.fetch).toHaveBeenCalledWith(
+        'http://api.test/trainers/1',
+        expect.objectContaining({
+          method: 'PATCH',
+          body: JSON.stringify({ bio: 'New bio' }),
+        })
+      );
     });
     expect(mockRefresh).toHaveBeenCalled();
   });

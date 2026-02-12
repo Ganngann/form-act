@@ -25,19 +25,19 @@ describe('SessionCard', () => {
         expect(screen.getByText('Confirmée')).toBeInTheDocument() // StatusBadge converts CONFIRMED to Confirmée
     })
 
-    it('shows "Détails" button by default', () => {
+    it('shows "Détails Session" button by default', () => {
         render(<SessionCard session={mockSession} />)
-        expect(screen.getByText('Détails')).toBeInTheDocument()
+        expect(screen.getByText('Détails Session')).toBeInTheDocument()
         expect(screen.queryByText('Compléter la logistique')).not.toBeInTheDocument()
     })
 
     it('shows "Compléter la logistique" button when isActionRequired is true', () => {
         render(<SessionCard session={mockSession} isActionRequired={true} />)
         expect(screen.getByText('Compléter la logistique')).toBeInTheDocument()
-        expect(screen.queryByText('Détails')).not.toBeInTheDocument()
+        expect(screen.queryByText('Détails Session')).not.toBeInTheDocument()
     })
 
-    it('shows "Programme (PDF)" button when programLink is present', () => {
+    it('shows "Programme PDF" button when programLink is present', () => {
         const sessionWithProgram = {
             ...mockSession,
             formation: {
@@ -46,7 +46,7 @@ describe('SessionCard', () => {
             }
         }
         render(<SessionCard session={sessionWithProgram} />)
-        expect(screen.getByText('Programme (PDF)')).toBeInTheDocument()
-        expect(screen.getByText('Programme (PDF)').closest('a')).toHaveAttribute('href', 'https://example.com/program.pdf')
+        expect(screen.getByText('Programme PDF')).toBeInTheDocument()
+        expect(screen.getByText('Programme PDF').closest('a')).toHaveAttribute('href', 'https://example.com/program.pdf')
     })
 })

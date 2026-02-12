@@ -17,7 +17,7 @@ describe('NextMissionCard', () => {
     render(<NextMissionCard mission={mission} />);
     expect(screen.getByText('JS Training')).toBeDefined();
     expect(screen.getByText('Acme')).toBeDefined();
-    expect(screen.getByText(/Matin/)).toBeDefined();
+    expect(screen.getByText('09:00 - 12:30')).toBeDefined();
     expect(screen.getByText('Brussels')).toBeDefined();
     expect(screen.getByText('1 participant')).toBeDefined();
   });
@@ -29,7 +29,7 @@ describe('NextMissionCard', () => {
 
   it('generates correct maps url', () => {
     render(<NextMissionCard mission={mission} />);
-    const link = screen.getByText('Y aller (GPS)').closest('a');
+    const link = screen.getByText('Y aller').closest('a');
     expect(link).toHaveAttribute('href', expect.stringContaining('Brussels'));
   });
 });

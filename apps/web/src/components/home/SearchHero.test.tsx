@@ -14,7 +14,7 @@ describe('SearchHero', () => {
 
   it('renders correctly', () => {
     render(<SearchHero categories={categories} />);
-    expect(screen.getByText('Choisir un thème...')).toBeDefined();
+    expect(screen.getByText('Quelle compétence recherchez-vous ?')).toBeDefined();
     expect(screen.getByRole('button', { name: /Rechercher/i })).toBeDefined();
   });
 

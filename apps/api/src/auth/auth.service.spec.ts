@@ -128,7 +128,7 @@ describe("AuthService", () => {
       expect(prisma.user.findUnique).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { id: "1" },
-          include: { formateur: { select: { id: true } } },
+          include: { formateur: { select: { id: true } }, client: true },
         }),
       );
     });

@@ -5,9 +5,9 @@ import * as navigation from 'next/navigation';
 
 // Polyfill ResizeObserver
 global.ResizeObserver = class ResizeObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
+  observe() { }
+  unobserve() { }
+  disconnect() { }
 };
 
 // Mock useRouter
@@ -54,13 +54,13 @@ describe('SessionLogisticsManager', () => {
     expect(screen.getByText('Lieu et Logistique')).toBeDefined();
     expect(screen.getByText('123 Main St')).toBeDefined();
     expect(screen.getByText(/Projecteur/)).toBeDefined();
-    expect(screen.getByText('Code 1234')).toBeDefined();
-    expect(screen.getByText('John Doe')).toBeDefined();
+    expect(screen.getByText(/Code 1234/)).toBeDefined();
+    expect(screen.getByText(/John.*Doe/)).toBeDefined();
   });
 
   it('shows Edit button when not locked', () => {
     render(<SessionLogisticsManager session={mockSession} />);
-    expect(screen.getByText('Modifier')).toBeDefined();
+    expect(screen.getByText('Modifier les infos')).toBeDefined();
   });
 
   it('shows Locked badge when within 7 days', () => {
@@ -69,27 +69,27 @@ describe('SessionLogisticsManager', () => {
       date: new Date(Date.now() + 86400000 * 2).toISOString(), // 2 days from now
     };
     render(<SessionLogisticsManager session={lockedSession} />);
-    expect(screen.queryByText('Modifier')).toBeNull();
+    expect(screen.queryByText('Modifier les infos')).toBeNull();
     expect(screen.getByText(/Verrouillé/)).toBeDefined();
   });
 
   it('allows edit when locked but isLogisticsOpen is true (Admin override)', () => {
-     const overrideSession = {
+    const overrideSession = {
       ...mockSession,
       date: new Date(Date.now() + 86400000 * 2).toISOString(), // 2 days from now
       isLogisticsOpen: true,
     };
     render(<SessionLogisticsManager session={overrideSession} />);
-    expect(screen.getByText('Modifier')).toBeDefined();
+    expect(screen.getByText('Modifier les infos')).toBeDefined();
     expect(screen.queryByText(/Verrouillé/)).toBeNull();
   });
 
   it('handles missing logistics and participants data gracefully', () => {
     const emptySession = {
-        ...mockSession,
-        logistics: null,
-        participants: null,
-        location: null
+      ...mockSession,
+      logistics: null,
+      participants: null,
+      location: null
     };
 
     render(<SessionLogisticsManager session={emptySession} />);
@@ -99,7 +99,7 @@ describe('SessionLogisticsManager', () => {
     expect(screen.getByText(/À confirmer/)).toBeDefined();
 
     // Open edit to check default values
-    fireEvent.click(screen.getByText('Modifier'));
+    fireEvent.click(screen.getByText('Modifier les infos'));
 
     // Check that participant list starts with one empty row
     expect(screen.getAllByLabelText('Prénom')).toHaveLength(1);
@@ -111,7 +111,7 @@ describe('SessionLogisticsManager', () => {
     render(<SessionLogisticsManager session={mockSession} />);
 
     // Open dialog
-    fireEvent.click(screen.getByText('Modifier'));
+    fireEvent.click(screen.getByText('Modifier les infos'));
 
     // Check dialog content
     expect(screen.getByText('Modifier la logistique')).toBeDefined();
@@ -177,20 +177,20 @@ describe('SessionLogisticsManager', () => {
   });
 
   it('handles API error on submit', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-      (global.fetch as any).mockRejectedValue(new Error('API Error'));
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => { });
+    (global.fetch as any).mockRejectedValue(new Error('API Error'));
 
-      render(<SessionLogisticsManager session={mockSession} />);
-      fireEvent.click(screen.getByText('Modifier'));
-      fireEvent.click(screen.getByText('Enregistrer les modifications'));
+    render(<SessionLogisticsManager session={mockSession} />);
+    fireEvent.click(screen.getByText('Modifier les infos'));
+    fireEvent.click(screen.getByText('Enregistrer les modifications'));
 
-      await waitFor(() => {
-          expect(consoleSpy).toHaveBeenCalled();
-          expect(alertSpy).toHaveBeenCalledWith("Une erreur est survenue lors de l'enregistrement.");
-      });
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalled();
+      expect(alertSpy).toHaveBeenCalledWith("Une erreur est survenue lors de l'enregistrement.");
+    });
 
-      consoleSpy.mockRestore();
-      alertSpy.mockRestore();
+    consoleSpy.mockRestore();
+    alertSpy.mockRestore();
   });
 });

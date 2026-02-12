@@ -48,7 +48,9 @@ describe("DispatcherService", () => {
 
       await service.findAvailableTrainers(date, zoneId, formationId);
 
-      expect(prisma.formation.findUnique).toHaveBeenCalledWith({ where: { id: formationId } });
+      expect(prisma.formation.findUnique).toHaveBeenCalledWith({
+        where: { id: formationId },
+      });
       expect(prisma.formateur.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
@@ -72,12 +74,14 @@ describe("DispatcherService", () => {
 
       await service.findAvailableTrainers(date, zoneId, formationId);
 
-      expect(prisma.formation.findUnique).toHaveBeenCalledWith({ where: { id: formationId } });
+      expect(prisma.formation.findUnique).toHaveBeenCalledWith({
+        where: { id: formationId },
+      });
       expect(prisma.formateur.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
             authorizedFormations: {
-                some: { id: formationId }
+              some: { id: formationId },
             },
             OR: [
               {
@@ -97,13 +101,15 @@ describe("DispatcherService", () => {
     });
 
     it("should throw if formation not found", async () => {
-       const zoneId = "zone-1";
-       const date = new Date();
-       const formationId = "f-missing";
+      const zoneId = "zone-1";
+      const date = new Date();
+      const formationId = "f-missing";
 
-       (prisma.formation.findUnique as jest.Mock).mockResolvedValue(null);
+      (prisma.formation.findUnique as jest.Mock).mockResolvedValue(null);
 
-       await expect(service.findAvailableTrainers(date, zoneId, formationId)).rejects.toThrow();
+      await expect(
+        service.findAvailableTrainers(date, zoneId, formationId),
+      ).rejects.toThrow();
     });
   });
 });

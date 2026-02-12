@@ -12,7 +12,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private emailService: EmailService,
-  ) { }
+  ) {}
 
   async hashPassword(password: string): Promise<string> {
     return bcrypt.hash(password, 10);

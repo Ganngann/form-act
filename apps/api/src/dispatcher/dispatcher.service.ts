@@ -12,11 +12,7 @@ export class DispatcherService {
    * @param zoneId - The ID of the zone where the formation takes place.
    * @param formationId - The ID of the formation to be dispensed.
    */
-  async findAvailableTrainers(
-    date: Date,
-    zoneId: string,
-    formationId: string,
-  ) {
+  async findAvailableTrainers(date: Date, zoneId: string, formationId: string) {
     const formation = await this.prisma.formation.findUnique({
       where: { id: formationId },
     });

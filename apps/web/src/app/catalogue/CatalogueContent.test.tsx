@@ -24,7 +24,7 @@ describe('CatalogueContent', () => {
 
   it('renders correctly', async () => {
     render(<CatalogueContent />);
-    expect(screen.getByText('Catalogue des Formations')).toBeDefined();
+    expect(screen.getByText(/Développez vos/i)).toBeDefined();
     expect(screen.getByPlaceholderText('Rechercher une formation...')).toBeDefined();
     await waitFor(() => expect(global.fetch).toHaveBeenCalled());
   });
@@ -43,7 +43,7 @@ describe('CatalogueContent', () => {
     render(<CatalogueContent />);
 
     await waitFor(() => {
-        expect(screen.getByText('Formation 1')).toBeDefined();
+      expect(screen.getByText('Formation 1')).toBeDefined();
     });
   });
 
@@ -51,34 +51,34 @@ describe('CatalogueContent', () => {
     mockSearchParams = new URLSearchParams('search=Nest');
     (global.fetch as any)
       .mockResolvedValueOnce({
-         json: async () => ([]), // categories
+        json: async () => ([]), // categories
       })
       .mockResolvedValueOnce({ // formations
-         json: async () => ([{ id: '1', title: 'NestJS Intro' }]),
+        json: async () => ([{ id: '1', title: 'NestJS Intro' }]),
       });
 
     render(<CatalogueContent />);
 
     await waitFor(() => {
-       const calls = (global.fetch as any).mock.calls;
-       const formationCall = calls.find((call: any) => call[0].includes('/formations'));
-       expect(formationCall[0]).toContain('search=Nest');
+      const calls = (global.fetch as any).mock.calls;
+      const formationCall = calls.find((call: any) => call[0].includes('/formations'));
+      expect(formationCall[0]).toContain('search=Nest');
     });
   });
 
   it('updates URL when search input changes (debounced)', async () => {
-     vi.useFakeTimers();
-     (global.fetch as any).mockResolvedValue({ json: async () => ([]) });
+    vi.useFakeTimers();
+    (global.fetch as any).mockResolvedValue({ json: async () => ([]) });
 
-     render(<CatalogueContent />);
+    render(<CatalogueContent />);
 
-     const input = screen.getByPlaceholderText('Rechercher une formation...');
-     fireEvent.change(input, { target: { value: 'React' } });
+    const input = screen.getByPlaceholderText('Rechercher une formation...');
+    fireEvent.change(input, { target: { value: 'React' } });
 
-     // Fast forward debounce
-     vi.advanceTimersByTime(300);
+    // Fast forward debounce (component uses 500ms)
+    vi.advanceTimersByTime(600);
 
-     expect(mockPush).toHaveBeenCalledWith('/catalogue?search=React');
-     vi.useRealTimers();
+    expect(mockPush).toHaveBeenCalledWith('/catalogue?search=React');
+    vi.useRealTimers();
   });
 });

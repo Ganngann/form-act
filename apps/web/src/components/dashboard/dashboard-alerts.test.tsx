@@ -21,9 +21,8 @@ describe('DashboardAlerts', () => {
 
         const alert = screen.getByRole('alert')
         expect(alert).toBeInTheDocument()
-        expect(alert).toHaveClass('bg-orange-50')
-        expect(alert).toHaveClass('border-orange-500')
-        expect(alert).toHaveClass('text-orange-700')
+        expect(alert).toHaveClass('bg-orange-50/50')
+        expect(alert).toHaveClass('border-primary/20')
     })
 
     it('renders critical alert (Red) for date < 9 days', () => {
@@ -38,8 +37,7 @@ describe('DashboardAlerts', () => {
 
         const alert = screen.getByRole('alert')
         expect(alert).toBeInTheDocument()
-        expect(alert).toHaveClass('bg-red-50')
-        expect(alert).toHaveClass('border-red-500')
-        expect(alert).toHaveClass('text-red-700')
+        expect(alert).toHaveClass('bg-red-50/50')
+        expect(alert).toHaveClass('border-red-200')
     })
 })

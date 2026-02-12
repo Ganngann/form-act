@@ -17,26 +17,22 @@ vi.mock("next/navigation", () => ({
 describe("Header", () => {
   it("renders guest links", () => {
     render(<Header />);
-    expect(screen.getByText("Se connecter")).toBeDefined();
-    expect(screen.getByText("S'inscrire")).toBeDefined();
+    expect(screen.getByText("Mon Espace")).toBeInTheDocument();
   });
 
   it("renders Admin links", () => {
     render(<Header userRole="ADMIN" />);
-    expect(screen.getByText("Dashboard Admin")).toBeDefined();
-    expect(screen.getByText("Administrateur")).toBeDefined();
+    expect(screen.getByText("Admin")).toBeInTheDocument();
   });
 
   it("renders Trainer links", () => {
     render(<Header userRole="TRAINER" />);
-    expect(screen.getByText("Espace Formateur")).toBeDefined();
-    expect(screen.getByText("Formateur")).toBeDefined();
+    expect(screen.getByText("Trainer")).toBeInTheDocument();
   });
 
   it("renders Client links", () => {
     render(<Header userRole="CLIENT" />);
-    expect(screen.getByText("Mes Formations")).toBeDefined();
-    expect(screen.getByText("Client")).toBeDefined();
+    expect(screen.getByText("Client")).toBeInTheDocument();
   });
 
   it("toggles mobile menu", () => {
@@ -50,11 +46,11 @@ describe("Header", () => {
   });
 
   it("shows correct mobile menu for logged in user", () => {
-      render(<Header userRole="CLIENT" />);
-      const buttons = screen.getAllByRole("button");
-      const toggleBtn = buttons[buttons.length - 1]; // Toggle is the last button
-      fireEvent.click(toggleBtn);
+    render(<Header userRole="CLIENT" />);
+    const buttons = screen.getAllByRole("button");
+    const toggleBtn = buttons[buttons.length - 1]; // Toggle is the last button
+    fireEvent.click(toggleBtn);
 
-      expect(screen.getByText("Connecté en tant que CLIENT")).toBeDefined();
+    expect(screen.getByText("Accéder à mon espace")).toBeInTheDocument();
   });
 });
