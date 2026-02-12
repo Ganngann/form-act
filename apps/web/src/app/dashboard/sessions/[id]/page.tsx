@@ -28,52 +28,61 @@ export default async function ClientSessionDetailPage({ params }: { params: { id
     if (!session) notFound();
 
     return (
-        <div className="container mx-auto py-10 px-4 max-w-4xl">
-            <div className="flex items-center gap-4 mb-8">
-                <Button variant="ghost" size="icon" asChild>
-                    <Link href="/dashboard"><ArrowLeft className="h-5 w-5" /></Link>
+        <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Header */}
+            <div className="flex items-center gap-6">
+                <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-primary/10 hover:text-primary transition-all">
+                    <Link href="/dashboard"><ArrowLeft className="h-6 w-6" /></Link>
                 </Button>
-                <h1 className="text-2xl font-bold tracking-tight">Détails de ma session</h1>
+                <h1 className="text-4xl font-bold tracking-tight">Détails de ma session.</h1>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Content */}
-                <div className="md:col-span-2 space-y-8">
-                    {/* Header Info */}
-                    <section className="bg-white p-6 rounded-xl border shadow-sm space-y-6">
-                        <div className="flex justify-between items-start">
+                <div className="lg:col-span-2 space-y-8">
+                    {/* Header Info Card */}
+                    <section className="bg-white p-8 rounded-[2rem] border border-border shadow-sm space-y-8 relative overflow-hidden">
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                             <div>
-                                <h2 className="text-2xl font-bold text-primary">{session.formation.title}</h2>
-                                <p className="text-muted-foreground">{session.formation.category?.name}</p>
+                                <h2 className="text-3xl font-bold text-primary tracking-tight leading-tight">
+                                    {session.formation.title}
+                                </h2>
+                                <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest mt-2">
+                                    {session.formation.category?.name}
+                                </p>
                             </div>
                             <StatusBadge status={session.status} />
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div className="flex items-start gap-3">
-                                <Calendar className="h-5 w-5 text-blue-500 mt-0.5" />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 pt-8 border-t border-border/50">
+                            <div className="flex items-start gap-4">
+                                <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center shrink-0">
+                                    <Calendar className="h-5 w-5 text-primary" />
+                                </div>
                                 <div>
-                                    <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Date & Heure</span>
-                                    <p className="font-medium">
+                                    <span className="block text-[10px] font-black text-muted-foreground uppercase tracking-[2px] mb-1">Date & Heure</span>
+                                    <p className="font-bold text-foreground">
                                         {format(new Date(session.date), "EEEE d MMMM yyyy", { locale: fr })}
                                     </p>
-                                    <span className="text-sm px-2 py-0.5 bg-secondary rounded mt-1 inline-block">
-                                        {session.slot}
+                                    <span className="text-[10px] font-black text-primary bg-primary/10 px-2 py-0.5 rounded mt-2 inline-block uppercase tracking-wider">
+                                        {session.slot === 'ALL_DAY' ? 'Journée entière' : session.slot}
                                     </span>
                                 </div>
                             </div>
 
-                            <div className="flex items-start gap-3">
-                                <User className="h-5 w-5 text-blue-500 mt-0.5" />
+                            <div className="flex items-start gap-4">
+                                <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center shrink-0">
+                                    <User className="h-5 w-5 text-primary" />
+                                </div>
                                 <div>
-                                    <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Formateur</span>
-                                    <p className="font-medium">
+                                    <span className="block text-[10px] font-black text-muted-foreground uppercase tracking-[2px] mb-1">Formateur</span>
+                                    <p className="font-bold text-foreground">
                                         {session.trainer
                                             ? `${session.trainer.firstName} ${session.trainer.lastName}`
                                             : "En attente d'assignation"}
                                     </p>
                                     {session.trainer && (
-                                        <p className="text-xs text-muted-foreground">Expert en {session.formation.expertise?.name}</p>
+                                        <p className="text-xs font-medium text-muted-foreground mt-1">Expert en {session.formation.expertise?.name}</p>
                                     )}
                                 </div>
                             </div>
@@ -85,23 +94,26 @@ export default async function ClientSessionDetailPage({ params }: { params: { id
 
                 {/* Sidebar */}
                 <div className="space-y-6">
-                    <section className="bg-blue-50 p-6 rounded-xl border border-blue-100 space-y-4">
-                        <div className="flex items-center gap-2">
-                            <Info className="h-5 w-5 text-blue-600" />
-                            <h3 className="font-bold text-blue-900">À noter</h3>
+                    <section className="bg-primary/5 p-8 rounded-[2rem] border border-primary/10 space-y-6">
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                                <Info className="h-5 w-5" />
+                            </div>
+                            <h3 className="font-black text-primary uppercase text-xs tracking-widest">À noter</h3>
                         </div>
-                        <p className="text-sm text-blue-800 leading-relaxed">
-                            Les modifications logistiques sont possibles jusqu&apos;à 7 jours avant la date de la séance.
+                        <p className="text-sm font-medium text-muted-foreground leading-relaxed italic border-l-2 border-primary/20 pl-4">
+                            "Les modifications logistiques sont possibles jusqu'à 7 jours avant la date de la séance."
                         </p>
                         <div className="pt-2">
-                            <Button variant="outline" className="w-full bg-white border-blue-200 text-blue-700 hover:bg-blue-100" asChild>
-                                <Link href="/catalogue">Voir le programme</Link>
+                            <Button variant="outline" className="w-full h-12 rounded-xl border-primary/20 text-primary hover:bg-primary/5 font-bold shadow-none" asChild>
+                                <Link href="/catalogue">Voir le programme formation</Link>
                             </Button>
                         </div>
                     </section>
 
-                    <div className="text-center p-4">
-                        <p className="text-xs text-muted-foreground">Une question ? Contactez notre support administratif.</p>
+                    <div className="text-center p-6 border border-dashed border-border rounded-[2rem] bg-muted/5">
+                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Besoin d'aide ?</p>
+                        <p className="text-xs font-medium text-muted-foreground/60 mt-1 uppercase tracking-tight">Contactez notre support administratif.</p>
                     </div>
                 </div>
             </div>
