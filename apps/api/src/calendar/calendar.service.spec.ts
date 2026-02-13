@@ -75,6 +75,11 @@ describe("CalendarService", () => {
       expect(ics.replace(/\s+/g, "")).toContain("projector");
       // "Logistique: simple string" might be split too
       expect(ics.replace(/\s+/g, "")).toContain("Logistique:simplestring");
+
+      // Verify the URL is present (defaulting to http://localhost:3000)
+      // ical-generator might add ;VALUE=URI to the URL property
+      expect(ics).toContain("http://localhost:3000/trainer/missions");
+      expect(ics).toMatch(/URL(;VALUE=URI)?:http:\/\/localhost:3000\/trainer\/missions/);
     });
 
     it("should throw NotFoundException if token invalid", async () => {
