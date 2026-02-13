@@ -7,6 +7,7 @@ async function main() {
   console.log('Start seeding ...');
 
   const hashedPassword = await bcrypt.hash('admin123', 10);
+  const baseDate = new Date('2026-02-13T09:00:00'); // Référence : Aujourd'hui selon le contexte utilisateur
 
   // 1. Zones
   const zonesData = [
@@ -41,19 +42,13 @@ async function main() {
     });
   }
 
-  // 3. Admin User
+  // 3. Users (Admin, Trainers, Clients)
   await prisma.user.upsert({
     where: { email: 'admin@formact.be' },
     update: { role: 'ADMIN', password: hashedPassword },
-    create: {
-      email: 'admin@formact.be',
-      name: 'Super Admin',
-      password: hashedPassword,
-      role: 'ADMIN',
-    },
+    create: { email: 'admin@formact.be', name: 'Super Admin', password: hashedPassword, role: 'ADMIN' },
   });
 
-  // 4. Trainers
   const trainersData = [
     { firstName: 'Jean', lastName: 'Dupont', email: 'jean.dupont@example.com', zones: ['BRU', 'BW'], experts: ['BRU', 'BW', 'LIE', 'NAM'] },
     { firstName: 'Marie', lastName: 'Lefebvre', email: 'marie.lefebvre@example.com', zones: ['LIE', 'NAM'], experts: ['LIE', 'NAM', 'LUX'] },
@@ -77,7 +72,7 @@ async function main() {
         firstName: t.firstName,
         lastName: t.lastName,
         email: t.email,
-        address: `Rue du Formateur ${Math.floor(Math.random() * 100)}, 1000 Bruxelles`,
+        address: `Rue du Formateur ${Math.floor(Math.random() * 100)}, Bruxelles`,
         userId: user.id,
         predilectionZones: { connect: t.zones.map(code => ({ code })) },
         expertiseZones: { connect: t.experts.map(code => ({ code })) },
@@ -86,25 +81,24 @@ async function main() {
     trainers.push(trainer);
   }
 
-  // 5. Formations
+  // 4. Formations (avec assignation de formateurs pour l'expertise)
   const formationsData = [
-    { title: 'Introduction to NestJS', desc: 'Learn NestJS basics', cat: 'Développement', level: 'Beginner', dur: '2 jours', type: 'FULL_DAY', experts: true },
-    { title: 'Management 101', desc: 'Basics of Team Management', cat: 'Management', level: 'Intermediate', dur: '1 jour', type: 'FULL_DAY', experts: true },
-    { title: 'Excel Basics', desc: 'Spreadsheets for everyone', cat: 'Bureautique', level: 'Beginner', dur: '3 jours', type: 'HALF_DAY', experts: false },
-    { title: 'React Advanced', desc: 'Deep dive into Hooks and Patterns', cat: 'Développement', level: 'Advanced', dur: '3 jours', type: 'FULL_DAY', experts: true },
-    { title: 'Docker for Beginners', desc: 'Containerize your apps', cat: 'Technique', level: 'Beginner', dur: '1 jour', type: 'FULL_DAY', experts: true },
-    { title: 'Vente Stratégique', desc: 'Boost your sales skills', cat: 'Soft Skills', level: 'Advanced', dur: '2 jours', type: 'FULL_DAY', experts: false },
-    { title: 'Anglais Business', desc: 'Professional English', cat: 'Langues', level: 'Intermediate', dur: '10 jours', type: 'HALF_DAY', experts: false },
-    { title: 'Communication Non-Violente', desc: 'Improve workspace interactions', cat: 'Soft Skills', level: 'Beginner', dur: '1 jour', type: 'HALF_DAY', experts: false },
-    { title: 'Python Data Science', desc: 'Data analysis with Python', cat: 'Développement', level: 'Intermediate', dur: '5 jours', type: 'FULL_DAY', experts: true },
-    { title: 'Leadership & Coaching', desc: 'Manage with impact', cat: 'Management', level: 'Advanced', dur: '3 jours', type: 'FULL_DAY', experts: true },
+    { title: 'Introduction to NestJS', experts: true, cat: 'Développement' },
+    { title: 'Management 101', experts: true, cat: 'Management' },
+    { title: 'Excel Basics', experts: false, cat: 'Bureautique' },
+    { title: 'React Advanced', experts: true, cat: 'Développement' },
+    { title: 'Docker for Beginners', experts: true, cat: 'Technique' },
+    { title: 'Vente Stratégique', experts: false, cat: 'Soft Skills' },
+    { title: 'Anglais Business', experts: false, cat: 'Langues' },
+    { title: 'Communication Non-Violente', experts: false, cat: 'Soft Skills' },
+    { title: 'Python Data Science', experts: true, cat: 'Développement' },
+    { title: 'Leadership & Coaching', experts: true, cat: 'Management' },
   ];
 
   const formations = [];
   for (const f of formationsData) {
-    // If it's an expertise formation, assign 1-2 random trainers
     const assignedTrainers = f.experts
-      ? trainers.sort(() => 0.5 - Math.random()).slice(0, Math.max(1, Math.floor(Math.random() * 3)))
+      ? trainers.sort(() => 0.5 - Math.random()).slice(0, 2)
       : [];
 
     const formation = await prisma.formation.upsert({
@@ -115,10 +109,10 @@ async function main() {
       },
       create: {
         title: f.title,
-        description: f.desc,
-        level: f.level,
-        duration: f.dur,
-        durationType: f.type,
+        description: `Description pour ${f.title}`,
+        level: 'Intermediate',
+        duration: '2 jours',
+        durationType: 'FULL_DAY',
         isExpertise: f.experts,
         category: { connect: { name: f.cat } },
         isPublished: true,
@@ -128,7 +122,7 @@ async function main() {
     formations.push(formation);
   }
 
-  // 6. Clients
+  // 5. Clients
   const clientsData = [
     { name: 'Acme Corp', vat: 'BE0000000001', email: 'client@company.com' },
     { name: 'Startup Inc', vat: 'BE0999999999', email: 'newclient@startup.com' },
@@ -151,44 +145,40 @@ async function main() {
       create: {
         companyName: c.name,
         vatNumber: c.vat,
-        address: `Avenue de l'Industrie ${Math.floor(Math.random() * 200)}, 1000 Bruxelles`,
+        address: `Avenue de l'Industrie ${Math.floor(Math.random() * 200)}, Bruxelles`,
         userId: user.id,
       }
     });
     clients.push(client);
   }
 
-  // 7. Sessions (Targeting 20 per week over ~16 weeks)
-  console.log('Seeding sessions (~350 sessions for high density)...');
+  // 6. Sessions (Target: 20 sessions par semaine centré sur le 13 février)
+  console.log('Seeding dense sessions around Feb 13, 2026...');
   await prisma.session.deleteMany({});
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // Massive seeding
-  for (let i = 0; i < 350; i++) {
+  // On génère 320 sessions sur 16 semaines (8 avant, 8 après)
+  // Environ 20 sessions par semaine
+  for (let i = 0; i < 320; i++) {
     const randomClient = clients[Math.floor(Math.random() * clients.length)];
     const randomFormation = formations[Math.floor(Math.random() * formations.length)];
 
-    // Choose date in a window of 4 months (-60 to +60 days)
-    const randomDays = Math.floor(Math.random() * 120) - 60;
-    const sessionDate = new Date(today.getTime() + randomDays * 24 * 60 * 60 * 1000);
+    // Date aléatoire entre -56 jours (8 sem) et +56 jours (8 sem) par rapport au 13 fév 2026
+    const randomDays = Math.floor(Math.random() * 112) - 56;
+    const sessionDate = new Date(baseDate.getTime() + randomDays * 24 * 60 * 60 * 1000);
 
-    // Weighted status
     const statusRoll = Math.random();
-    const status = statusRoll > 0.4 ? 'CONFIRMED' : (statusRoll > 0.1 ? 'PENDING' : 'CANCELLED');
+    const status = statusRoll > 0.3 ? 'CONFIRMED' : (statusRoll > 0.1 ? 'PENDING' : 'CANCELLED');
 
-    // For trainer assignment:
-    // If it's an expertise formation, we MUST pick one from the authorized trainers of that formation
-    const authorizedForThis = await prisma.formation.findUnique({
-      where: { id: randomFormation.id },
-      include: { authorizedTrainers: true }
-    });
-
+    // Assignation de formateur
     let trainerId: string | undefined = undefined;
-    if (status === 'CONFIRMED' && Math.random() > 0.05) {
-      if (randomFormation.isExpertise && authorizedForThis?.authorizedTrainers.length) {
-        trainerId = authorizedForThis.authorizedTrainers[Math.floor(Math.random() * authorizedForThis.authorizedTrainers.length)].id;
+    if (status === 'CONFIRMED') {
+      const authorized = await prisma.formation.findUnique({
+        where: { id: randomFormation.id },
+        include: { authorizedTrainers: true }
+      });
+
+      if (randomFormation.isExpertise && authorized?.authorizedTrainers.length) {
+        trainerId = authorized.authorizedTrainers[Math.floor(Math.random() * authorized.authorizedTrainers.length)].id;
       } else if (!randomFormation.isExpertise) {
         trainerId = trainers[Math.floor(Math.random() * trainers.length)].id;
       }
@@ -197,14 +187,12 @@ async function main() {
     await prisma.session.create({
       data: {
         date: sessionDate,
-        slot: Math.random() > 0.4 ? 'ALL_DAY' : (Math.random() > 0.5 ? 'AM' : 'PM'),
+        slot: Math.random() > 0.5 ? 'ALL_DAY' : 'AM',
         status: status,
-        formation: { connect: { id: randomFormation.id } },
-        client: { connect: { id: randomClient.id } },
-        trainer: trainerId ? { connect: { id: trainerId } } : undefined,
-        proofUrl: (status === 'CONFIRMED' && sessionDate < today && Math.random() > 0.3) ? '/files/proofs/attendance.pdf' : null,
-        billedAt: (status === 'CONFIRMED' && sessionDate < today && Math.random() > 0.6) ? new Date(sessionDate.getTime() + 2 * 24 * 60 * 60 * 1000) : null,
-        logistics: (status === 'CONFIRMED' && Math.random() > 0.2) ? JSON.stringify({ wifi: true, access: 'Badge required' }) : null,
+        formationId: randomFormation.id,
+        clientId: randomClient.id,
+        trainerId: trainerId || null,
+        logistics: (status === 'CONFIRMED' && sessionDate < baseDate) ? JSON.stringify({ wifi: true }) : null,
       }
     });
   }
