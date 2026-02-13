@@ -281,6 +281,11 @@ export class SessionsService {
               lte: new Date(new Date().setHours(new Date().getHours() - 48)),
             },
           },
+          select: {
+            location: true,
+            participants: true,
+            logistics: true,
+          },
         })
         .then(
           (sessions) =>
@@ -314,7 +319,9 @@ export class SessionsService {
     };
   }
 
-  isLogisticsStrictlyComplete(session: Session): boolean {
+  isLogisticsStrictlyComplete(
+    session: Pick<Session, "location" | "participants" | "logistics">,
+  ): boolean {
     // 1. Location present
     if (!session.location || session.location.trim() === "") return false;
 
