@@ -254,4 +254,22 @@ describe("CheckoutForm", () => {
         });
         spy.mockRestore();
     });
+
+    it("submits form failure with non-Error object", async () => {
+        (global.fetch as any).mockRejectedValue("Unknown Error");
+
+        render(<CheckoutForm {...defaultProps} />);
+        await fillForm();
+        fireEvent.click(screen.getByText("Vérifier et continuer"));
+
+        await waitFor(() => {
+            expect(screen.getByText("Confirmer la réservation")).toBeDefined();
+        });
+
+        fireEvent.click(screen.getByText("Confirmer la réservation"));
+
+        await waitFor(() => {
+            expect(screen.getByText("Une erreur inattendue est survenue")).toBeDefined();
+        });
+    });
 });
