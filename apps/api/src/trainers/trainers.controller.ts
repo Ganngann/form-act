@@ -21,6 +21,7 @@ import {
   createDiskStorage,
   fileFilter,
   MAX_FILE_SIZE,
+  removeFile,
 } from "../common/file-upload.utils";
 
 @Controller("trainers")
@@ -100,13 +101,20 @@ export class TrainersController {
   ) {
     if (!file) throw new BadRequestException("File is required");
 
-    const trainer = await this.trainersService.findOne(id);
-    if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
-      throw new ForbiddenException("You can only update your own profile");
-    }
+    try {
+      const trainer = await this.trainersService.findOne(id);
+      if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
+        throw new ForbiddenException("You can only update your own profile");
+      }
 
-    const avatarUrl = `/files/avatars/${file.filename}`;
-    return this.trainersService.updateAvatar(id, avatarUrl);
+      const avatarUrl = `/files/avatars/${file.filename}`;
+      return await this.trainersService.updateAvatar(id, avatarUrl);
+    } catch (error) {
+      if (file && file.path) {
+        await removeFile(file.path);
+      }
+      throw error;
+    }
   }
 
   @UseGuards(AuthGuard("jwt"))

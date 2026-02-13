@@ -3,6 +3,12 @@ import { SessionsController } from "./sessions.controller";
 import { SessionsService } from "./sessions.service";
 import { ForbiddenException, BadRequestException } from "@nestjs/common";
 
+jest.mock("../common/file-upload.utils", () => ({
+  ...jest.requireActual("../common/file-upload.utils"),
+  removeFile: jest.fn(),
+}));
+import { removeFile } from "../common/file-upload.utils";
+
 describe("SessionsController", () => {
   let controller: SessionsController;
   let service: SessionsService;
@@ -19,6 +25,7 @@ describe("SessionsController", () => {
   };
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SessionsController],
       providers: [
@@ -192,6 +199,24 @@ describe("SessionsController", () => {
       await expect(
         controller.uploadProof("1", file, { user: { role: "CLIENT" } }),
       ).rejects.toThrow(ForbiddenException);
+    });
+
+    it("should delete file if authorization fails", async () => {
+      mockSessionsService.findOne.mockResolvedValue({
+        trainer: { userId: "u2" },
+      });
+      const file = {
+        filename: "test.jpg",
+        path: "/tmp/test.jpg",
+      } as Express.Multer.File;
+
+      await expect(
+        controller.uploadProof("1", file, {
+          user: { role: "TRAINER", userId: "u1" },
+        }),
+      ).rejects.toThrow(ForbiddenException);
+
+      expect(removeFile).toHaveBeenCalledWith("/tmp/test.jpg");
     });
   });
 
