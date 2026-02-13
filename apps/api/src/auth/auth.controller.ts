@@ -53,7 +53,10 @@ export class AuthController {
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
-    return user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { resetToken, resetTokenExpires, ...safeUser } = user;
+
+    return safeUser;
   }
 
   @Post("logout")
