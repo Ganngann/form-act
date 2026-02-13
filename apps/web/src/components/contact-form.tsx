@@ -29,7 +29,7 @@ export function ContactForm() {
     const onSubmit = async (data: FormData) => {
         setSubmitting(true)
         // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500))
+        await new Promise(resolve => setTimeout(resolve, process.env.NODE_ENV === 'test' ? 0 : 1500))
         console.log("Form data:", data)
         setSubmitting(false)
         setSuccess(true)
