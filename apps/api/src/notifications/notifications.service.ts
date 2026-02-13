@@ -22,25 +22,35 @@ export class NotificationsService {
     const sessions = await this.sessionsService.findAll();
     const now = new Date();
 
-    for (const session of sessions) {
-      if (session.status === "CANCELLED") continue;
-
-      try {
-        await this.checkLogisticsTPlus48(session, now);
-        await this.checkParticipantsJ15(session, now);
-        await this.checkParticipantsJ9(session, now);
-        await this.checkProgramJ30(session, now);
-        await this.checkMissionJ21(session, now);
-        await this.checkAttendanceJ7(session, now);
-        await this.checkProofJPlus1(session, now);
-      } catch (error) {
-        this.logger.error(
-          `Error processing session ${session.id}: ${error.message}`,
-          error.stack,
-        );
-      }
+    const chunkSize = 50;
+    for (let i = 0; i < sessions.length; i += chunkSize) {
+      const chunk = sessions.slice(i, i + chunkSize);
+      await Promise.all(
+        chunk.map((session) => this.processSession(session, now)),
+      );
     }
     this.logger.log("Notification cron job finished.");
+  }
+
+  private async processSession(session: SessionWithRelations, now: Date) {
+    if (session.status === "CANCELLED") return;
+
+    try {
+      await Promise.all([
+        this.checkLogisticsTPlus48(session, now),
+        this.checkParticipantsJ15(session, now),
+        this.checkParticipantsJ9(session, now),
+        this.checkProgramJ30(session, now),
+        this.checkMissionJ21(session, now),
+        this.checkAttendanceJ7(session, now),
+        this.checkProofJPlus1(session, now),
+      ]);
+    } catch (error) {
+      this.logger.error(
+        `Error processing session ${session.id}: ${error.message}`,
+        error.stack,
+      );
+    }
   }
 
   // 1. T+48h: Relance si Logistique vide
