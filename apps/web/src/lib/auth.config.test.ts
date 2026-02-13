@@ -20,16 +20,15 @@ describe('getJwtSecretKey', () => {
     expect(secret).toEqual(new TextEncoder().encode('my-secret'));
   });
 
-  it('should return default secret when JWT_SECRET is undefined and NODE_ENV is not production', () => {
+  it('should throw error when JWT_SECRET is undefined, regardless of environment', () => {
     delete process.env.JWT_SECRET;
-    process.env.NODE_ENV = 'development';
-    const secret = getJwtSecretKey();
-    expect(secret).toEqual(new TextEncoder().encode('super-secret-key'));
-  });
 
-  it('should throw error when JWT_SECRET is undefined and NODE_ENV is production', () => {
-    delete process.env.JWT_SECRET;
+    // Test in development
+    process.env.NODE_ENV = 'development';
+    expect(() => getJwtSecretKey()).toThrow('JWT_SECRET is not defined');
+
+    // Test in production
     process.env.NODE_ENV = 'production';
-    expect(() => getJwtSecretKey()).toThrow('JWT_SECRET is not defined in production environment.');
+    expect(() => getJwtSecretKey()).toThrow('JWT_SECRET is not defined');
   });
 });
