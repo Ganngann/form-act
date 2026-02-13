@@ -1,6 +1,7 @@
 import { BadRequestException } from "@nestjs/common";
 import { diskStorage } from "multer";
 import { extname } from "path";
+import { randomBytes } from "crypto";
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -38,10 +39,9 @@ export const createDiskStorage = (destination: string) => {
   return diskStorage({
     destination,
     filename: (req, file, cb) => {
-      const randomName = Array(32)
-        .fill(null)
-        .map(() => Math.round(Math.random() * 16).toString(16))
-        .join("");
+      // Security: Use crypto.randomBytes for unpredictable filenames
+      // 16 bytes = 32 hex characters
+      const randomName = randomBytes(16).toString("hex");
       return cb(null, `${randomName}${extname(file.originalname)}`);
     },
   });

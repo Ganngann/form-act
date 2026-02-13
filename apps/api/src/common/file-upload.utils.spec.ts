@@ -1,5 +1,9 @@
-import { fileFilter } from "./file-upload.utils";
+import { fileFilter, createDiskStorage } from "./file-upload.utils";
 import { BadRequestException } from "@nestjs/common";
+// We need to mock multer to access the configuration passed to diskStorage
+jest.mock("multer", () => ({
+  diskStorage: jest.fn().mockImplementation((config) => config),
+}));
 
 describe("fileFilter", () => {
   it("should accept valid image files", () => {
@@ -54,5 +58,41 @@ describe("fileFilter", () => {
       expect.any(BadRequestException),
       false,
     );
+  });
+});
+
+describe("createDiskStorage", () => {
+  it("should generate random hex filenames of length 32 + extension", () => {
+    const storageConfig = createDiskStorage("./uploads");
+    // Since we mocked diskStorage to return its config, we can access the filename function
+    const filenameFn = (storageConfig as any).filename;
+
+    const file = { originalname: "test.jpg" } as unknown as Express.Multer.File;
+    const callback = jest.fn();
+
+    filenameFn(null, file, callback);
+
+    expect(callback).toHaveBeenCalled();
+    const generatedFilename = callback.mock.calls[0][1]; // 2nd argument is the filename
+
+    // Check format: 32 hex chars + .jpg
+    expect(generatedFilename).toMatch(/^[a-f0-9]{32}\.jpg$/);
+  });
+
+  it("should generate unique filenames", () => {
+    const storageConfig = createDiskStorage("./uploads");
+    const filenameFn = (storageConfig as any).filename;
+
+    const file = { originalname: "test.png" } as unknown as Express.Multer.File;
+    const filenames = new Set();
+
+    for (let i = 0; i < 100; i++) {
+      const callback = jest.fn();
+      filenameFn(null, file, callback);
+      const generatedFilename = callback.mock.calls[0][1];
+      filenames.add(generatedFilename);
+    }
+
+    expect(filenames.size).toBe(100);
   });
 });
