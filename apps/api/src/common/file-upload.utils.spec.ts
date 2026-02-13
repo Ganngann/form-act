@@ -6,10 +6,10 @@ describe("fileFilter", () => {
     const file = {
       originalname: "test.jpg",
       mimetype: "image/jpeg",
-    } as any;
+    } as unknown as Express.Multer.File;
     const callback = jest.fn();
 
-    fileFilter({} as any, file, callback);
+    fileFilter({}, file, callback);
 
     expect(callback).toHaveBeenCalledWith(null, true);
   });
@@ -18,10 +18,10 @@ describe("fileFilter", () => {
     const file = {
       originalname: "test.pdf",
       mimetype: "application/pdf",
-    } as any;
+    } as unknown as Express.Multer.File;
     const callback = jest.fn();
 
-    fileFilter({} as any, file, callback);
+    fileFilter({}, file, callback);
 
     expect(callback).toHaveBeenCalledWith(null, true);
   });
@@ -30,23 +30,29 @@ describe("fileFilter", () => {
     const file = {
       originalname: "test.exe",
       mimetype: "application/x-msdownload",
-    } as any;
+    } as unknown as Express.Multer.File;
     const callback = jest.fn();
 
-    fileFilter({} as any, file, callback);
+    fileFilter({}, file, callback);
 
-    expect(callback).toHaveBeenCalledWith(expect.any(BadRequestException), false);
+    expect(callback).toHaveBeenCalledWith(
+      expect.any(BadRequestException),
+      false,
+    );
   });
 
   it("should reject invalid mime type", () => {
     const file = {
       originalname: "test.jpg",
       mimetype: "text/html", // Spoofed mimetype? Or mismatch
-    } as any;
+    } as unknown as Express.Multer.File;
     const callback = jest.fn();
 
-    fileFilter({} as any, file, callback);
+    fileFilter({}, file, callback);
 
-    expect(callback).toHaveBeenCalledWith(expect.any(BadRequestException), false);
+    expect(callback).toHaveBeenCalledWith(
+      expect.any(BadRequestException),
+      false,
+    );
   });
 });
