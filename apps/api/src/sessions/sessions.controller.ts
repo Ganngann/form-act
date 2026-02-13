@@ -29,7 +29,7 @@ import {
 @Controller("sessions")
 @UseGuards(AuthGuard("jwt"))
 export class SessionsController {
-  constructor(private readonly sessionsService: SessionsService) {}
+  constructor(private readonly sessionsService: SessionsService) { }
 
   @Get("me")
   async findMySessions(@Request() req) {
@@ -70,6 +70,7 @@ export class SessionsController {
     @Query("end") end?: string,
     @Query("status") status?: string,
     @Query("filter") filter?: string,
+    @Query("q") q?: string,
   ) {
     if (req.user.role !== "ADMIN") {
       throw new ForbiddenException("Access denied");
@@ -77,7 +78,7 @@ export class SessionsController {
 
     const startDate = start ? new Date(start) : undefined;
     const endDate = end ? new Date(end) : undefined;
-    return this.sessionsService.findAll(startDate, endDate, status, filter);
+    return this.sessionsService.findAll(startDate, endDate, status, filter, q);
   }
 
   @Post(":id/proof")

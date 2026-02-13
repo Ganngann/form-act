@@ -10,7 +10,7 @@ export class SessionsService {
   constructor(
     private prisma: PrismaService,
     private emailService: EmailService,
-  ) {}
+  ) { }
 
   async findOne(id: string) {
     const session = await this.prisma.session.findUnique({
@@ -29,7 +29,7 @@ export class SessionsService {
     return session;
   }
 
-  async findAll(start?: Date, end?: Date, status?: string, filter?: string) {
+  async findAll(start?: Date, end?: Date, status?: string, filter?: string, query?: string) {
     const where: Prisma.SessionWhereInput = {};
 
     if (start && end) {
@@ -47,20 +47,27 @@ export class SessionsService {
       where.status = status;
     }
 
+    if (query) {
+      where.OR = [
+        { formation: { title: { contains: query } } },
+        { client: { companyName: { contains: query } } },
+        { trainer: { firstName: { contains: query } } },
+        { trainer: { lastName: { contains: query } } },
+      ];
+    }
+
     // Admin Specific Filters
     if (filter === "NO_TRAINER") {
       where.status = "CONFIRMED";
       where.trainerId = null;
     } else if (filter === "MISSING_LOGISTICS") {
       const now = new Date();
-      const twoDaysAgo = new Date(now);
-      twoDaysAgo.setHours(now.getHours() - 48);
+      // J-14 logic as per V2 spec
+      const in14Days = new Date(now);
+      in14Days.setDate(now.getDate() + 14);
 
       where.status = "CONFIRMED";
-      where.date = { gte: now };
-      where.createdAt = { lte: twoDaysAgo };
-      // Remove basic DB check to perform strict JS check
-      // where.OR = [{ logistics: null }, { logistics: "" }, { logistics: "{}" }];
+      where.date = { gte: now, lte: in14Days };
     } else if (filter === "MISSING_PROOF") {
       where.date = { lt: new Date() };
       where.status = "CONFIRMED";
@@ -68,6 +75,8 @@ export class SessionsService {
     } else if (filter === "READY_TO_BILL") {
       where.proofUrl = { not: null };
       where.billedAt = null;
+    } else if (filter === "ARCHIVED") {
+      where.billedAt = { not: null };
     }
 
     const sessions = await this.prisma.session.findMany({
@@ -80,7 +89,7 @@ export class SessionsService {
         formation: true,
       },
       orderBy: {
-        date: "asc",
+        date: filter === "ARCHIVED" ? "desc" : "asc",
       },
     });
 
