@@ -16,9 +16,12 @@ import {
 import { TrainersService } from "./trainers.service";
 import { UpdateTrainerDto } from "./dto/update-trainer.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { diskStorage } from "multer";
-import { extname } from "path";
 import { AuthGuard } from "@nestjs/passport";
+import {
+  createDiskStorage,
+  fileFilter,
+  MAX_FILE_SIZE,
+} from "../common/file-upload.utils";
 
 @Controller("trainers")
 export class TrainersController {
@@ -85,16 +88,9 @@ export class TrainersController {
   @Post(":id/avatar")
   @UseInterceptors(
     FileInterceptor("file", {
-      storage: diskStorage({
-        destination: "./uploads/avatars",
-        filename: (req, file, cb) => {
-          const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join("");
-          return cb(null, `${randomName}${extname(file.originalname)}`);
-        },
-      }),
+      storage: createDiskStorage("./uploads/avatars"),
+      fileFilter: fileFilter,
+      limits: { fileSize: MAX_FILE_SIZE },
     }),
   )
   async uploadAvatar(
