@@ -1,4 +1,4 @@
-import { fileFilter } from "./file-upload.utils";
+import { fileFilter, generateSecureFilename } from "./file-upload.utils";
 import { BadRequestException } from "@nestjs/common";
 
 describe("fileFilter", () => {
@@ -54,5 +54,27 @@ describe("fileFilter", () => {
       expect.any(BadRequestException),
       false,
     );
+  });
+});
+
+describe("generateSecureFilename", () => {
+  it("should generate a filename with 32 hex characters plus extension", () => {
+    const originalName = "test.jpg";
+    const filename = generateSecureFilename(originalName);
+    // 32 chars from hex + 4 chars from ".jpg" = 36
+    expect(filename).toHaveLength(36);
+    expect(filename.endsWith(".jpg")).toBe(true);
+  });
+
+  it("should preserve the original extension", () => {
+    const originalName = "my-report.pdf";
+    const filename = generateSecureFilename(originalName);
+    expect(filename.endsWith(".pdf")).toBe(true);
+  });
+
+  it("should generate unique filenames", () => {
+    const name1 = generateSecureFilename("image.png");
+    const name2 = generateSecureFilename("image.png");
+    expect(name1).not.toBe(name2);
   });
 });
