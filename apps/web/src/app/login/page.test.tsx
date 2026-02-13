@@ -93,4 +93,25 @@ describe('LoginPage', () => {
     await user.click(screen.getByRole('button', { name: 'Se connecter' }));
     await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/dashboard'));
   });
+
+  it('prevents open redirect', async () => {
+    const user = userEvent.setup();
+    // Simulate malicious redirect param
+    window.history.pushState({}, 'Test', '/login?redirect=https://malicious.com');
+
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => ({ role: 'CLIENT' }),
+    });
+
+    render(<LoginPage />);
+    await user.type(screen.getByPlaceholderText('Email'), 'victim@test.com');
+    await user.type(screen.getByPlaceholderText('Mot de passe'), 'pass');
+    await user.click(screen.getByRole('button', { name: 'Se connecter' }));
+
+    await waitFor(() => {
+        expect(mockPush).not.toHaveBeenCalledWith('https://malicious.com');
+        expect(mockPush).toHaveBeenCalledWith('/dashboard');
+    });
+  });
 });
