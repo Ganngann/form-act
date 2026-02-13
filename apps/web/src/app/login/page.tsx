@@ -34,7 +34,7 @@ export default function LoginPage() {
       const searchParams = new URLSearchParams(window.location.search);
       const redirect = searchParams.get('redirect');
 
-      if (redirect) {
+      if (redirect && redirect.startsWith('/') && !redirect.startsWith('//')) {
         router.push(redirect);
       } else if (user.role === 'ADMIN') {
         router.push('/admin');
