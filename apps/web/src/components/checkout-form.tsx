@@ -142,8 +142,12 @@ export function CheckoutForm({ formationId, trainerId, date, slot, isLoggedIn, f
 
             window.location.href = "/dashboard?success=booking"
 
-        } catch (e: any) {
-            setError(e.message)
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                setError(e.message)
+            } else {
+                setError("Une erreur inattendue est survenue")
+            }
         } finally {
             setSubmitting(false)
         }
