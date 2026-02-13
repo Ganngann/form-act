@@ -23,6 +23,7 @@ import {
   createDiskStorage,
   fileFilter,
   MAX_FILE_SIZE,
+  removeFile,
 } from "../common/file-upload.utils";
 
 @Controller("sessions")
@@ -94,23 +95,30 @@ export class SessionsController {
   ) {
     if (!file) throw new BadRequestException("File is required");
 
-    const session = await this.sessionsService.findOne(id);
+    try {
+      const session = await this.sessionsService.findOne(id);
 
-    // Permission: Admin or The Trainer
-    if (req.user.role === "ADMIN") {
-      // OK
-    } else if (req.user.role === "TRAINER") {
-      if (session.trainer.userId !== req.user.userId) {
-        throw new ForbiddenException(
-          "You can only upload proofs for your own sessions",
-        );
+      // Permission: Admin or The Trainer
+      if (req.user.role === "ADMIN") {
+        // OK
+      } else if (req.user.role === "TRAINER") {
+        if (session.trainer.userId !== req.user.userId) {
+          throw new ForbiddenException(
+            "You can only upload proofs for your own sessions",
+          );
+        }
+      } else {
+        throw new ForbiddenException("Access denied"); // Client cannot upload proof
       }
-    } else {
-      throw new ForbiddenException("Access denied"); // Client cannot upload proof
-    }
 
-    const proofUrl = `/files/proofs/${file.filename}`;
-    return this.sessionsService.updateProof(id, proofUrl);
+      const proofUrl = `/files/proofs/${file.filename}`;
+      return await this.sessionsService.updateProof(id, proofUrl);
+    } catch (error) {
+      if (file && file.path) {
+        await removeFile(file.path);
+      }
+      throw error;
+    }
   }
 
   @Patch(":id")

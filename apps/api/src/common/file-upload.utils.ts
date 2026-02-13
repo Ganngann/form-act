@@ -2,6 +2,7 @@ import { BadRequestException } from "@nestjs/common";
 import { diskStorage } from "multer";
 import { extname } from "path";
 import * as crypto from "crypto";
+import * as fs from "fs/promises";
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -48,4 +49,20 @@ export const createDiskStorage = (destination: string) => {
       return cb(null, filename);
     },
   });
+};
+
+interface SystemError extends Error {
+  code?: string;
+}
+
+export const removeFile = async (filePath: string) => {
+  try {
+    await fs.unlink(filePath);
+  } catch (error) {
+    // If file doesn't exist (ENOENT), ignore. Otherwise log.
+    const err = error as SystemError;
+    if (err.code !== "ENOENT") {
+      console.error(`Error deleting file ${filePath}:`, error);
+    }
+  }
 };
