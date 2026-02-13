@@ -18,9 +18,12 @@ import { UpdateSessionDto } from "./dto/update-session.dto";
 import { AdminUpdateSessionDto } from "./dto/admin-update-session.dto";
 import { AdminBillSessionDto } from "./dto/admin-bill-session.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { diskStorage } from "multer";
-import { extname } from "path";
 import { AuthGuard } from "@nestjs/passport";
+import {
+  createDiskStorage,
+  fileFilter,
+  MAX_FILE_SIZE,
+} from "../common/file-upload.utils";
 
 @Controller("sessions")
 @UseGuards(AuthGuard("jwt"))
@@ -79,16 +82,9 @@ export class SessionsController {
   @Post(":id/proof")
   @UseInterceptors(
     FileInterceptor("file", {
-      storage: diskStorage({
-        destination: "./uploads/proofs",
-        filename: (req, file, cb) => {
-          const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join("");
-          return cb(null, `${randomName}${extname(file.originalname)}`);
-        },
-      }),
+      storage: createDiskStorage("./uploads/proofs"),
+      fileFilter: fileFilter,
+      limits: { fileSize: MAX_FILE_SIZE },
     }),
   )
   async uploadProof(
