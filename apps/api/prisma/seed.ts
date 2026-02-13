@@ -6,7 +6,9 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Start seeding ...');
 
-  // Zones
+  const hashedPassword = await bcrypt.hash('admin123', 10);
+
+  // 1. Zones
   const zonesData = [
     { name: 'Bruxelles', code: 'BRU' },
     { name: 'Brabant Wallon', code: 'BW' },
@@ -21,317 +23,191 @@ async function main() {
     { name: 'Flandre Orientale', code: 'OVL' },
   ];
 
-  const zones = [];
   for (const z of zonesData) {
-    const zone = await prisma.zone.upsert({
+    await prisma.zone.upsert({
       where: { code: z.code },
       update: {},
       create: z,
     });
-    zones.push(zone);
   }
 
-  // Categories
-  const categoriesData = ['Bureautique', 'Management', 'Développement', 'Soft Skills'];
-  const categories = [];
+  // 2. Categories
+  const categoriesData = ['Bureautique', 'Management', 'Développement', 'Soft Skills', 'Langues', 'Technique'];
   for (const c of categoriesData) {
-    const cat = await prisma.category.upsert({
+    await prisma.category.upsert({
       where: { name: c },
       update: {},
       create: { name: c },
     });
-    categories.push(cat);
   }
 
-  // Admin User
-  const adminEmail = 'admin@formact.be';
-  const hashedPassword = await bcrypt.hash('admin123', 10);
-
+  // 3. Admin User
   await prisma.user.upsert({
-    where: { email: adminEmail },
-    update: {
-      role: 'ADMIN',
-      password: hashedPassword,
-    },
+    where: { email: 'admin@formact.be' },
+    update: { role: 'ADMIN', password: hashedPassword },
     create: {
-      email: adminEmail,
+      email: 'admin@formact.be',
       name: 'Super Admin',
       password: hashedPassword,
       role: 'ADMIN',
     },
   });
 
-  // Formateur
-  const formateurEmail = 'jean.dupont@example.com';
-  // Ensure user exists for formateur
-  const formateurUser = await prisma.user.upsert({
-    where: { email: formateurEmail },
-    update: { role: 'TRAINER' },
-    create: {
-      email: formateurEmail,
-      name: 'Jean Dupont',
-      password: hashedPassword, // Same password for testing
-      role: 'TRAINER'
-    }
-  });
+  // 4. Trainers
+  const trainersData = [
+    { firstName: 'Jean', lastName: 'Dupont', email: 'jean.dupont@example.com', zones: ['BRU', 'BW'], experts: ['BRU', 'BW', 'LIE', 'NAM'] },
+    { firstName: 'Marie', lastName: 'Lefebvre', email: 'marie.lefebvre@example.com', zones: ['LIE', 'NAM'], experts: ['LIE', 'NAM', 'LUX'] },
+    { firstName: 'Thomas', lastName: 'Dubois', email: 'thomas.dubois@example.com', zones: ['HAI'], experts: ['HAI', 'BRU'] },
+    { firstName: 'Sophie', lastName: 'Martin', email: 'sophie.martin@example.com', zones: ['ANT', 'LIM'], experts: ['ANT', 'LIM', 'VBR'] },
+    { firstName: 'Nicolas', lastName: 'Petit', email: 'nicolas.petit@example.com', zones: ['WVL', 'OVL'], experts: ['WVL', 'OVL', 'VBR', 'BRU'] },
+  ];
 
-  const formateur = await prisma.formateur.upsert({
-    where: { email: formateurEmail },
-    update: {
-      userId: formateurUser.id,
-      predilectionZones: {
-        set: [{ code: 'BRU' }, { code: 'BW' }]
-      },
-      expertiseZones: {
-        set: [{ code: 'BRU' }, { code: 'BW' }, { code: 'LIE' }, { code: 'NAM' }]
+  const trainers = [];
+  for (const t of trainersData) {
+    const user = await prisma.user.upsert({
+      where: { email: t.email },
+      update: { password: hashedPassword, role: 'TRAINER' },
+      create: { email: t.email, name: `${t.firstName} ${t.lastName}`, password: hashedPassword, role: 'TRAINER' }
+    });
+
+    const trainer = await prisma.formateur.upsert({
+      where: { email: t.email },
+      update: { userId: user.id },
+      create: {
+        firstName: t.firstName,
+        lastName: t.lastName,
+        email: t.email,
+        address: `Rue du Formateur ${Math.floor(Math.random() * 100)}, 1000 Bruxelles`,
+        userId: user.id,
+        predilectionZones: { connect: t.zones.map(code => ({ code })) },
+        expertiseZones: { connect: t.experts.map(code => ({ code })) },
       }
-    },
-    create: {
-      firstName: 'Jean',
-      lastName: 'Dupont',
-      email: formateurEmail,
-      address: 'Rue de la Gare 15, 1000 Bruxelles',
-      userId: formateurUser.id,
-      predilectionZones: {
-        connect: [{ code: 'BRU' }, { code: 'BW' }]
+    });
+    trainers.push(trainer);
+  }
+
+  // 5. Formations
+  const formationsData = [
+    { title: 'Introduction to NestJS', desc: 'Learn NestJS basics', cat: 'Développement', level: 'Beginner', dur: '2 jours', type: 'FULL_DAY', experts: true },
+    { title: 'Management 101', desc: 'Basics of Team Management', cat: 'Management', level: 'Intermediate', dur: '1 jour', type: 'FULL_DAY', experts: true },
+    { title: 'Excel Basics', desc: 'Spreadsheets for everyone', cat: 'Bureautique', level: 'Beginner', dur: '3 jours', type: 'HALF_DAY', experts: false },
+    { title: 'React Advanced', desc: 'Deep dive into Hooks and Patterns', cat: 'Développement', level: 'Advanced', dur: '3 jours', type: 'FULL_DAY', experts: true },
+    { title: 'Docker for Beginners', desc: 'Containerize your apps', cat: 'Technique', level: 'Beginner', dur: '1 jour', type: 'FULL_DAY', experts: true },
+    { title: 'Vente Stratégique', desc: 'Boost your sales skills', cat: 'Soft Skills', level: 'Advanced', dur: '2 jours', type: 'FULL_DAY', experts: false },
+    { title: 'Anglais Business', desc: 'Professional English', cat: 'Langues', level: 'Intermediate', dur: '10 jours', type: 'HALF_DAY', experts: false },
+    { title: 'Communication Non-Violente', desc: 'Improve workspace interactions', cat: 'Soft Skills', level: 'Beginner', dur: '1 jour', type: 'HALF_DAY', experts: false },
+    { title: 'Python Data Science', desc: 'Data analysis with Python', cat: 'Développement', level: 'Intermediate', dur: '5 jours', type: 'FULL_DAY', experts: true },
+    { title: 'Leadership & Coaching', desc: 'Manage with impact', cat: 'Management', level: 'Advanced', dur: '3 jours', type: 'FULL_DAY', experts: true },
+  ];
+
+  const formations = [];
+  for (const f of formationsData) {
+    // If it's an expertise formation, assign 1-2 random trainers
+    const assignedTrainers = f.experts
+      ? trainers.sort(() => 0.5 - Math.random()).slice(0, Math.max(1, Math.floor(Math.random() * 3)))
+      : [];
+
+    const formation = await prisma.formation.upsert({
+      where: { title: f.title },
+      update: {
+        isExpertise: f.experts,
+        authorizedTrainers: { set: assignedTrainers.map(t => ({ id: t.id })) }
       },
-      expertiseZones: {
-        connect: [{ code: 'BRU' }, { code: 'BW' }, { code: 'LIE' }, { code: 'NAM' }]
+      create: {
+        title: f.title,
+        description: f.desc,
+        level: f.level,
+        duration: f.dur,
+        durationType: f.type,
+        isExpertise: f.experts,
+        category: { connect: { name: f.cat } },
+        isPublished: true,
+        authorizedTrainers: { connect: assignedTrainers.map(t => ({ id: t.id })) }
       }
-    },
-  });
+    });
+    formations.push(formation);
+  }
 
-  // NestJS Formation (Expertise)
-  const formationTitle = 'Introduction to NestJS';
-  const formation = await prisma.formation.upsert({
-    where: { title: formationTitle },
-    update: {
-      duration: '2 jours',
-      durationType: 'FULL_DAY',
-      isExpertise: true,
-      authorizedTrainers: {
-        connect: { email: formateurEmail }
-      },
-      category: {
-        connect: { name: 'Développement' },
-      },
-      agreementCodes: JSON.stringify([
-        { region: 'Wallonie', code: 'NEST-001' },
-        { region: 'Bruxelles', code: 'BXL-NEST' }
-      ]),
-    },
-    create: {
-      title: formationTitle,
-      description: 'Learn the basics of NestJS framework.',
-      level: 'Beginner',
-      duration: '2 jours',
-      durationType: 'FULL_DAY',
-      isExpertise: true,
-      authorizedTrainers: {
-        connect: { email: formateurEmail }
-      },
-      category: {
-        connect: { name: 'Développement' },
-      },
-      agreementCodes: JSON.stringify([
-        { region: 'Wallonie', code: 'NEST-001' },
-        { region: 'Bruxelles', code: 'BXL-NEST' }
-      ]),
-    },
-  });
+  // 6. Clients
+  const clientsData = [
+    { name: 'Acme Corp', vat: 'BE0000000001', email: 'client@company.com' },
+    { name: 'Startup Inc', vat: 'BE0999999999', email: 'newclient@startup.com' },
+    { name: 'Tech Solutions', vat: 'BE0888888888', email: 'contact@techsolutions.be' },
+    { name: 'Global Logistics', vat: 'BE0777777777', email: 'hr@globallog.com' },
+    { name: 'Green Energy SA', vat: 'BE0666666666', email: 'office@greenenergy.be' },
+  ];
 
-  // Management Formation (Expertise, but Jean not authorized)
-  const managementTitle = 'Management 101';
-  const mgtFormation = await prisma.formation.upsert({
-    where: { title: managementTitle },
-    update: {
-      category: { connect: { name: 'Management' } },
-      isExpertise: true,
-    },
-    create: {
-      id: 'management-101',
-      title: managementTitle,
-      description: 'Basics of Team Management',
-      level: 'Beginner',
-      duration: '1 jour',
-      isExpertise: true,
-      // No authorized trainers
-      category: { connect: { name: 'Management' } },
-    },
-  });
+  const clients = [];
+  for (const c of clientsData) {
+    const user = await prisma.user.upsert({
+      where: { email: c.email },
+      update: { role: 'CLIENT' },
+      create: { email: c.email, name: c.name, password: hashedPassword, role: 'CLIENT' }
+    });
 
-  // Excel (Bureautique) - Expertise with Jean
-  const excelTitle = 'Excel Basics';
-  const excelFormation = await prisma.formation.upsert({
-    where: { title: excelTitle },
-    update: {
-      durationType: 'HALF_DAY',
-      category: { connect: { name: 'Bureautique' } },
-      isExpertise: true,
-      authorizedTrainers: {
-        connect: { email: formateurEmail }
-      },
-    },
-    create: {
-      title: excelTitle,
-      description: 'Spreadsheets for everyone',
-      level: 'Beginner',
-      duration: '3 jours',
-      durationType: 'HALF_DAY',
-      isExpertise: true,
-      authorizedTrainers: {
-        connect: { email: formateurEmail }
-      },
-      category: { connect: { name: 'Bureautique' } },
-    },
-  });
+    const client = await prisma.client.upsert({
+      where: { userId: user.id },
+      update: {},
+      create: {
+        companyName: c.name,
+        vatNumber: c.vat,
+        address: `Avenue de l'Industrie ${Math.floor(Math.random() * 200)}, 1000 Bruxelles`,
+        userId: user.id,
+      }
+    });
+    clients.push(client);
+  }
 
-  // Client
-  const clientEmail = 'client@company.com';
-  const clientUser = await prisma.user.upsert({
-    where: { email: clientEmail },
-    update: { role: 'CLIENT' },
-    create: {
-      email: clientEmail,
-      name: 'Client User',
-      password: hashedPassword,
-      role: 'CLIENT'
-    }
-  });
-
-  const client = await prisma.client.upsert({
-    where: { userId: clientUser.id },
-    update: {},
-    create: {
-      companyName: 'Acme Corp',
-      vatNumber: 'BE0000000001',
-      address: 'Rue de la Loi 16, 1000 Bruxelles',
-      userId: clientUser.id,
-      createdAt: new Date('2023-01-01')
-    }
-  });
-
-  // Client Recent
-  const clientRecentEmail = 'newclient@startup.com';
-  const clientRecentUser = await prisma.user.upsert({
-    where: { email: clientRecentEmail },
-    update: { role: 'CLIENT' },
-    create: {
-      email: clientRecentEmail,
-      name: 'New Client',
-      password: hashedPassword,
-      role: 'CLIENT'
-    }
-  });
-
-  await prisma.client.upsert({
-    where: { userId: clientRecentUser.id },
-    update: {},
-    create: {
-      companyName: 'Startup Inc',
-      vatNumber: 'BE0999999999',
-      address: 'Avenue Louise 100, 1050 Bruxelles',
-      userId: clientRecentUser.id,
-      createdAt: new Date('2023-11-15')
-    }
-  });
-
-  // --- SESSIONS SEEDING ---
-  console.log('Seeding sessions for Priority Actions scenarios...');
-  // Clear all existing sessions to start clean
+  // 7. Sessions (Targeting 20 per week over ~16 weeks)
+  console.log('Seeding sessions (~350 sessions for high density)...');
   await prisma.session.deleteMany({});
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
+  // Massive seeding
+  for (let i = 0; i < 350; i++) {
+    const randomClient = clients[Math.floor(Math.random() * clients.length)];
+    const randomFormation = formations[Math.floor(Math.random() * formations.length)];
 
-  const plus3Days = new Date(today);
-  plus3Days.setDate(today.getDate() + 3);
+    // Choose date in a window of 4 months (-60 to +60 days)
+    const randomDays = Math.floor(Math.random() * 120) - 60;
+    const sessionDate = new Date(today.getTime() + randomDays * 24 * 60 * 60 * 1000);
 
-  const plus10Days = new Date(today);
-  plus10Days.setDate(today.getDate() + 10);
+    // Weighted status
+    const statusRoll = Math.random();
+    const status = statusRoll > 0.4 ? 'CONFIRMED' : (statusRoll > 0.1 ? 'PENDING' : 'CANCELLED');
 
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
+    // For trainer assignment:
+    // If it's an expertise formation, we MUST pick one from the authorized trainers of that formation
+    const authorizedForThis = await prisma.formation.findUnique({
+      where: { id: randomFormation.id },
+      include: { authorizedTrainers: true }
+    });
 
-  const longAgo = new Date(today);
-  longAgo.setDate(today.getDate() - 20);
-
-  // 1. Demandes à valider (PENDING)
-  await prisma.session.create({
-    data: {
-      date: plus10Days,
-      slot: 'ALL_DAY',
-      status: 'PENDING',
-      formation: { connect: { id: formation.id } },
-      client: { connect: { id: client.id } },
+    let trainerId: string | undefined = undefined;
+    if (status === 'CONFIRMED' && Math.random() > 0.05) {
+      if (randomFormation.isExpertise && authorizedForThis?.authorizedTrainers.length) {
+        trainerId = authorizedForThis.authorizedTrainers[Math.floor(Math.random() * authorizedForThis.authorizedTrainers.length)].id;
+      } else if (!randomFormation.isExpertise) {
+        trainerId = trainers[Math.floor(Math.random() * trainers.length)].id;
+      }
     }
-  });
 
-  const startupInc = await prisma.client.findUnique({ where: { userId: clientRecentUser.id } });
-
-  await prisma.session.create({
-    data: {
-      date: plus3Days,
-      slot: 'AM',
-      status: 'PENDING',
-      formation: { connect: { id: mgtFormation.id } },
-      client: { connect: { id: startupInc.id } },
-    }
-  });
-
-  // 2. Sessions sans formateur (CONFIRMED et trainerId est null)
-  await prisma.session.create({
-    data: {
-      date: plus10Days,
-      slot: 'ALL_DAY',
-      status: 'CONFIRMED',
-      formation: { connect: { id: excelFormation.id } },
-      client: { connect: { id: client.id } },
-    }
-  });
-
-  // 3. Logistique manquante (J-7, status CONFIRMED et logistics est null)
-  await prisma.session.create({
-    data: {
-      date: plus3Days,
-      slot: 'ALL_DAY',
-      status: 'CONFIRMED',
-      trainer: { connect: { id: formateur.id } },
-      formation: { connect: { id: formation.id } },
-      client: { connect: { id: client.id } },
-      logistics: null,
-    }
-  });
-
-  // 4. Feuilles de présence manquantes (Session passée, status CONFIRMED, proofUrl null)
-  await prisma.session.create({
-    data: {
-      date: yesterday,
-      slot: 'ALL_DAY',
-      status: 'CONFIRMED',
-      trainer: { connect: { id: formateur.id } },
-      formation: { connect: { id: formation.id } },
-      client: { connect: { id: client.id } },
-      proofUrl: null
-    }
-  });
-
-  // 5. À Facturer (Session passée, proofUrl présent, mais billedAt null)
-  await prisma.session.create({
-    data: {
-      date: longAgo,
-      slot: 'ALL_DAY',
-      status: 'CONFIRMED',
-      trainer: { connect: { id: formateur.id } },
-      formation: { connect: { id: mgtFormation.id } },
-      client: { connect: { id: client.id } },
-      proofUrl: "/files/proofs/attendance-sheet.pdf",
-      billedAt: null
-    }
-  });
+    await prisma.session.create({
+      data: {
+        date: sessionDate,
+        slot: Math.random() > 0.4 ? 'ALL_DAY' : (Math.random() > 0.5 ? 'AM' : 'PM'),
+        status: status,
+        formation: { connect: { id: randomFormation.id } },
+        client: { connect: { id: randomClient.id } },
+        trainer: trainerId ? { connect: { id: trainerId } } : undefined,
+        proofUrl: (status === 'CONFIRMED' && sessionDate < today && Math.random() > 0.3) ? '/files/proofs/attendance.pdf' : null,
+        billedAt: (status === 'CONFIRMED' && sessionDate < today && Math.random() > 0.6) ? new Date(sessionDate.getTime() + 2 * 24 * 60 * 60 * 1000) : null,
+        logistics: (status === 'CONFIRMED' && Math.random() > 0.2) ? JSON.stringify({ wifi: true, access: 'Badge required' }) : null,
+      }
+    });
+  }
 
   console.log('Seeding finished.');
 }
