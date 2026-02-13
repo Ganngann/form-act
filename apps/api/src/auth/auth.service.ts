@@ -5,6 +5,7 @@ import * as bcrypt from "bcrypt";
 import { User } from "@prisma/client";
 import { EmailService } from "../email/email.service";
 import * as crypto from "crypto";
+import { getFrontendUrl } from "../common/config";
 
 @Injectable()
 export class AuthService {
@@ -49,7 +50,7 @@ export class AuthService {
       },
     });
 
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    const frontendUrl = getFrontendUrl();
     const resetLink = `${frontendUrl}/auth/reset-password?token=${token}`;
 
     await this.emailService.sendEmail(
