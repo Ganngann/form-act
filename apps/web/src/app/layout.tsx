@@ -3,6 +3,7 @@ import { Space_Grotesk } from 'next/font/google';
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import './globals.css';
+import { getJwtSecretKey } from '@/lib/auth.config';
 import { Header } from '@/components/layout/Header';
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'] });
@@ -23,7 +24,7 @@ export default async function RootLayout({
 
     if (token) {
         try {
-            const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'super-secret-key');
+            const secret = getJwtSecretKey();
             const { payload } = await jwtVerify(token, secret);
             userRole = payload.role as string;
         } catch (error) {

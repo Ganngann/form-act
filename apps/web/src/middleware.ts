@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
+import { getJwtSecretKey } from '@/lib/auth.config';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -21,12 +22,7 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret && process.env.NODE_ENV === 'production') {
-      throw new Error('JWT_SECRET is not defined in production environment.');
-    }
-
-    const secret = new TextEncoder().encode(jwtSecret || 'super-secret-key');
+    const secret = getJwtSecretKey();
     const { payload } = await jwtVerify(token, secret);
     const role = payload.role as string;
 

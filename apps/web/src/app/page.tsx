@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
+import { getJwtSecretKey } from '@/lib/auth.config';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SearchHero } from '@/components/home/SearchHero';
@@ -27,7 +28,7 @@ async function getUserRole() {
   if (!token) return null;
 
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'super-secret-key');
+    const secret = getJwtSecretKey();
     const { payload } = await jwtVerify(token, secret);
     return payload.role as string;
   } catch (error) {
