@@ -59,7 +59,9 @@ describe("useBookingLogic", () => {
 
   it("should handle manual booking mode correctly for FULL_DAY", async () => {
     const fullDayFormation = { ...formation, durationType: "FULL_DAY" };
-    const { result } = renderHook(() => useBookingLogic({ formation: fullDayFormation }));
+    const { result } = renderHook(() =>
+      useBookingLogic({ formation: fullDayFormation }),
+    );
 
     act(() => {
       result.current.setSelectedTrainer("manual");

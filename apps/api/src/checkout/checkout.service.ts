@@ -23,6 +23,26 @@ export class CheckoutService {
       throw new BadRequestException("Password is required for new users.");
     }
 
+    if (user) {
+      // Security Fix: Require authentication for existing users to prevent unauthorized booking
+      if (!data.password) {
+        throw new BadRequestException(
+          "An account with this email already exists. Please provide your password or log in.",
+        );
+      }
+
+      const validatedUser = await this.authService.validateUser(
+        data.email,
+        data.password,
+      );
+
+      if (!validatedUser) {
+        throw new BadRequestException(
+          "Invalid password for existing account. Please try again.",
+        );
+      }
+    }
+
     // Atomic transaction
     const result = await this.prisma.$transaction(async (tx) => {
       // 1. Get or Create User

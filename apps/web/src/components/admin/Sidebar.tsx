@@ -1,19 +1,38 @@
 "use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Calendar, Users, Briefcase, BookOpen, Tags, FileText, Settings } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Card, CardContent } from '@/components/ui/card';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  Calendar,
+  Users,
+  Briefcase,
+  BookOpen,
+  Tags,
+  FileText,
+  Settings,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
 
 const navItems = [
-  { href: '/admin', label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: '/admin/sessions', label: "Sessions", icon: Calendar, exact: false },
-  { href: '/admin/calendar', label: "Calendrier", icon: Calendar, exact: false },
-  { href: '/admin/trainers', label: "Formateurs", icon: Users, exact: false },
-  { href: '/admin/clients', label: "Clients", icon: Briefcase, exact: false },
-  { href: '/admin/formations', label: "Formations", icon: BookOpen, exact: false },
-  { href: '/admin/categories', label: "Catégories", icon: Tags, exact: false },
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin/sessions", label: "Sessions", icon: Calendar, exact: false },
+  {
+    href: "/admin/calendar",
+    label: "Calendrier",
+    icon: Calendar,
+    exact: false,
+  },
+  { href: "/admin/trainers", label: "Formateurs", icon: Users, exact: false },
+  { href: "/admin/clients", label: "Clients", icon: Briefcase, exact: false },
+  {
+    href: "/admin/formations",
+    label: "Formations",
+    icon: BookOpen,
+    exact: false,
+  },
+  { href: "/admin/categories", label: "Catégories", icon: Tags, exact: false },
 ];
 
 export function Sidebar() {
@@ -27,7 +46,9 @@ export function Sidebar() {
         </div>
         <div>
           <h2 className="font-black text-lg tracking-tight">Admin</h2>
-          <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Espace de gestion</p>
+          <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
+            Espace de gestion
+          </p>
         </div>
       </div>
 
@@ -46,13 +67,17 @@ export function Sidebar() {
                 "flex items-center gap-4 px-4 py-3 rounded-xl font-bold transition-all duration-200 group relative overflow-hidden",
                 isActive
                   ? "bg-white text-primary shadow-sm border border-border/50"
-                  : "text-muted-foreground hover:text-primary hover:bg-white/50 border border-transparent"
+                  : "text-muted-foreground hover:text-primary hover:bg-white/50 border border-transparent",
               )}
             >
-              <div className={cn(
-                "h-8 w-8 rounded-lg flex items-center justify-center transition-colors",
-                isActive ? "bg-primary/10 text-primary" : "bg-transparent group-hover:bg-primary/5"
-              )}>
+              <div
+                className={cn(
+                  "h-8 w-8 rounded-lg flex items-center justify-center transition-colors",
+                  isActive
+                    ? "bg-primary/10 text-primary"
+                    : "bg-transparent group-hover:bg-primary/5",
+                )}
+              >
                 <Icon className="h-4 w-4" />
               </div>
               <span className="text-sm font-bold">{item.label}</span>
@@ -68,11 +93,17 @@ export function Sidebar() {
         <Card className="rounded-[1.5rem] border-primary/10 bg-gradient-to-br from-primary/5 to-transparent overflow-hidden">
           <CardContent className="p-5 relative">
             <div className="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-full blur-2xl -mr-8 -mt-8"></div>
-            <h3 className="text-xs font-black uppercase tracking-widest text-primary mb-2">Support</h3>
+            <h3 className="text-xs font-black uppercase tracking-widest text-primary mb-2">
+              Support
+            </h3>
             <p className="text-[11px] text-muted-foreground font-medium mb-3 leading-relaxed">
-              Besoin d&apos;aide technique ou d&apos;une nouvelle fonctionnalité ?
+              Besoin d&apos;aide technique ou d&apos;une nouvelle fonctionnalité
+              ?
             </p>
-            <Link href="/contact" className="text-[11px] font-bold text-primary hover:underline">
+            <Link
+              href="/contact"
+              className="text-[11px] font-bold text-primary hover:underline"
+            >
               Contacter le support →
             </Link>
           </CardContent>

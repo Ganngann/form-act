@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useRouter } from 'next/navigation';
-import { API_URL } from '@/lib/config';
-import { useState, useEffect } from 'react';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
+import { API_URL } from "@/lib/config";
+import { useState, useEffect } from "react";
 
 const formSchema = z.object({
-  email: z.string().email('Email invalide'),
-  firstName: z.string().min(1, 'Prénom requis'),
-  lastName: z.string().min(1, 'Nom requis'),
+  email: z.string().email("Email invalide"),
+  firstName: z.string().min(1, "Prénom requis"),
+  lastName: z.string().min(1, "Nom requis"),
   predilectionZones: z.array(z.string()).optional(),
   expertiseZones: z.array(z.string()).optional(),
 });
@@ -38,10 +38,11 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
 
   // Process initialData to match form schema
   const defaultValues: FormData = {
-    email: initialData?.email || '',
-    firstName: initialData?.firstName || '',
-    lastName: initialData?.lastName || '',
-    predilectionZones: initialData?.predilectionZones?.map((z: any) => z.id) || [],
+    email: initialData?.email || "",
+    firstName: initialData?.firstName || "",
+    lastName: initialData?.lastName || "",
+    predilectionZones:
+      initialData?.predilectionZones?.map((z: any) => z.id) || [],
     expertiseZones: initialData?.expertiseZones?.map((z: any) => z.id) || [],
   };
 
@@ -56,14 +57,14 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
     defaultValues,
   });
 
-  const predilectionIds = watch('predilectionZones') || [];
-  const expertiseIds = watch('expertiseZones') || [];
+  const predilectionIds = watch("predilectionZones") || [];
+  const expertiseIds = watch("expertiseZones") || [];
 
   useEffect(() => {
     fetch(`${API_URL}/zones`, { credentials: "include" })
       .then((res) => res.json())
       .then((data) => setZones(data))
-      .catch((err) => console.error('Failed to fetch zones', err));
+      .catch((err) => console.error("Failed to fetch zones", err));
   }, []);
 
   const handlePredilectionChange = (zoneId: string, checked: boolean) => {
@@ -73,11 +74,11 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
       // Also check expertise
       const currentExpertise = new Set(expertiseIds);
       currentExpertise.add(zoneId);
-      setValue('expertiseZones', Array.from(currentExpertise));
+      setValue("expertiseZones", Array.from(currentExpertise));
     } else {
       current.delete(zoneId);
     }
-    setValue('predilectionZones', Array.from(current));
+    setValue("predilectionZones", Array.from(current));
   };
 
   const handleExpertiseChange = (zoneId: string, checked: boolean) => {
@@ -87,7 +88,7 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
     } else {
       current.delete(zoneId);
     }
-    setValue('expertiseZones', Array.from(current));
+    setValue("expertiseZones", Array.from(current));
   };
 
   const onSubmit = async (data: FormData) => {
@@ -97,21 +98,21 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
       const url = isEdit
         ? `${API_URL}/admin/trainers/${initialData?.id}`
         : `${API_URL}/admin/trainers`;
-      const method = isEdit ? 'PATCH' : 'POST';
+      const method = isEdit ? "PATCH" : "POST";
 
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(data),
       });
 
       if (!res.ok) {
         const json = await res.json();
-        throw new Error(json.message || 'Erreur lors de l\'enregistrement');
+        throw new Error(json.message || "Erreur lors de l'enregistrement");
       }
 
-      router.push('/admin/trainers');
+      router.push("/admin/trainers");
       router.refresh();
     } catch (e: any) {
       setError(e.message);
@@ -125,21 +126,33 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
       {error && <div className="text-red-500 text-sm">{error}</div>}
 
       <div className="space-y-2">
-        <label htmlFor="firstName" className="text-sm font-medium">Prénom</label>
-        <Input id="firstName" {...register('firstName')} />
-        {errors.firstName && <p className="text-red-500 text-xs">{errors.firstName.message}</p>}
+        <label htmlFor="firstName" className="text-sm font-medium">
+          Prénom
+        </label>
+        <Input id="firstName" {...register("firstName")} />
+        {errors.firstName && (
+          <p className="text-red-500 text-xs">{errors.firstName.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="lastName" className="text-sm font-medium">Nom</label>
-        <Input id="lastName" {...register('lastName')} />
-        {errors.lastName && <p className="text-red-500 text-xs">{errors.lastName.message}</p>}
+        <label htmlFor="lastName" className="text-sm font-medium">
+          Nom
+        </label>
+        <Input id="lastName" {...register("lastName")} />
+        {errors.lastName && (
+          <p className="text-red-500 text-xs">{errors.lastName.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="email" className="text-sm font-medium">Email</label>
-        <Input id="email" type="email" {...register('email')} />
-        {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
+        <label htmlFor="email" className="text-sm font-medium">
+          Email
+        </label>
+        <Input id="email" type="email" {...register("email")} />
+        {errors.email && (
+          <p className="text-red-500 text-xs">{errors.email.message}</p>
+        )}
       </div>
 
       {zones.length > 0 && (
@@ -156,13 +169,18 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
               const isExpertise = expertiseIds.includes(zone.id);
 
               return (
-                <div key={zone.id} className="grid grid-cols-3 gap-4 items-center">
+                <div
+                  key={zone.id}
+                  className="grid grid-cols-3 gap-4 items-center"
+                >
                   <div className="text-sm">{zone.name}</div>
                   <div className="flex justify-center">
                     <input
                       type="checkbox"
                       checked={isPredilection}
-                      onChange={(e) => handlePredilectionChange(zone.id, e.target.checked)}
+                      onChange={(e) =>
+                        handlePredilectionChange(zone.id, e.target.checked)
+                      }
                       className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                     />
                   </div>
@@ -171,7 +189,9 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
                       type="checkbox"
                       checked={isExpertise || isPredilection}
                       disabled={isPredilection}
-                      onChange={(e) => handleExpertiseChange(zone.id, e.target.checked)}
+                      onChange={(e) =>
+                        handleExpertiseChange(zone.id, e.target.checked)
+                      }
                       className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary disabled:opacity-50"
                     />
                   </div>
@@ -183,9 +203,11 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
       )}
 
       <div className="flex gap-2 pt-4">
-        <Button type="button" variant="outline" onClick={() => router.back()}>Annuler</Button>
+        <Button type="button" variant="outline" onClick={() => router.back()}>
+          Annuler
+        </Button>
         <Button type="submit" disabled={loading}>
-          {loading ? 'Enregistrement...' : (isEdit ? 'Modifier' : 'Créer')}
+          {loading ? "Enregistrement..." : isEdit ? "Modifier" : "Créer"}
         </Button>
       </div>
     </form>

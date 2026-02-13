@@ -1,24 +1,24 @@
-import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
+import { PrismaClient } from "@prisma/client";
+import * as bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Start seeding ...');
+  console.log("Start seeding ...");
 
   // Zones
   const zonesData = [
-    { name: 'Bruxelles', code: 'BRU' },
-    { name: 'Brabant Wallon', code: 'BW' },
-    { name: 'Liège', code: 'LIE' },
-    { name: 'Namur', code: 'NAM' },
-    { name: 'Hainaut', code: 'HAI' },
-    { name: 'Luxembourg', code: 'LUX' },
-    { name: 'Anvers', code: 'ANT' },
-    { name: 'Limbourg', code: 'LIM' },
-    { name: 'Brabant Flamand', code: 'VBR' },
-    { name: 'Flandre Occidentale', code: 'WVL' },
-    { name: 'Flandre Orientale', code: 'OVL' },
+    { name: "Bruxelles", code: "BRU" },
+    { name: "Brabant Wallon", code: "BW" },
+    { name: "Liège", code: "LIE" },
+    { name: "Namur", code: "NAM" },
+    { name: "Hainaut", code: "HAI" },
+    { name: "Luxembourg", code: "LUX" },
+    { name: "Anvers", code: "ANT" },
+    { name: "Limbourg", code: "LIM" },
+    { name: "Brabant Flamand", code: "VBR" },
+    { name: "Flandre Occidentale", code: "WVL" },
+    { name: "Flandre Orientale", code: "OVL" },
   ];
 
   const zones = [];
@@ -32,7 +32,12 @@ async function main() {
   }
 
   // Categories
-  const categoriesData = ['Bureautique', 'Management', 'Développement', 'Soft Skills'];
+  const categoriesData = [
+    "Bureautique",
+    "Management",
+    "Développement",
+    "Soft Skills",
+  ];
   const categories = [];
   for (const c of categoriesData) {
     const cat = await prisma.category.upsert({
@@ -44,34 +49,34 @@ async function main() {
   }
 
   // Admin User
-  const adminEmail = 'admin@formact.be';
-  const hashedPassword = await bcrypt.hash('admin123', 10);
+  const adminEmail = "admin@formact.be";
+  const hashedPassword = await bcrypt.hash("admin123", 10);
 
   await prisma.user.upsert({
     where: { email: adminEmail },
     update: {
-      role: 'ADMIN',
+      role: "ADMIN",
     },
     create: {
       email: adminEmail,
-      name: 'Super Admin',
+      name: "Super Admin",
       password: hashedPassword,
-      role: 'ADMIN',
+      role: "ADMIN",
     },
   });
 
   // Formateur
-  const formateurEmail = 'jean.dupont@example.com';
+  const formateurEmail = "jean.dupont@example.com";
   // Ensure user exists for formateur
   const formateurUser = await prisma.user.upsert({
     where: { email: formateurEmail },
-    update: { role: 'TRAINER' },
+    update: { role: "TRAINER" },
     create: {
       email: formateurEmail,
-      name: 'Jean Dupont',
+      name: "Jean Dupont",
       password: hashedPassword, // Same password for testing
-      role: 'TRAINER'
-    }
+      role: "TRAINER",
+    },
   });
 
   const formateur = await prisma.formateur.upsert({
@@ -79,164 +84,174 @@ async function main() {
     update: {
       userId: formateurUser.id,
       predilectionZones: {
-        set: [{ code: 'BRU' }, { code: 'BW' }]
+        set: [{ code: "BRU" }, { code: "BW" }],
       },
       expertiseZones: {
-        set: [{ code: 'BRU' }, { code: 'BW' }, { code: 'LIE' }, { code: 'NAM' }]
-      }
+        set: [
+          { code: "BRU" },
+          { code: "BW" },
+          { code: "LIE" },
+          { code: "NAM" },
+        ],
+      },
     },
     create: {
-      firstName: 'Jean',
-      lastName: 'Dupont',
+      firstName: "Jean",
+      lastName: "Dupont",
       email: formateurEmail,
-      address: 'Rue de la Gare 15, 1000 Bruxelles',
+      address: "Rue de la Gare 15, 1000 Bruxelles",
       userId: formateurUser.id,
       predilectionZones: {
-        connect: [{ code: 'BRU' }, { code: 'BW' }]
+        connect: [{ code: "BRU" }, { code: "BW" }],
       },
       expertiseZones: {
-        connect: [{ code: 'BRU' }, { code: 'BW' }, { code: 'LIE' }, { code: 'NAM' }]
-      }
+        connect: [
+          { code: "BRU" },
+          { code: "BW" },
+          { code: "LIE" },
+          { code: "NAM" },
+        ],
+      },
     },
   });
 
   // NestJS Formation (Expertise)
-  const formationTitle = 'Introduction to NestJS';
+  const formationTitle = "Introduction to NestJS";
   const formation = await prisma.formation.upsert({
     where: { title: formationTitle },
     update: {
-      duration: '2 jours',
-      durationType: 'FULL_DAY',
+      duration: "2 jours",
+      durationType: "FULL_DAY",
       isExpertise: true,
       authorizedTrainers: {
-        connect: { email: formateurEmail }
+        connect: { email: formateurEmail },
       },
       category: {
-        connect: { name: 'Développement' },
+        connect: { name: "Développement" },
       },
       agreementCodes: JSON.stringify([
-        { region: 'Wallonie', code: 'NEST-001' },
-        { region: 'Bruxelles', code: 'BXL-NEST' }
+        { region: "Wallonie", code: "NEST-001" },
+        { region: "Bruxelles", code: "BXL-NEST" },
       ]),
     },
     create: {
       title: formationTitle,
-      description: 'Learn the basics of NestJS framework.',
-      level: 'Beginner',
-      duration: '2 jours',
-      durationType: 'FULL_DAY',
+      description: "Learn the basics of NestJS framework.",
+      level: "Beginner",
+      duration: "2 jours",
+      durationType: "FULL_DAY",
       isExpertise: true,
       authorizedTrainers: {
-        connect: { email: formateurEmail }
+        connect: { email: formateurEmail },
       },
       category: {
-        connect: { name: 'Développement' },
+        connect: { name: "Développement" },
       },
       agreementCodes: JSON.stringify([
-        { region: 'Wallonie', code: 'NEST-001' },
-        { region: 'Bruxelles', code: 'BXL-NEST' }
+        { region: "Wallonie", code: "NEST-001" },
+        { region: "Bruxelles", code: "BXL-NEST" },
       ]),
     },
   });
 
   // Management Formation (Expertise, but Jean not authorized)
-  const managementTitle = 'Management 101';
+  const managementTitle = "Management 101";
   const mgtFormation = await prisma.formation.upsert({
     where: { title: managementTitle },
     update: {
-      category: { connect: { name: 'Management' } },
+      category: { connect: { name: "Management" } },
       isExpertise: true,
     },
     create: {
-      id: 'management-101',
+      id: "management-101",
       title: managementTitle,
-      description: 'Basics of Team Management',
-      level: 'Beginner',
-      duration: '1 jour',
+      description: "Basics of Team Management",
+      level: "Beginner",
+      duration: "1 jour",
       isExpertise: true,
       // No authorized trainers
-      category: { connect: { name: 'Management' } },
+      category: { connect: { name: "Management" } },
     },
   });
 
   // Excel (Bureautique) - Expertise with Jean
-  const excelTitle = 'Excel Basics';
+  const excelTitle = "Excel Basics";
   const excelFormation = await prisma.formation.upsert({
     where: { title: excelTitle },
     update: {
-      durationType: 'HALF_DAY',
-      category: { connect: { name: 'Bureautique' } },
+      durationType: "HALF_DAY",
+      category: { connect: { name: "Bureautique" } },
       isExpertise: true,
       authorizedTrainers: {
-        connect: { email: formateurEmail }
+        connect: { email: formateurEmail },
       },
     },
     create: {
       title: excelTitle,
-      description: 'Spreadsheets for everyone',
-      level: 'Beginner',
-      duration: '3 jours',
-      durationType: 'HALF_DAY',
+      description: "Spreadsheets for everyone",
+      level: "Beginner",
+      duration: "3 jours",
+      durationType: "HALF_DAY",
       isExpertise: true,
       authorizedTrainers: {
-        connect: { email: formateurEmail }
+        connect: { email: formateurEmail },
       },
-      category: { connect: { name: 'Bureautique' } },
+      category: { connect: { name: "Bureautique" } },
     },
   });
 
   // Client
-  const clientEmail = 'client@company.com';
+  const clientEmail = "client@company.com";
   const clientUser = await prisma.user.upsert({
     where: { email: clientEmail },
-    update: { role: 'CLIENT' },
+    update: { role: "CLIENT" },
     create: {
       email: clientEmail,
-      name: 'Client User',
+      name: "Client User",
       password: hashedPassword,
-      role: 'CLIENT'
-    }
+      role: "CLIENT",
+    },
   });
 
   const client = await prisma.client.upsert({
     where: { userId: clientUser.id },
     update: {},
     create: {
-      companyName: 'Acme Corp',
-      vatNumber: 'BE0000000001',
-      address: 'Rue de la Loi 16, 1000 Bruxelles',
+      companyName: "Acme Corp",
+      vatNumber: "BE0000000001",
+      address: "Rue de la Loi 16, 1000 Bruxelles",
       userId: clientUser.id,
-      createdAt: new Date('2023-01-01')
-    }
+      createdAt: new Date("2023-01-01"),
+    },
   });
 
   // Client Recent
-  const clientRecentEmail = 'newclient@startup.com';
+  const clientRecentEmail = "newclient@startup.com";
   const clientRecentUser = await prisma.user.upsert({
     where: { email: clientRecentEmail },
-    update: { role: 'CLIENT' },
+    update: { role: "CLIENT" },
     create: {
       email: clientRecentEmail,
-      name: 'New Client',
+      name: "New Client",
       password: hashedPassword,
-      role: 'CLIENT'
-    }
+      role: "CLIENT",
+    },
   });
 
   await prisma.client.upsert({
     where: { userId: clientRecentUser.id },
     update: {},
     create: {
-      companyName: 'Startup Inc',
-      vatNumber: 'BE0999999999',
-      address: 'Avenue Louise 100, 1050 Bruxelles',
+      companyName: "Startup Inc",
+      vatNumber: "BE0999999999",
+      address: "Avenue Louise 100, 1050 Bruxelles",
       userId: clientRecentUser.id,
-      createdAt: new Date('2023-11-15')
-    }
+      createdAt: new Date("2023-11-15"),
+    },
   });
 
   // --- SESSIONS SEEDING ---
-  console.log('Seeding sessions for Priority Actions scenarios...');
+  console.log("Seeding sessions for Priority Actions scenarios...");
   // Clear all existing sessions to start clean
   await prisma.session.deleteMany({});
 
@@ -262,77 +277,79 @@ async function main() {
   await prisma.session.create({
     data: {
       date: plus10Days,
-      slot: 'ALL_DAY',
-      status: 'PENDING',
+      slot: "ALL_DAY",
+      status: "PENDING",
       formation: { connect: { id: formation.id } },
       client: { connect: { id: client.id } },
-    }
+    },
   });
 
-  const startupInc = await prisma.client.findUnique({ where: { userId: clientRecentUser.id } });
+  const startupInc = await prisma.client.findUnique({
+    where: { userId: clientRecentUser.id },
+  });
 
   await prisma.session.create({
     data: {
       date: plus3Days,
-      slot: 'AM',
-      status: 'PENDING',
+      slot: "AM",
+      status: "PENDING",
       formation: { connect: { id: mgtFormation.id } },
       client: { connect: { id: startupInc.id } },
-    }
+    },
   });
 
   // 2. Sessions sans formateur (CONFIRMED et trainerId est null)
   await prisma.session.create({
     data: {
       date: plus10Days,
-      slot: 'ALL_DAY',
-      status: 'CONFIRMED',
+      slot: "ALL_DAY",
+      status: "CONFIRMED",
       formation: { connect: { id: excelFormation.id } },
       client: { connect: { id: client.id } },
-    }
+    },
   });
 
   // 3. Logistique manquante (J-7, status CONFIRMED et logistics est null)
   await prisma.session.create({
     data: {
       date: plus3Days,
-      slot: 'ALL_DAY',
-      status: 'CONFIRMED',
+      slot: "ALL_DAY",
+      status: "CONFIRMED",
       trainer: { connect: { id: formateur.id } },
       formation: { connect: { id: formation.id } },
       client: { connect: { id: client.id } },
       logistics: null,
-    }
+    },
   });
 
   // 4. Feuilles de présence manquantes (Session passée, status CONFIRMED, proofUrl null)
   await prisma.session.create({
     data: {
       date: yesterday,
-      slot: 'ALL_DAY',
-      status: 'CONFIRMED',
+      slot: "ALL_DAY",
+      status: "CONFIRMED",
       trainer: { connect: { id: formateur.id } },
       formation: { connect: { id: formation.id } },
       client: { connect: { id: client.id } },
-      proofUrl: null
-    }
+      proofUrl: null,
+    },
   });
 
   // 5. À Facturer (Session passée, proofUrl présent, mais billedAt null)
   await prisma.session.create({
     data: {
       date: longAgo,
-      slot: 'ALL_DAY',
-      status: 'CONFIRMED',
+      slot: "ALL_DAY",
+      status: "CONFIRMED",
       trainer: { connect: { id: formateur.id } },
       formation: { connect: { id: mgtFormation.id } },
       client: { connect: { id: client.id } },
       proofUrl: "/files/proofs/attendance-sheet.pdf",
-      billedAt: null
-    }
+      billedAt: null,
+    },
   });
 
-  console.log('Seeding finished.');
+  console.log("Seeding finished.");
 }
 
 main()

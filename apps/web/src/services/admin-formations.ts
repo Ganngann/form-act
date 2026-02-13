@@ -1,18 +1,25 @@
-import { API_URL } from '@/lib/config';
-import { Formation, CreateFormationData, UpdateFormationData, Category } from '@/types/formation';
+import { API_URL } from "@/lib/config";
+import {
+  Formation,
+  CreateFormationData,
+  UpdateFormationData,
+  Category,
+} from "@/types/formation";
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   const res = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...options.headers,
     },
-    credentials: 'include', // Important for cookies
+    credentials: "include", // Important for cookies
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ message: 'An error occurred' }));
+    const error = await res
+      .json()
+      .catch(() => ({ message: "An error occurred" }));
     throw new Error(error.message || res.statusText);
   }
 
@@ -20,24 +27,27 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
 }
 
 export const adminFormationsService = {
-  getFormations: (): Promise<Formation[]> => fetchWithAuth('/admin/formations'),
+  getFormations: (): Promise<Formation[]> => fetchWithAuth("/admin/formations"),
 
-  getCategories: (): Promise<Category[]> => fetchWithAuth('/categories'),
+  getCategories: (): Promise<Category[]> => fetchWithAuth("/categories"),
 
   createFormation: (data: CreateFormationData): Promise<Formation> =>
-    fetchWithAuth('/admin/formations', {
-      method: 'POST',
+    fetchWithAuth("/admin/formations", {
+      method: "POST",
       body: JSON.stringify(data),
     }),
 
-  updateFormation: (id: string, data: UpdateFormationData): Promise<Formation> =>
+  updateFormation: (
+    id: string,
+    data: UpdateFormationData,
+  ): Promise<Formation> =>
     fetchWithAuth(`/admin/formations/${id}`, {
-      method: 'PATCH',
+      method: "PATCH",
       body: JSON.stringify(data),
     }),
 
   deleteFormation: (id: string): Promise<void> =>
     fetchWithAuth(`/admin/formations/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     }),
 };

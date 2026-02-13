@@ -1,51 +1,50 @@
 "use client";
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { API_URL } from '@/lib/config';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { API_URL } from "@/lib/config";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     try {
       const res = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        credentials: 'include',
+        credentials: "include",
       });
 
       if (!res.ok) {
-        throw new Error('Identifiants invalides');
+        throw new Error("Identifiants invalides");
       }
 
       const user = await res.json();
 
       const searchParams = new URLSearchParams(window.location.search);
-      const redirect = searchParams.get('redirect');
+      const redirect = searchParams.get("redirect");
 
       if (redirect) {
         router.push(redirect);
-      } else if (user.role === 'ADMIN') {
-        router.push('/admin');
-      } else if (user.role === 'TRAINER') {
-        router.push('/trainer');
+      } else if (user.role === "ADMIN") {
+        router.push("/admin");
+      } else if (user.role === "TRAINER") {
+        router.push("/trainer");
       } else {
-        router.push('/dashboard');
+        router.push("/dashboard");
       }
 
       router.refresh();
-
     } catch (err: any) {
       setError(err.message);
     }
@@ -75,11 +74,16 @@ export default function LoginPage() {
             />
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <div className="text-right">
-              <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
+              <Link
+                href="/auth/forgot-password"
+                className="text-sm text-blue-600 hover:underline"
+              >
                 Mot de passe oublié ?
               </Link>
             </div>
-            <Button type="submit" className="w-full">Se connecter</Button>
+            <Button type="submit" className="w-full">
+              Se connecter
+            </Button>
           </form>
         </CardContent>
       </Card>

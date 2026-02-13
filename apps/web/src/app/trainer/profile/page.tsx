@@ -1,14 +1,14 @@
-import { cookies } from 'next/headers';
-import { API_URL } from '@/lib/config';
-import { ProfileForm } from '@/components/trainer/profile-form';
-import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { User, MapPin } from 'lucide-react';
+import { cookies } from "next/headers";
+import { API_URL } from "@/lib/config";
+import { ProfileForm } from "@/components/trainer/profile-form";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { User, MapPin } from "lucide-react";
 
 async function getData() {
   const cookieStore = cookies();
-  const token = cookieStore.get('Authentication')?.value;
+  const token = cookieStore.get("Authentication")?.value;
   if (!token) return { trainer: null };
 
   let meRes;
@@ -19,14 +19,14 @@ async function getData() {
     try {
       meRes = await fetch(`${API_URL}/auth/me`, {
         headers: { Cookie: `Authentication=${token}` },
-        cache: 'no-store',
+        cache: "no-store",
       });
       if (meRes.ok) break;
     } catch (e) {
       console.warn(`Attempt ${attempts + 1} failed for /auth/me`, e);
     }
     attempts++;
-    if (attempts < maxAttempts) await new Promise(r => setTimeout(r, 500));
+    if (attempts < maxAttempts) await new Promise((r) => setTimeout(r, 500));
   }
 
   if (!meRes || !meRes.ok) {
@@ -42,8 +42,8 @@ async function getData() {
 
   const trainerRes = await fetch(`${API_URL}/trainers/${trainerId}`, {
     headers: { Cookie: `Authentication=${token}` },
-    cache: 'no-store',
-  })
+    cache: "no-store",
+  });
 
   if (!trainerRes.ok) {
     return { trainer: null };
@@ -57,13 +57,15 @@ async function getData() {
 export default async function TrainerProfilePage() {
   const { trainer } = await getData();
 
-  if (!trainer) return (
-    <div className="flex items-center justify-center min-h-[50vh] text-red-600 font-medium">
-      Impossible de charger le profil.
-    </div>
-  );
+  if (!trainer)
+    return (
+      <div className="flex items-center justify-center min-h-[50vh] text-red-600 font-medium">
+        Impossible de charger le profil.
+      </div>
+    );
 
-  const initials = `${trainer.firstName[0]}${trainer.lastName[0]}`.toUpperCase();
+  const initials =
+    `${trainer.firstName[0]}${trainer.lastName[0]}`.toUpperCase();
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -105,8 +107,12 @@ export default async function TrainerProfilePage() {
                 <User className="h-6 w-6" />
               </div>
               <div>
-                <h2 className="text-xl font-black tracking-tight text-gray-900">Informations Personnelles</h2>
-                <p className="text-muted-foreground text-sm font-medium">Gérez vos coordonnées et votre bio.</p>
+                <h2 className="text-xl font-black tracking-tight text-gray-900">
+                  Informations Personnelles
+                </h2>
+                <p className="text-muted-foreground text-sm font-medium">
+                  Gérez vos coordonnées et votre bio.
+                </p>
               </div>
             </div>
             <ProfileForm trainer={trainer} />

@@ -3,60 +3,74 @@
 Ce document centralise toutes les tâches du projet. Il a été réorganisé pour prioriser la stabilité et la conformité métier (Bible) avant l'extension fonctionnelle.
 
 ## 🚨 Sprint Actuel : Stabilisation & Conformité (Priorité Immédiate)
-*Objectif : Garantir que le tunnel de vente (Client) et la gestion logistique (Formateur) fonctionnent sans défaut avant d'ouvrir la facturation.*
+
+_Objectif : Garantir que le tunnel de vente (Client) et la gestion logistique (Formateur) fonctionnent sans défaut avant d'ouvrir la facturation._
 
 ### Bug-03 : Checkout & Récapitulatif (Estimation)
+
 **Référence Bible :** Section 3.1
 **Symptôme :** Le tunnel de réservation s'arrête brutalement sans étape de confirmation.
+
 - [x] Ajouter une étape de confirmation finale avant validation.
 - [x] Afficher un récapitulatif avec mention explicite **"Estimation Tarifaire"** (Le prix final incluant les frais de déplacement exacts sera validé par l'admin à la facturation, cf. Bible 5.1).
 - [x] Préciser au client que la facturation sera effectuée via Odoo après la prestation.
 
 ### Audit-UX-01 : Module Logistique Client
+
 **Référence Bible :** Section 4.2 (Verrou J-7)
+
 - [x] S'assurer que le client peut éditer le lieu/participants/matériel tant que ce n'est pas verrouillé (J-7).
 
 ### Bug-07 : Amélioration Seed (Dette Technique)
+
 - [x] Corriger `seed.ts` pour utiliser des `upsert` robustes sur les titres de formation et éviter les multiplications infinies au re-seed.
 
 ### Tech-01 : Refactorisation Dialog UI (Dette Technique)
+
 - [x] Le composant `apps/web/src/components/ui/dialog.tsx` est une implémentation "maison" simplifiée qui n'utilise pas les primitives complètes de `@radix-ui/react-dialog` (Portal, Overlay). Il faudrait le migrer vers l'implémentation standard shadcn/ui pour garantir une accessibilité et une gestion du focus optimales.
 
 ---
 
 ## 🚧 Sprint Suivant : Finance & Administration
-*Objectif : Implémenter le flux financier (Facturation & Reporting) une fois les opérations fiabilisées.*
+
+_Objectif : Implémenter le flux financier (Facturation & Reporting) une fois les opérations fiabilisées._
 
 ### US-33 : Admin - Préparation Facturation
+
 **Référence Bible :** Section 5.1 (Calcul Prix) & 5.2 (Odoo Prep)
 **En tant que** Administrateur,
 **Je veux** visualiser les sessions terminées et ajuster le prix final,
 **Afin de** préparer l'encodage comptable dans Odoo.
 
-*Critères d'Acceptation (AC) :*
+_Critères d'Acceptation (AC) :_
+
 - [x] Liste des sessions terminées avec preuve validée (`PROOF_RECEIVED` ou `VALIDATED`).
 - [x] Calcul automatique du prix : Base + Distance (Matrix) + Options.
 - [x] **Champ "Ajustement Admin"** éditable (Positif ou Négatif) pour figer le Prix Final (Bible 5.1).
 - [x] Vue synthétique des données de facturation (TVA, Adresse).
 
 ### US-34 : Admin - Clôture Facturation
+
 **Référence Bible :** Section 5.2 (Odoo Prep)
 **En tant que** Administrateur,
 **Je veux** marquer une session comme "Facturée",
 **Afin de** notifier le client et archiver le dossier.
 
-*Critères d'Acceptation (AC) :*
+_Critères d'Acceptation (AC) :_
+
 - [x] Action "Marquer comme Facturé".
 - [x] Envoi email notification client.
 - [x] Archivage de la session (Lecture seule / Statut `INVOICED`).
 
 ### US-35 : Formateur - Reporting & Honoraires
+
 **Référence Bible :** Section 3.3 (Reporting)
 **En tant que** Formateur,
 **Je veux** visualiser le récapitulatif de mes missions et l'estimation de mes gains,
 **Afin de** suivre mon activité.
 
-*Critères d'Acceptation (AC) :*
+_Critères d'Acceptation (AC) :_
+
 - [ ] Page "Reporting" dans l'espace formateur.
 - [ ] Sélecteur de Mois.
 - [ ] KPIs : Nombre missions, Total Km, Total Honoraires (Estimé).
@@ -65,32 +79,41 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 ---
 
 ## 🚀 Sprint de Lancement : Infrastructure & Production
-*Objectif : Sécuriser et déployer l'application pour le "Go Live".*
+
+_Objectif : Sécuriser et déployer l'application pour le "Go Live"._
 
 ### US-36 : Mise en Production (Production Ready)
+
 **Contexte :** Déploiement sur o2switch (Node.js).
 **En tant que** DevOps,
 **Je veux** configurer l'application pour un environnement de production sécurisé.
 
-*Critères d'Acceptation (AC) :*
+_Critères d'Acceptation (AC) :_
+
 - [ ] Sécurité : Helmet, CORS dynamique, Rate Limiting.
 - [ ] Env : Validation stricte des variables (Joi/Zod).
 - [ ] Procédure : Documentation déploiement o2switch, Persistance `uploads`.
 
 ### US-Seed-Final : Consolidation Données
+
 - [ ] Vérifier que le seed de production contient les formations et catégories finales validées par le métier.
 
 ---
 
 ## 🧊 Frigo / V2 (Post-MVP)
-*Fonctionnalités "Confort" identifiées dans la Bible mais non bloquantes pour le lancement.*
+
+_Fonctionnalités "Confort" identifiées dans la Bible mais non bloquantes pour le lancement._
 
 ### US-37 : Tech - Import Calendrier (iCal In)
+
 **Référence Bible :** Section 2.3
+
 - [ ] Lecture de l'agenda personnel du formateur pour bloquer les disponibilités.
 
 ### US-38 : Conformité RGPD (Anonymisation)
+
 **Référence Bible :** Section 6.2
+
 - [ ] Tâche Cron quotidienne pour supprimer les données participants après 24 mois.
 
 ---
@@ -99,7 +122,7 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 
 ### Sprints 1 à 5 + Corrections Post-Audit (Terminées)
 
-*(Liste des tâches terminées conservée pour historique)*
+_(Liste des tâches terminées conservée pour historique)_
 
 - [x] **US-00 à US-04** (Sprint 1 : Fondations)
 - [x] **US-10 à US-15** (Sprint 2 : Logistique & Admin)

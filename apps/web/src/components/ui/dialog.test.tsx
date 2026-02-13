@@ -1,7 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Dialog, DialogContent, DialogTitle } from './dialog';
-import userEvent from '@testing-library/user-event';
-import { useState } from 'react';
+import { render, screen, fireEvent } from "@testing-library/react";
+import { Dialog, DialogContent, DialogTitle } from "./dialog";
+import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 
 // Wrapper to test controlled component
 const TestDialog = () => {
@@ -19,17 +19,17 @@ const TestDialog = () => {
   );
 };
 
-describe('Dialog', () => {
-  it('opens when controlled state changes', async () => {
+describe("Dialog", () => {
+  it("opens when controlled state changes", async () => {
     const user = userEvent.setup();
     render(<TestDialog />);
 
-    expect(screen.queryByText('Dialog Content')).toBeNull();
+    expect(screen.queryByText("Dialog Content")).toBeNull();
 
-    await user.click(screen.getByText('Open'));
+    await user.click(screen.getByText("Open"));
 
-    expect(screen.getByText('Dialog Title')).toBeDefined();
-    expect(screen.getByText('Dialog Content')).toBeDefined();
+    expect(screen.getByText("Dialog Title")).toBeDefined();
+    expect(screen.getByText("Dialog Content")).toBeDefined();
 
     // Test closing (via backdrop or close button if available, but checking existance first)
     // The simplified dialog has an X button and backdrop click handler

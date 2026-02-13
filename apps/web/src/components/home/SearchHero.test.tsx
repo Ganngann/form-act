@@ -1,28 +1,33 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { SearchHero } from './SearchHero';
-import { vi } from 'vitest';
-import userEvent from '@testing-library/user-event';
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { SearchHero } from "./SearchHero";
+import { vi } from "vitest";
+import userEvent from "@testing-library/user-event";
 
 // Mock useRouter
 const mockPush = vi.fn();
-vi.mock('next/navigation', () => ({
+vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
-describe('SearchHero', () => {
-  const categories = [{ id: '1', name: 'Cat 1' }, { id: '2', name: 'Cat 2' }];
+describe("SearchHero", () => {
+  const categories = [
+    { id: "1", name: "Cat 1" },
+    { id: "2", name: "Cat 2" },
+  ];
 
-  it('renders correctly', () => {
+  it("renders correctly", () => {
     render(<SearchHero categories={categories} />);
-    expect(screen.getByText('Quelle compétence recherchez-vous ?')).toBeDefined();
-    expect(screen.getByRole('button', { name: /Rechercher/i })).toBeDefined();
+    expect(
+      screen.getByText("Quelle compétence recherchez-vous ?"),
+    ).toBeDefined();
+    expect(screen.getByRole("button", { name: /Rechercher/i })).toBeDefined();
   });
 
-  it('navigates to catalogue without selection', async () => {
+  it("navigates to catalogue without selection", async () => {
     const user = userEvent.setup();
     render(<SearchHero categories={categories} />);
-    await user.click(screen.getByRole('button', { name: /Rechercher/i }));
-    expect(mockPush).toHaveBeenCalledWith('/catalogue');
+    await user.click(screen.getByRole("button", { name: /Rechercher/i }));
+    expect(mockPush).toHaveBeenCalledWith("/catalogue");
   });
 
   // Radix Select interaction test is brittle in JSDOM without complex setup.

@@ -1,14 +1,14 @@
 export default {
-  moduleFileExtensions: ['js', 'json', 'ts'],
-  rootDir: 'src',
-  testRegex: '.*\\.spec\\.ts$',
+  moduleFileExtensions: ["js", "json", "ts"],
+  rootDir: "src",
+  testRegex: ".*\\.spec\\.ts$",
   transform: {
-    '^.+\\.(t|j)s$': 'ts-jest',
+    "^.+\\.(t|j)s$": "ts-jest",
   },
-  collectCoverageFrom: ['**/*.(t|j)s'],
+  collectCoverageFrom: ["**/*.(t|j)s"],
   collectCoverage: true,
-  coverageDirectory: '../coverage',
-  coverageReporters: ['text', 'json-summary', 'lcov'],
+  coverageDirectory: "../coverage",
+  coverageReporters: ["text", "json-summary", "lcov"],
   coverageThreshold: {
     global: {
       branches: 82.73,
@@ -17,5 +17,5 @@ export default {
       statements: 82.43,
     },
   },
-  testEnvironment: 'node',
+  testEnvironment: "node",
 };

@@ -1,120 +1,130 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useCallback } from "react"
-import { useSearchParams, useRouter, usePathname } from "next/navigation"
+import { useEffect, useState, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
-import { Search, Loader2, ArrowRight, Clock, BookOpen, Filter } from "lucide-react"
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import {
+  Search,
+  Loader2,
+  ArrowRight,
+  Clock,
+  BookOpen,
+  Filter,
+} from "lucide-react";
 
 type Category = {
-  id: string
-  name: string
-}
+  id: string;
+  name: string;
+};
 
 type Formation = {
-  id: string
-  title: string
-  description: string
-  duration: string
-  imageUrl?: string
+  id: string;
+  title: string;
+  description: string;
+  duration: string;
+  imageUrl?: string;
   category?: {
-    name: string
-  }
-}
+    name: string;
+  };
+};
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export default function CatalogueContent() {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  const selectedCategory = searchParams.get("categoryId") || ""
-  const currentSearch = searchParams.get("search") || ""
+  const selectedCategory = searchParams.get("categoryId") || "";
+  const currentSearch = searchParams.get("search") || "";
 
-  const [categories, setCategories] = useState<Category[]>([])
-  const [formations, setFormations] = useState<Formation[]>([])
-  const [loading, setLoading] = useState(false)
-  const [loadingCategories, setLoadingCategories] = useState(true)
-  const [searchValue, setSearchValue] = useState(currentSearch)
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [formations, setFormations] = useState<Formation[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [searchValue, setSearchValue] = useState(currentSearch);
 
   // Fetch categories on mount
   useEffect(() => {
     fetch(`${API_URL}/categories`)
       .then((res) => res.json())
       .then((data) => {
-        setCategories(data)
-        setLoadingCategories(false)
+        setCategories(data);
+        setLoadingCategories(false);
       })
       .catch((err) => {
-        console.error("Error fetching categories:", err)
-        setLoadingCategories(false)
-      })
-  }, [])
+        console.error("Error fetching categories:", err);
+        setLoadingCategories(false);
+      });
+  }, []);
 
   // Sync local search state if URL changes externally
   useEffect(() => {
-    setSearchValue(currentSearch)
-  }, [currentSearch])
+    setSearchValue(currentSearch);
+  }, [currentSearch]);
 
   // Helper to update URL
-  const updateUrl = useCallback((updates: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParams.toString())
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value) {
-        params.set(key, value)
-      } else {
-        params.delete(key)
-      }
-    })
-    const newUrl = `${pathname}?${params.toString()}`
-    router.push(newUrl)
-  }, [searchParams, pathname, router])
+  const updateUrl = useCallback(
+    (updates: Record<string, string | null>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value) {
+          params.set(key, value);
+        } else {
+          params.delete(key);
+        }
+      });
+      const newUrl = `${pathname}?${params.toString()}`;
+      router.push(newUrl);
+    },
+    [searchParams, pathname, router],
+  );
 
   // Debounce search update
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchValue !== currentSearch) {
-        updateUrl({ search: searchValue })
+        updateUrl({ search: searchValue });
       }
-    }, 500)
-    return () => clearTimeout(timer)
-  }, [searchValue, currentSearch, updateUrl])
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchValue, currentSearch, updateUrl]);
 
   // Fetch formations when params change
   useEffect(() => {
-    setLoading(true)
-    const params = new URLSearchParams()
-    if (selectedCategory) params.set("categoryId", selectedCategory)
-    if (currentSearch) params.set("search", currentSearch)
+    setLoading(true);
+    const params = new URLSearchParams();
+    if (selectedCategory) params.set("categoryId", selectedCategory);
+    if (currentSearch) params.set("search", currentSearch);
 
-    const queryString = params.toString()
-    const url = `${API_URL}/formations${queryString ? `?${queryString}` : ""}`
+    const queryString = params.toString();
+    const url = `${API_URL}/formations${queryString ? `?${queryString}` : ""}`;
 
     fetch(url)
       .then((res) => res.json())
       .then((data) => {
-        setFormations(data)
-        setLoading(false)
+        setFormations(data);
+        setLoading(false);
       })
       .catch((err) => {
-        console.error("Error fetching formations:", err)
-        setLoading(false)
-      })
-  }, [selectedCategory, currentSearch])
+        console.error("Error fetching formations:", err);
+        setLoading(false);
+      });
+  }, [selectedCategory, currentSearch]);
 
   const handleCategoryChange = (val: string) => {
-    updateUrl({ categoryId: val === "all" ? null : val })
-  }
+    updateUrl({ categoryId: val === "all" ? null : val });
+  };
 
   return (
     <div className="flex flex-col gap-12 pb-24">
@@ -129,7 +139,8 @@ export default function CatalogueContent() {
             <span className="text-primary italic">Compétences.</span>
           </h1>
           <p className="text-lg text-muted-foreground/80 max-w-2xl font-medium leading-relaxed">
-            Parcourez notre catalogue complet de formations certifiées et trouvez le programme adapté à vos ambitions professionnelles.
+            Parcourez notre catalogue complet de formations certifiées et
+            trouvez le programme adapté à vos ambitions professionnelles.
           </p>
         </div>
       </section>
@@ -150,7 +161,10 @@ export default function CatalogueContent() {
           <div className="hidden md:block w-px h-10 bg-border/60"></div>
 
           <div className="w-full md:w-1/3">
-            <Select onValueChange={handleCategoryChange} value={selectedCategory || "all"}>
+            <Select
+              onValueChange={handleCategoryChange}
+              value={selectedCategory || "all"}
+            >
               <SelectTrigger className="h-14 rounded-2xl border-border/50 bg-muted/20 text-lg font-medium hover:bg-white transition-all">
                 <div className="flex items-center gap-3">
                   <Filter className="h-5 w-5 text-primary" />
@@ -158,9 +172,18 @@ export default function CatalogueContent() {
                 </div>
               </SelectTrigger>
               <SelectContent className="rounded-2xl border-border p-2">
-                <SelectItem value="all" className="rounded-xl font-bold py-3 cursor-pointer">Toutes les thématiques</SelectItem>
+                <SelectItem
+                  value="all"
+                  className="rounded-xl font-bold py-3 cursor-pointer"
+                >
+                  Toutes les thématiques
+                </SelectItem>
                 {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id} className="rounded-xl font-bold py-3 cursor-pointer">
+                  <SelectItem
+                    key={category.id}
+                    value={category.id}
+                    className="rounded-xl font-bold py-3 cursor-pointer"
+                  >
                     {category.name}
                   </SelectItem>
                 ))}
@@ -169,8 +192,15 @@ export default function CatalogueContent() {
           </div>
 
           <div className="w-full md:w-auto ml-auto">
-            <Button className="w-full md:w-auto h-14 rounded-2xl px-8 text-lg font-black shadow-lg shadow-primary/20" disabled={loading}>
-              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : `${formations.length} Résultats`}
+            <Button
+              className="w-full md:w-auto h-14 rounded-2xl px-8 text-lg font-black shadow-lg shadow-primary/20"
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                `${formations.length} Résultats`
+              )}
             </Button>
           </div>
         </div>
@@ -180,7 +210,9 @@ export default function CatalogueContent() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 gap-4">
               <Loader2 className="h-10 w-10 text-primary animate-spin" />
-              <p className="font-bold text-muted-foreground animate-pulse">Chargement des pépites...</p>
+              <p className="font-bold text-muted-foreground animate-pulse">
+                Chargement des pépites...
+              </p>
             </div>
           ) : formations.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -224,7 +256,9 @@ export default function CatalogueContent() {
                     <div className="flex items-center justify-between pt-6 border-t border-border/50">
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Clock className="h-4 w-4" />
-                        <span className="text-xs font-bold uppercase tracking-wider">{formation.duration}</span>
+                        <span className="text-xs font-bold uppercase tracking-wider">
+                          {formation.duration}
+                        </span>
                       </div>
                       <div className="h-10 w-10 rounded-full bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
                         <ArrowRight className="h-5 w-5" />
@@ -241,13 +275,15 @@ export default function CatalogueContent() {
               </div>
               <h3 className="text-2xl font-bold mb-2">Aucun résultat trouvé</h3>
               <p className="text-muted-foreground max-w-md">
-                Nous n&apos;avons trouvé aucune formation correspondant à votre recherche. Essayez d&apos;autres mots-clés ou parcourez toutes nos thématiques.
+                Nous n&apos;avons trouvé aucune formation correspondant à votre
+                recherche. Essayez d&apos;autres mots-clés ou parcourez toutes
+                nos thématiques.
               </p>
               <Button
                 variant="link"
                 onClick={() => {
-                  setSearchValue("")
-                  handleCategoryChange("all")
+                  setSearchValue("");
+                  handleCategoryChange("all");
                 }}
                 className="mt-6 text-primary font-bold text-lg"
               >
@@ -258,5 +294,5 @@ export default function CatalogueContent() {
         </div>
       </div>
     </div>
-  )
+  );
 }

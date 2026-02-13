@@ -34,42 +34,48 @@ describe("AdminSessionControls", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     global.fetch = vi.fn(() =>
-        Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({}),
-        })
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({}),
+      }),
     ) as any;
     global.confirm = vi.fn(() => true);
     global.alert = vi.fn();
   });
 
   it("renders correctly", () => {
-    render(<AdminSessionControls session={mockSession} trainers={mockTrainers} />);
+    render(
+      <AdminSessionControls session={mockSession} trainers={mockTrainers} />,
+    );
     expect(screen.getByText("Affectation Formateur")).toBeDefined();
     expect(screen.getByText("Déverrouiller Logistique")).toBeDefined();
   });
 
   it("handles cancel session with confirmation", async () => {
-    render(<AdminSessionControls session={mockSession} trainers={mockTrainers} />);
+    render(
+      <AdminSessionControls session={mockSession} trainers={mockTrainers} />,
+    );
 
     const cancelButton = screen.getByText("Annuler la Session");
     fireEvent.click(cancelButton);
 
     expect(global.confirm).toHaveBeenCalled();
     await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-            expect.stringContaining("/sessions/1/admin-update"),
-            expect.objectContaining({
-                method: "PATCH",
-                body: JSON.stringify({ status: "CANCELLED" }),
-            })
-        );
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/sessions/1/admin-update"),
+        expect.objectContaining({
+          method: "PATCH",
+          body: JSON.stringify({ status: "CANCELLED" }),
+        }),
+      );
     });
   });
 
   it("does not cancel if not confirmed", async () => {
     global.confirm = vi.fn(() => false);
-    render(<AdminSessionControls session={mockSession} trainers={mockTrainers} />);
+    render(
+      <AdminSessionControls session={mockSession} trainers={mockTrainers} />,
+    );
 
     const cancelButton = screen.getByText("Annuler la Session");
     fireEvent.click(cancelButton);
@@ -79,30 +85,36 @@ describe("AdminSessionControls", () => {
   });
 
   it("handles logistics toggle", async () => {
-    render(<AdminSessionControls session={mockSession} trainers={mockTrainers} />);
+    render(
+      <AdminSessionControls session={mockSession} trainers={mockTrainers} />,
+    );
 
     // Find checkbox input
     const checkbox = screen.getByRole("checkbox");
     fireEvent.click(checkbox);
 
     await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-            expect.stringContaining("/sessions/1/admin-update"),
-            expect.objectContaining({
-                method: "PATCH",
-                body: JSON.stringify({ isLogisticsOpen: true }),
-            })
-        );
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/sessions/1/admin-update"),
+        expect.objectContaining({
+          method: "PATCH",
+          body: JSON.stringify({ isLogisticsOpen: true }),
+        }),
+      );
     });
   });
 
   it("handles update error", async () => {
-      (global.fetch as any).mockResolvedValue({ ok: false });
-      render(<AdminSessionControls session={mockSession} trainers={mockTrainers} />);
-      const checkbox = screen.getByRole("checkbox");
-      fireEvent.click(checkbox);
-      await waitFor(() => {
-          expect(global.alert).toHaveBeenCalledWith("Erreur lors de la mise à jour");
-      });
+    (global.fetch as any).mockResolvedValue({ ok: false });
+    render(
+      <AdminSessionControls session={mockSession} trainers={mockTrainers} />,
+    );
+    const checkbox = screen.getByRole("checkbox");
+    fireEvent.click(checkbox);
+    await waitFor(() => {
+      expect(global.alert).toHaveBeenCalledWith(
+        "Erreur lors de la mise à jour",
+      );
+    });
   });
 });

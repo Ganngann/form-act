@@ -43,9 +43,15 @@ export function SearchHero({ categories }: SearchHeroProps) {
             <SelectValue placeholder="Quelle compétence recherchez-vous ?" />
           </SelectTrigger>
           <SelectContent className="rounded-2xl border-border shadow-2xl">
-            <SelectItem value="all" className="font-bold py-3">Toutes les thématiques</SelectItem>
+            <SelectItem value="all" className="font-bold py-3">
+              Toutes les thématiques
+            </SelectItem>
             {categories.map((category) => (
-              <SelectItem key={category.id} value={category.id} className="font-bold py-3">
+              <SelectItem
+                key={category.id}
+                value={category.id}
+                className="font-bold py-3"
+              >
                 {category.name}
               </SelectItem>
             ))}

@@ -1,8 +1,8 @@
 "use client";
-import { API_URL } from '@/lib/config';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
-import { LogOut } from 'lucide-react';
+import { API_URL } from "@/lib/config";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
 
 export function LogoutButton() {
   const router = useRouter();
@@ -10,13 +10,13 @@ export function LogoutButton() {
   const handleLogout = async () => {
     try {
       await fetch(`${API_URL}/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
+        method: "POST",
+        credentials: "include",
       });
-      router.push('/login');
+      router.push("/login");
       router.refresh();
     } catch (error) {
-      console.error('Logout failed', error);
+      console.error("Logout failed", error);
     }
   };
 

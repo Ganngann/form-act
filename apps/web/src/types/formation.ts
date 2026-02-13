@@ -15,7 +15,7 @@ export type Formation = {
   description: string;
   level: string;
   duration: string;
-  durationType: 'HALF_DAY' | 'FULL_DAY';
+  durationType: "HALF_DAY" | "FULL_DAY";
   price?: number;
   programLink?: string;
   methodology?: string;
@@ -29,7 +29,10 @@ export type Formation = {
   authorizedTrainers?: Trainer[];
 };
 
-export type CreateFormationData = Omit<Formation, 'id' | 'category' | 'authorizedTrainers'> & {
+export type CreateFormationData = Omit<
+  Formation,
+  "id" | "category" | "authorizedTrainers"
+> & {
   authorizedTrainerIds?: string[];
 };
 export type UpdateFormationData = Partial<CreateFormationData>;

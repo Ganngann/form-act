@@ -1,4 +1,9 @@
-import { differenceInDays, isBefore, isPast, differenceInHours } from "date-fns";
+import {
+  differenceInDays,
+  isBefore,
+  isPast,
+  differenceInHours,
+} from "date-fns";
 
 export type SessionStatus =
   | "PENDING"
@@ -57,7 +62,8 @@ export function getComputedStatus(session: SessionData): SessionStatus {
 
   // 2. FUTURE SESSIONS (Logistics Workflow)
   const hasLogistics = !!session.location && !!session.logistics; // Assuming location is part of logistics check
-  const hasParticipants = !!session.participants && session.participants !== "[]";
+  const hasParticipants =
+    !!session.participants && session.participants !== "[]";
 
   if (hasLogistics && hasParticipants) {
     return "READY";
@@ -74,22 +80,25 @@ export function getComputedStatus(session: SessionData): SessionStatus {
   // T+48h: Logistics Missing
   // Check if session was created more than 48 hours ago
   if (!hasLogistics) {
-      if (session.createdAt) {
-          const hoursSinceCreation = differenceInHours(now, new Date(session.createdAt));
-          if (hoursSinceCreation > 48) {
-              return "LOGISTICS_MISSING";
-          }
-           // Grace period active
-          return "CONFIRMED";
+    if (session.createdAt) {
+      const hoursSinceCreation = differenceInHours(
+        now,
+        new Date(session.createdAt),
+      );
+      if (hoursSinceCreation > 48) {
+        return "LOGISTICS_MISSING";
       }
-      // Fallback if createdAt is missing (assume old data)
-      return "LOGISTICS_MISSING";
+      // Grace period active
+      return "CONFIRMED";
+    }
+    // Fallback if createdAt is missing (assume old data)
+    return "LOGISTICS_MISSING";
   }
 
   // If logistics present but participants missing (and > J-15)
   if (hasLogistics && !hasParticipants) {
-      // It's technically "Logistics OK, waiting for participants"
-      return "CONFIRMED";
+    // It's technically "Logistics OK, waiting for participants"
+    return "CONFIRMED";
   }
 
   return "CONFIRMED";

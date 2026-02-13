@@ -8,48 +8,51 @@ Bienvenue sur le projet **Form-Act**.
 
 L'objectif principal est de réduire de 80% les échanges manuels et de fiabiliser la logistique des sessions de formation.
 
-*   **Automatisation** : Relances automatiques pour la logistique (lieux, participants).
-*   **Responsabilisation** : Le client saisit lui-même ses données (participants, accessibilité).
-*   **Synchronisation** : Gestion intelligente des agendas formateurs (iCal bidirectionnel).
-*   **Territorialité** : Algorithme d'attribution basé sur la géographie (Zones de Prédilection vs Expertise).
+- **Automatisation** : Relances automatiques pour la logistique (lieux, participants).
+- **Responsabilisation** : Le client saisit lui-même ses données (participants, accessibilité).
+- **Synchronisation** : Gestion intelligente des agendas formateurs (iCal bidirectionnel).
+- **Territorialité** : Algorithme d'attribution basé sur la géographie (Zones de Prédilection vs Expertise).
 
 ## 📚 Documentation
 
 La documentation complète du projet se trouve dans le dossier `docs/` :
 
-*   [**📖 Bible Métier**](docs/00_bible_metier.md) : Référentiel unique des règles métier, flux et rôles (RACI).
-*   [**🛠 Stack Technique**](docs/01_stack_technique.md) : Choix technologiques, architecture et standards de développement (IA-Proof).
-*   [**📂 Architecture Dossiers**](docs/02_architecture_dossiers.md) : Structure des fichiers et conventions de nommage.
-*   [**🎨 Wireframes Fonctionnels**](docs/03_wireframes_fonctionnels.md) : Maquettes et parcours utilisateurs.
-*   [**🎓 Guide Workflow**](docs/04_guide_workflow.md) : Procédures de travail.
-*   [**📋 Backlog Tâches**](docs/05_backlog_taches.md) : Suivi de l'avancement du projet.
-*   [**🐛 Bugs & Questions**](docs/06_journal_bugs_questions.md) : Journal des points bloquants et questions ouvertes.
-*   [**🤖 Brief IA (AGENT.md)**](AGENT.md) : Instructions spécifiques pour l'assistant IA.
+- [**📖 Bible Métier**](docs/00_bible_metier.md) : Référentiel unique des règles métier, flux et rôles (RACI).
+- [**🛠 Stack Technique**](docs/01_stack_technique.md) : Choix technologiques, architecture et standards de développement (IA-Proof).
+- [**📂 Architecture Dossiers**](docs/02_architecture_dossiers.md) : Structure des fichiers et conventions de nommage.
+- [**🎨 Wireframes Fonctionnels**](docs/03_wireframes_fonctionnels.md) : Maquettes et parcours utilisateurs.
+- [**🎓 Guide Workflow**](docs/04_guide_workflow.md) : Procédures de travail.
+- [**📋 Backlog Tâches**](docs/05_backlog_taches.md) : Suivi de l'avancement du projet.
+- [**🐛 Bugs & Questions**](docs/06_journal_bugs_questions.md) : Journal des points bloquants et questions ouvertes.
+- [**🤖 Brief IA (AGENT.md)**](AGENT.md) : Instructions spécifiques pour l'assistant IA.
 
 ## 🛠 Stack Technique
 
 Le projet repose sur une stack moderne, robuste et typée (**Node.js + TypeScript**) pour garantir la fiabilité et faciliter la maintenance par IA.
 
 ### Backend
-*   **Framework** : [NestJS](https://nestjs.com/) (Architecture modulaire)
-*   **Langage** : TypeScript (Strict Mode)
-*   **Base de Données** : MariaDB (MySQL) via [Prisma ORM](https://www.prisma.io/)
-*   **Hébergement** : o2switch (Node.js App)
+
+- **Framework** : [NestJS](https://nestjs.com/) (Architecture modulaire)
+- **Langage** : TypeScript (Strict Mode)
+- **Base de Données** : MariaDB (MySQL) via [Prisma ORM](https://www.prisma.io/)
+- **Hébergement** : o2switch (Node.js App)
 
 ### Frontend
-*   **Framework** : [Next.js](https://nextjs.org/) (App Router)
-*   **Langage** : TypeScript
-*   **UI** : [Tailwind CSS](https://tailwindcss.com/) + [Shadcn/ui](https://ui.shadcn.com/)
+
+- **Framework** : [Next.js](https://nextjs.org/) (App Router)
+- **Langage** : TypeScript
+- **UI** : [Tailwind CSS](https://tailwindcss.com/) + [Shadcn/ui](https://ui.shadcn.com/)
 
 ### Qualité & Sécurité
-*   **E2E Testing** : Playwright ("No Test, No Commit")
-*   **Validation** : Zod
-*   **Dates** : Day.js
-*   **Architecture** : Atomic Design / Action-Based
+
+- **E2E Testing** : Playwright ("No Test, No Commit")
+- **Validation** : Zod
+- **Dates** : Day.js
+- **Architecture** : Atomic Design / Action-Based
 
 ## 🚦 Installation & Démarrage
 
-*(Cette section sera complétée au fur et à mesure de l'initialisation du code)*
+_(Cette section sera complétée au fur et à mesure de l'initialisation du code)_
 
 1.  **Prérequis** : Node.js (LTS), pnpm (Installer via `npm i -g pnpm`).
 2.  **Installation des dépendances** (Racine) :
@@ -57,13 +60,14 @@ Le projet repose sur une stack moderne, robuste et typée (**Node.js + TypeScrip
     pnpm install
     ```
 3.  **Configuration** :
-    *   **Backend** : Dupliquer `apps/api/.env` (si présent) ou créer le fichier selon les besoins (voir `apps/api/README.md` s'il existe). Le projet est configuré par défaut avec SQLite.
+    - **Backend** : Dupliquer `apps/api/.env` (si présent) ou créer le fichier selon les besoins (voir `apps/api/README.md` s'il existe). Le projet est configuré par défaut avec SQLite.
 4.  **Lancement (Dev)** :
     ```bash
     pnpm dev
     ```
-    *   Frontend : http://localhost:3000
-    *   Backend : http://localhost:3001
+
+    - Frontend : http://localhost:3000
+    - Backend : http://localhost:3001
 
 ## 📝 Licence
 

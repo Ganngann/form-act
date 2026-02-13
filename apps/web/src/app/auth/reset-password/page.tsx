@@ -30,8 +30,8 @@ function ResetPasswordForm() {
     }
 
     if (!token) {
-        setError("Token manquant.");
-        return;
+      setError("Token manquant.");
+      return;
     }
 
     setLoading(true);
@@ -50,9 +50,8 @@ function ResetPasswordForm() {
 
       setMessage("Mot de passe mis à jour avec succès.");
       setTimeout(() => {
-          router.push("/login");
+        router.push("/login");
       }, 2000);
-
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur de connexion");
     } finally {
@@ -61,46 +60,48 @@ function ResetPasswordForm() {
   };
 
   if (!token) {
-      return (
-          <div className="text-center text-red-500">
-              Lien invalide ou incomplet.
-          </div>
-      )
+    return (
+      <div className="text-center text-red-500">
+        Lien invalide ou incomplet.
+      </div>
+    );
   }
 
   return (
-      <>
-        {message ? (
-            <div className="text-green-600 space-y-4 text-center">
-              <p>{message}</p>
-              <p className="text-sm text-gray-500">Redirection vers la connexion...</p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <Input
-                type="password"
-                placeholder="Nouveau mot de passe"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-              />
-               <Input
-                type="password"
-                placeholder="Confirmer le mot de passe"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                minLength={6}
-              />
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Enregistrement..." : "Enregistrer"}
-              </Button>
-            </form>
-          )}
-      </>
-  )
+    <>
+      {message ? (
+        <div className="text-green-600 space-y-4 text-center">
+          <p>{message}</p>
+          <p className="text-sm text-gray-500">
+            Redirection vers la connexion...
+          </p>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            type="password"
+            placeholder="Nouveau mot de passe"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
+          />
+          <Input
+            type="password"
+            placeholder="Confirmer le mot de passe"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            minLength={6}
+          />
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Enregistrement..." : "Enregistrer"}
+          </Button>
+        </form>
+      )}
+    </>
+  );
 }
 
 export default function ResetPasswordPage() {
@@ -111,9 +112,9 @@ export default function ResetPasswordPage() {
           <CardTitle>Nouveau mot de passe</CardTitle>
         </CardHeader>
         <CardContent>
-            <Suspense fallback={<div>Chargement...</div>}>
-                <ResetPasswordForm />
-            </Suspense>
+          <Suspense fallback={<div>Chargement...</div>}>
+            <ResetPasswordForm />
+          </Suspense>
         </CardContent>
       </Card>
     </div>

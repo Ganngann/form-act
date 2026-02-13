@@ -1,4 +1,3 @@
-
 You can easily launch the project locally using the following command in your terminal:
 
 ```bash
@@ -6,6 +5,7 @@ pnpm start:windows
 ```
 
 This script will automatically:
+
 1. Install all dependencies (`pnpm install`)
 2. Create the `.env` file if it doesn't exist
 3. Generate the database client (Prisma)

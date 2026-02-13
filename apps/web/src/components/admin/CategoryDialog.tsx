@@ -1,7 +1,7 @@
-import { useEffect } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import {
   Dialog,
   DialogContent,
@@ -9,24 +9,24 @@ import {
   DialogTitle,
   DialogFooter,
   DialogDescription,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { adminCategoriesService } from "@/services/admin-categories"
-import { Category } from "@/types/formation"
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { adminCategoriesService } from "@/services/admin-categories";
+import { Category } from "@/types/formation";
 
 const schema = z.object({
   name: z.string().min(1, "Le nom est requis"),
-})
+});
 
-type FormData = z.infer<typeof schema>
+type FormData = z.infer<typeof schema>;
 
 interface CategoryDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  category: Category | null
-  onSuccess: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  category: Category | null;
+  onSuccess: () => void;
 }
 
 export function CategoryDialog({
@@ -45,33 +45,33 @@ export function CategoryDialog({
     defaultValues: {
       name: "",
     },
-  })
+  });
 
   useEffect(() => {
     if (category) {
       reset({
         name: category.name,
-      })
+      });
     } else {
       reset({
         name: "",
-      })
+      });
     }
-  }, [category, reset, open])
+  }, [category, reset, open]);
 
   const onSubmit = async (data: FormData) => {
     try {
       if (category) {
-        await adminCategoriesService.updateCategory(category.id, data)
+        await adminCategoriesService.updateCategory(category.id, data);
       } else {
-        await adminCategoriesService.createCategory(data)
+        await adminCategoriesService.createCategory(data);
       }
-      onSuccess()
-      onOpenChange(false)
+      onSuccess();
+      onOpenChange(false);
     } catch (error) {
-      alert("Une erreur est survenue")
+      alert("Une erreur est survenue");
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -81,7 +81,8 @@ export function CategoryDialog({
             {category ? "Modifier la catégorie" : "Nouvelle catégorie"}
           </DialogTitle>
           <DialogDescription>
-            Remplissez les informations ci-dessous pour {category ? "modifier" : "créer"} une catégorie.
+            Remplissez les informations ci-dessous pour{" "}
+            {category ? "modifier" : "créer"} une catégorie.
           </DialogDescription>
         </DialogHeader>
 
@@ -95,7 +96,11 @@ export function CategoryDialog({
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Annuler
             </Button>
             <Button type="submit" disabled={isSubmitting}>
@@ -105,5 +110,5 @@ export function CategoryDialog({
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -1,16 +1,19 @@
-import { cookies } from 'next/headers';
-import { API_URL } from '@/lib/config';
-import { FormationsTable } from '@/components/admin/FormationsTable';
+import { cookies } from "next/headers";
+import { API_URL } from "@/lib/config";
+import { FormationsTable } from "@/components/admin/FormationsTable";
 
 async function getData() {
   const cookieStore = cookies();
-  const token = cookieStore.get('Authentication')?.value;
+  const token = cookieStore.get("Authentication")?.value;
   const headers = { Cookie: `Authentication=${token}` };
 
   const [formationsRes, categoriesRes, trainersRes] = await Promise.all([
-    fetch(`${API_URL}/admin/formations`, { headers, cache: 'no-store' }),
-    fetch(`${API_URL}/categories`, { headers, cache: 'no-store' }),
-    fetch(`${API_URL}/admin/trainers?take=1000`, { headers, cache: 'no-store' }),
+    fetch(`${API_URL}/admin/formations`, { headers, cache: "no-store" }),
+    fetch(`${API_URL}/categories`, { headers, cache: "no-store" }),
+    fetch(`${API_URL}/admin/trainers?take=1000`, {
+      headers,
+      cache: "no-store",
+    }),
   ]);
 
   if (!formationsRes.ok) {

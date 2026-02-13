@@ -15,65 +15,70 @@ Ce guide décrit la méthode **MANUELLE** qui a été testée et validée le 16/
 ## 2. API / Backend (NestJS)
 
 ### 2.1. Build & Packaging
+
 1.  Lancer le build :
     ```bash
     pnpm build --filter api
     ```
 2.  Créer une archive **`api.zip`** contenant :
-    *   Le dossier `apps/api/dist`
-    *   Le fichier `apps/api/package.json`
-    *   Le dossier `apps/api/prisma`
+    - Le dossier `apps/api/dist`
+    - Le fichier `apps/api/package.json`
+    - Le dossier `apps/api/prisma`
 
 ### 2.2. Mise en ligne (o2switch)
+
 1.  **cPanel > Setup Node.js App** :
-    *   **Root** : `api`
-    *   **URL** : `api.votre-domaine.com` (ou sous-dossier)
-    *   **Startup File** : `dist/main.js`
-    *   Créer l'app.
+    - **Root** : `api`
+    - **URL** : `api.votre-domaine.com` (ou sous-dossier)
+    - **Startup File** : `dist/main.js`
+    - Créer l'app.
 2.  **Gestionnaire de Fichiers** :
-    *   Aller dans le dossier `api`.
-    *   Uploader et extraire `api.zip`.
+    - Aller dans le dossier `api`.
+    - Uploader et extraire `api.zip`.
 3.  **Finalisation** :
-    *   Retourner dans "Setup Node.js App".
-    *   Cliquer sur **Run NPM Install**.
-    *   Cliquer sur **Start App**.
+    - Retourner dans "Setup Node.js App".
+    - Cliquer sur **Run NPM Install**.
+    - Cliquer sur **Start App**.
 
 ---
 
 ## 3. Site Web / Frontend (Next.js)
 
 ### 3.1. Build & Packaging
+
 1.  Lancer le build :
     ```bash
     pnpm build --filter web
     ```
 2.  Créer une archive **`web.zip`** contenant le contenu de `apps/web` **SAUF** `node_modules` :
-    *   Dossier `.next`
-    *   Dossier `public`
-    *   Fichier `package.json`
-    *   Fichier `next.config.js`
-    *   Fichier `server.js` (Indispensable !)
+    - Dossier `.next`
+    - Dossier `public`
+    - Fichier `package.json`
+    - Fichier `next.config.js`
+    - Fichier `server.js` (Indispensable !)
 
 ### 3.2. Mise en ligne (o2switch)
+
 1.  **cPanel > Setup Node.js App** :
-    *   **Root** : `web`
-    *   **URL** : `votre-domaine.com`
-    *   **Startup File** : `server.js`
-    *   Créer l'app.
+    - **Root** : `web`
+    - **URL** : `votre-domaine.com`
+    - **Startup File** : `server.js`
+    - Créer l'app.
 2.  **Gestionnaire de Fichiers** :
-    *   Aller dans le dossier `web`.
-    *   Supprimer les fichiers par défaut (`app.js`, etc.).
-    *   Uploader et extraire `web.zip`.
+    - Aller dans le dossier `web`.
+    - Supprimer les fichiers par défaut (`app.js`, etc.).
+    - Uploader et extraire `web.zip`.
 3.  **Finalisation** :
-    *   Retourner dans "Setup Node.js App".
-    *   Cliquer sur **Run NPM Install**.
-    *   Cliquer sur **Start App**.
+    - Retourner dans "Setup Node.js App".
+    - Cliquer sur **Run NPM Install**.
+    - Cliquer sur **Start App**.
 
 ---
 
 ## 4. Base de Données & Persistance
 
 Pour finaliser la connexion (Prod) :
+
 1.  Créer une base MySQL dans cPanel.
 2.  Ajouter `DATABASE_URL` dans les variables d'environnement de l'app API.
 3.  Connectez-vous en SSH pour jouer les migrations :

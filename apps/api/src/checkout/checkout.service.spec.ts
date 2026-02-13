@@ -40,6 +40,7 @@ describe("CheckoutService", () => {
           provide: AuthService,
           useValue: {
             hashPassword: jest.fn(),
+            validateUser: jest.fn(),
           },
         },
         {
@@ -80,6 +81,9 @@ describe("CheckoutService", () => {
       // User exists outside transaction
       const existingUser = { id: "1", email: "test@example.com" } as User;
       jest.spyOn(prisma.user, "findUnique").mockResolvedValue(existingUser);
+      jest
+        .spyOn(authService, "validateUser")
+        .mockResolvedValue(existingUser as Omit<User, "password">);
 
       // Client does not exist
       mockTx.client.findUnique.mockResolvedValue(null);
@@ -93,6 +97,33 @@ describe("CheckoutService", () => {
       expect(mockTx.user.create).not.toHaveBeenCalled();
       // Should create client
       expect(mockTx.client.create).toHaveBeenCalled();
+      // Should validate user
+      expect(authService.validateUser).toHaveBeenCalledWith(
+        mockDto.email,
+        mockDto.password,
+      );
+    });
+
+    it("should throw BadRequestException if user exists but password is missing", async () => {
+      const existingUser = { id: "1", email: "test@example.com" } as User;
+      jest.spyOn(prisma.user, "findUnique").mockResolvedValue(existingUser);
+
+      const dtoWithoutPassword = { ...mockDto };
+      delete dtoWithoutPassword.password;
+
+      await expect(service.processCheckout(dtoWithoutPassword)).rejects.toThrow(
+        "An account with this email already exists. Please provide your password or log in.",
+      );
+    });
+
+    it("should throw BadRequestException if user exists and password is invalid", async () => {
+      const existingUser = { id: "1", email: "test@example.com" } as User;
+      jest.spyOn(prisma.user, "findUnique").mockResolvedValue(existingUser);
+      jest.spyOn(authService, "validateUser").mockResolvedValue(null);
+
+      await expect(service.processCheckout(mockDto)).rejects.toThrow(
+        "Invalid password for existing account. Please try again.",
+      );
     });
 
     it("should throw BadRequestException if client already exists and belongs to another user", async () => {

@@ -22,19 +22,21 @@ vi.mock("@/components/ui/select", () => ({
   SelectTrigger: ({ children }: any) => <div>{children}</div>,
   SelectValue: ({ placeholder }: any) => <span>{placeholder}</span>,
   SelectContent: ({ children }: any) => <>{children}</>,
-  SelectItem: ({ children, value }: any) => <option value={value}>{children}</option>,
+  SelectItem: ({ children, value }: any) => (
+    <option value={value}>{children}</option>
+  ),
 }));
 
 // Mock UI components that might cause issues in JSDOM
 // Using standard inputs is usually fine, but Select/Dialog sometimes need resize observer.
 global.ResizeObserver = class ResizeObserver {
-  observe() { }
-  unobserve() { }
-  disconnect() { }
+  observe() {}
+  unobserve() {}
+  disconnect() {}
 };
 
 // Fix Radix Select issue in JSDOM
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   HTMLElement.prototype.hasPointerCapture = vi.fn();
   HTMLElement.prototype.setPointerCapture = vi.fn();
   HTMLElement.prototype.releasePointerCapture = vi.fn();
@@ -55,7 +57,7 @@ describe("FormationDialog", () => {
         categories={mockCategories}
         trainers={mockTrainers}
         onSuccess={onSuccess}
-      />
+      />,
     );
 
     expect(screen.getByText("Nouvelle formation")).toBeInTheDocument();
@@ -88,7 +90,7 @@ describe("FormationDialog", () => {
         categories={mockCategories}
         trainers={mockTrainers}
         onSuccess={onSuccess}
-      />
+      />,
     );
 
     expect(screen.getByDisplayValue("Existing Formation")).toBeInTheDocument();
@@ -97,7 +99,9 @@ describe("FormationDialog", () => {
     await user.click(screen.getByText(/Médias/i));
 
     await waitFor(() => {
-      expect(screen.getByDisplayValue("http://img.com/1.jpg")).toBeInTheDocument();
+      expect(
+        screen.getByDisplayValue("http://img.com/1.jpg"),
+      ).toBeInTheDocument();
       expect(screen.getByDisplayValue("Wallonie")).toBeInTheDocument(); // Agreement region
       expect(screen.getByDisplayValue("W-123")).toBeInTheDocument(); // Agreement code
     });
@@ -113,7 +117,7 @@ describe("FormationDialog", () => {
         categories={mockCategories}
         trainers={mockTrainers}
         onSuccess={onSuccess}
-      />
+      />,
     );
 
     // Switch to Media tab
@@ -131,7 +135,9 @@ describe("FormationDialog", () => {
     expect(regionInputs[0]).toHaveValue("Bruxelles");
 
     // Remove agreement
-    const removeButton = document.querySelector('.hover\\:text-red-500')?.closest('button');
+    const removeButton = document
+      .querySelector(".hover\\:text-red-500")
+      ?.closest("button");
     // Using simple querySelector fallback if Lucide icon renders weirdly in test
     // But testing-library usually finds buttons by role if aria-label is missing, we might need to rely on the class or structure.
 
@@ -139,7 +145,9 @@ describe("FormationDialog", () => {
     if (removeButton) {
       await user.click(removeButton);
       await waitFor(() => {
-        expect(screen.queryByPlaceholderText(/Région/i)).not.toBeInTheDocument();
+        expect(
+          screen.queryByPlaceholderText(/Région/i),
+        ).not.toBeInTheDocument();
       });
     }
   });
@@ -154,12 +162,15 @@ describe("FormationDialog", () => {
         categories={mockCategories}
         trainers={mockTrainers}
         onSuccess={onSuccess}
-      />
+      />,
     );
 
     // Fill required fields
     await user.type(screen.getByLabelText(/Titre/i), "New Formation");
-    await user.type(screen.getByLabelText(/Description courte/i), "Description");
+    await user.type(
+      screen.getByLabelText(/Description courte/i),
+      "Description",
+    );
     await user.type(screen.getByLabelText(/Niveau/i), "Advanced");
 
     // Switch to Details tab for duration

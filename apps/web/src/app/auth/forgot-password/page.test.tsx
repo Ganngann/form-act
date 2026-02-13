@@ -20,16 +20,18 @@ describe("ForgotPasswordPage", () => {
 
   it("handles submission", async () => {
     (global.fetch as any).mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ message: "Email sent" }),
+      ok: true,
+      json: () => Promise.resolve({ message: "Email sent" }),
     });
 
     render(<ForgotPasswordPage />);
-    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "test@example.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Email"), {
+      target: { value: "test@example.com" },
+    });
     fireEvent.click(screen.getByText("Envoyer le lien"));
 
     await waitFor(() => {
-        expect(screen.getByText("Email sent")).toBeDefined();
+      expect(screen.getByText("Email sent")).toBeDefined();
     });
   });
 });
