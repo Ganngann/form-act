@@ -4,13 +4,22 @@ import { Request } from "express";
 
 describe("JwtStrategy", () => {
   let strategy: JwtStrategy;
+  const originalEnv = process.env;
 
   beforeEach(async () => {
+    jest.resetModules();
+    process.env = { ...originalEnv };
+    process.env.JWT_SECRET = "test-secret";
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [JwtStrategy],
     }).compile();
 
     strategy = module.get<JwtStrategy>(JwtStrategy);
+  });
+
+  afterAll(() => {
+    process.env = originalEnv;
   });
 
   it("should be defined", () => {

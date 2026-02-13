@@ -25,10 +25,10 @@ describe('getJwtSecretKey', () => {
 
     // Test in development
     process.env.NODE_ENV = 'development';
-    expect(() => getJwtSecretKey()).toThrow('JWT_SECRET is not defined');
+    expect(() => getJwtSecretKey()).toThrow('JWT_SECRET environment variable is not defined');
 
     // Test in production
     process.env.NODE_ENV = 'production';
-    expect(() => getJwtSecretKey()).toThrow('JWT_SECRET is not defined');
+    expect(() => getJwtSecretKey()).toThrow('JWT_SECRET environment variable is not defined');
   });
 });
