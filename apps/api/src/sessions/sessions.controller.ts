@@ -23,16 +23,15 @@ import { extname } from "path";
 import { AuthGuard } from "@nestjs/passport";
 
 @Controller("sessions")
+@UseGuards(AuthGuard("jwt"))
 export class SessionsController {
   constructor(private readonly sessionsService: SessionsService) {}
 
-  @UseGuards(AuthGuard("jwt"))
   @Get("me")
   async findMySessions(@Request() req) {
     return this.sessionsService.findByUserId(req.user.userId, req.user.role);
   }
 
-  @UseGuards(AuthGuard("jwt"))
   @Get("admin/stats")
   async getAdminStats(@Request() req) {
     if (req.user.role !== "ADMIN") {
@@ -42,23 +41,41 @@ export class SessionsController {
   }
 
   @Get(":id")
-  async findOne(@Param("id") id: string) {
-    return this.sessionsService.findOne(id);
+  async findOne(@Param("id") id: string, @Request() req) {
+    const session = await this.sessionsService.findOne(id);
+
+    if (req.user.role === "ADMIN") return session;
+    if (
+      req.user.role === "TRAINER" &&
+      session.trainer?.userId === req.user.userId
+    )
+      return session;
+    if (
+      req.user.role === "CLIENT" &&
+      session.client?.userId === req.user.userId
+    )
+      return session;
+
+    throw new ForbiddenException("Access denied");
   }
 
   @Get()
   async findAll(
+    @Request() req,
     @Query("start") start?: string,
     @Query("end") end?: string,
     @Query("status") status?: string,
     @Query("filter") filter?: string,
   ) {
+    if (req.user.role !== "ADMIN") {
+      throw new ForbiddenException("Access denied");
+    }
+
     const startDate = start ? new Date(start) : undefined;
     const endDate = end ? new Date(end) : undefined;
     return this.sessionsService.findAll(startDate, endDate, status, filter);
   }
 
-  @UseGuards(AuthGuard("jwt"))
   @Post(":id/proof")
   @UseInterceptors(
     FileInterceptor("file", {
@@ -100,7 +117,6 @@ export class SessionsController {
     return this.sessionsService.updateProof(id, proofUrl);
   }
 
-  @UseGuards(AuthGuard("jwt"))
   @Patch(":id")
   async update(
     @Param("id") id: string,
@@ -140,7 +156,6 @@ export class SessionsController {
     return this.sessionsService.update(id, updateSessionDto);
   }
 
-  @UseGuards(AuthGuard("jwt"))
   @Patch(":id/admin-update")
   async adminUpdate(
     @Param("id") id: string,
@@ -153,7 +168,6 @@ export class SessionsController {
     return this.sessionsService.adminUpdate(id, body);
   }
 
-  @UseGuards(AuthGuard("jwt"))
   @Get(":id/billing-preview")
   async getBillingPreview(@Param("id") id: string, @Request() req) {
     if (req.user.role !== "ADMIN") {
@@ -162,7 +176,6 @@ export class SessionsController {
     return this.sessionsService.getBillingPreview(id);
   }
 
-  @UseGuards(AuthGuard("jwt"))
   @Post(":id/bill")
   async billSession(
     @Param("id") id: string,

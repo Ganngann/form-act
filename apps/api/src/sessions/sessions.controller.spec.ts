@@ -38,8 +38,13 @@ describe("SessionsController", () => {
   });
 
   describe("findAll", () => {
-    it("should parse dates and status", async () => {
-      await controller.findAll("2023-01-01", "2023-01-02", "PENDING");
+    it("should allow ADMIN and parse dates and status", async () => {
+      await controller.findAll(
+        { user: { role: "ADMIN" } },
+        "2023-01-01",
+        "2023-01-02",
+        "PENDING",
+      );
       expect(service.findAll).toHaveBeenCalledWith(
         new Date("2023-01-01"),
         new Date("2023-01-02"),
@@ -48,8 +53,14 @@ describe("SessionsController", () => {
       );
     });
 
-    it("should handle filters", async () => {
-      await controller.findAll(undefined, undefined, undefined, "NO_TRAINER");
+    it("should allow ADMIN and handle filters", async () => {
+      await controller.findAll(
+        { user: { role: "ADMIN" } },
+        undefined,
+        undefined,
+        undefined,
+        "NO_TRAINER",
+      );
       expect(service.findAll).toHaveBeenCalledWith(
         undefined,
         undefined,
@@ -58,14 +69,71 @@ describe("SessionsController", () => {
       );
     });
 
-    it("should handle missing dates and filters", async () => {
-      await controller.findAll();
+    it("should allow ADMIN and handle missing dates and filters", async () => {
+      await controller.findAll({ user: { role: "ADMIN" } });
       expect(service.findAll).toHaveBeenCalledWith(
         undefined,
         undefined,
         undefined,
         undefined,
       );
+    });
+
+    it("should deny non-ADMIN", async () => {
+      await expect(
+        controller.findAll({ user: { role: "CLIENT" } }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("findOne", () => {
+    it("should allow ADMIN", async () => {
+      mockSessionsService.findOne.mockResolvedValue({});
+      await controller.findOne("1", { user: { role: "ADMIN" } });
+      expect(service.findOne).toHaveBeenCalledWith("1");
+    });
+
+    it("should allow TRAINER if owner", async () => {
+      mockSessionsService.findOne.mockResolvedValue({
+        trainer: { userId: "u1" },
+      });
+      await controller.findOne("1", {
+        user: { role: "TRAINER", userId: "u1" },
+      });
+      expect(service.findOne).toHaveBeenCalledWith("1");
+    });
+
+    it("should deny TRAINER if not owner", async () => {
+      mockSessionsService.findOne.mockResolvedValue({
+        trainer: { userId: "u2" },
+      });
+      await expect(
+        controller.findOne("1", { user: { role: "TRAINER", userId: "u1" } }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it("should allow CLIENT if owner", async () => {
+      mockSessionsService.findOne.mockResolvedValue({
+        client: { userId: "u1" },
+      });
+      await controller.findOne("1", { user: { role: "CLIENT", userId: "u1" } });
+      expect(service.findOne).toHaveBeenCalledWith("1");
+    });
+
+    it("should deny CLIENT if not owner", async () => {
+      mockSessionsService.findOne.mockResolvedValue({
+        client: { userId: "u2" },
+      });
+      await expect(
+        controller.findOne("1", { user: { role: "CLIENT", userId: "u1" } }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it("should deny unknown role", async () => {
+      mockSessionsService.findOne.mockResolvedValue({});
+      await expect(
+        controller.findOne("1", { user: { role: "UNKNOWN" } }),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 
