@@ -1,0 +1,411 @@
+
+> web@0.1.0 test /app/apps/web
+> vitest run --coverage "src/components/contact-form.test.tsx"
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /app/apps/web
+      Coverage enabled with v8
+
+stdout | src/components/contact-form.test.tsx > ContactForm > handles successful submission flow
+Form data: {
+  name: 'John Doe',
+  email: 'john@example.com',
+  subject: 'Question about product',
+  message: 'I would like to know more about your services. Please contact me.'
+}
+
+ ❯ src/components/contact-form.test.tsx (4 tests | 2 failed) 7081ms
+   ✓ ContactForm > renders form fields correctly 379ms
+   × ContactForm > shows validation errors for invalid inputs 1478ms
+     → Unable to find an element with the text: Email invalide. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<form[39m
+      [33mclass[39m=[32m"space-y-6"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"grid grid-cols-1 md:grid-cols-2 gap-6"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-2"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+            [33mfor[39m=[32m"name"[39m
+          [36m>[39m
+            [0mNom complet[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 h-12 rounded-xl bg-muted/5 border-border"[39m
+            [33mid[39m=[32m"name"[39m
+            [33mname[39m=[32m"name"[39m
+            [33mplaceholder[39m=[32m"Jean Dupont"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-2"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+            [33mfor[39m=[32m"email"[39m
+          [36m>[39m
+            [0mEmail[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 h-12 rounded-xl bg-muted/5 border-border"[39m
+            [33mid[39m=[32m"email"[39m
+            [33mname[39m=[32m"email"[39m
+            [33mplaceholder[39m=[32m"jean@exemple.com"[39m
+            [33mtype[39m=[32m"email"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"space-y-2"[39m
+      [36m>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+          [33mfor[39m=[32m"subject"[39m
+        [36m>[39m
+          [0mSujet[0m
+        [36m</label>[39m
+        [36m<input[39m
+          [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 h-12 rounded-xl bg-muted/5 border-border"[39m
+          [33mid[39m=[32m"subject"[39m
+          [33mname[39m=[32m"subject"[39m
+          [33mplaceholder[39m=[32m"Demande de renseignements..."[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"space-y-2"[39m
+      [36m>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+          [33mfor[39m=[32m"message"[39m
+        [36m>[39m
+          [0mMessage[0m
+        [36m</label>[39m
+        [36m<textarea[39m
+          [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[150px] rounded-xl bg-muted/5 border-border resize-none"[39m
+          [33mid[39m=[32m"message"[39m
+          [33mname[39m=[32m"message"[39m
+          [33mplaceholder[39m=[32m"Comment pouvons-nous vous aider ?"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 w-full h-14 text-lg font-black rounded-xl shadow-lg shadow-primary/20 transition-transform active:scale-95"[39m
+        [33mtype[39m=[32m"submit"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mdata-testid[39m=[32m"send-icon"[39m
+        [36m/>[39m
+        [0m Envoyer le message[0m
+      [36m</button>[39m
+    [36m</form>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<form[39m
+        [33mclass[39m=[32m"space-y-6"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"grid grid-cols-1 md:grid-cols-2 gap-6"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-2"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+              [33mfor[39m=[32m"name"[39m
+            [36m>[39m
+              [0mNom complet[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 h-12 rounded-xl bg-muted/5 border-border"[39m
+              [33mid[39m=[32m"name"[39m
+              [33mname[39m=[32m"name"[39m
+              [33mplaceholder[39m=[32m"Jean Dupont"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-2"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+              [33mfor[39m=[32m"email"[39m
+            [36m>[39m
+              [0mEmail[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 h-12 rounded-xl bg-muted/5 border-border"[39m
+              [33mid[39m=[32m"email"[39m
+              [33mname[39m=[32m"email"[39m
+              [33mplaceholder[39m=[32m"jean@exemple.com"[39m
+              [33mtype[39m=[32m"email"[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-2"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+            [33mfor[39m=[32m"subject"[39m
+          [36m>[39m
+            [0mSujet[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 h-12 rounded-xl bg-muted/5 border-border"[39m
+            [33mid[39m=[32m"subject"[39m
+            [33mname[39m=[32m"subject"[39m
+            [33mplaceholder[39m=[32m"Demande de renseignements..."[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-2"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+            [33mfor[39m=[32m"message"[39m
+          [36m>[39m
+            [0mMessage[0m
+          [36m</label>[39m
+          [36m<textarea[39m
+            [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[150px] rounded-xl bg-muted/5 border-border resize-none"[39m
+            [33mid[39m=[32m"message"[39m
+            [33mname[39m=[32m"message"[39m
+            [33mplaceholder[39m=[32m"Comment pouvons-nous vous aider ?"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 w-full h-14 text-lg font-black rounded-xl shadow-lg shadow-primary/20 transition-transform active:scale-95"[39m
+          [33mtype[39m=[32m"submit"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mdata-testid[39m=[32m"send-icon"[39m
+          [36m/>[39m
+          [0m Envoyer le message[0m
+        [36m</button>[39m
+      [36m</form>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+   × ContactForm > handles successful submission flow 5076ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/contact-form.test.tsx > ContactForm > shows validation errors for invalid inputs
+TestingLibraryElementError: Unable to find an element with the text: Email invalide. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<form[39m
+      [33mclass[39m=[32m"space-y-6"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"grid grid-cols-1 md:grid-cols-2 gap-6"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-2"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+            [33mfor[39m=[32m"name"[39m
+          [36m>[39m
+            [0mNom complet[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 h-12 rounded-xl bg-muted/5 border-border"[39m
+            [33mid[39m=[32m"name"[39m
+            [33mname[39m=[32m"name"[39m
+            [33mplaceholder[39m=[32m"Jean Dupont"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-2"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+            [33mfor[39m=[32m"email"[39m
+          [36m>[39m
+            [0mEmail[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 h-12 rounded-xl bg-muted/5 border-border"[39m
+            [33mid[39m=[32m"email"[39m
+            [33mname[39m=[32m"email"[39m
+            [33mplaceholder[39m=[32m"jean@exemple.com"[39m
+            [33mtype[39m=[32m"email"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"space-y-2"[39m
+      [36m>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+          [33mfor[39m=[32m"subject"[39m
+        [36m>[39m
+          [0mSujet[0m
+        [36m</label>[39m
+        [36m<input[39m
+          [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 h-12 rounded-xl bg-muted/5 border-border"[39m
+          [33mid[39m=[32m"subject"[39m
+          [33mname[39m=[32m"subject"[39m
+          [33mplaceholder[39m=[32m"Demande de renseignements..."[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"space-y-2"[39m
+      [36m>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+          [33mfor[39m=[32m"message"[39m
+        [36m>[39m
+          [0mMessage[0m
+        [36m</label>[39m
+        [36m<textarea[39m
+          [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[150px] rounded-xl bg-muted/5 border-border resize-none"[39m
+          [33mid[39m=[32m"message"[39m
+          [33mname[39m=[32m"message"[39m
+          [33mplaceholder[39m=[32m"Comment pouvons-nous vous aider ?"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 w-full h-14 text-lg font-black rounded-xl shadow-lg shadow-primary/20 transition-transform active:scale-95"[39m
+        [33mtype[39m=[32m"submit"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mdata-testid[39m=[32m"send-icon"[39m
+        [36m/>[39m
+        [0m Envoyer le message[0m
+      [36m</button>[39m
+    [36m</form>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<form[39m
+        [33mclass[39m=[32m"space-y-6"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"grid grid-cols-1 md:grid-cols-2 gap-6"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-2"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+              [33mfor[39m=[32m"name"[39m
+            [36m>[39m
+              [0mNom complet[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 h-12 rounded-xl bg-muted/5 border-border"[39m
+              [33mid[39m=[32m"name"[39m
+              [33mname[39m=[32m"name"[39m
+              [33mplaceholder[39m=[32m"Jean Dupont"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"space-y-2"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+              [33mfor[39m=[32m"email"[39m
+            [36m>[39m
+              [0mEmail[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 h-12 rounded-xl bg-muted/5 border-border"[39m
+              [33mid[39m=[32m"email"[39m
+              [33mname[39m=[32m"email"[39m
+              [33mplaceholder[39m=[32m"jean@exemple.com"[39m
+              [33mtype[39m=[32m"email"[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-2"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+            [33mfor[39m=[32m"subject"[39m
+          [36m>[39m
+            [0mSujet[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 h-12 rounded-xl bg-muted/5 border-border"[39m
+            [33mid[39m=[32m"subject"[39m
+            [33mname[39m=[32m"subject"[39m
+            [33mplaceholder[39m=[32m"Demande de renseignements..."[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-2"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm font-bold text-muted-foreground uppercase tracking-wider"[39m
+            [33mfor[39m=[32m"message"[39m
+          [36m>[39m
+            [0mMessage[0m
+          [36m</label>[39m
+          [36m<textarea[39m
+            [33mclass[39m=[32m"flex w-full border px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[150px] rounded-xl bg-muted/5 border-border resize-none"[39m
+            [33mid[39m=[32m"message"[39m
+            [33mname[39m=[32m"message"[39m
+            [33mplaceholder[39m=[32m"Comment pouvons-nous vous aider ?"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 w-full h-14 text-lg font-black rounded-xl shadow-lg shadow-primary/20 transition-transform active:scale-95"[39m
+          [33mtype[39m=[32m"submit"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mdata-testid[39m=[32m"send-icon"[39m
+          [36m/>[39m
+          [0m Envoyer le message[0m
+        [36m</button>[39m
+      [36m</form>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+ ❯ Proxy.waitForWrapper ../../node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ src/components/contact-form.test.tsx:69:15
+     67|         });
+     68|
+     69|         await waitFor(() => {
+       |               ^
+     70|             // Check for email error first, as it's definitive
+     71|             expect(screen.getByText("Email invalide")).toBeInTheDocume…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/components/contact-form.test.tsx > ContactForm > handles successful submission flow
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  13:15:58
+   Duration  13.90s (transform 196ms, setup 147ms, collect 648ms, tests 7.08s, environment 744ms, prepare 143ms)
+
+/app/apps/web:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web@0.1.0 test: `vitest run --coverage "src/components/contact-form.test.tsx"`
+Exit status 1
