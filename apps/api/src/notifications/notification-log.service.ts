@@ -23,4 +23,36 @@ export class NotificationLogService {
     });
     return count > 0;
   }
+
+  async getLogsForSessions(sessionIds: string[]): Promise<Set<string>> {
+    const existingLogs = new Set<string>();
+    const BATCH_SIZE = 50;
+
+    for (let i = 0; i < sessionIds.length; i += BATCH_SIZE) {
+      const batch = sessionIds.slice(i, i + BATCH_SIZE);
+      const logs = await this.prisma.notificationLog.findMany({
+        where: {
+          OR: batch.map((id) => ({
+            metadata: {
+              contains: id,
+            },
+          })),
+        },
+        select: {
+          type: true,
+          metadata: true,
+        },
+      });
+
+      for (const log of logs) {
+        if (!log.metadata) continue;
+        for (const id of batch) {
+          if (log.metadata.includes(id)) {
+            existingLogs.add(`${log.type}:${id}`);
+          }
+        }
+      }
+    }
+    return existingLogs;
+  }
 }

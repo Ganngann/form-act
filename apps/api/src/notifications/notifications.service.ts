@@ -22,17 +22,19 @@ export class NotificationsService {
     const sessions = await this.sessionsService.findAll();
     const now = new Date();
 
-    for (const session of sessions) {
-      if (session.status === "CANCELLED") continue;
+    const activeSessions = sessions.filter((s) => s.status !== "CANCELLED");
+    const sessionIds = activeSessions.map((s) => s.id);
+    const sentLogs = await this.logService.getLogsForSessions(sessionIds);
 
+    for (const session of activeSessions) {
       try {
-        await this.checkLogisticsTPlus48(session, now);
-        await this.checkParticipantsJ15(session, now);
-        await this.checkParticipantsJ9(session, now);
-        await this.checkProgramJ30(session, now);
-        await this.checkMissionJ21(session, now);
-        await this.checkAttendanceJ7(session, now);
-        await this.checkProofJPlus1(session, now);
+        await this.checkLogisticsTPlus48(session, now, sentLogs);
+        await this.checkParticipantsJ15(session, now, sentLogs);
+        await this.checkParticipantsJ9(session, now, sentLogs);
+        await this.checkProgramJ30(session, now, sentLogs);
+        await this.checkMissionJ21(session, now, sentLogs);
+        await this.checkAttendanceJ7(session, now, sentLogs);
+        await this.checkProofJPlus1(session, now, sentLogs);
       } catch (error) {
         this.logger.error(
           `Error processing session ${session.id}: ${error.message}`,
@@ -47,6 +49,7 @@ export class NotificationsService {
   private async checkLogisticsTPlus48(
     session: SessionWithRelations,
     now: Date,
+    sentLogs: Set<string>,
   ) {
     if (this.sessionsService.isLogisticsStrictlyComplete(session)) return;
 
@@ -55,7 +58,7 @@ export class NotificationsService {
 
     if (hoursDiff >= 48) {
       const type = "LOGISTICS_REMINDER_48H";
-      if (await this.logService.hasLog(type, session.id)) return;
+      if (sentLogs.has(`${type}:${session.id}`)) return;
 
       if (session.client?.user?.email) {
         await this.emailService.sendEmail(
@@ -79,13 +82,17 @@ export class NotificationsService {
   }
 
   // 2. J-15: Alerte si Participants vides
-  private async checkParticipantsJ15(session: SessionWithRelations, now: Date) {
+  private async checkParticipantsJ15(
+    session: SessionWithRelations,
+    now: Date,
+    sentLogs: Set<string>,
+  ) {
     if (!this.isEmpty(session.participants)) return;
 
     const days = this.getDaysUntil(new Date(session.date), now);
     if (days <= 15 && days > 9) {
       const type = "PARTICIPANTS_ALERT_J15";
-      if (await this.logService.hasLog(type, session.id)) return;
+      if (sentLogs.has(`${type}:${session.id}`)) return;
 
       if (session.client?.user?.email) {
         await this.emailService.sendEmail(
@@ -105,13 +112,17 @@ export class NotificationsService {
   }
 
   // 3. J-9: Alerte Critique si Participants vides
-  private async checkParticipantsJ9(session: SessionWithRelations, now: Date) {
+  private async checkParticipantsJ9(
+    session: SessionWithRelations,
+    now: Date,
+    sentLogs: Set<string>,
+  ) {
     if (!this.isEmpty(session.participants)) return;
 
     const days = this.getDaysUntil(new Date(session.date), now);
     if (days <= 9) {
       const type = "PARTICIPANTS_CRITICAL_J9";
-      if (await this.logService.hasLog(type, session.id)) return;
+      if (sentLogs.has(`${type}:${session.id}`)) return;
 
       if (session.client?.user?.email) {
         await this.emailService.sendEmail(
@@ -131,11 +142,15 @@ export class NotificationsService {
   }
 
   // 4. J-30: Envoi PDF Programme (Client)
-  private async checkProgramJ30(session: SessionWithRelations, now: Date) {
+  private async checkProgramJ30(
+    session: SessionWithRelations,
+    now: Date,
+    sentLogs: Set<string>,
+  ) {
     const days = this.getDaysUntil(new Date(session.date), now);
     if (days <= 30) {
       const type = "PROGRAM_SEND_J30";
-      if (await this.logService.hasLog(type, session.id)) return;
+      if (sentLogs.has(`${type}:${session.id}`)) return;
 
       const programLink = session.formation.programLink;
       if (programLink && session.client?.user?.email) {
@@ -156,11 +171,15 @@ export class NotificationsService {
   }
 
   // 5. J-21: Rappel Mission avec détails (Formateur)
-  private async checkMissionJ21(session: SessionWithRelations, now: Date) {
+  private async checkMissionJ21(
+    session: SessionWithRelations,
+    now: Date,
+    sentLogs: Set<string>,
+  ) {
     const days = this.getDaysUntil(new Date(session.date), now);
     if (days <= 21) {
       const type = "MISSION_REMINDER_J21";
-      if (await this.logService.hasLog(type, session.id)) return;
+      if (sentLogs.has(`${type}:${session.id}`)) return;
 
       if (session.trainer?.email) {
         await this.emailService.sendEmail(
@@ -182,11 +201,15 @@ export class NotificationsService {
   }
 
   // 6. J-7: Envoi Pack Documentaire (Formateur) + Verrouillage (implied)
-  private async checkAttendanceJ7(session: SessionWithRelations, now: Date) {
+  private async checkAttendanceJ7(
+    session: SessionWithRelations,
+    now: Date,
+    sentLogs: Set<string>,
+  ) {
     const days = this.getDaysUntil(new Date(session.date), now);
     if (days <= 7) {
       const type = "DOC_PACK_J7";
-      if (await this.logService.hasLog(type, session.id)) return;
+      if (sentLogs.has(`${type}:${session.id}`)) return;
 
       if (session.trainer?.email) {
         const pdfBuffer =
@@ -214,7 +237,11 @@ export class NotificationsService {
   }
 
   // 7. J+1: Rappel Preuve (Formateur)
-  private async checkProofJPlus1(session: SessionWithRelations, now: Date) {
+  private async checkProofJPlus1(
+    session: SessionWithRelations,
+    now: Date,
+    sentLogs: Set<string>,
+  ) {
     // Si la preuve est déjà là ou session annulée (déjà filtré en haut mais double check), on ne fait rien
     if (session.proofUrl) return;
 
@@ -229,7 +256,7 @@ export class NotificationsService {
       sessionDate.getFullYear() === yesterday.getFullYear()
     ) {
       const type = "PROOF_REMINDER_J1";
-      if (await this.logService.hasLog(type, session.id)) return;
+      if (sentLogs.has(`${type}:${session.id}`)) return;
 
       if (session.trainer?.email) {
         await this.emailService.sendEmail(

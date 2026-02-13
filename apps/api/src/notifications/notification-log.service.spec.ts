@@ -11,6 +11,7 @@ describe("NotificationLogService", () => {
     notificationLog: {
       create: jest.fn(),
       count: jest.fn(),
+      findMany: jest.fn(),
     },
   };
 
@@ -59,6 +60,22 @@ describe("NotificationLogService", () => {
       mockPrismaService.notificationLog.count.mockResolvedValue(0);
       const result = await service.hasLog("TEST", "session1");
       expect(result).toBe(false);
+    });
+  });
+
+  describe("getLogsForSessions", () => {
+    it("should return a set of existing logs", async () => {
+      const sessionIds = ["s1", "s2"];
+      const logs = [
+        { type: "TEST", metadata: '{"sessionId":"s1"}' },
+        { type: "TEST2", metadata: '{"sessionId":"s2"}' },
+      ];
+      mockPrismaService.notificationLog.findMany.mockResolvedValue(logs);
+
+      const result = await service.getLogsForSessions(sessionIds);
+      expect(result.has("TEST:s1")).toBe(true);
+      expect(result.has("TEST2:s2")).toBe(true);
+      expect(result.size).toBe(2);
     });
   });
 });
