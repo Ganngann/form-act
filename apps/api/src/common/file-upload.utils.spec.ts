@@ -1,5 +1,8 @@
-import { fileFilter, generateSecureFilename } from "./file-upload.utils";
+import { fileFilter, generateSecureFilename, removeFile } from "./file-upload.utils";
 import { BadRequestException } from "@nestjs/common";
+import * as fs from "fs/promises";
+
+jest.mock("fs/promises");
 
 describe("fileFilter", () => {
   it("should accept valid image files", () => {
@@ -76,5 +79,48 @@ describe("generateSecureFilename", () => {
     const name1 = generateSecureFilename("image.png");
     const name2 = generateSecureFilename("image.png");
     expect(name1).not.toBe(name2);
+  });
+});
+
+describe("removeFile", () => {
+  const mockUnlink = fs.unlink as jest.Mock;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should successfully remove a file", async () => {
+    mockUnlink.mockResolvedValue(undefined);
+    await removeFile("path/to/file.jpg");
+    expect(mockUnlink).toHaveBeenCalledWith("path/to/file.jpg");
+  });
+
+  it("should ignore ENOENT error if file does not exist", async () => {
+    const error: any = new Error("File not found");
+    error.code = "ENOENT";
+    mockUnlink.mockRejectedValue(error);
+
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    await removeFile("path/to/missing.jpg");
+
+    expect(mockUnlink).toHaveBeenCalledWith("path/to/missing.jpg");
+    expect(consoleSpy).not.toHaveBeenCalled();
+
+    consoleSpy.mockRestore();
+  });
+
+  it("should log other errors", async () => {
+    const error = new Error("Permission denied");
+    mockUnlink.mockRejectedValue(error);
+
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    await removeFile("path/to/locked.jpg");
+
+    expect(mockUnlink).toHaveBeenCalledWith("path/to/locked.jpg");
+    expect(consoleSpy).toHaveBeenCalledWith("Error deleting file path/to/locked.jpg:", error);
+
+    consoleSpy.mockRestore();
   });
 });
