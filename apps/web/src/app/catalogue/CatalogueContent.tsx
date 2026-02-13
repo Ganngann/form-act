@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { API_URL } from "@/lib/config"
 import Link from "next/link"
 import { Search, Loader2, ArrowRight, Clock, BookOpen, Filter } from "lucide-react"
 
@@ -30,8 +31,6 @@ type Formation = {
     name: string
   }
 }
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
 
 export default function CatalogueContent() {
   const router = useRouter()

@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import { getJwtSecretKey } from '@/lib/auth.config';
+import { API_URL } from '@/lib/config';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SearchHero } from '@/components/home/SearchHero';
@@ -8,7 +9,7 @@ import { BadgeCheck, Calendar, GraduationCap, Users, Shield, Zap, ArrowRight, St
 
 async function getCategories() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/categories`, {
+    const res = await fetch(`${API_URL}/categories`, {
       cache: 'no-store',
     });
     if (!res.ok) {
