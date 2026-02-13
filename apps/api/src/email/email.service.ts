@@ -20,25 +20,14 @@ export class EmailService {
   }
 
   async sendEmail(to: string, subject: string, html: string): Promise<void> {
-    try {
-      const info = await this.transporter.sendMail({
-        from: process.env.SMTP_FROM || '"Formact" <noreply@formact.com>',
-        to,
-        subject,
-        html,
-      });
-      this.logger.log(`Email sent: ${info.messageId} to ${to}`);
-    } catch (error) {
-      this.logger.error(`Failed to send email to ${to}`, error);
-      throw error;
-    }
+    return this.sendEmailWithAttachments(to, subject, html);
   }
 
   async sendEmailWithAttachments(
     to: string,
     subject: string,
     html: string,
-    attachments: nodemailer.SendMailOptions["attachments"],
+    attachments?: nodemailer.SendMailOptions["attachments"],
   ): Promise<void> {
     try {
       const info = await this.transporter.sendMail({
@@ -48,14 +37,22 @@ export class EmailService {
         html,
         attachments,
       });
-      this.logger.log(
-        `Email sent with attachments: ${info.messageId} to ${to}`,
-      );
+      if (attachments && attachments.length > 0) {
+        this.logger.log(
+          `Email sent with attachments: ${info.messageId} to ${to}`,
+        );
+      } else {
+        this.logger.log(`Email sent: ${info.messageId} to ${to}`);
+      }
     } catch (error) {
-      this.logger.error(
-        `Failed to send email with attachments to ${to}`,
-        error,
-      );
+      if (attachments && attachments.length > 0) {
+        this.logger.error(
+          `Failed to send email with attachments to ${to}`,
+          error,
+        );
+      } else {
+        this.logger.error(`Failed to send email to ${to}`, error);
+      }
       throw error;
     }
   }
