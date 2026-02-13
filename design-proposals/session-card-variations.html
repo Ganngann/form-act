@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top 5 Propositions Structurelles | Form-Act</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --brand: #ff5e00;
+            --brand-soft: rgba(255, 94, 0, 0.05);
+            --bg: #F8FAFC;
+            --card: #FFFFFF;
+            --border: #E5E7EB;
+            --text: #111827;
+            --dim: #6B7280;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'Space Grotesk', sans-serif;
+            margin: 0;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            align-items: center;
+            color: var(--text);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .prop-title {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--brand);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            display: block;
+            border-left: 3px solid var(--brand);
+            padding-left: 10px;
+        }
+
+        /* Base Card Styling */
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: var(--brand);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        h3 {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .client {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--dim);
+        }
+
+        .price {
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        /* Progress Elements */
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #e2e8f0;
+        }
+
+        .step-dot.done {
+            background: var(--success);
+        }
+
+        .step-dot.alert {
+            background: var(--danger);
+            box-shadow: 0 0 8px var(--danger);
+        }
+
+        /* PROP 1: THE RADAR (Focus Urgence) */
+        .card-p1 {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .p1-urgency {
+            background: var(--brand-soft);
+            width: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid var(--border);
+        }
+
+        .p1-days {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--brand);
+        }
+
+        .p1-label {
+            font-size: 0.6rem;
+            font-weight: 800;
+            color: var(--brand);
+            text-transform: uppercase;
+        }
+
+        .p1-content {
+            flex: 1;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .p1-footer {
+            background: #fdfdfd;
+            padding: 12px 25px;
+            border-top: 1px dashed var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* PROP 2: THE SPLIT (Focus Données vs Action) */
+        .card-p2 {
+            padding: 0;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+        }
+
+        .p2-info {
+            padding: 30px;
+            border-right: 1px solid var(--border);
+        }
+
+        .p2-status {
+            padding: 30px;
+            background: #fafafa;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .p2-pipeline {
+            display: flex;
+            border-radius: 50px;
+            background: #eee;
+            height: 6px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .p2-fill {
+            height: 100%;
+            background: var(--brand);
+            width: 40%;
+        }
+
+        /* PROP 3: THE COMPACT ROW (Focus Densité/Archivage) */
+        .card-p3 {
+            padding: 15px 25px;
+            display: grid;
+            grid-template-columns: 100px 1fr 180px 100px 40px;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .p3-date {
+            font-weight: 800;
+            text-align: center;
+            line-height: 1;
+        }
+
+        .p3-dots {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        /* PROP 4: THE NARRATIVE (Focus Compréhension Humaine) */
+        .card-p4 {
+            padding: 30px;
+            border-left: 6px solid var(--warning);
+        }
+
+        .p4-next {
+            margin-top: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #FFF7ED;
+            color: #C2410C;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* PROP 5: THE MILESTONES (Focus Processus Industriel) */
+        .card-p5 {
+            padding: 30px;
+        }
+
+        .p5-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .p5-step {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .p5-step.done {
+            background: #ecfdf5;
+            border-color: #10b981;
+            color: #047857;
+        }
+
+        .p5-step.active {
+            background: #fff7ed;
+            border-color: #ff5e00;
+            color: #c2410c;
+            font-weight: 800;
+            border-width: 2px;
+        }
+
+        .p5-label {
+            font-size: 0.6rem;
+            font-weight: 800;
+            display: block;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- PROPOSITION 1 -->
+        <div>
+            <span class="prop-title">Prop 01: Le Radar Opérationnel</span>
+            <div class="card card-p1">
+                <div class="p1-urgency">
+                    <span class="p1-days">J-12</span>
+                    <span class="p1-label">Échéance</span>
+                </div>
+                <div class="p1-content">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start">
+                        <div>
+                            <h3>Formation NestJS Avancé</h3>
+                            <span class="client">🚀 Startup & Co</span>
+                        </div>
+                        <div class="price">1.250 €</div>
+                    </div>
+                    <div style="margin-top:15px; font-size:0.8rem; font-weight:600; color:var(--dim)">
+                        👤 Formateur: <span style="color:var(--text)">Jean-Michel Code</span>
+                    </div>
+                </div>
+                <div class="p1-footer">
+                    <div style="display:flex; gap:10px; align-items:center">
+                        <div class="p3-dots">
+                            <div class="step-dot done"></div>
+                            <div class="step-dot done"></div>
+                            <div class="step-dot alert"></div>
+                            <div class="step-dot"></div>
+                            <div class="step-dot"></div>
+                        </div>
+                        <span style="font-size:0.7rem; font-weight:800; color:var(--danger)">LOGISTIQUE À
+                            FINALISER</span>
+                    </div>
+                    <a href="#"
+                        style="text-decoration:none; color:var(--brand); font-weight:800; font-size:0.8rem">GÉRER →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROPOSITION 2 -->
+        <div>
+            <span class="prop-title">Prop 02: Le Split Décisionnel</span>
+            <div class="card card-p2">
+                <div class="p2-info">
+                    <div style="display:flex; justify-content:space-between">
+                        <span style="font-size:0.7rem; font-weight:800; color:var(--brand)">#2025-042</span>
+                        <span style="font-size:0.75rem; font-weight:700; color:var(--dim)">12 Mars 2026</span>
+                    </div>
+                    <h3 style="margin:10px 0">Management & Communication</h3>
+                    <span class="client">Banque Populaire</span>
+                    <div style="margin-top:20px; font-weight:900; font-size:1.4rem">2.800 € <small
+                            style="font-size:0.7rem; color:var(--dim)">HT</small></div>
+                </div>
+                <div class="p2-status">
+                    <div style="font-size:0.7rem; font-weight:800; color:var(--dim)">TRAVAIL ACCOMPLI</div>
+                    <div class="p2-pipeline">
+                        <div class="p2-fill" style="width:60%"></div>
+                    </div>
+                    <div style="font-size:0.85rem; font-weight:700">
+                        <span style="color:var(--success)">✓ Infos OK</span><br>
+                        <span style="color:var(--success)">✓ Formateur OK</span><br>
+                        <span style="color:var(--brand)">◔ Logistique en cours</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROPOSITION 3 -->
+        <div>
+            <span class="prop-title">Prop 03: Le Tableau de Bord Ultra-Dense</span>
+            <div class="card card-p3">
+                <div class="p3-date">
+                    <div style="font-size:0.7rem; color:var(--brand)">MARS</div>
+                    <div style="font-size:1.4rem">16</div>
+                </div>
+                <div>
+                    <h3 style="font-size:1rem">Excel Niveau Expert</h3>
+                    <span class="client" style="font-size:0.75rem">HR Solutions</span>
+                </div>
+                <div class="p3-dots">
+                    <div class="step-dot done" title="Information"></div>
+                    <div class="step-dot done" title="Formateur"></div>
+                    <div class="step-dot done" title="Logistique"></div>
+                    <div class="step-dot done" title="Présence"></div>
+                    <div class="step-dot" title="Facture"></div>
+                </div>
+                <div class="price" style="font-size:1rem; text-align:right">450 €</div>
+                <a href="#" style="text-decoration:none; text-align:right">⚙️</a>
+            </div>
+        </div>
+
+        <!-- PROPOSITION 4 -->
+        <div>
+            <span class="prop-title">Prop 04: Le Flux Narratif (Action Focus)</span>
+            <div class="card card-p4">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start">
+                    <div>
+                        <h3>CyberSécurité Phase d'Audit</h3>
+                        <div class="client">TotalEnergies • Paris</div>
+                    </div>
+                    <div style="text-align:right">
+                        <div class="price">4.500 €</div>
+                        <div style="font-size:0.7rem; font-weight:800; color:var(--warning)">J-14 (RÈGLE STRICTE)</div>
+                    </div>
+                </div>
+                <div style="margin-top:20px; display:flex; gap:30px">
+                    <div style="font-size:0.8rem">👤 <span style="font-weight:700">À ASSIGNER</span></div>
+                    <div style="font-size:0.8rem">📦 <span style="color:var(--dim)">Dossier incomplet</span></div>
+                </div>
+                <div class="p4-next">
+                    ⚠️ PROCHAINE ACTION : Trouver un formateur disponible pour le 24/03
+                </div>
+            </div>
+        </div>
+
+        <!-- PROPOSITION 5 -->
+        <div>
+            <span class="prop-title">Prop 05: Le Processus Industriel (Jalons)</span>
+            <div class="card card-p5">
+                <div style="display:flex; justify-content:space-between">
+                    <div>
+                        <h3>Anglais Professionnel (TOEIC)</h3>
+                        <span class="client">Renault Group • 12 Stagiaires</span>
+                    </div>
+                    <div class="price">950 €</div>
+                </div>
+                <div class="p5-grid">
+                    <div class="p5-step done">✅ <span class="p5-label">INFO</span></div>
+                    <div class="p5-step done">✅ <span class="p5-label">TRN</span></div>
+                    <div class="p5-step active">⏳ <span class="p5-label">LOGS</span></div>
+                    <div class="p5-step">○ <span class="p5-label">PRS</span></div>
+                    <div class="p5-step">○ <span class="p5-label">INV</span></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archives Administratives | Form-Act</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --brand: #ff5e00;
+            --brand-soft: rgba(255, 94, 0, 0.05);
+            --bg: #FDFDFF;
+            --card: #FFFFFF;
+            --border: #E5E7EB;
+            --text: #111827;
+            --dim: #6B7280;
+            --success: #10B981;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'Space Grotesk', sans-serif;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Tactical Grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #fff;
+            border-right: 1px solid var(--border);
+            padding: 40px 24px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            color: var(--dim);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .nav-item.active {
+            background: var(--brand-soft);
+            color: var(--brand);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 60px 80px;
+            max-width: 1400px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 30px;
+        }
+
+        .archive-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .archive-table th {
+            text-align: left;
+            padding: 18px 24px;
+            background: #f9fafb;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--dim);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .archive-table td {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        .archive-table tr:hover {
+            background: #fdfdff;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            background: #ECFDF5;
+            color: #10B981;
+            text-transform: uppercase;
+        }
+
+        .price-val {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .search-area {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 20px;
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            align-items: center;
+        }
+
+        .search-area input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .year-divider {
+            padding: 10px 24px;
+            background: #f1f5f9;
+            font-weight: 800;
+            font-size: 0.8rem;
+            color: var(--dim);
+            border-bottom: 1px solid var(--border);
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="logo" style="margin-bottom: 40px; font-weight: 800; font-size: 1.2rem;">FORM-ACT</div>
+        <nav>
+            <a href="sessions-v2-concept.html" class="nav-item">Administration</a>
+            <a href="#" class="nav-item active">Archives</a>
+            <a href="#" class="nav-item">Clients</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h1>Archives des Sessions</h1>
+            <p style="color: var(--dim); margin-top: -20px; margin-bottom: 40px; font-weight: 500;">Historique complet
+                des dossiers finalisés et facturés.</p>
+        </header>
+
+        <div class="search-area">
+            <span>🔍</span>
+            <input type="text" placeholder="Rechercher dans les archives (Client, Date, Formation, Facture...)">
+            <div style="font-size: 0.8rem; color: var(--dim); font-weight: 700;">FILTRER PAR ANNÉE : <select
+                    style="border: none; background: none; font-weight: 800; color: var(--brand); outline: none;">
+                    <option>2025</option>
+                    <option>2024</option>
+                </select></div>
+        </div>
+
+        <table class="archive-table">
+            <thead>
+                <tr>
+                    <th>Dossier / Formation</th>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Facturation</th>
+                    <th>Montant HT</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="year-divider">
+                    <td colspan="6">ANNÉE 2025</td>
+                </tr>
+                <tr>
+                    <td><strong>Coaching Management</strong></td>
+                    <td>HR Solutions</td>
+                    <td>12 Déc. 2025</td>
+                    <td><span class="status-badge">Facturé #2025-042</span></td>
+                    <td><span class="price-val">3.400 €</span></td>
+                    <td style="text-align: right;"><a href="#" style="text-decoration: none;">📄 PDF</a></td>
+                </tr>
+                <tr>
+                    <td><strong>Sécurité Réseaux</strong></td>
+                    <td>CyberGuard</td>
+                    <td>10 Nov. 2025</td>
+                    <td><span class="status-badge">Facturé #2025-039</span></td>
+                    <td><span class="price-val">2.100 €</span></td>
+                    <td style="text-align: right;"><a href="#" style="text-decoration: none;">📄 PDF</a></td>
+                </tr>
+                <tr class="year-divider">
+                    <td colspan="6">ANNÉE 2024</td>
+                </tr>
+                <tr>
+                    <td><strong>Bases de Données SQL</strong></td>
+                    <td>Data Corp</td>
+                    <td>15 Sept. 2024</td>
+                    <td><span class="status-badge">Facturé #2024-118</span></td>
+                    <td><span class="price-val">1.850 €</span></td>
+                    <td style="text-align: right;"><a href="#" style="text-decoration: none;">📄 PDF</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+</body>
+
+</html>
