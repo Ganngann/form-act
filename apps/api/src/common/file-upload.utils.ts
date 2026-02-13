@@ -51,12 +51,17 @@ export const createDiskStorage = (destination: string) => {
   });
 };
 
+interface SystemError extends Error {
+  code?: string;
+}
+
 export const removeFile = async (filePath: string) => {
   try {
     await fs.unlink(filePath);
   } catch (error) {
     // If file doesn't exist (ENOENT), ignore. Otherwise log.
-    if ((error as any).code !== "ENOENT") {
+    const err = error as SystemError;
+    if (err.code !== "ENOENT") {
       console.error(`Error deleting file ${filePath}:`, error);
     }
   }
