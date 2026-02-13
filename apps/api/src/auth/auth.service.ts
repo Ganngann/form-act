@@ -8,6 +8,11 @@ import * as crypto from "crypto";
 
 @Injectable()
 export class AuthService {
+  // A valid bcrypt hash (cost 10) to use for timing consistency when user is not found.
+  // This prevents user enumeration via timing attacks.
+  private readonly DUMMY_HASH =
+    "$2b$10$SaPN12DzXHe4gEaZAEFDw.eP9qNg6x.JeqMfEcGzj24IV3PwmBXDy";
+
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
@@ -23,7 +28,13 @@ export class AuthService {
     pass: string,
   ): Promise<Omit<User, "password"> | null> {
     const user = await this.prisma.user.findUnique({ where: { email } });
-    if (user && user.password && (await bcrypt.compare(pass, user.password))) {
+
+    // Mitigate timing attack: Always compare password, even if user not found.
+    const passwordToCompare =
+      user && user.password ? user.password : this.DUMMY_HASH;
+    const isMatch = await bcrypt.compare(pass, passwordToCompare);
+
+    if (user && isMatch && user.password) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
       return result;
