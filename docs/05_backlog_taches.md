@@ -73,9 +73,10 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 **Je veux** configurer l'application pour un environnement de production sécurisé.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Sécurité : Helmet, CORS dynamique, Rate Limiting.
-- [ ] Env : Validation stricte des variables (Joi/Zod).
-- [ ] Procédure : Documentation déploiement o2switch, Persistance `uploads`.
+- [ ] Sécurité : Intégration Helmet et Rate Limiting (Backend).
+- [ ] Env : Validation stricte des variables (Joi/Zod) et configuration FRONTEND_URL.
+- [ ] Procédure : Documentation déploiement o2switch (Scripts de build monorepo).
+- [ ] Persistance : Gestion des volumes pour les `uploads` (Preuves de présence).
 
 ### US-Seed-Final : Consolidation Données
 - [ ] Vérifier que le seed de production contient les formations et catégories finales validées par le métier.
@@ -97,6 +98,13 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 
 ## 🗄️ Archives (Terminé)
 
+### 💎 Refonte Admin V2 (Février 2026)
+- [x] **AdminBentoStats** : Indicateurs visuels interactifs (Assignations, Logistique J-14, Émargements, Facturation).
+- [x] **SessionRadarCard** : Design "Radar Opérationnel" avec urgence J-X et pipeline tactique 5 étapes.
+- [x] **SessionSearchBar** : Filtrage temps réel par formation, client ou formateur.
+- [x] **ArchivesPage** : Workspace séparé pour les sessions clôturées (billedAt != null).
+- [x] **Workspace Unifié** : Navigation fluide et dashboard consolidé.
+
 ### Sprints 1 à 5 + Corrections Post-Audit (Terminées)
 
 *(Liste des tâches terminées conservée pour historique)*
@@ -106,9 +114,11 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 - [x] **US-16 à US-20** (Sprint 3 : Automations)
 - [x] **US-21 à US-28** (Sprint 4 : UX)
 - [x] **US-29** : Client - Gestion Profil & Facturation
-- [x] **US-30** : Admin - Gestion des Sessions
+- [x] **US-30** : Admin - Gestion des Sessions (Base)
 - [x] **US-31** : Booking - Demande Manuelle
 - [x] **US-32** : Auth - Réinitialisation Mot de Passe
+- [x] **US-33** : Admin - Préparation Facturation (Calcul base + distance)
+- [x] **US-34** : Admin - Clôture Facturation (Statut INVOICED + Email)
 - [x] **Bug-01** : Catalogue Vide & Recherche
 - [x] **Bug-02** : Liens Morts
 - [x] **Bug-04** : Espace Formateur
