@@ -1,6 +1,9 @@
 export type Category = {
   id: string;
   name: string;
+  _count?: {
+    formations: number;
+  };
 };
 
 export type Trainer = {

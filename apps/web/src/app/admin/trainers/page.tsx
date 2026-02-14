@@ -26,16 +26,21 @@ export default async function TrainersPage({
   const { data: trainers, total } = await getTrainers(page, search);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="space-y-12">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
-          <h2 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
-            Formateurs <Badge variant="secondary" className="rounded-full px-2 bg-gray-100 text-gray-600 border-transparent text-xs">{total}</Badge>
-          </h2>
-          <p className="text-muted-foreground font-medium mt-1">Gérez votre équipe pédagogique.</p>
+          <span className="inline-block px-3 py-1 rounded-md bg-orange-50 border border-orange-200 text-[10px] font-black uppercase tracking-widest text-orange-600 mb-4">
+            Ressources Humaines
+          </span>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-gray-900 mb-2">
+            Annuaire Formateurs
+          </h1>
+          <p className="text-muted-foreground font-medium text-lg max-w-2xl">
+            Gérez votre équipe pédagogique, leurs disponibilités et leurs zones d&apos;expertise.
+          </p>
         </div>
         <Link href="/admin/trainers/new">
-          <Button className="rounded-xl font-bold h-11 px-6 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all">
+          <Button className="rounded-xl font-bold h-12 px-8 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all">
             <Plus className="mr-2 h-5 w-5" />
             Nouveau Formateur
           </Button>

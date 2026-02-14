@@ -6,6 +6,7 @@ import { API_URL } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { User, ShieldCheck, AlertCircle } from "lucide-react";
 
 interface Trainer {
   id: string;
@@ -65,41 +66,46 @@ export function AdminSessionControls({ session, trainers }: { session: Session; 
 
   return (
     <div className="space-y-6">
-      <Card className="rounded-[2rem] border-transparent shadow-sm bg-white overflow-hidden">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-black text-gray-900">Affectation Formateur</CardTitle>
+      <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden">
+        <CardHeader className="bg-gray-50/50 border-b border-gray-100/50 pb-4">
+          <CardTitle className="text-lg font-black text-gray-900 tracking-tight flex items-center gap-2">
+            <User className="h-5 w-5 text-primary" /> Affectation Formateur
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 pt-2">
+        <CardContent className="space-y-4 p-8 pt-6">
           <div className="flex gap-4 items-center">
             <div className="flex-1">
               <Select value={selectedTrainer} onValueChange={handleTrainerChange} disabled={loading || isLocked}>
-                <SelectTrigger className="w-full rounded-xl border-border/50 bg-muted/5 h-12 font-medium">
+                <SelectTrigger className="w-full rounded-xl border-gray-100 bg-gray-50/50 h-12 font-bold focus:bg-white transition-all">
                   <SelectValue placeholder="Choisir un formateur" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-border/50 shadow-lg">
-                  <SelectItem value="unassigned" className="font-bold text-amber-600 focus:text-amber-700 focus:bg-amber-50 rounded-lg my-1">-- Non Assigné --</SelectItem>
+                <SelectContent className="rounded-2xl border-border shadow-2xl">
+                  <SelectItem value="unassigned" className="font-black text-amber-600 focus:text-amber-700 focus:bg-amber-50 rounded-xl my-1">-- Non Assigné --</SelectItem>
                   {trainers.map(t => (
-                    <SelectItem key={t.id} value={t.id} className="rounded-lg my-0.5 font-medium">{t.firstName} {t.lastName}</SelectItem>
+                    <SelectItem key={t.id} value={t.id} className="rounded-xl my-0.5 font-bold">{t.firstName} {t.lastName}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
-          <p className="text-xs text-muted-foreground bg-blue-50 text-blue-700 p-3 rounded-xl border border-blue-100">
-            <strong>Note :</strong> Ce sélecteur ignore les règles de zone et d&apos;expertise (Forçage).
-          </p>
+          <div className="text-[10px] font-bold text-blue-700 bg-blue-50/50 p-4 rounded-2xl border border-blue-100/50 flex items-start gap-3">
+            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span>Note : Ce sélecteur ignore les règles de zone et d&apos;expertise (Forçage manuel).</span>
+          </div>
         </CardContent>
       </Card>
 
-      <Card className="rounded-[2rem] border-transparent shadow-sm bg-white overflow-hidden">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-black text-gray-900">Dérogations & Status</CardTitle>
+      <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden">
+        <CardHeader className="bg-gray-50/50 border-b border-gray-100/50 pb-4">
+          <CardTitle className="text-lg font-black text-gray-900 tracking-tight flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-blue-600" /> Dérogations & Status
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6 pt-4">
-          <div className="flex items-center justify-between bg-muted/5 p-4 rounded-xl border border-border/50">
+        <CardContent className="space-y-6 p-8 pt-6">
+          <div className="flex items-center justify-between bg-slate-50/50 p-5 rounded-2xl border border-slate-100">
             <div className="space-y-0.5">
-              <label className="text-sm font-bold text-gray-900">Déverrouiller Logistique</label>
-              <p className="text-xs text-muted-foreground font-medium">Autoriser le client à modifier les infos après J-7</p>
+              <label className="text-sm font-black text-gray-900 uppercase tracking-tighter">Déverrouiller Logistique</label>
+              <p className="text-[11px] text-muted-foreground font-bold leading-tight">Autoriser le client à modifier les infos après J-7</p>
             </div>
             <div className="relative inline-flex items-center cursor-pointer">
               <input
@@ -110,18 +116,18 @@ export function AdminSessionControls({ session, trainers }: { session: Session; 
                 onChange={(e) => handleLogisticsToggle(e.target.checked)}
                 disabled={loading || isLocked}
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary shadow-inner"></div>
             </div>
           </div>
 
           <div className="pt-2">
             <Button
-              variant="destructive"
+              variant="ghost"
               onClick={handleCancel}
               disabled={loading || session.status === 'CANCELLED' || isLocked}
-              className="w-full rounded-xl font-bold h-12 shadow-sm hover:shadow-md transition-all"
+              className="w-full rounded-2xl font-black text-red-500 hover:text-red-600 hover:bg-red-50 h-14 border-2 border-transparent hover:border-red-100 transition-all uppercase tracking-widest text-[10px]"
             >
-              {session.status === 'CANCELLED' ? "Session Annulée" : "Annuler la Session"}
+              {session.status === 'CANCELLED' ? "Session Annulée" : "Annuler la Session définitivement"}
             </Button>
           </div>
         </CardContent>

@@ -42,19 +42,24 @@ export default async function ArchivesPage({
 
     return (
         <div className="space-y-6 max-w-7xl mx-auto">
-            <div className="flex items-center gap-4">
-                <Button variant="ghost" size="sm" asChild className="rounded-full">
-                    <Link href="/admin/sessions">
-                        <ArrowLeft className="h-4 w-4" />
-                    </Link>
-                </Button>
-                <div>
-                    <h1 className="text-2xl font-black tracking-tighter text-slate-900 uppercase">
-                        Archives des Sessions
-                    </h1>
-                    <p className="text-sm text-slate-500 font-medium">
-                        Historique complet des sessions facturées et clôturées.
-                    </p>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                <div className="flex items-center gap-6">
+                    <Button variant="ghost" size="icon" asChild className="h-14 w-14 rounded-2xl bg-white shadow-sm border border-slate-100 shrink-0">
+                        <Link href="/admin/sessions">
+                            <ArrowLeft className="h-6 w-6 text-slate-400" />
+                        </Link>
+                    </Button>
+                    <div>
+                        <span className="inline-block px-3 py-1 rounded-md bg-slate-100 border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-600 mb-4">
+                            Historique
+                        </span>
+                        <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-gray-900 mb-2">
+                            Archives Sessions
+                        </h1>
+                        <p className="text-muted-foreground font-medium text-lg max-w-2xl">
+                            Consultez l&apos;historique complet des prestations clôturées et facturées.
+                        </p>
+                    </div>
                 </div>
             </div>
 

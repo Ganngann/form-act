@@ -45,15 +45,18 @@ export default async function SessionsListPage({
   const activeLabel = searchParams.filter ? FILTER_LABELS[searchParams.filter] : 'TOUTES LES SESSIONS';
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-12">
       {/* Header with Title and Archives Link */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
-          <h1 className="text-3xl font-black tracking-tighter text-slate-900 uppercase">
-            Workspace Administration
+          <span className="inline-block px-3 py-1 rounded-md bg-indigo-50 border border-indigo-200 text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-4">
+            Opérations
+          </span>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-gray-900 mb-2">
+            Suivi des Sessions
           </h1>
-          <p className="text-slate-500 font-medium italic">
-            Gérez le flux opérationnel des sessions actives.
+          <p className="text-muted-foreground font-medium text-lg max-w-2xl text-slate-500 font-medium">
+            Gérez le flux opérationnel et le planning des sessions actives.
           </p>
         </div>
         <Button variant="outline" asChild className="rounded-xl border-slate-200 font-bold gap-2">

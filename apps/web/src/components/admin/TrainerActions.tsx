@@ -12,7 +12,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Pencil, Trash2, Loader2 } from "lucide-react"
+import { MoreHorizontal, Pencil, Trash2, Loader2, Eye } from "lucide-react"
 import { API_URL } from "@/lib/config"
 
 interface TrainerActionsProps {
@@ -57,6 +57,11 @@ export function TrainerActions({ trainerId }: TrainerActionsProps) {
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem className="p-0">
                     <Link href={`/admin/trainers/${trainerId}`} className="cursor-pointer font-medium w-full flex items-center px-2 py-1.5 hover:bg-accent hover:text-accent-foreground rounded-sm">
+                        <Eye className="mr-2 h-4 w-4" /> Voir le profil
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="p-0">
+                    <Link href={`/admin/trainers/${trainerId}/edit`} className="cursor-pointer font-medium w-full flex items-center px-2 py-1.5 hover:bg-accent hover:text-accent-foreground rounded-sm">
                         <Pencil className="mr-2 h-4 w-4" /> Modifier
                     </Link>
                 </DropdownMenuItem>

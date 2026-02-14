@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Plus, Pencil, Trash2, CheckCircle2, XCircle, MoreHorizontal, Search, Filter } from "lucide-react"
+import Link from "next/link"
+import { Plus, Pencil, Trash2, MoreHorizontal, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -22,9 +23,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Formation, Category, Trainer } from "@/types/formation"
-import { FormationDialog } from "@/components/admin/FormationDialog"
 import { adminFormationsService } from "@/services/admin-formations"
 
 interface FormationsTableProps {
@@ -35,26 +35,13 @@ interface FormationsTableProps {
 
 export function FormationsTable({
   initialFormations,
-  categories,
-  trainers,
 }: FormationsTableProps) {
   const router = useRouter()
   const [formations] = useState(initialFormations)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [selectedFormation, setSelectedFormation] = useState<Formation | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
 
-  const handleCreate = () => {
-    setSelectedFormation(null)
-    setIsDialogOpen(true)
-  }
-
-  const handleEdit = (formation: Formation) => {
-    setSelectedFormation(formation)
-    setIsDialogOpen(true)
-  }
-
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
     if (confirm("Êtes-vous sûr de vouloir supprimer cette formation ?")) {
       try {
         await adminFormationsService.deleteFormation(id)
@@ -65,10 +52,6 @@ export function FormationsTable({
     }
   }
 
-  const handleSuccess = () => {
-    router.refresh()
-  }
-
   // Basic client-side filtering
   const filteredFormations = formations.filter(f =>
     f.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -77,16 +60,6 @@ export function FormationsTable({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-3xl font-black text-gray-900 tracking-tight">Catalogue Formations</h2>
-          <p className="text-muted-foreground font-medium mt-1">Gérez votre offre de formation et vos programmes.</p>
-        </div>
-        <Button onClick={handleCreate} className="rounded-xl font-bold h-11 px-6 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all">
-          <Plus className="mr-2 h-5 w-5" />
-          Nouvelle Formation
-        </Button>
-      </div>
 
       <Card className="border-none shadow-xl bg-white/50 backdrop-blur-sm rounded-[2.5rem] overflow-hidden">
         <div className="p-6 border-b border-gray-100 flex gap-4 items-center">
@@ -99,7 +72,6 @@ export function FormationsTable({
               className="pl-10 h-11 rounded-xl bg-white border-transparent shadow-sm focus-visible:ring-primary/20 font-medium"
             />
           </div>
-          {/* Future filters could go here */}
         </div>
 
         <div className="p-0">
@@ -116,7 +88,11 @@ export function FormationsTable({
             </TableHeader>
             <TableBody>
               {filteredFormations.map((formation) => (
-                <TableRow key={formation.id} className="group hover:bg-blue-50/30 border-gray-100 cursor-pointer transition-colors" onClick={() => handleEdit(formation)}>
+                <TableRow
+                  key={formation.id}
+                  className="group hover:bg-blue-50/30 border-gray-100 cursor-pointer transition-colors"
+                  onClick={() => router.push(`/admin/formations/${formation.id}`)}
+                >
                   <TableCell className="pl-8 py-4 font-bold text-gray-900 group-hover:text-primary transition-colors">
                     {formation.title}
                     {formation.duration && <span className="block text-xs text-muted-foreground font-normal mt-0.5">{formation.duration}</span>}
@@ -142,12 +118,12 @@ export function FormationsTable({
                   </TableCell>
                   <TableCell className="py-4">
                     {formation.isPublished ? (
-                      <div className="flex items-center gap-1.5 status-badge-published">
+                      <div className="flex items-center gap-1.5">
                         <div className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
                         <span className="text-xs font-bold text-green-700">Publié</span>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-1.5 status-badge-draft">
+                      <div className="flex items-center gap-1.5">
                         <div className="h-2 w-2 rounded-full bg-gray-300" />
                         <span className="text-xs font-bold text-gray-500">Brouillon</span>
                       </div>
@@ -163,11 +139,11 @@ export function FormationsTable({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="rounded-xl border-border shadow-xl">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => handleEdit(formation)} className="cursor-pointer font-medium">
+                        <DropdownMenuItem onClick={() => router.push(`/admin/formations/${formation.id}`)} className="cursor-pointer font-medium">
                           <Pencil className="mr-2 h-4 w-4" /> Modifier
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleDelete(formation.id)} className="cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50 font-medium">
+                        <DropdownMenuItem onClick={(e) => handleDelete(formation.id, e)} className="cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50 font-medium">
                           <Trash2 className="mr-2 h-4 w-4" /> Supprimer
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -186,15 +162,6 @@ export function FormationsTable({
           </Table>
         </div>
       </Card>
-
-      <FormationDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        formation={selectedFormation}
-        categories={categories}
-        trainers={trainers}
-        onSuccess={handleSuccess}
-      />
     </div>
   )
 }

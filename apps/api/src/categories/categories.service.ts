@@ -9,7 +9,7 @@ import { UpdateCategoryDto } from "./dto/update-category.dto";
 
 @Injectable()
 export class CategoriesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(createCategoryDto: CreateCategoryDto) {
     return this.prisma.category.create({
@@ -19,6 +19,11 @@ export class CategoriesService {
 
   async findAll() {
     return this.prisma.category.findMany({
+      include: {
+        _count: {
+          select: { formations: true },
+        },
+      },
       orderBy: {
         name: "asc",
       },
