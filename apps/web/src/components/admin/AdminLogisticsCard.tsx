@@ -27,9 +27,14 @@ export function AdminLogisticsCard({ session }: AdminLogisticsCardProps) {
     const [loading, setLoading] = useState(false);
 
     // Initial state matching User Logistics Schema
-    const initialLogistics = session.logistics
-        ? JSON.parse(session.logistics)
-        : { wifi: null, subsidies: null, videoMaterial: [], writingMaterial: [], accessDetails: "" };
+    let initialLogistics;
+    try {
+        initialLogistics = session.logistics
+            ? JSON.parse(session.logistics)
+            : { wifi: null, subsidies: null, videoMaterial: [], writingMaterial: [], accessDetails: "" };
+    } catch {
+        initialLogistics = { wifi: null, subsidies: null, videoMaterial: [], writingMaterial: [], accessDetails: "" };
+    }
 
     const [location, setLocation] = useState(session.location || "");
     const [wifi, setWifi] = useState<"yes" | "no" | null>(initialLogistics.wifi);
@@ -209,7 +214,7 @@ export function AdminLogisticsCard({ session }: AdminLogisticsCardProps) {
 
                         {/* Material Écriture */}
                         <div className="space-y-3">
-                            <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Matériel d'écriture</Label>
+                            <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Matériel d&apos;écriture</Label>
                             <div className="flex flex-wrap gap-2">
                                 {WRITING_OPTIONS.map(item => (
                                     <Badge
@@ -228,7 +233,7 @@ export function AdminLogisticsCard({ session }: AdminLogisticsCardProps) {
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Logistique d'accès & Notes</Label>
+                            <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Logistique d&apos;accès & Notes</Label>
                             <Textarea
                                 value={accessDetails}
                                 onChange={(e) => setAccessDetails(e.target.value)}

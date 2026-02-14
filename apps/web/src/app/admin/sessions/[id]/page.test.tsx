@@ -15,6 +15,11 @@ vi.mock('next/navigation', () => ({
     notFound: vi.fn().mockImplementation(() => {
         throw new Error('NEXT_NOT_FOUND');
     }),
+    useRouter: vi.fn().mockReturnValue({
+        push: vi.fn(),
+        refresh: vi.fn(),
+        back: vi.fn(),
+    }),
 }));
 
 // Mock components
@@ -41,6 +46,8 @@ vi.mock('lucide-react', () => ({
     Wifi: () => <span>Icon</span>,
     FileText: () => <span>Icon</span>,
     Building2: () => <span>Icon</span>,
+    Edit2: () => <span>Icon</span>,
+    Save: () => <span>Icon</span>,
 }));
 
 describe('SessionDetailPage', () => {

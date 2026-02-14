@@ -47,6 +47,7 @@ describe("CategoriesService", () => {
       const result = await service.findAll();
       expect(result).toEqual([{ id: "1", name: "Bureautique" }]);
       expect(mockPrismaService.category.findMany).toHaveBeenCalledWith({
+        include: { _count: { select: { formations: true } } },
         orderBy: { name: "asc" },
       });
     });

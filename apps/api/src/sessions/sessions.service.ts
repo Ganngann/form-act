@@ -10,7 +10,7 @@ export class SessionsService {
   constructor(
     private prisma: PrismaService,
     private emailService: EmailService,
-  ) { }
+  ) {}
 
   async findOne(id: string) {
     const session = await this.prisma.session.findUnique({
@@ -29,7 +29,13 @@ export class SessionsService {
     return session;
   }
 
-  async findAll(start?: Date, end?: Date, status?: string, filter?: string, query?: string) {
+  async findAll(
+    start?: Date,
+    end?: Date,
+    status?: string,
+    filter?: string,
+    query?: string,
+  ) {
     const where: Prisma.SessionWhereInput = {};
 
     if (start && end) {

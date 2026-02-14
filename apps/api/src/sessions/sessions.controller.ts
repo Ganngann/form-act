@@ -29,7 +29,7 @@ import {
 @Controller("sessions")
 @UseGuards(AuthGuard("jwt"))
 export class SessionsController {
-  constructor(private readonly sessionsService: SessionsService) { }
+  constructor(private readonly sessionsService: SessionsService) {}
 
   @Get("me")
   async findMySessions(@Request() req) {

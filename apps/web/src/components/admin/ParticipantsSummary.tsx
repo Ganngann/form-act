@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface ParticipantsSummaryProps {
-    participants: string | null;
+    participants?: string | null;
 }
 
 export function ParticipantsSummary({ participants }: ParticipantsSummaryProps) {
