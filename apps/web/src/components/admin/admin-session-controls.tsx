@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { User, ShieldCheck, AlertCircle } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 interface Trainer {
   id: string;
@@ -102,22 +103,17 @@ export function AdminSessionControls({ session, trainers }: { session: Session; 
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 p-8 pt-6">
+
           <div className="flex items-center justify-between bg-slate-50/50 p-5 rounded-2xl border border-slate-100">
             <div className="space-y-0.5">
               <label className="text-sm font-black text-gray-900 uppercase tracking-tighter">Déverrouiller Logistique</label>
               <p className="text-[11px] text-muted-foreground font-bold leading-tight">Autoriser le client à modifier les infos après J-7</p>
             </div>
-            <div className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                id="logistics-toggle"
-                className="sr-only peer"
-                checked={isLogisticsOpen}
-                onChange={(e) => handleLogisticsToggle(e.target.checked)}
-                disabled={loading || isLocked}
-              />
-              <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary shadow-inner"></div>
-            </div>
+            <Switch
+              checked={isLogisticsOpen}
+              onCheckedChange={handleLogisticsToggle}
+              disabled={loading || isLocked}
+            />
           </div>
 
           <div className="pt-2">
