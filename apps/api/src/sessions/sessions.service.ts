@@ -219,6 +219,8 @@ export class SessionsService {
         : { disconnect: true };
     if (data.isLogisticsOpen !== undefined)
       updateData.isLogisticsOpen = data.isLogisticsOpen;
+    if (data.logistics !== undefined) updateData.logistics = data.logistics;
+    if (data.location !== undefined) updateData.location = data.location;
     if (data.status !== undefined) updateData.status = data.status;
 
     // Auto-confirm if assigning trainer to a PENDING session

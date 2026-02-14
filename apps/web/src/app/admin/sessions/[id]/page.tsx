@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { LogisticsSummary } from '@/components/admin/LogisticsSummary';
+import { AdminLogisticsCard } from '@/components/admin/AdminLogisticsCard';
 import { ParticipantsSummary } from '@/components/admin/ParticipantsSummary';
 
 async function getSession(id: string) {
@@ -171,16 +171,7 @@ export default async function SessionDetailPage({ params }: { params: { id: stri
                     {/* Logistics & Participants Grid */}
                     <div className="grid md:grid-cols-2 gap-8">
                         {/* Logistics */}
-                        <Card className="rounded-[2rem] border-transparent shadow-sm bg-white h-full">
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-lg font-black flex items-center gap-2">
-                                    <Package className="h-5 w-5 text-primary" /> Logistique
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="pt-4">
-                                <LogisticsSummary logistics={session.logistics} />
-                            </CardContent>
-                        </Card>
+                        <AdminLogisticsCard session={session} />
 
                         {/* Participants */}
                         <Card className="rounded-[2rem] border-transparent shadow-sm bg-white h-full">

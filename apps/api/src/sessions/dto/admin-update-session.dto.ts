@@ -12,4 +12,12 @@ export class AdminUpdateSessionDto {
   @IsString()
   @IsOptional()
   status?: string;
+
+  @IsString()
+  @IsOptional()
+  logistics?: string;
+
+  @IsString()
+  @IsOptional()
+  location?: string;
 }
