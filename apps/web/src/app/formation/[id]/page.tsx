@@ -1,11 +1,11 @@
 import { BookingWidget } from "@/components/booking-widget"
 import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { API_URL } from "@/lib/config"
 import { Download, CheckCircle2, Clock, BookOpen, BarChart3, HelpCircle, ShieldCheck, Check } from "lucide-react"
 import Link from "next/link"
 
 async function getFormation(id: string) {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
   const res = await fetch(`${API_URL}/formations/${id}`, { cache: "no-store" })
   if (!res.ok) return undefined
   return res.json()

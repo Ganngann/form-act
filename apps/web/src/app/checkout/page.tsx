@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation"
 import { cookies } from "next/headers"
 import { jwtVerify } from "jose"
 import { getJwtSecretKey } from "@/lib/auth.config"
+import { API_URL } from "@/lib/config"
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
@@ -17,7 +18,6 @@ interface CheckoutPageProps {
 }
 
 async function getFormation(id: string) {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
   const res = await fetch(`${API_URL}/formations/${id}`, { cache: "no-store" })
   if (!res.ok) return undefined
   return res.json()
@@ -25,7 +25,6 @@ async function getFormation(id: string) {
 
 async function getTrainer(id: string) {
   if (!id) return null;
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
   const res = await fetch(`${API_URL}/trainers/${id}/public`, { cache: "no-store" })
   if (!res.ok) return undefined
   return res.json()
