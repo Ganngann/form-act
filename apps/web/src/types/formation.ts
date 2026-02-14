@@ -7,6 +7,25 @@ export type Trainer = {
   id: string;
   firstName: string;
   lastName: string;
+  email?: string;
+};
+
+// Alias Trainer to Formateur for backward compatibility if needed
+export type Formateur = Trainer;
+
+export type User = {
+  id: string;
+  email: string;
+  name?: string;
+  role: 'ADMIN' | 'TRAINER' | 'CLIENT';
+};
+
+export type Client = {
+  id: string;
+  companyName: string;
+  contactName: string;
+  userId: string;
+  user?: User;
 };
 
 export type Formation = {
@@ -27,6 +46,27 @@ export type Formation = {
   isPublished: boolean;
   isExpertise: boolean;
   authorizedTrainers?: Trainer[];
+};
+
+export type Session = {
+  id: string;
+  formationId: string;
+  formation: Formation;
+  clientId: string;
+  client?: Client;
+  trainerId?: string;
+  trainer?: Trainer;
+  date: string;
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED' | 'PROOF_RECEIVED' | 'INVOICED';
+  location?: string;
+  participants?: string; // JSON string
+  logistics?: string; // JSON string
+  isLogisticsOpen: boolean;
+  proofUrl?: string;
+  billedAt?: string;
+  billingData?: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type CreateFormationData = Omit<Formation, 'id' | 'category' | 'authorizedTrainers'> & {
