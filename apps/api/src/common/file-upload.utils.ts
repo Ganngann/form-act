@@ -6,7 +6,20 @@ import * as fs from "fs/promises";
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
-export const ALLOWED_EXTENSIONS = /\.(jpg|jpeg|png|webp|pdf)$/i;
+export const ALLOWED_FILE_TYPES: Record<string, string[]> = {
+  "image/jpeg": ["jpg", "jpeg"],
+  "image/png": ["png"],
+  "image/webp": ["webp"],
+  "application/pdf": ["pdf"],
+};
+
+export const ALLOWED_EXTENSIONS_LIST = Object.values(ALLOWED_FILE_TYPES).flat();
+export const ALLOWED_MIME_TYPES = Object.keys(ALLOWED_FILE_TYPES);
+
+export const ALLOWED_EXTENSIONS = new RegExp(
+  `\\.(${ALLOWED_EXTENSIONS_LIST.join("|")})$`,
+  "i",
+);
 
 export const fileFilter = (
   req: unknown,
@@ -16,20 +29,13 @@ export const fileFilter = (
   if (!file.originalname.match(ALLOWED_EXTENSIONS)) {
     return callback(
       new BadRequestException(
-        "Only image (jpg, png, webp) and pdf files are allowed!",
+        `Only ${ALLOWED_EXTENSIONS_LIST.join(", ")} files are allowed!`,
       ),
       false,
     );
   }
 
-  // Basic MIME type check (not foolproof but filters obvious mismatches)
-  const allowedMimeTypes = [
-    "image/jpeg",
-    "image/png",
-    "image/webp",
-    "application/pdf",
-  ];
-  if (!allowedMimeTypes.includes(file.mimetype)) {
+  if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
     return callback(new BadRequestException("Invalid file type!"), false);
   }
 

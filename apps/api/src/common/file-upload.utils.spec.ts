@@ -1,5 +1,27 @@
-import { fileFilter, generateSecureFilename } from "./file-upload.utils";
+import {
+  fileFilter,
+  generateSecureFilename,
+  ALLOWED_EXTENSIONS,
+  ALLOWED_FILE_TYPES,
+} from "./file-upload.utils";
 import { BadRequestException } from "@nestjs/common";
+
+describe("File Validation Logic", () => {
+  it("should generate ALLOWED_EXTENSIONS regex that matches all defined extensions", () => {
+    const allExtensions = Object.values(ALLOWED_FILE_TYPES).flat();
+    allExtensions.forEach((ext) => {
+      expect(`test.${ext}`).toMatch(ALLOWED_EXTENSIONS);
+      expect(`test.${ext.toUpperCase()}`).toMatch(ALLOWED_EXTENSIONS);
+    });
+  });
+
+  it("should not match extensions not in the allowed list", () => {
+    const invalidExtensions = ["exe", "bat", "sh", "gif"];
+    invalidExtensions.forEach((ext) => {
+      expect(`test.${ext}`).not.toMatch(ALLOWED_EXTENSIONS);
+    });
+  });
+});
 
 describe("fileFilter", () => {
   it("should accept valid image files", () => {
