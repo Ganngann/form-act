@@ -4,6 +4,7 @@
     "private": true,
     "scripts": {
         "postinstall": "prisma generate",
+        "generate:prod": "prisma generate --schema=./prisma/schema.mysql.prisma",
         "build": "nest build",
         "format": "prettier --write \"src/**/*.ts\"",
         "start": "nest start",

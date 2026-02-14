@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String     @id @default(uuid())
+  email             String     @unique
+  name              String?
+  password          String?
+  role              String     @default("CLIENT") // Enums as String for SQLite compatibility
+  resetToken        String?
+  resetTokenExpires DateTime?
+  client            Client?
+  formateur         Formateur?
+}
+
+model Client {
+  id          String    @id @default(uuid())
+  vatNumber   String    @unique
+  companyName String
+  address     String
+  auditLog    String?   // JSON string: History of profile changes
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id])
+  sessions    Session[]
+  createdAt   DateTime  @default(now())
+}
+
+model Formateur {
+  id                 String      @id @default(uuid())
+  firstName          String
+  lastName           String
+  email              String      @unique
+  address            String?
+  userId             String?     @unique
+  user               User?       @relation(fields: [userId], references: [id])
+  predilectionZones  Zone[]      @relation("Predilection")
+  expertiseZones     Zone[]      @relation("Expertise")
+  authorizedFormations Formation[] @relation("AuthorizedTrainers")
+  sessions           Session[]
+  bio                String?
+  avatarUrl         String?
+  calendarToken     String?     @unique
+}
+
+model Zone {
+  id                     String      @id @default(uuid())
+  name                   String      @unique
+  code                   String?     @unique
+  formateursPredilection Formateur[] @relation("Predilection")
+  formateursExpertise    Formateur[] @relation("Expertise")
+}
+
+model Category {
+  id         String      @id @default(uuid())
+  name       String      @unique
+  formations Formation[]
+}
+
+model Formation {
+  id                 String      @id @default(uuid())
+  title              String      @unique
+  description        String
+  level              String
+  duration           String
+  durationType       String      @default("HALF_DAY")
+  programLink        String?     // URL to the PDF program
+  price              Decimal?    // Standard amount in Euros (HTVA)
+  methodology        String?     // Pedagogical approach description
+  inclusions         String?     // List of included material
+  agreementCodes     String?     // JSON string: List of agreement codes [{ region: "Wallonie", code: "..." }]
+  imageUrl           String?     // URL of illustration image
+  isExpertise        Boolean     @default(false)
+  authorizedTrainers Formateur[] @relation("AuthorizedTrainers")
+  categoryId         String?
+  category           Category?   @relation(fields: [categoryId], references: [id])
+  sessions           Session[]
+  isPublished        Boolean     @default(true)
+}
+
+model Session {
+  id          String    @id @default(uuid())
+  createdAt   DateTime  @default(now())
+  date        DateTime
+  slot        String
+  formationId String
+  formation   Formation @relation(fields: [formationId], references: [id])
+  trainerId   String?
+  trainer     Formateur? @relation(fields: [trainerId], references: [id])
+  status      String    @default("PENDING")
+  clientId    String?
+  client      Client?   @relation(fields: [clientId], references: [id])
+
+  // New fields for Workflow Status
+  location     String?   // Address of the session (can differ from client address)
+  logistics    String?   // JSON string: { access, wifi, videoMaterial, etc. }
+  isLogisticsOpen Boolean @default(false) // Allows client edits even if < J-7
+  participants String?   // JSON string: [ { name, email }, ... ]
+  proofUrl     String?   // URL to the signed attendance sheet
+  billedAt     DateTime? // When the session was marked as billed
+  billingData  String?   // JSON string: Snapshot of financial data (basePrice, adjustment, finalPrice, etc.)
+}
+
+model NotificationLog {
+  id        String   @id @default(uuid())
+  type      String
+  recipient String
+  status    String
+  sentAt    DateTime @default(now())
+  error     String?
+  metadata  String?  // JSON string
+}
