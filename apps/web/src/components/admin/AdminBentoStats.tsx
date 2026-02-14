@@ -45,6 +45,18 @@ export function AdminBentoStats({ activeFilter }: AdminBentoStatsProps) {
 
     const bentoItems = [
         {
+            id: "PENDING",
+            label: "Demandes",
+            count: stats.pendingRequests,
+            sublabel: "À valider / confirmer",
+            icon: AlertCircle,
+            color: "bg-indigo-500",
+            lightColor: "bg-indigo-50",
+            textColor: "text-indigo-600",
+            borderColor: "border-indigo-100",
+            href: "/admin/sessions?status=PENDING"
+        },
+        {
             id: "NO_TRAINER",
             label: "Assignations",
             count: stats.noTrainer,
@@ -95,9 +107,9 @@ export function AdminBentoStats({ activeFilter }: AdminBentoStatsProps) {
     ];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
             {bentoItems.map((item) => {
-                const isActive = activeFilter === item.id;
+                const isActive = activeFilter === item.id || (item.id === 'PENDING' && activeFilter === 'PENDING');
                 const Icon = item.icon;
 
                 return (

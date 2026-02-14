@@ -6,11 +6,13 @@ import { AdminBillingControls } from '@/components/admin/admin-billing-controls'
 import { StatusBadge } from '@/components/ui/status-badge';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, MapPin, Calendar, Clock, User, Users, Package, Tv, Wifi, FileText, Building2 } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Clock, User, Users, Package, Building2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { LogisticsSummary } from '@/components/admin/LogisticsSummary';
+import { ParticipantsSummary } from '@/components/admin/ParticipantsSummary';
 
 async function getSession(id: string) {
     const cookieStore = cookies();
@@ -175,63 +177,8 @@ export default async function SessionDetailPage({ params }: { params: { id: stri
                                     <Package className="h-5 w-5 text-primary" /> Logistique
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="pt-4 space-y-4">
-                                {(() => {
-                                    if (!session.logistics) return <p className="text-muted-foreground italic text-sm p-4 bg-muted/20 rounded-xl">Aucune information logistique renseignée.</p>;
-                                    try {
-                                        const log = JSON.parse(session.logistics);
-                                        return (
-                                            <div className="space-y-4">
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    <div className="bg-muted/10 p-3 rounded-xl border border-border/50">
-                                                        <span className="text-xs font-bold text-muted-foreground uppercase mb-1 block">Wifi</span>
-                                                        <div className="flex items-center gap-2 font-bold text-gray-900">
-                                                            <Wifi className="h-4 w-4 text-primary" />
-                                                            {log.wifi === "yes" ? "Oui" : "Non"}
-                                                        </div>
-                                                    </div>
-                                                    <div className="bg-muted/10 p-3 rounded-xl border border-border/50">
-                                                        <span className="text-xs font-bold text-muted-foreground uppercase mb-1 block">Subsides</span>
-                                                        <div className="flex items-center gap-2 font-bold text-gray-900">
-                                                            <FileText className="h-4 w-4 text-primary" />
-                                                            {log.subsidies === "yes" ? "Oui" : "Non"}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {(log.videoMaterial?.length > 0 || log.writingMaterial?.length > 0) && (
-                                                    <div className="bg-muted/10 p-4 rounded-xl border border-border/50 space-y-3">
-                                                        {log.videoMaterial?.length > 0 && (
-                                                            <div>
-                                                                <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2 mb-1">
-                                                                    <Tv className="h-3 w-3" /> Vidéo
-                                                                </span>
-                                                                <p className="text-sm font-medium">{log.videoMaterial.join(", ")}</p>
-                                                            </div>
-                                                        )}
-                                                        {log.writingMaterial?.length > 0 && (
-                                                            <div>
-                                                                <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2 mb-1">
-                                                                    <FileText className="h-3 w-3" /> Écriture
-                                                                </span>
-                                                                <p className="text-sm font-medium">{log.writingMaterial.join(", ")}</p>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                )}
-
-                                                {log.accessDetails && (
-                                                    <div className="bg-orange-50/50 p-4 rounded-xl border border-orange-100 text-sm">
-                                                        <span className="font-bold text-orange-800 block mb-1">Accès & Notes</span>
-                                                        <p className="text-orange-900/80 whitespace-pre-wrap">{log.accessDetails}</p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    } catch (e) {
-                                        return <pre className="text-xs p-4 bg-red-50 text-red-600 rounded-xl">{session.logistics}</pre>;
-                                    }
-                                })()}
+                            <CardContent className="pt-4">
+                                <LogisticsSummary logistics={session.logistics} />
                             </CardContent>
                         </Card>
 
@@ -243,30 +190,7 @@ export default async function SessionDetailPage({ params }: { params: { id: stri
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="pt-4">
-                                {(() => {
-                                    if (!session.participants) return <p className="text-muted-foreground italic text-sm p-4 bg-muted/20 rounded-xl">Liste vide pour le moment.</p>;
-                                    try {
-                                        const parts = JSON.parse(session.participants);
-                                        if (parts.length === 0) return <p className="text-muted-foreground italic text-sm p-4 bg-muted/20 rounded-xl">Aucun participant inscrit.</p>;
-                                        return (
-                                            <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-                                                {parts.map((p: any, i: number) => (
-                                                    <div key={i} className="flex items-center gap-3 p-3 bg-muted/5 hover:bg-muted/20 rounded-xl border border-border/40 transition-colors">
-                                                        <div className="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
-                                                            {p.firstName?.[0]}{p.lastName?.[0]}
-                                                        </div>
-                                                        <div>
-                                                            <p className="font-bold text-sm text-gray-900">{p.firstName || p.name} {p.lastName}</p>
-                                                            {p.email && <p className="text-xs text-muted-foreground">{p.email}</p>}
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        );
-                                    } catch (e) {
-                                        return <p className="text-destructive text-sm font-bold">Erreur de format des participants</p>;
-                                    }
-                                })()}
+                                <ParticipantsSummary participants={session.participants} />
                             </CardContent>
                         </Card>
                     </div>

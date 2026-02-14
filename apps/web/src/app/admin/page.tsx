@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { MasterCalendar } from '@/components/admin/master-calendar';
-import { PriorityActions } from '@/components/admin/priority-actions';
+import { AdminBentoStats } from '@/components/admin/AdminBentoStats';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, ArrowRight, User, Building2, LayoutDashboard } from 'lucide-react';
@@ -58,10 +58,10 @@ export default async function AdminDashboard() {
         {/* Actions Prioritaires */}
         <section className="space-y-6">
           <div className="flex items-center gap-4">
-            <h2 className="text-xl font-black uppercase tracking-widest text-muted-foreground">Actions Prioritaires</h2>
+            <h2 className="text-xl font-black uppercase tracking-widest text-muted-foreground">Indicateurs Opérationnels</h2>
             <div className="h-px flex-1 bg-border"></div>
           </div>
-          <PriorityActions />
+          <AdminBentoStats />
         </section>
 
         {/* Calendrier Principal */}

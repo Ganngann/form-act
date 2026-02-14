@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { SessionData, getComputedStatus, STATUS_LABELS, STATUS_COLORS } from "@/lib/session-status"
+import { ParticipantsSummary } from "./ParticipantsSummary"
 
 interface SessionDetailsDialogProps {
   session: SessionData | null
@@ -60,9 +61,9 @@ export function SessionDetailsDialog({ session, open, onOpenChange }: SessionDet
             <span>{session.location || "À définir (En attente logistique)"}</span>
           </div>
 
-          <div className="grid gap-1">
+          <div className="grid gap-1 overflow-hidden">
             <span className="text-sm font-medium text-muted-foreground">Participants</span>
-            <span>{session.participants ? JSON.parse(session.participants).length + " inscrits" : "Liste vide"}</span>
+            <ParticipantsSummary participants={session.participants} />
           </div>
         </div>
 
