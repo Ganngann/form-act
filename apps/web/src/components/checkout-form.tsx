@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { API_URL } from "@/lib/config"
+import { ROUTES } from "@/lib/routes"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -140,7 +141,7 @@ export function CheckoutForm({ formationId, trainerId, date, slot, isLoggedIn, f
                 throw new Error(errData.message || "Erreur lors de la réservation")
             }
 
-            window.location.href = "/dashboard?success=booking"
+            window.location.href = `${ROUTES.dashboard}?success=booking`
 
         } catch (e: unknown) {
             if (e instanceof Error) {

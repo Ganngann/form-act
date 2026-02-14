@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { CheckoutForm } from "./checkout-form";
+import { ROUTES } from "@/lib/routes";
 import { vi } from "vitest";
 
 // Mock API_URL
@@ -182,7 +183,7 @@ describe("CheckoutForm", () => {
         fireEvent.click(screen.getByText("Confirmer la réservation"));
 
         await waitFor(() => {
-            expect(window.location.href).toBe("/dashboard?success=booking");
+            expect(window.location.href).toBe(`${ROUTES.dashboard}?success=booking`);
         });
     });
 
