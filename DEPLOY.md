@@ -1,132 +1,126 @@
-# 🚀 Guide de Déploiement (Staging/Prod) - Form-Act
+# 🚀 Guide de Déploiement (Staging) - Form-Act
 
-Ce guide détaille les étapes pour déployer le projet sur **o2switch** (cPanel).
+Ce document détaille la procédure de mise en production sur l'hébergement mutualisé **o2switch**.
 
-## 1. Préparation des Fichiers (Local)
+Les informations sensibles (mots de passe, clés API) ne sont PAS stockées ici. Elles doivent être configurées directement sur le serveur via les variables d'environnement (`.env`).
 
-Le projet est configuré pour gérer deux environnements :
-- **Local** : SQLite (`schema.prisma`)
-- **Production** : MySQL/MariaDB (`schema.mysql.prisma`)
+## 📋 Informations du Serveur
 
-### Générer le Build
+- **Hébergement** : o2switch
+- **Panel** : cPanel / Setup Node.js App
 
-Lancez cette commande à la racine du projet pour créer les versions optimisées :
+| Application | URL Publique | Dossier sur le Serveur |
+| :--- | :--- | :--- |
+| **Backend (API)** | `https://api.formact.[VOTRE_ID].universe.wf` | `form-act-api` |
+| **Frontend (Web)** | `https://formact.[VOTRE_ID].universe.wf` | `form-act-front` |
+
+---
+
+## 1. Préparation (Local)
+
+Si ce n'est pas déjà fait, générez les fichiers de production :
 
 ```bash
 pnpm run build
 ```
 
-Cela va générer :
-1.  `apps/web/.next/standalone` : Le serveur Frontend optimisé.
-2.  `apps/web/.next/static` : Les fichiers statiques (images, CSS, JS).
-3.  `dist/apps/api` : Le serveur Backend compilé (si vous utilisez le build global, sinon il faut builder l'api spécifiquement).
-
-> **Note** : Pour l'API, assurez-vous que le dossier `dist` est bien présent dans `apps/api`.
-
----
-
-## 2. Configuration sur o2switch (cPanel)
-
-### A. Base de Données (MySQL)
-
-1.  Allez dans **"Bases de données MySQL"**.
-2.  Créez une nouvelle base : `formact_db`.
-3.  Créez un utilisateur : `formact_user`.
-4.  Liez l'utilisateur à la base avec **TOUS les privilèges**.
-5.  Notez le mot de passe.
-
-### B. Application Backend (Node.js)
-
-1.  Allez dans **"Setup Node.js App"**.
-2.  Créez une application :
-    *   **Node.js version** : 20.x (Recommandé).
-    *   **App Mode** : `Production`.
-    *   **App Root** : `api`.
-    *   **Application URL** : `api.form-act.be`.
-    *   **Startup File** : `dist/main.js`.
-3.  Cliquez sur **Create**.
-
-### C. Application Frontend (Node.js)
-
-1.  Créez une **seconde** application Node.js :
-    *   **App Root** : `web`.
-    *   **Application URL** : `app.form-act.be` (ou votre domaine principal).
-    *   **Startup File** : `server.js`.
-2.  Cliquez sur **Create**.
+Cela va créer :
+- `apps/web/.next/standalone` (Frontend - Serveur Autonome)
+- `apps/web/.next/static` (Assets Frontend)
+- `apps/web/public` (Images Frontend)
+- `dist/apps/api` (Backend - Serveur Compilé)
 
 ---
 
-## 3. Transfert des Fichiers
+## 2. Transfert des Fichiers (FileZilla / SCP)
 
-Utilisez FileZilla (ou le Gestionnaire de fichiers cPanel) pour envoyer les fichiers.
+Connectez-vous à votre espace hébergement et transférez les fichiers vers les dossiers correspondants.
 
-### Pour l'API (`/api`)
+### 🟢 A. Pour le Backend (API)
+**Destination** : `/home/[USER]/form-act-api`
 
-Copiez le contenu de `apps/api` vers le dossier `api` sur le serveur, **SAUF** `node_modules`.
-Assurez-vous d'inclure :
-- `dist/`
-- `prisma/` (avec `schema.mysql.prisma`)
-- `package.json`
-- `.env` (Créez-le avec les infos de Prod)
+1.  Videz le dossier (sauf `node_modules` si vous voulez gagner du temps, mais c'est mieux de repartir à zéro la première fois).
+2.  Copiez **le contenu** de `apps/api` (votre code source, package.json, etc.) vers le serveur.
+    *   ⚠️ **Important** : Assurez-vous d'envoyer le dossier `dist` (qui vient d'être généré) et le dossier `prisma`.
+3.  Renommez `prisma/schema.mysql.prisma` en `prisma/schema.prisma` sur le serveur (pour qu'il devienne le fichier de référence).
 
-### Pour le Web (`/web`)
+### 🔵 B. Pour le Frontend (Web)
+**Destination** : `/home/[USER]/form-act-front`
 
-Copiez le contenu du build standalone :
-1.  Copiez tout le contenu de `apps/web/.next/standalone/` vers le dossier `web` sur le serveur.
-2.  Copiez le dossier `apps/web/.next/static` vers `web/.next/static`.
-3.  Copiez le dossier `apps/web/public` vers `web/public`.
+1.  Videz le dossier.
+2.  Copiez **le contenu** de `apps/web/.next/standalone` vers le dossier du serveur.
+3.  Copiez le dossier `apps/web/.next/static` vers le sous-dossier `.next/static` sur le serveur.
+4.  Copiez le dossier `apps/web/public` vers le dossier `public` sur le serveur.
 
 ---
 
-## 4. Installation & Démarrage (SSH ou Terminal cPanel)
+## 3. Configuration des Variables (.env)
 
-Connectez-vous au terminal.
+Créez (ou modifiez) le fichier `.env` à la racine de chaque dossier **sur le serveur**. NE COMMITTEZ JAMAIS CE FICHIER.
 
-### Backend (API)
+### 🟢 API (`/form-act-api/.env`)
+
+```env
+# Remplacer xxxxx par votre mot de passe DB o2switch
+DATABASE_URL="mysql://[DB_USER]:[DB_PASSWORD]@localhost:3306/[DB_NAME]"
+
+PORT=3001
+JWT_SECRET="[SHH_SECRET_DE_PROD]"
+
+# URL du Front pour autoriser les requêtes (CORS)
+FRONTEND_URL="https://formact.[VOTRE_ID].universe.wf"
+
+# Config SMTP
+SMTP_HOST=localhost
+SMTP_PORT=587
+SMTP_USER=noreply@formact.[VOTRE_ID].universe.wf
+SMTP_PASS=[EMAIL_PASSWORD]
+SMTP_FROM="Form-Act <noreply@formact.[VOTRE_ID].universe.wf>"
+```
+
+### 🔵 Web (`/form-act-front/.env`)
+
+```env
+PORT=3000
+# URL de l'API pour que le Front puisse communiquer avec
+NEXT_PUBLIC_API_URL="https://api.formact.[VOTRE_ID].universe.wf"
+```
+
+---
+
+## 4. Installation & Démarrage (Terminal SSH/cPanel)
+
+Depuis le terminal de cPanel (ou via SSH), lancez ces commandes :
+
+### 🟢 Installation Backend
 
 ```bash
-cd api
-# Installer les dépendances de prod
+cd form-act-api
+
+# 1. Installer les dépendances de prod
 npm install --production
 
-# Générer le client Prisma pour MySQL
-npm run generate:prod
+# 2. Générer le client Prisma (optionnel si postinstall tourne)
+npx prisma generate
 
-# Appliquer la structure de la DB (Migration)
-npx prisma db push --schema=./prisma/schema.mysql.prisma
+# 3. Mettre à jour la Base de Données (Migration)
+npx prisma db push
 ```
 
-### Frontend (Web)
+### 🔵 Installation Frontend
 
 ```bash
-cd web
-# Normalement le standalone contient déjà tout, mais parfois un install est nécessaire
-# Node server.js devrait suffire
+cd form-act-front
+
+# Normalement pas besoin d'install, le standalone est autonome.
+# Si besoin : npm install
 ```
 
 ---
 
-## 5. Variables d'Environnement (.env)
+## 5. Activation
 
-Créez le fichier `.env` dans chaque dossier (`api` et `web`) sur le serveur.
+Retournez dans l'interface **"Setup Node.js App"** de cPanel et cliquez sur **Redémarrer (Restart)** pour les deux applications.
 
-**API (`/api/.env`)** :
-```env
-DATABASE_URL="mysql://formact_user:MOT_DE_PASSE@localhost:3306/formact_db"
-FRONTEND_URL="https://app.form-act.be"
-JWT_SECRET="VOTRE_SECRET_PROD"
-PORT=3001
-# SMTP configs...
-```
-
-**Web (`/web/.env`)** :
-```env
-NEXT_PUBLIC_API_URL="https://api.form-act.be"
-PORT=3000
-```
-
----
-
-## 6. Redémarrage
-
-Retournez dans **"Setup Node.js App"** et cliquez sur **"Restart"** pour les deux applications.
+- API : Vérifiez `https://api.formact.[VOTRE_ID].universe.wf`
+- Web : Vérifiez `https://formact.[VOTRE_ID].universe.wf`
