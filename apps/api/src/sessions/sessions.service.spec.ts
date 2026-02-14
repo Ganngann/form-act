@@ -130,7 +130,10 @@ describe("SessionsService", () => {
         expect.objectContaining({
           where: expect.objectContaining({
             status: "CONFIRMED",
-            createdAt: expect.objectContaining({ lte: expect.any(Date) }),
+            date: expect.objectContaining({
+              gte: expect.any(Date),
+              lte: expect.any(Date),
+            }),
             // OR clause removed, we filter in JS
           }),
         }),
