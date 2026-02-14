@@ -152,52 +152,165 @@ async function main() {
     clients.push(client);
   }
 
-  // 6. Sessions (Target: 20 sessions par semaine centré sur le 13 février)
-  console.log('Seeding dense sessions around Feb 13, 2026...');
+  // 6. Sessions (Rythme lent : Commandes anticipées de 3-4 mois)
+  console.log('Seeding slow rhythm operational situation...');
   await prisma.session.deleteMany({});
 
-  // On génère 320 sessions sur 16 semaines (8 avant, 8 après)
-  // Environ 20 sessions par semaine
-  for (let i = 0; i < 320; i++) {
+  const participantsList = [
+    JSON.stringify([{ name: 'Alice Merton', email: 'alice@example.com' }, { name: 'Bob Smith', email: 'bob@example.com' }]),
+    JSON.stringify([{ name: 'Charlie Brown', email: 'charlie@example.com' }, { name: 'Diana Prince', email: 'diana@example.com' }]),
+  ];
+
+  // --- Logique anti-conflit avancée (Slots AM/PM/ALL_DAY) ---
+  const occupiedSlots = new Map<string, Set<string>>();
+
+  const markOccupied = (trainerId: string, date: Date, slot: string) => {
+    const dayKey = date.toISOString().split('T')[0];
+    if (!occupiedSlots.has(trainerId)) occupiedSlots.set(trainerId, new Set());
+    const slots = occupiedSlots.get(trainerId)!;
+
+    if (slot === 'ALL_DAY') {
+      slots.add(`${dayKey}-AM`);
+      slots.add(`${dayKey}-PM`);
+      slots.add(`${dayKey}-ALL_DAY`);
+    } else {
+      slots.add(`${dayKey}-${slot}`);
+    }
+  };
+
+  const isAvailable = (trainerId: string, date: Date, slot: string) => {
+    const dayKey = date.toISOString().split('T')[0];
+    const slots = occupiedSlots.get(trainerId);
+    if (!slots) return true;
+
+    if (slot === 'ALL_DAY') {
+      return !slots.has(`${dayKey}-AM`) && !slots.has(`${dayKey}-PM`) && !slots.has(`${dayKey}-ALL_DAY`);
+    }
+    return !slots.has(`${dayKey}-${slot}`) && !slots.has(`${dayKey}-ALL_DAY`);
+  };
+
+  const createSession = async (offsetDays: number, statusRoll: string, overrides: any = {}) => {
     const randomClient = clients[Math.floor(Math.random() * clients.length)];
     const randomFormation = formations[Math.floor(Math.random() * formations.length)];
+    const date = new Date(baseDate.getTime() + offsetDays * 24 * 60 * 60 * 1000);
+    date.setHours(9, 0, 0, 0);
 
-    // Date aléatoire entre -56 jours (8 sem) et +56 jours (8 sem) par rapport au 13 fév 2026
-    const randomDays = Math.floor(Math.random() * 112) - 56;
-    const sessionDate = new Date(baseDate.getTime() + randomDays * 24 * 60 * 60 * 1000);
+    // Rythme lent : La commande est passée 100 jours avant la formation
+    const createdAt = new Date(date.getTime() - 100 * 24 * 60 * 60 * 1000);
 
-    const statusRoll = Math.random();
-    const status = statusRoll > 0.3 ? 'CONFIRMED' : (statusRoll > 0.1 ? 'PENDING' : 'CANCELLED');
+    // Slot par défaut aléatoire
+    const slotChoices = ['AM', 'PM', 'ALL_DAY'];
+    const slot = overrides.slot || slotChoices[Math.floor(Math.random() * slotChoices.length)];
 
-    // Assignation de formateur
-    let trainerId: string | undefined = undefined;
-    if (status === 'CONFIRMED') {
-      const authorized = await prisma.formation.findUnique({
-        where: { id: randomFormation.id },
-        include: { authorizedTrainers: true }
-      });
-
-      if (randomFormation.isExpertise && authorized?.authorizedTrainers.length) {
-        trainerId = authorized.authorizedTrainers[Math.floor(Math.random() * authorized.authorizedTrainers.length)].id;
-      } else if (!randomFormation.isExpertise) {
-        trainerId = trainers[Math.floor(Math.random() * trainers.length)].id;
-      }
+    // Si un trainerId est fourni, on marque le créneau comme occupé
+    if (overrides.trainerId) {
+      markOccupied(overrides.trainerId, date, slot);
     }
 
-    await prisma.session.create({
+    return prisma.session.create({
       data: {
-        date: sessionDate,
-        slot: Math.random() > 0.5 ? 'ALL_DAY' : 'AM',
-        status: status,
+        date,
+        createdAt: overrides.createdAt || createdAt,
+        slot,
+        status: statusRoll,
         formationId: randomFormation.id,
         clientId: randomClient.id,
-        trainerId: trainerId || null,
-        logistics: (status === 'CONFIRMED' && sessionDate < baseDate) ? JSON.stringify({ wifi: true }) : null,
+        location: 'Site Client Principal',
+        ...overrides
       }
+    });
+  };
+
+  // --- 1. DEMANDES (PENDING) - Prévues pour dans 3-4 mois ---
+  for (let i = 0; i < 4; i++) {
+    await createSession(90 + (i * 7), 'PENDING', { trainerId: null });
+  }
+
+  // --- 2. ASSIGNATIONS (CONFIRMED sans Formateur) - Prévues pour dans 2 mois ---
+  for (let i = 0; i < 5; i++) {
+    await createSession(60 + (i * 5), 'CONFIRMED', { trainerId: null });
+  }
+
+  // --- 3. LOGISTIQUE INCOMPLÈTE (Future, J-14) - Prévues pour tout bientôt ---
+  for (let i = 0; i < 5; i++) {
+    const dateOffset = 7 + (i * 2);
+    const trainerId = trainers[i % trainers.length].id; // Rotation simple
+    await createSession(dateOffset, 'CONFIRMED', {
+      trainerId,
+      logistics: null,
+      participants: null
     });
   }
 
-  console.log('Seeding finished.');
+  // --- 4. ÉMARGEMENTS MANQUANTS - Sessions très récentes (J-1 à J-7) ---
+  for (let i = 0; i < 8; i++) {
+    const dateOffset = -(1 + i);
+    const trainerId = trainers[(i + 2) % trainers.length].id; // Rotation décalée
+    await createSession(dateOffset, 'CONFIRMED', {
+      trainerId,
+      proofUrl: null
+    });
+  }
+
+  // --- 5. À FACTURER - Sessions de fin Janvier / début Février ---
+  for (let i = 0; i < 4; i++) {
+    const dateOffset = -(15 + i);
+    const trainerId = trainers[(i + 4) % trainers.length].id; // Rotation décalée
+    await createSession(dateOffset, 'PROOF_RECEIVED', {
+      trainerId,
+      proofUrl: 'https://example.com/sheet.pdf',
+      billedAt: null,
+      participants: participantsList[0]
+    });
+  }
+
+  // --- 6. SESSIONS SAINES (DENSITÉ MAXIMALE : Planning plein) - 200 sessions ---
+  // On remplit les 3 prochains mois de manière intensive (AM/PM séparés)
+  for (let i = 0; i < 200; i++) {
+    const dateOffset = Math.floor(i / 4) + 1;
+    const slotChoices = ['AM', 'PM', 'AM', 'PM', 'ALL_DAY']; // On favorise les demi-journées pour la densité
+    const slot = slotChoices[i % slotChoices.length];
+    const targetDate = new Date(baseDate.getTime() + dateOffset * 24 * 60 * 60 * 1000);
+    targetDate.setHours(9, 0, 0, 0);
+
+    const shuffledTrainers = [...trainers].sort(() => Math.random() - 0.5);
+    const availableTrainer = shuffledTrainers.find(t => isAvailable(t.id, targetDate, slot));
+
+    if (availableTrainer) {
+      await createSession(dateOffset, 'CONFIRMED', {
+        trainerId: availableTrainer.id,
+        slot,
+        logistics: JSON.stringify({ wifi: "yes", subsidies: "no", videoMaterial: ["Projector"] }),
+        participants: participantsList[Math.floor(Math.random() * participantsList.length)]
+      });
+    }
+  }
+
+  // --- 7. ARCHIVES (Facturées) - Étale sur l'année 2025 ---
+  for (let i = 0; i < 40; i++) {
+    const offset = -(40 + (i * 8));
+    const sDate = new Date(baseDate.getTime() + offset * 24 * 60 * 60 * 1000);
+    const basePrice = 850 + (Math.floor(Math.random() * 5) * 50);
+    const trainerRef = trainers[i % trainers.length];
+
+    await createSession(offset, 'INVOICED', {
+      trainerId: trainerRef.id,
+      proofUrl: 'https://archive.com/proof.pdf',
+      billedAt: new Date(sDate.getTime() + 10 * 24 * 60 * 60 * 1000),
+      participants: participantsList[1],
+      logistics: JSON.stringify({ wifi: "yes", subsidies: "yes", videoMaterial: ["Projector"], writingMaterial: ["Pens"] }),
+      billingData: JSON.stringify({
+        basePrice,
+        optionsFee: 20,
+        optionsDetails: ["Kit Vidéo (20€)"],
+        distanceFee: 0,
+        adminAdjustment: 0,
+        finalPrice: basePrice + 20
+      })
+    });
+  }
+
+  console.log('Seeding finished with realistic slow-paced rhythm and no trainer collisions.');
 }
 
 main()
