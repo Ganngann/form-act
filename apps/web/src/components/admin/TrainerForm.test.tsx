@@ -40,7 +40,7 @@ describe('TrainerForm', () => {
     const trainer = { id: '1', firstName: 'Jane', lastName: 'Doe', email: 'jane@doe.com' };
     render(<TrainerForm initialData={trainer} isEdit={true} />);
     expect(screen.getByDisplayValue('Jane')).toBeDefined();
-    expect(screen.getByRole('button', { name: /Modifier/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /Mettre à jour/i })).toBeDefined();
   });
 
   it('submits PATCH when isEdit is true', async () => {
@@ -48,7 +48,7 @@ describe('TrainerForm', () => {
     const trainer = { id: '1', firstName: 'Jane', lastName: 'Smith', email: 'jane@smith.com' };
     render(<TrainerForm initialData={trainer} isEdit={true} />);
 
-    await user.click(screen.getByRole('button', { name: /Modifier/i }));
+    await user.click(screen.getByRole('button', { name: /Mettre à jour/i }));
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
@@ -70,7 +70,7 @@ describe('TrainerForm', () => {
 
     await user.type(screen.getByLabelText(/^Prénom$/i), 'John');
     await user.type(screen.getByLabelText(/^Nom$/i), 'Doe');
-    await user.type(screen.getByLabelText(/^Email$/i), 'john@doe.com');
+    await user.type(screen.getByLabelText(/Email/i), 'john@doe.com');
     await user.click(screen.getByRole('button', { name: /Créer/i }));
 
     await waitFor(() => {
@@ -84,6 +84,8 @@ describe('TrainerForm', () => {
     (global.fetch as any).mockResolvedValue({ ok: true, json: async () => zones });
 
     render(<TrainerForm />);
+
+    await user.click(screen.getByText(/Zones & Expertise/i));
 
     const checkboxes = await screen.findAllByRole('checkbox');
     // First is predilection, second is expertise

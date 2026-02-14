@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useState, useEffect, useTransition } from "react";
-import { useDebounce } from "@/hooks/use-debounce"; // Check if this exists or use a simple one
 
 export function SessionSearchBar() {
     const router = useRouter();

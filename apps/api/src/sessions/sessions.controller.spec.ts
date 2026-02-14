@@ -57,6 +57,7 @@ describe("SessionsController", () => {
         new Date("2023-01-02"),
         "PENDING",
         undefined,
+        undefined,
       );
     });
 
@@ -73,12 +74,14 @@ describe("SessionsController", () => {
         undefined,
         undefined,
         "NO_TRAINER",
+        undefined,
       );
     });
 
     it("should allow ADMIN and handle missing dates and filters", async () => {
       await controller.findAll({ user: { role: "ADMIN" } });
       expect(service.findAll).toHaveBeenCalledWith(
+        undefined,
         undefined,
         undefined,
         undefined,

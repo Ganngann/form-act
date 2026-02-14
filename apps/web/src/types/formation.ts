@@ -42,3 +42,25 @@ export type CreateCategoryData = {
 };
 
 export type UpdateCategoryData = Partial<CreateCategoryData>;
+
+export type Client = {
+  id: string;
+  companyName: string;
+};
+
+export type Session = {
+  id: string;
+  date: string | Date;
+  location?: string;
+  slot?: string;
+  trainerId?: string;
+  logistics?: string;
+  proofUrl?: string;
+  billedAt?: string | Date;
+  formation: Formation;
+  client?: Client;
+  trainer?: Trainer;
+  billingData?: string;
+};
+
+export type Formateur = Trainer;

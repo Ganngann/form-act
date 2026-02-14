@@ -52,7 +52,7 @@ describe("AdminSessionControls", () => {
   it("handles cancel session with confirmation", async () => {
     render(<AdminSessionControls session={mockSession} trainers={mockTrainers} />);
 
-    const cancelButton = screen.getByText("Annuler la Session");
+    const cancelButton = screen.getByText(/Annuler la Session/);
     fireEvent.click(cancelButton);
 
     expect(global.confirm).toHaveBeenCalled();
@@ -71,7 +71,7 @@ describe("AdminSessionControls", () => {
     global.confirm = vi.fn(() => false);
     render(<AdminSessionControls session={mockSession} trainers={mockTrainers} />);
 
-    const cancelButton = screen.getByText("Annuler la Session");
+    const cancelButton = screen.getByText(/Annuler la Session/);
     fireEvent.click(cancelButton);
 
     expect(global.confirm).toHaveBeenCalled();
@@ -82,7 +82,7 @@ describe("AdminSessionControls", () => {
     render(<AdminSessionControls session={mockSession} trainers={mockTrainers} />);
 
     // Find checkbox input
-    const checkbox = screen.getByRole("checkbox");
+    const checkbox = screen.getByRole("switch");
     fireEvent.click(checkbox);
 
     await waitFor(() => {
@@ -99,7 +99,7 @@ describe("AdminSessionControls", () => {
   it("handles update error", async () => {
       (global.fetch as any).mockResolvedValue({ ok: false });
       render(<AdminSessionControls session={mockSession} trainers={mockTrainers} />);
-      const checkbox = screen.getByRole("checkbox");
+      const checkbox = screen.getByRole("switch");
       fireEvent.click(checkbox);
       await waitFor(() => {
           expect(global.alert).toHaveBeenCalledWith("Erreur lors de la mise à jour");
