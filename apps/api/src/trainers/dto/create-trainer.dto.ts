@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateTrainerDto {
   @IsEmail()
@@ -12,4 +12,18 @@ export class CreateTrainerDto {
   @IsString()
   @IsNotEmpty()
   lastName: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  predilectionZones?: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  expertiseZones?: string[];
+
+  @IsString()
+  @IsOptional()
+  bio?: string;
 }
