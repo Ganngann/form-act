@@ -17,7 +17,7 @@ import { ResetPasswordDto } from "./dto/reset-password.dto";
 
 @Controller("auth")
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post("forgot-password")
   async forgotPassword(@Body() body: ForgotPasswordDto) {
@@ -50,6 +50,7 @@ export class AuthController {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax", // Lax is better for navigation from external sites, strict might be too aggressive for now
       path: "/",
+      domain: process.env.COOKIE_DOMAIN,
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 

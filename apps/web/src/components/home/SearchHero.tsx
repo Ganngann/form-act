@@ -44,11 +44,13 @@ export function SearchHero({ categories }: SearchHeroProps) {
           </SelectTrigger>
           <SelectContent className="rounded-2xl border-border shadow-2xl">
             <SelectItem value="all" className="font-bold py-3">Toutes les thématiques</SelectItem>
-            {categories.map((category) => (
-              <SelectItem key={category.id} value={category.id} className="font-bold py-3">
-                {category.name}
-              </SelectItem>
-            ))}
+            {categories
+              .filter((category) => category.id && category.id !== "")
+              .map((category) => (
+                <SelectItem key={category.id} value={category.id} className="font-bold py-3">
+                  {category.name}
+                </SelectItem>
+              ))}
           </SelectContent>
         </Select>
       </div>
