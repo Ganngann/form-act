@@ -14,11 +14,13 @@ import { AuthGuard } from "@nestjs/passport";
 import { LoginDto } from "./dto/login.dto";
 import { ForgotPasswordDto } from "./dto/forgot-password.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
+import { LoginThrottlerGuard } from "./login-throttler.guard";
 
 @Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @UseGuards(LoginThrottlerGuard)
   @Post("forgot-password")
   async forgotPassword(@Body() body: ForgotPasswordDto) {
     await this.authService.forgotPassword(body.email);
@@ -34,6 +36,7 @@ export class AuthController {
     return { message: "Mot de passe mis à jour avec succès." };
   }
 
+  @UseGuards(LoginThrottlerGuard)
   @Post("login")
   async login(
     @Body() body: LoginDto,
