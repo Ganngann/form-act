@@ -11,6 +11,10 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // Security Enhancement: Trust Proxy for Rate Limiting
+  // Ensures req.ip is correct when behind a proxy/load balancer
+  app.getHttpAdapter().getInstance().set("trust proxy", 1);
+
   // Security Enhancement: Global Validation Pipe
   // Ensures all inputs are validated against DTOs, stripping unknown properties.
   app.useGlobalPipes(

@@ -17,3 +17,8 @@
 **Vulnerability:** The `validateUser` method in `AuthService` returned immediately if a user was not found, but performed a slow `bcrypt.compare` if the user existed. This timing difference allowed attackers to enumerate valid email addresses.
 **Learning:** `bcrypt.compare` is intentionally slow. Any logic that skips it based on a database lookup creates a measurable timing side-channel.
 **Prevention:** Always ensure the time taken to reject a login attempt is roughly constant, regardless of whether the user exists. Use a dummy hash for comparison when the user is not found.
+
+## 2026-02-16 - Missing Trust Proxy for Rate Limiting
+**Vulnerability:** The API implemented rate limiting but failed to enable `trust proxy` in `main.ts`. When deployed behind a load balancer or proxy, `req.ip` defaults to the proxy's IP, causing the rate limiter to block all users after a few failed attempts by anyone (or fail to limit individual attackers properly).
+**Learning:** Rate limiting logic that relies on `req.ip` is fundamentally flawed in production environments unless the application is explicitly configured to trust the `X-Forwarded-For` header from the upstream proxy.
+**Prevention:** Always verify `app.getHttpAdapter().getInstance().set('trust proxy', 1)` (or equivalent for Fastify) is present in `main.ts` when implementing IP-based security controls. Add an integration test that simulates `X-Forwarded-For` headers to verify correct IP resolution.
