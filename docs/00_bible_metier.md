@@ -19,7 +19,7 @@ Sous l'impulsion de l'Administrateur, la plateforme vise à transformer un proce
 | Fonctionnalité | Client (Entreprise) | Formateur (Prestataire) | Admin (L'Administrateur) |
 | :--- | :---: | :---: | :---: |
 | **Consulter le catalogue** | ✅ | ✅ | ✅ |
-| **Réserver une session** | **R** (Responsable) | ❌ | **A** (Autorité - Forçage possible) |
+| **Réserver une session** | **D** (Demandeur) | ❌ | **V** (Validateur de l'offre) |
 | **Éditer infos facturation** | **R** (Édition libre) | ❌ | **I** (Consultation) |
 | **Gérer disponibilités** | ❌ | **R** (iCal/Manuel) | **I** (Supervision) |
 | **Modifier prix session** | ❌ | ❌ | **R** (Responsable) |
@@ -59,6 +59,7 @@ Le système gère la visibilité des formateurs via une matrice de régions (Pro
 1.  **Zone de Prédilection (Rayon Court)** : Zones où le formateur accepte d'aller quotidiennement pour des formations standards. Objectif : Rentabilité et confort.
 2.  **Zone d'Expertise (Rayon Étendu)** : Zones où le formateur accepte d'aller uniquement pour ses spécialités.
 3.  **Logique d'héritage** : Toute zone "Prédilection" est incluse d'office dans "Expertise".
+4.  **Auto-Sélection (UX)** : Si, pour une session donnée, un *seul* formateur est disponible et compétent dans la zone, il est **pré-sélectionné automatiquement** pour éviter un clic inutile (80% des cas). Le client peut le modifier si d'autres options existent.
 
 ### 2.3. Catégorisation des Formations (Thèmes)
 Pour faciliter la recherche dans le catalogue public, les formations sont regroupées par **Catégories** (ex: Bureautique, Management, Soft Skills).
@@ -87,13 +88,23 @@ Pour faciliter la recherche dans le catalogue public, les formations sont regrou
 *   **Tunnel de Réservation (Fil d'Ariane)** :
     1.  **Formation** : Sélection dans le catalogue.
     2.  **Localisation** : Choix de la Province (Indispensable pour filtrer les formateurs et calcul frais).
-    3.  **Intervenant** : Choix du formateur (si plusieurs dispos pour cette province).
+    3.  **Intervenant** : Choix du formateur.
+        *   *Auto-sélection* : Pré-rempli si candidat unique.
         *   *Cas "Aucun formateur"* : Proposition de demande manuelle.
-    4.  **Date** : Calendrier temps réel (ne montre que les dispos du formateur choisi).
-    5.  **Identification** : Création de compte simplifiée via **N° TVA**.
-        *   Récupération auto des données (VIES/BCE).
-        *   *Mode dégradé* : Saisie manuelle autorisée si API indisponible.
-        *   Inclus : Gestion de réinitialisation de mot de passe.
+    4.  **Date** : Calendrier temps réel.
+    5.  **Identification** : Création de compte simplifiée.
+        *   Récupération auto des données.
+    6.  **Action** : Bouton **"Envoyer ma demande"** (Pas de réservation directe).
+        *   Le statut de la session devient `PENDING_APPROVAL`.
+        *   Le client reçoit un accusé de réception : "Nous préparons votre offre".
+
+### 3.1.Bis Workflow de Validation (Nouveau Flux)
+Une fois la demande envoyée, le processus se déplace dans l'Espace Client :
+1.  **Proposition Admin** : L'Admin reçoit la demande, vérifie la faisabilité et encode le **Prix Final** (Offre).
+2.  **Notification Client** : Le client reçoit un email "Votre offre pour [Formation] est disponible".
+3.  **Validation Client** : Sur son dashboard, le client clique sur **"Accepter l'offre"**.
+    *   Le statut passe à `CONFIRMED`.
+    *   La session est définitivement bloquée dans l'agenda du formateur.
 
 ### 3.2. Espace Client (Tableau de Bord)
 *   **Dashboard** : Timeline des sessions (À venir, En attente d'infos, Terminée). Notifications urgentes.
@@ -126,9 +137,12 @@ Le système applique une logique de "Harcèlement bienveillant" pour garantir la
 ### 4.1. Matrice des Notifications (Workflow)
 
 | Temps | Déclencheur | Destinataire | Objet / Action |
+| **Temps** | Déclencheur | Destinataire | Objet / Action |
 | :--- | :--- | :--- | :--- |
-| **T0** | Réservation | Client + Admin + Formateur | **Confirmation**. Récapitulatif + Invitation Calendrier. |
-| **T+48h** | Logistique vide | Client | **Relance Logistique**. Lien vers formulaire Lieu/Matériel. (Rappel tous les 3 jours). |
+| **H0** | Demande Client | Admin | **Nouvelle Demande**. "Session à chiffrer pour X". |
+| **H+X** | Offre Admin | Client | **Offre Disponible**. "Validez votre formation pour confirmer". |
+| **T0** | Validation Client | Tous | **Confirmation**. Récapitulatif + Invitation Calendrier. |
+| **T+48h** | Logistique vide | Client | **Relance Logistique**. Lien vers formulaire Lieu/Matériel. |
 | **J-30** | Date | Client | **Envoi Descriptif**. PDF du programme détaillé pour affichage interne. |
 | **J-21** | Date | Formateur | **Rappel Mission**. Récapitulatif : Lieu, accès, matériel prévu. |
 | **J-15** | Participants vides | Client | **Alerte Participants**. Rappel encodage noms (Critique pour J-7). |
@@ -180,8 +194,9 @@ Ce formulaire est dynamique et s'adapte au type de formation.
 | **Matériel Écrit** | Checkbox | Oui | Flipchart / Marqueurs / Tableau blanc. |
 | **Connexion Wi-Fi** | Radio | Oui | Accès invité requis ? |
 | **Logistique Accès** | Texte | Non | Étage, ascenseur, code porte, parking réservé. |
-| **Subsides (FormTS)** | Radio | Oui | Tag pour l'export mensuel spécifique. |
 | **Participants** | Liste Objets | Oui | [Prénom, Nom, Email]. |
+
+*Note : La gestion des subsides FormTS n'est plus demandée au client. C'est un champ **Admin-Only** ("Subside IN COMPANY accepté") visible en lecture seule sur le récapitulatif.*
 
 ### 6.2. Sécurité & RGPD
 *   **Données Participants** : Sensibles. Accessibles uniquement par le formateur assigné et l'Admin. Anonymisation automatique (suppression noms/emails) après **24 mois** (Délai légal audit FormTS).

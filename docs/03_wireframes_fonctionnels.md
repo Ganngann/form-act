@@ -23,10 +23,11 @@ graph TD
     E -->|Oui - via TVA| F[Appel API VIES/BCE]
     F -->|Données Récupérées| G[Formulaire Simplifié]
     E -->|Non - Login| H[Authentification]
-    G --> I[Récapitulatif & Validation]
+    G --> I[Envoi Demande]
     H --> I
-    I -->|Confirmation| J[Succès & Envoi Email]
-    J --> K[Redirection Dashboard Client]
+    I -->|Offre Admin| J[Réception Offre]
+    J -->|Validation Client| K[Confirmation Définitive]
+    K --> L[Dashboard Client]
 ```
 
 ### 1.2. Cycle de Vie Logistique (Workflow)
@@ -96,17 +97,16 @@ sequenceDiagram
         *   *Action* : Filtre les formateurs disponibles.
     *   **Étape 2 : Choix Formateur & Date** :
         *   Liste des experts de la zone.
+        *   *Auto-sélection* : Pré-rempli si unique candidat.
         *   Calendrier des disponibilités.
     *   **Cas "Aucun formateur trouvé"** (Zone Désert) :
         *   Message : "Aucun expert disponible automatiquement dans votre zone."
         *   Bouton : **"Demande de prise en charge manuelle"**.
 
-#### ✅ Confirmation / Succès (`/checkout/success`)
-*   **Message Rassurant** : "Votre demande de réservation est confirmée !".
-*   **Récapitulatif Commande** : Date, Formateur, Prix estimé.
-*   **Call To Action (Next Step)** :
-    *   "Complétez les infos logistiques maintenant" (Bouton principal).
-    *   "Aller à mon tableau de bord" (Bouton secondaire).
+#### ✅ Confirmation Demande (`/checkout/success`)
+*   **Message** : "Votre demande est bien reçue !".
+*   **Explication** : "Nous analysons votre demande pour vous proposer la meilleure offre. Vous recevrez un email sous 24h."
+*   **Call To Action** : "Retour au tableau de bord".
 
 ---
 
@@ -131,8 +131,8 @@ sequenceDiagram
 *   **KPIs** : Formations à venir (nb), Actions requises (nb).
 *   **Timeline Sessions** :
     *   Liste chronologique.
-    *   Statuts visuels : 🔴 "Logistique manquante", 🟠 "Participants manquants", 🟢 "Prêt", 🔵 "Terminé".
-    *   Action : Bouton "Gérer" sur chaque ligne.
+    *   Statuts visuels : 🟡 "En Attente Offre", 🟢 "Offre à Valider", 🔴 "Logistique manquante", 🔵 "Terminé".
+    *   Action : Bouton "Valider Offre" ou "Gérer Logistique".
 
 #### 🏢 Profil & Facturation (`/dashboard/client/profil`)
 *   **Coordonnées** :
@@ -150,6 +150,7 @@ sequenceDiagram
     *   Instructions d'accès (Code porte, étage...).
 *   **Bloc 2 : Matériel**
     *   Checkboxes : Projecteur, Paperboard, Wifi Invité.
+    *   *(Note: Case Subsides supprimée côté client - Gestion Admin)*.
 *   **Bloc 3 : Participants**
     *   Tableau simple : Nom, Prénom, Email.
     *   Bouton "Ajouter ligne".
@@ -205,11 +206,15 @@ sequenceDiagram
 *   Gestion des liaisons Formateurs <-> Zones <-> Formations.
 *   Paramétrage des prix de base.
 
-#### 🔧 Interface de Forçage (Modale Admin sur Session)
-*   **Actions Critiques** :
-    *   Bouton "Déverrouiller Logistique" (Permet au client de modifier à J-1).
-    *   Bouton "Changer Formateur" (Ignore règles géographiques).
-    *   Bouton "Annuler Session" (Avec motif + Email auto).
+#### 🔧 Interface de Forçage & Offres (Modale Admin)
+*   **Nouvelle Demande** :
+    *   Champ Input : **"Prix Final HTVA"**.
+    *   Bouton : **"Envoyer l'Offre"**.
+*   **Gestion Session** :
+    *   Toggle : **"Subside FormTS Accepté"**.
+    *   Bouton "Déverrouiller Logistique".
+    *   Bouton "Changer Formateur".
+    *   Bouton "Annuler Session".
 
 #### 💶 Odoo Prep (`/admin/odoo-prep`)
 *   **File d'attente** : Liste sessions terminées avec preuve uploadée.

@@ -2,7 +2,66 @@
 
 Ce document centralise toutes les tâches du projet. Il a été réorganisé pour prioriser la stabilité et la conformité métier (Bible) avant l'extension fonctionnelle.
 
-## 🚨 Sprint Actuel : Stabilisation & Conformité (Priorité Immédiate)
+## 🚨 Sprint Actuel : Ajustements Post-Démo 18/02
+
+### US-01 : Sélection Automatique Formateur (UX)
+**Référence :** Retour Démo 18/02
+**En tant que** Admin,
+**Je veux** que le système pré-remplisse le formateur s'il est le seul disponible/compétent,
+**Afin de** réduire les clics inutiles (80% des cas).
+
+*Critères d'Acceptation (AC) :*
+- [ ] Pré-sélection automatique dans le formulaire de création/modification si 1 seul candidat.
+- [ ] Possibilité de modifier manuellement.
+
+### US-02 : Flux Demandeur - Demande de Formation
+**Référence :** Retour Démo 18/02
+**En tant que** Client,
+**Je veux** envoyer une demande sans réservation immédiate,
+**Afin de** recevoir une offre tarifaire précise avant de m'engager.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Remplacement bouton "Réserver" par "Envoyer une demande".
+- [ ] Statut initial : `PENDING_APPROVAL` (Demande en attente).
+- [ ] Email de confirmation de réception.
+
+### US-03 : Admin - Proposition Tarifaire
+**Référence :** Retour Démo 18/02
+**En tant que** Admin,
+**Je veux** définir un prix pour une demande client,
+**Afin de** lui soumettre une offre.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Notification "Nouvelle Demande".
+- [ ] Interface de saisie du prix (HTVA/TTC) sur la session.
+- [ ] Bouton "Envoyer l'offre" -> Notification Client.
+- [ ] Statut : `OFFER_SENT`.
+
+### US-04 : Client - Validation Offre
+**Référence :** Retour Démo 18/02
+**En tant que** Client,
+**Je veux** valider l'offre reçue,
+**Afin de** confirmer la session.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Vue "Validation Offre" avec récapitulatif prix.
+- [ ] Bouton "Accepter l'offre".
+- [ ] Passage au statut `CONFIRMED`.
+
+### US-05 : Admin - Gestion Subsides FormTS
+**Référence :** Retour Démo 18/02
+**En tant que** Admin,
+**Je veux** valider moi-même l'éligibilité aux subsides,
+**Afin de** garder le contrôle financier.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Retrait case "Demander subside" côté Client.
+- [ ] Ajout toggle "Subside IN COMPANY accepté" côté Admin.
+- [ ] Affichage lecture seule pour le Client.
+
+---
+
+## 🏗️ Sprint Précédent : Stabilisation & Conformité (Priorité Immédiate)
 *Objectif : Garantir que le tunnel de vente (Client) et la gestion logistique (Formateur) fonctionnent sans défaut avant d'ouvrir la facturation.*
 
 ### Bug-03 : Checkout & Récapitulatif (Estimation)
