@@ -12,16 +12,43 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Pencil, Trash2, Loader2, Eye } from "lucide-react"
+import { MoreHorizontal, Pencil, Trash2, Loader2, Eye, Ban, CheckCircle } from "lucide-react"
 import { API_URL } from "@/lib/config"
 
 interface TrainerActionsProps {
     trainerId: string
+    isActive: boolean
 }
 
-export function TrainerActions({ trainerId }: TrainerActionsProps) {
+export function TrainerActions({ trainerId, isActive }: TrainerActionsProps) {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
+
+    const handleToggleStatus = async () => {
+        if (isActive) {
+             if (!confirm("Attention : Désactiver ce compte empêchera le formateur de se connecter. Les sessions futures devront être réassignées manuellement. Continuer ?")) {
+                 return;
+             }
+        }
+
+        setLoading(true)
+        try {
+            const res = await fetch(`${API_URL}/admin/trainers/${trainerId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ isActive: !isActive }),
+            })
+            if (res.ok) {
+                router.refresh()
+            } else {
+                alert("Erreur lors de la mise à jour")
+            }
+        } catch (e) {
+            alert("Erreur réseau")
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const handleDelete = async () => {
         if (!confirm("Êtes-vous sûr de vouloir supprimer ce formateur ?")) return
@@ -66,6 +93,14 @@ export function TrainerActions({ trainerId }: TrainerActionsProps) {
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem
+                    onClick={handleToggleStatus}
+                    disabled={loading}
+                    className={`cursor-pointer font-medium w-full flex items-center ${isActive ? 'text-orange-600 focus:text-orange-700 focus:bg-orange-50' : 'text-green-600 focus:text-green-700 focus:bg-green-50'}`}
+                >
+                    {isActive ? <Ban className="mr-2 h-4 w-4" /> : <CheckCircle className="mr-2 h-4 w-4" />}
+                    {isActive ? "Désactiver" : "Activer"}
+                </DropdownMenuItem>
                 <DropdownMenuItem
                     onClick={handleDelete}
                     disabled={loading}

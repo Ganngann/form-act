@@ -13,16 +13,20 @@ export class TrainersService {
     private authService: AuthService,
   ) { }
 
-  async findAll(skip: number = 0, take: number = 10, search?: string) {
-    const where: Prisma.FormateurWhereInput = search
-      ? {
-        OR: [
-          { firstName: { contains: search } },
-          { lastName: { contains: search } },
-          { email: { contains: search } },
-        ],
-      }
-      : {};
+  async findAll(skip: number = 0, take: number = 10, search?: string, includeInactive: boolean = false) {
+    const where: Prisma.FormateurWhereInput = {};
+
+    if (search) {
+      where.OR = [
+        { firstName: { contains: search } },
+        { lastName: { contains: search } },
+        { email: { contains: search } },
+      ];
+    }
+
+    if (!includeInactive) {
+      where.isActive = true;
+    }
 
     const [data, total] = await Promise.all([
       this.prisma.formateur.findMany({
@@ -135,6 +139,7 @@ export class TrainersService {
         lastName: data.lastName,
         email: data.email,
         bio: data.bio,
+        isActive: data.isActive,
       };
 
       if (data.predilectionZones) {

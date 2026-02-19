@@ -5,18 +5,47 @@ import { useRouter } from "next/navigation";
 import { API_URL } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Pencil, Trash2, UserCog, ShieldAlert } from "lucide-react";
+import { Pencil, Trash2, UserCog, ShieldAlert, Shield } from "lucide-react";
 import Link from "next/link";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface Trainer {
     id: string;
     firstName: string;
     lastName: string;
+    isActive: boolean;
 }
 
 export function AdminTrainerControls({ trainer }: { trainer: Trainer }) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [isActive, setIsActive] = useState(trainer.isActive);
+
+    const handleToggleStatus = async (checked: boolean) => {
+        if (!checked) {
+             if (!confirm("Attention : Désactiver ce compte empêchera le formateur de se connecter. Les sessions futures devront être réassignées manuellement. Continuer ?")) {
+                 return;
+             }
+        }
+
+        setLoading(true);
+        try {
+            const res = await fetch(`${API_URL}/admin/trainers/${trainer.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ isActive: checked }),
+                credentials: "include"
+            });
+            if (!res.ok) throw new Error("Update failed");
+            setIsActive(checked);
+            router.refresh();
+        } catch (e) {
+            alert("Erreur lors de la mise à jour");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleDelete = async () => {
         if (!confirm("Êtes-vous sûr de vouloir supprimer ce formateur ? Cette action est irréversible.")) return;
@@ -39,6 +68,30 @@ export function AdminTrainerControls({ trainer }: { trainer: Trainer }) {
 
     return (
         <div className="space-y-6">
+            <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden">
+                <CardHeader className="bg-gray-50/50 border-b border-gray-100/50 pb-4">
+                    <CardTitle className="text-lg font-black text-gray-900 tracking-tight flex items-center gap-2">
+                        <Shield className="h-5 w-5 text-primary" /> Accès & Statut
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 p-8 pt-6">
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="space-y-0.5">
+                             <Label htmlFor="active-mode" className="text-base font-bold text-gray-700">Compte Actif</Label>
+                             <p className="text-xs text-muted-foreground">
+                                {isActive ? "Accès autorisé" : "Accès bloqué"}
+                             </p>
+                        </div>
+                        <Switch
+                            id="active-mode"
+                            checked={isActive}
+                            onCheckedChange={handleToggleStatus}
+                            disabled={loading}
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+
             <Card className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden">
                 <CardHeader className="bg-gray-50/50 border-b border-gray-100/50 pb-4">
                     <CardTitle className="text-lg font-black text-gray-900 tracking-tight flex items-center gap-2">

@@ -4,12 +4,13 @@ import { Input } from '@/components/ui/input';
 import { API_URL } from '@/lib/config';
 import { Plus, Users, Search } from 'lucide-react';
 import { TrainerActions } from '@/components/admin/TrainerActions';
+import { TrainerFilters } from '@/components/admin/TrainerFilters';
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
-async function getTrainers(page: number = 0, search: string = '') {
-  const res = await fetch(`${API_URL}/admin/trainers?skip=${page * 10}&take=10&search=${search}`, {
+async function getTrainers(page: number = 0, search: string = '', includeInactive: boolean = false) {
+  const res = await fetch(`${API_URL}/admin/trainers?skip=${page * 10}&take=10&search=${search}&includeInactive=${includeInactive}`, {
     cache: 'no-store',
   });
   if (!res.ok) throw new Error('Failed to fetch trainers');
@@ -19,11 +20,12 @@ async function getTrainers(page: number = 0, search: string = '') {
 export default async function TrainersPage({
   searchParams,
 }: {
-  searchParams: { page?: string; q?: string };
+  searchParams: { page?: string; q?: string; includeInactive?: string };
 }) {
   const page = Number(searchParams.page) || 0;
   const search = searchParams.q || '';
-  const { data: trainers, total } = await getTrainers(page, search);
+  const includeInactive = searchParams.includeInactive === 'true';
+  const { data: trainers, total } = await getTrainers(page, search, includeInactive);
 
   return (
     <div className="space-y-12">
@@ -48,17 +50,7 @@ export default async function TrainersPage({
       </div>
 
       <Card className="border-none shadow-xl bg-white/50 backdrop-blur-sm rounded-[2.5rem] overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
-          <form className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              name="q"
-              placeholder="Rechercher un formateur..."
-              defaultValue={search}
-              className="pl-10 h-11 rounded-xl bg-white border-transparent shadow-sm focus-visible:ring-primary/20 font-medium"
-            />
-          </form>
-        </div>
+        <TrainerFilters />
 
         <div className="p-0">
           <table className="w-full text-sm text-left">
@@ -99,12 +91,14 @@ export default async function TrainersPage({
                   </td>
                   <td className="py-4">
                     <div className="flex items-center gap-1.5">
-                      <div className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
-                      <span className="text-xs font-bold text-green-700">Actif</span>
+                      <div className={`h-2 w-2 rounded-full ${trainer.isActive ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]' : 'bg-gray-400'}`} />
+                      <span className={`text-xs font-bold ${trainer.isActive ? 'text-green-700' : 'text-gray-500'}`}>
+                        {trainer.isActive ? 'Actif' : 'Inactif'}
+                      </span>
                     </div>
                   </td>
                   <td className="pr-8 py-4 text-right">
-                    <TrainerActions trainerId={trainer.id} />
+                    <TrainerActions trainerId={trainer.id} isActive={trainer.isActive} />
                   </td>
                 </tr>
               ))}
@@ -126,12 +120,12 @@ export default async function TrainersPage({
         </p>
         <div className="flex gap-2">
           {page > 0 && (
-            <Link href={`/admin/trainers?page=${page - 1}&q=${search}`}>
+            <Link href={`/admin/trainers?page=${page - 1}&q=${search}&includeInactive=${includeInactive}`}>
               <Button variant="outline" className="rounded-xl font-bold">Précédent</Button>
             </Link>
           )}
           {(page + 1) * 10 < total && (
-            <Link href={`/admin/trainers?page=${page + 1}&q=${search}`}>
+            <Link href={`/admin/trainers?page=${page + 1}&q=${search}&includeInactive=${includeInactive}`}>
               <Button variant="outline" className="rounded-xl font-bold">Suivant</Button>
             </Link>
           )}

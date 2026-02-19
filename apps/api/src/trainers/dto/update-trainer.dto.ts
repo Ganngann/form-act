@@ -1,4 +1,4 @@
-import { IsArray, IsEmail, IsOptional, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsEmail, IsOptional, IsString } from "class-validator";
 
 export class UpdateTrainerDto {
   @IsEmail()
@@ -26,4 +26,8 @@ export class UpdateTrainerDto {
   @IsString()
   @IsOptional()
   bio?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 }

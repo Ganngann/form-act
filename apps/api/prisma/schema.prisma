@@ -49,6 +49,7 @@ model Formateur {
   bio                String?
   avatarUrl         String?
   calendarToken     String?     @unique
+  isActive          Boolean     @default(true)
 }
 
 model Zone {

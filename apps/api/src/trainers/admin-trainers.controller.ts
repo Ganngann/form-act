@@ -21,11 +21,13 @@ export class AdminTrainersController {
     @Query("skip") skip?: string,
     @Query("take") take?: string,
     @Query("search") search?: string,
+    @Query("includeInactive") includeInactive?: string,
   ) {
     return this.trainersService.findAll(
       skip ? +skip : 0,
       take ? +take : 10,
       search,
+      includeInactive === "true",
     );
   }
 

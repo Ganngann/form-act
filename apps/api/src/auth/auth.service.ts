@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from "@nestjs/common";
+import { Injectable, BadRequestException, ForbiddenException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "../prisma/prisma.service";
 import * as bcrypt from "bcrypt";
@@ -28,7 +28,14 @@ export class AuthService {
     email: string,
     pass: string,
   ): Promise<Omit<User, "password"> | null> {
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        formateur: {
+          select: { isActive: true },
+        },
+      },
+    });
 
     // Mitigate timing attack: Always compare password, even if user not found.
     const passwordToCompare =
@@ -36,8 +43,14 @@ export class AuthService {
     const isMatch = await bcrypt.compare(pass, passwordToCompare);
 
     if (user && isMatch && user.password) {
+      if (user.formateur && user.formateur.isActive === false) {
+        throw new ForbiddenException(
+          "Votre compte a été désactivé. Veuillez contacter l'administrateur.",
+        );
+      }
+
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = user;
+      const { password, formateur, ...result } = user as any;
       return result;
     }
     return null;
