@@ -10,9 +10,11 @@ import { LogoutButton } from "@/components/LogoutButton";
 
 interface HeaderProps {
   userRole?: string | null;
+  logoText?: string;
+  logoUrl?: string;
 }
 
-export function Header({ userRole }: HeaderProps) {
+export function Header({ userRole, logoText, logoUrl }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -38,11 +40,20 @@ export function Header({ userRole }: HeaderProps) {
       <div className="container flex items-center justify-between">
         <div className="flex items-center gap-12">
           <Link href="/" className="flex items-center gap-3 group" onClick={() => setIsMenuOpen(false)}>
-            <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center transition-transform group-hover:scale-110">
-              <Zap className="h-4 w-4 text-white fill-white" />
-            </div>
+            {logoUrl ? (
+               // eslint-disable-next-line @next/next/no-img-element
+               <img
+                 src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}${logoUrl}`}
+                 alt={logoText || "Logo"}
+                 className="h-10 w-auto transition-transform group-hover:scale-105"
+               />
+            ) : (
+              <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center transition-transform group-hover:scale-110">
+                <Zap className="h-4 w-4 text-white fill-white" />
+              </div>
+            )}
             <span className="text-xl font-bold tracking-tighter text-foreground">
-              FORM-ACT
+              {logoText || "FORM-ACT"}
             </span>
           </Link>
 

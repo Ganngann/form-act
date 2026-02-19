@@ -52,6 +52,27 @@ describe("FilesService", () => {
     expect(service).toBeDefined();
   });
 
+  describe("getPublicFile", () => {
+    it("should throw NotFoundException for path traversal", async () => {
+      await expect(service.getPublicFile("../test.jpg")).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it("should throw NotFoundException if file does not exist", async () => {
+      (existsSync as jest.Mock).mockReturnValue(false);
+      await expect(service.getPublicFile("test.jpg")).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it("should return file stream if file exists", async () => {
+      (existsSync as jest.Mock).mockReturnValue(true);
+      const result = await service.getPublicFile("test.jpg");
+      expect(result).toBeDefined();
+    });
+  });
+
   describe("getFile", () => {
     it("should throw NotFoundException for path traversal", async () => {
       await expect(

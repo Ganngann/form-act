@@ -25,6 +25,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
 import { API_URL } from "@/lib/config";
 import { cn } from "@/lib/utils";
+import { Participant } from "@/types/formation";
 
 // --- Types & Schema ---
 
@@ -63,7 +64,7 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
 
     // Parse initial data
     const initialLogistics = session.logistics ? JSON.parse(session.logistics) : {};
-    const initialParticipants = session.participants ? JSON.parse(session.participants) : [];
+    const initialParticipants: Participant[] = session.participants ? JSON.parse(session.participants) : [];
 
     const form = useForm<LogisticsFormValues>({
         resolver: zodResolver(logisticsSchema),
@@ -292,7 +293,7 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
                             <div className="bg-muted/5 p-6 rounded-2xl border border-border/50 text-sm space-y-3 min-h-[160px] max-h-[240px] overflow-y-auto">
                                 {initialParticipants.length > 0 ? (
                                     <ul className="space-y-3">
-                                        {initialParticipants.map((p: any, i: number) => (
+                                        {initialParticipants.map((p: Participant, i: number) => (
                                             <li key={i} className="flex items-center gap-3 group">
                                                 <div className="h-8 w-8 rounded-lg bg-white border border-border flex items-center justify-center text-[10px] font-black text-primary group-hover:border-primary transition-colors uppercase">
                                                     {(p.firstName?.[0] || '') + (p.lastName?.[0] || '')}

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 async function getData() {
     const [catsRes, trainersRes] = await Promise.all([
         fetch(`${API_URL}/categories`, { cache: 'no-store' }),
-        fetch(`${API_URL}/admin/trainers`, { cache: 'no-store' }) // Trainers list for selection
+        fetch(`${API_URL}/admin/trainers?take=1000`, { cache: 'no-store' }) // Trainers list for selection
     ]);
 
     const categories = await catsRes.json();

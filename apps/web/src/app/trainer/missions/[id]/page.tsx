@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { API_URL } from '@/lib/config';
+import { Participant } from '@/types/formation';
 
 import { ProofUploadWidget } from '@/components/trainer/proof-upload-widget';
 import Link from 'next/link';
@@ -49,7 +50,7 @@ export default async function MissionDetailsPage({ params }: { params: { id: str
         logistics = { raw: session.logistics }; // Fallback
     }
 
-    let participants: any[] = [];
+    let participants: Participant[] = [];
     try {
         participants = session.participants ? JSON.parse(session.participants) : [];
     } catch (e) {
@@ -216,7 +217,7 @@ export default async function MissionDetailsPage({ params }: { params: { id: str
                             <CardContent className="p-6">
                                 {participants.length > 0 ? (
                                     <ul className="space-y-4">
-                                        {participants.map((p: any, i: number) => {
+                                        {participants.map((p: Participant, i: number) => {
                                             const initials = (p.name || '?').split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
                                             return (
                                                 <li key={i} className="flex items-center gap-4 p-3 rounded-2xl bg-muted/5 hover:bg-muted/10 transition-colors border border-transparent hover:border-border/50">

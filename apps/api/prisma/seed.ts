@@ -311,6 +311,83 @@ async function main() {
   }
 
   console.log('Seeding finished with realistic slow-paced rhythm and no trainer collisions.');
+
+  // 8. Site Configuration (CMS)
+  console.log('Seeding Site Configuration...');
+
+  const configs = [
+    {
+      key: 'global_settings',
+      value: JSON.stringify({
+        logoText: 'FORM-ACT',
+        email: 'contact@form-act.com',
+        phone: '+32 2 123 45 67',
+        address: 'Avenue de la Formation 123, 1000 Bruxelles',
+        social: {
+          linkedin: 'https://linkedin.com/company/form-act',
+          facebook: 'https://facebook.com/formact'
+        }
+      })
+    },
+    {
+      key: 'home_hero',
+      value: JSON.stringify({
+        tagline: 'The Signature of Expertise',
+        title: 'Activez votre <br /><span class="text-primary italic">Expertise.</span>',
+        intro: 'La puissance du réseau Form-Act dans une interface moderne pour propulser vos talents vers de nouveaux sommets.'
+      })
+    },
+    {
+      key: 'home_promo',
+      value: JSON.stringify({
+        title: 'Plateforme n°1 <br />des Experts d\'Élite',
+        subtitle: 'Le Futur de la Formation',
+        description: 'Accédez à des programmes exclusifs et gérez votre croissance dans une interface pensée pour la performance.',
+        buttonLabel: 'Rejoindre le Réseau'
+      })
+    },
+    {
+      key: 'home_values',
+      value: JSON.stringify([
+        {
+          title: 'Qualiopi & <br />Certifications',
+          text: 'Toutes nos formations répondent aux référentiels de qualité les plus exigeants pour garantir votre satisfaction et vos financements.'
+        },
+        {
+          title: 'Réseau d\'Experts <br />Indépendants',
+          text: 'Un accès direct aux meilleurs formateurs du marché, sélectionnés pour leur expertise technique et leur pédagogie innovante.'
+        },
+        {
+          title: 'Tracking & <br />Reporting Live',
+          text: 'Suivez l\'impact de vos formations en temps réel grâce à notre dashboard intelligent et nos outils de reporting automatisés.'
+        }
+      ])
+    },
+    {
+      key: 'home_trust',
+      value: JSON.stringify({
+        quote: '"Form-Act a radicalement changé notre approche de la formation continue. La qualité des intervenants est simplement inégalée."',
+        author: 'Julien Morel',
+        role: 'DRH — TechCorp Solutions'
+      })
+    },
+    {
+      key: 'home_cta',
+      value: JSON.stringify({
+        title: 'Prêt à transformer <br />vos équipes ?',
+        buttonPrimary: 'Demander un Devis',
+        buttonSecondary: 'Explorer le Catalogue'
+      })
+    }
+  ];
+
+  for (const config of configs) {
+    await prisma.siteConfiguration.upsert({
+      where: { key: config.key },
+      update: {}, // Don't overwrite if exists
+      create: config
+    });
+  }
 }
 
 main()

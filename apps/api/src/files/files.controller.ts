@@ -13,6 +13,26 @@ import { AuthGuard } from "@nestjs/passport";
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
+  @Get("public/:filename")
+  async getPublicFile(
+    @Param("filename") filename: string,
+    @Response({ passthrough: true }) res,
+  ) {
+    const file = await this.filesService.getPublicFile(filename);
+
+    if (filename.endsWith(".pdf"))
+      res.set({ "Content-Type": "application/pdf" });
+    else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg"))
+      res.set({ "Content-Type": "image/jpeg" });
+    else if (filename.endsWith(".png"))
+      res.set({ "Content-Type": "image/png" });
+    else if (filename.endsWith(".webp"))
+      res.set({ "Content-Type": "image/webp" });
+    else res.set({ "Content-Type": "application/octet-stream" });
+
+    return file;
+  }
+
   @UseGuards(AuthGuard("jwt"))
   @Get(":type/:filename")
   async getFile(

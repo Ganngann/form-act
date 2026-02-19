@@ -48,6 +48,13 @@ export type Client = {
   companyName: string;
 };
 
+export type Participant = {
+  firstName?: string;
+  lastName?: string;
+  name?: string;
+  email?: string;
+};
+
 export type Session = {
   id: string;
   date: string | Date;
@@ -55,6 +62,7 @@ export type Session = {
   slot?: string;
   trainerId?: string;
   logistics?: string;
+  participants?: string | null;
   proofUrl?: string;
   billedAt?: string | Date;
   formation: Formation;
