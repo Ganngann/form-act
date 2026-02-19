@@ -114,7 +114,6 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 - [ ] Formulaire d'inscription accessible publiquement (Lien "Espace Client" ou "S'inscrire").
 - [ ] Collecte des informations de base (Nom, Email, Mot de passe).
 - [ ] Redirection vers le Dashboard Client après inscription.
-- [ ] *Note : La validation TVA/Facturation se fera ultérieurement dans le profil.*
 
 ### US-09 : Formateur - Agenda & Synchronisation (iCal In)
 **Référence :** Bible 2.3 & Demande Client
