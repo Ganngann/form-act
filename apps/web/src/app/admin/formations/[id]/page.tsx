@@ -15,7 +15,7 @@ async function getFormation(id: string) {
 async function getMetadata() {
     const [catsRes, trainersRes] = await Promise.all([
         fetch(`${API_URL}/categories`, { cache: 'no-store' }),
-        fetch(`${API_URL}/admin/trainers`, { cache: 'no-store' })
+        fetch(`${API_URL}/admin/trainers?take=1000`, { cache: 'no-store' })
     ]);
 
     const categories = await catsRes.json();
