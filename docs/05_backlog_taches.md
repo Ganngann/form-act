@@ -59,7 +59,128 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 - [ ] Ajout toggle "Subside IN COMPANY accepté" côté Admin.
 - [ ] Affichage lecture seule pour le Client.
 
----
+### US-06 : Admin - Gestion de l'Identité du Site (CMS)
+**Référence :** Demande Client (Parcours du site)
+**En tant que** Administrateur,
+**Je veux** pouvoir modifier le logo, le nom du site et les contenus textuels,
+**Afin de** gérer l'image de marque en toute autonomie sans faire appel à un développeur.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Section "Paramètres Généraux" dans l'admin.
+- [ ] Upload et gestion du Logo (Header, Favicon, Emails).
+- [ ] Champ éditable pour le Nom de la Plateforme (Impacte SEO et textes).
+- [ ] Éditeur (Rich Text) pour les contenus clés : Texte Accueil, Pied de page, Mentions Légales/CGV.
+
+### US-07 : Footer (Pied de Page)
+**Référence :** Demande Client (Parcours du site)
+**En tant que** Visiteur,
+**Je veux** avoir accès aux informations légales et pratiques en bas de chaque page,
+**Afin de** naviguer en toute confiance.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Création du composant global `Footer`.
+- [ ] Liens vers : "Mentions Légales", "CGV", "Politique de Confidentialité".
+- [ ] Coordonnées de contact (Adresse, Email).
+- [ ] Copyright dynamique (Année).
+- [ ] *Lien avec US-06 : Les textes doivent être modifiables via l'admin.*
+
+### US-08 : Inscription Spontanée Client
+**Référence :** Demande Client (Parcours du site)
+**En tant que** Prospect Client,
+**Je veux** créer mon compte sans devoir initier une demande de formation,
+**Afin de** préparer mes informations de facturation et accéder à mon espace personnel.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Formulaire d'inscription accessible publiquement (Lien "Espace Client" ou "S'inscrire").
+- [ ] Collecte des informations de base (Nom, Email, Mot de passe).
+- [ ] Redirection vers le Dashboard Client après inscription.
+- [ ] *Note : La validation TVA/Facturation se fera ultérieurement dans le profil.*
+
+### US-09 : Formateur - Agenda & Synchronisation (iCal In)
+**Référence :** Bible 2.3 & Demande Client
+**En tant que** Formateur,
+**Je veux** gérer mes plages d'indisponibilité manuellement ET synchroniser mon agenda personnel (Google/Outlook),
+**Afin de** ne pas recevoir de demandes sur des créneaux déjà occupés par ailleurs.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Interface Agenda dans l'Espace Formateur (Vue Mensuelle/Hebdo).
+- [ ] Ajout manuel de "Jours OFF" ou "Plages Occupées".
+- [ ] **Import iCal (Flux Entrant)** : Champ pour coller l'URL ics de son agenda perso.
+- [ ] Tâche de fond (Cron) pour lire les flux iCal et bloquer les créneaux correspondants.
+- [ ] Prise en compte immédiate par l'algorithme d'attribution (Exclusion du formateur si occupé).
+
+### US-10 : Téléchargement Liste Participants (Admin/Formateur)
+**Référence :** Demande Client
+**En tant que** Formateur ou Administrateur,
+**Je veux** télécharger la liste des participants formattée (Liste d'émargement),
+**Afin de** la faire signer le jour J ou d'en disposer pour gestion.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Bouton "Télécharger Liste Émargement (PDF)" sur le détail de la mission (Espace Formateur).
+- [ ] Bouton "Télécharger Liste" sur la fiche session (Espace Admin).
+- [ ] Le PDF doit contenir : Infos Session, Liste Noms/Prénoms, Colonne Signature.
+- [ ] Accessible dès que la session est confirmée.
+
+### US-11 : Tous - Modification du Mot de Passe
+**Référence :** Demande Client
+**En tant que** Utilisateur (Admin, Client, Formateur),
+**Je veux** modifier mon mot de passe actuel depuis mon profil,
+**Afin de** sécuriser mon compte.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Section "Sécurité" dans le profil utilisateur.
+- [ ] Formulaire : Ancien mot de passe / Nouveau mot de passe / Confirmation.
+- [ ] Validation de complexité (Min 8 caractères).
+- [ ] Feedback visuel "Mot de passe mis à jour".
+- [ ] *Complète l'US-32 (Reset Password par email).*
+
+### US-12 : Admin - Désactivation Formateur
+**Référence :** Demande Client
+**En tant que** Administrateur,
+**Je veux** désactiver un formateur qui ne collabore plus avec nous,
+**Afin de** l'exclure des nouvelles assignations et bloquer son accès, sans perdre l'historique.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Toggle "Actif / Inactif" sur la fiche formateur.
+- [ ] Si Inactif : Impossible de se connecter.
+- [ ] Si Inactif : Exclu des résultats de recherche pour les nouvelles sessions.
+- [ ] Si Inactif : Conservé dans l'historique des sessions passées.
+- [ ] Filtre "Afficher les inactifs" dans la liste des formateurs.
+
+### US-13 : Admin - Reset Filtres Sessions
+**Référence :** Demande Client
+**En tant que** Administrateur,
+**Je veux** un bouton pour désactiver tous les filtres actifs sur la liste des sessions,
+**Afin de** visualiser l'intégralité des dossiers en un clic.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Bouton "Voir tout" ou "Réinitialiser" à côté de la barre de recherche/filtres.
+- [ ] Action : Remet tous les filtres (Recherche, Statut, Date) à zéro.
+- [ ] Recharge la liste complète des sessions (hors archives).
+
+### US-14 : Admin - Relance Manuelle Logistique Client
+**Référence :** Demande Client
+**En tant que** Administrateur,
+**Je veux** déclencher manuellement l'email de rappel logistique à un client,
+**Afin de** débloquer un dossier sans attendre l'automatisme (ou en cas de non-réception).
+
+*Critères d'Acceptation (AC) :*
+- [ ] Bouton "Relancer Client (Logistique)" sur la fiche session (si logistique incomplète).
+- [ ] Envoi immédiat de l'email type "Relance Logistique" (avec lien formulaire).
+- [ ] Feedback visuel "Email de relance envoyé".
+- [ ] Feedback visuel "Email de relance envoyé".
+
+### US-15 : Admin - Édition Textes Emails (CMS)
+**Référence :** Demande Client
+**En tant que** Administrateur,
+**Je veux** modifier le contenu des emails automatiques (Offre, Validation, Relance),
+**Afin de** personnaliser ma communication sans développeur.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Section "Modèles d'Emails" dans l'admin (avec Paramètres Généraux).
+- [ ] Liste des templates editables (Sujet + Corps).
+- [ ] Support des variables dynamiques (ex: `{{client_name}}`, `{{session_date}}`).
+- [ ] Sauvegarde en base de données plutôt que dans le code (fichiers JSON ou table DB).
 
 ## 🏗️ Sprint Précédent : Stabilisation & Conformité (Priorité Immédiate)
 *Objectif : Garantir que le tunnel de vente (Client) et la gestion logistique (Formateur) fonctionnent sans défaut avant d'ouvrir la facturation.*
@@ -78,8 +199,26 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 ### Bug-07 : Amélioration Seed (Dette Technique)
 - [x] Corriger `seed.ts` pour utiliser des `upsert` robustes sur les titres de formation et éviter les multiplications infinies au re-seed.
 
+### Bug-08 : Admin - Sélection Formateurs Experts
+**Symptôme :** L'administrateur ne peut pas sélectionner les formateurs experts lors de l'édition d'une formation.
+**Impact :** Bloquant pour la gestion des formations "Expertise".
+- [ ] Analyser le composant de sélection (Combobox/Select).
+- [ ] Vérifier la requête API de récupération des formateurs.
+- [ ] Corriger la liaison ID Formation <-> ID Formateur.
+
+### Bug-09 : UI - Champs Formulaire Formateur
+**Symptôme :** Le texte des champs "Email" et "Biographie" chevauche les icônes sur la page d'édition.
+**Action :** Ajuster le padding-left des inputs concernés (CSS Tailwind).
+
 ### Tech-01 : Refactorisation Dialog UI (Dette Technique)
 - [x] Le composant `apps/web/src/components/ui/dialog.tsx` est une implémentation "maison" simplifiée qui n'utilise pas les primitives complètes de `@radix-ui/react-dialog` (Portal, Overlay). Il faudrait le migrer vers l'implémentation standard shadcn/ui pour garantir une accessibilité et une gestion du focus optimales.
+
+### Tech-02 : UI - Standardisation Header Admin
+**But :** Harmoniser les en-têtes des pages d'administration.
+**Design :** Badge (Pill) + Titre (H1) + Sous-titre + Bouton Retour optionnel.
+- [ ] Créer un composant réutilisable `PageHeader` (ou `AdminHeader`).
+- [ ] Props : `badge`, `title`, `description`, `backButton` (boolean/href), `breadcrumb` (array ou ReactNode), `children` (ReactNode pour actions à droite).
+- [ ] Remplacer les en-têtes "en dur" dans les pages Admin (Dashboard, Sessions, Archives, etc.).
 
 ---
 
@@ -145,9 +284,7 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 ## 🧊 Frigo / V2 (Post-MVP)
 *Fonctionnalités "Confort" identifiées dans la Bible mais non bloquantes pour le lancement.*
 
-### US-37 : Tech - Import Calendrier (iCal In)
-**Référence Bible :** Section 2.3
-- [ ] Lecture de l'agenda personnel du formateur pour bloquer les disponibilités.
+
 
 ### US-38 : Conformité RGPD (Anonymisation)
 **Référence Bible :** Section 6.2

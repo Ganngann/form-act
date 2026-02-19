@@ -83,8 +83,9 @@ Pour faciliter la recherche dans le catalogue public, les formations sont regrou
 ## 3. Architecture & Parcours Utilisateurs
 
 ### 3.1. Interface Publique (Frontend)
-*   **Accueil** : Moteur de recherche (Thème uniquement).
+*   **Accueil** : Moteur de recherche (Thème uniquement) + Lien "Accès / Inscription Client".
 *   **Catalogue** : Grille des formations triées par Thème.
+*   **Inscription Spontanée** : Formulaire dédié permettant de créer un compte client sans passer commande immédiatement.
 *   **Tunnel de Réservation (Fil d'Ariane)** :
     1.  **Formation** : Sélection dans le catalogue.
     2.  **Localisation** : Choix de la Province (Indispensable pour filtrer les formateurs et calcul frais).
@@ -119,7 +120,7 @@ Une fois la demande envoyée, le processus se déplace dans l'Espace Client :
 *   **Mon Profil** : Édition autonome de la Bio et de la Photo.
 
 ### 3.4. Panneau Administrateur (L'Administrateur)
-*   **Gestion des Formateurs (Onboarding)** : Création manuelle des comptes formateurs (Pas d'inscription publique). Configuration de leurs zones et compétences.
+*   **Gestion des Formateurs (Onboarding & Offboarding)** : Création manuelle des comptes. Activation/Désactivation des accès (Soft Delete pour conserver l'historique). Configuration Zones/Compétences.
 *   **Master Calendar** : Vue globale de l'occupation de toute l'équipe.
 *   **Gestion Catalogue** : Création formations, liaisons Experts/Zones.
 *   **Gestion du "Forçage"** :
@@ -127,6 +128,7 @@ Une fois la demande envoyée, le processus se déplace dans l'Espace Client :
     *   Assigner un formateur hors de sa zone.
     *   Modifier lieu/participants après le verrouillage J-7.
 *   **Odoo Prep** : File d'attente des sessions terminées prêtes à facturer.
+*   **Paramètres Généraux (CMS)** : Interface de gestion de l'identité du site (Logo, Nom, Textes d'accueil, Mentions légales).
 
 ---
 
