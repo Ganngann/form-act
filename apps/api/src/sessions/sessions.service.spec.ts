@@ -2,13 +2,15 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { SessionsService } from "./sessions.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { EmailService } from "../email/email.service";
-import { NotFoundException } from "@nestjs/common";
+import { PdfService } from "../files/pdf.service";
+import { NotFoundException, BadRequestException } from "@nestjs/common";
 import { Session, Formation } from "@prisma/client";
 
 describe("SessionsService", () => {
   let service: SessionsService;
   let prisma: PrismaService;
   let emailService: EmailService;
+  let pdfService: PdfService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -32,12 +34,19 @@ describe("SessionsService", () => {
             sendEmailWithAttachments: jest.fn(),
           },
         },
+        {
+          provide: PdfService,
+          useValue: {
+            generateAttendanceSheet: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<SessionsService>(SessionsService);
     prisma = module.get<PrismaService>(PrismaService);
     emailService = module.get<EmailService>(EmailService);
+    pdfService = module.get<PdfService>(PdfService);
   });
 
   afterEach(() => {
@@ -46,6 +55,32 @@ describe("SessionsService", () => {
 
   it("should be defined", () => {
     expect(service).toBeDefined();
+  });
+
+  describe("getAttendanceSheet", () => {
+    it("should generate pdf for confirmed session", async () => {
+      const mockSession = { id: "1", status: "CONFIRMED" } as Session;
+      jest.spyOn(service, "findOne").mockResolvedValue(mockSession as any);
+      jest.spyOn(pdfService, "generateAttendanceSheet").mockResolvedValue(Buffer.from("pdf"));
+
+      const result = await service.getAttendanceSheet("1");
+      expect(result).toBeInstanceOf(Buffer);
+      expect(pdfService.generateAttendanceSheet).toHaveBeenCalledWith(mockSession);
+    });
+
+    it("should throw BadRequestException if pending", async () => {
+      const mockSession = { id: "1", status: "PENDING" } as Session;
+      jest.spyOn(service, "findOne").mockResolvedValue(mockSession as any);
+
+      await expect(service.getAttendanceSheet("1")).rejects.toThrow(BadRequestException);
+    });
+
+    it("should throw BadRequestException if cancelled", async () => {
+      const mockSession = { id: "1", status: "CANCELLED" } as Session;
+      jest.spyOn(service, "findOne").mockResolvedValue(mockSession as any);
+
+      await expect(service.getAttendanceSheet("1")).rejects.toThrow(BadRequestException);
+    });
   });
 
   describe("findOne", () => {

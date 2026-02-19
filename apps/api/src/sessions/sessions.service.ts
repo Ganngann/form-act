@@ -1,16 +1,31 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { Prisma, Session, Formation } from "@prisma/client";
 import { AdminUpdateSessionDto } from "./dto/admin-update-session.dto";
 import { AdminBillSessionDto } from "./dto/admin-bill-session.dto";
 import { EmailService } from "../email/email.service";
+import { PdfService } from "../files/pdf.service";
 
 @Injectable()
 export class SessionsService {
   constructor(
     private prisma: PrismaService,
     private emailService: EmailService,
+    private pdfService: PdfService,
   ) {}
+
+  async getAttendanceSheet(sessionId: string): Promise<Buffer> {
+    const session = await this.findOne(sessionId);
+
+    // Ensure session is confirmed or further
+    if (session.status === "PENDING" || session.status === "CANCELLED") {
+      throw new BadRequestException(
+        "L'émargement n'est disponible que pour les sessions confirmées",
+      );
+    }
+
+    return this.pdfService.generateAttendanceSheet(session);
+  }
 
   async findOne(id: string) {
     const session = await this.prisma.session.findUnique({

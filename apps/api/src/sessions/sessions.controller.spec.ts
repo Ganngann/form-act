@@ -22,6 +22,7 @@ describe("SessionsController", () => {
     getAdminStats: jest.fn(),
     getBillingPreview: jest.fn(),
     billSession: jest.fn(),
+    getAttendanceSheet: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -42,6 +43,73 @@ describe("SessionsController", () => {
 
   it("should be defined", () => {
     expect(controller).toBeDefined();
+  });
+
+  describe("getAttendanceSheet", () => {
+    const mockRes = {
+      set: jest.fn(),
+      end: jest.fn(),
+    };
+
+    it("should allow ADMIN", async () => {
+      mockSessionsService.findOne.mockResolvedValue({});
+      mockSessionsService.getAttendanceSheet.mockResolvedValue(
+        Buffer.from("pdf"),
+      );
+
+      await controller.getAttendanceSheet(
+        "1",
+        { user: { role: "ADMIN" } },
+        mockRes as any,
+      );
+
+      expect(service.getAttendanceSheet).toHaveBeenCalledWith("1");
+      expect(mockRes.set).toHaveBeenCalled();
+      expect(mockRes.end).toHaveBeenCalledWith(expect.any(Buffer));
+    });
+
+    it("should allow TRAINER if owner", async () => {
+      mockSessionsService.findOne.mockResolvedValue({
+        trainer: { userId: "u1" },
+      });
+      mockSessionsService.getAttendanceSheet.mockResolvedValue(
+        Buffer.from("pdf"),
+      );
+
+      await controller.getAttendanceSheet(
+        "1",
+        { user: { role: "TRAINER", userId: "u1" } },
+        mockRes as any,
+      );
+
+      expect(service.getAttendanceSheet).toHaveBeenCalledWith("1");
+    });
+
+    it("should deny TRAINER if not owner", async () => {
+      mockSessionsService.findOne.mockResolvedValue({
+        trainer: { userId: "u2" },
+      });
+
+      await expect(
+        controller.getAttendanceSheet(
+          "1",
+          { user: { role: "TRAINER", userId: "u1" } },
+          mockRes as any,
+        ),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it("should deny CLIENT", async () => {
+      mockSessionsService.findOne.mockResolvedValue({});
+
+      await expect(
+        controller.getAttendanceSheet(
+          "1",
+          { user: { role: "CLIENT" } },
+          mockRes as any,
+        ),
+      ).rejects.toThrow(ForbiddenException);
+    });
   });
 
   describe("findAll", () => {

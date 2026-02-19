@@ -3,6 +3,7 @@ import { API_URL } from '@/lib/config';
 import { Participant } from '@/types/formation';
 
 import { ProofUploadWidget } from '@/components/trainer/proof-upload-widget';
+import { DownloadAttendanceButton } from '@/components/common/DownloadAttendanceButton';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
@@ -212,7 +213,18 @@ export default async function MissionDetailsPage({ params }: { params: { id: str
                                 <CardTitle className="text-lg font-black tracking-tight flex items-center gap-2">
                                     <Users className="h-5 w-5 text-primary" /> Participants
                                 </CardTitle>
-                                <Badge variant="secondary" className="font-bold">{participants.length}</Badge>
+                                <div className="flex items-center gap-2">
+                                    <Badge variant="secondary" className="font-bold">{participants.length}</Badge>
+                                    <DownloadAttendanceButton
+                                        sessionId={session.id}
+                                        sessionStatus={session.status}
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-7 text-xs px-2"
+                                    >
+                                        PDF
+                                    </DownloadAttendanceButton>
+                                </div>
                             </CardHeader>
                             <CardContent className="p-6">
                                 {participants.length > 0 ? (

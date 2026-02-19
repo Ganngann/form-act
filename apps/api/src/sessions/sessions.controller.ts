@@ -12,7 +12,9 @@ import {
   Request,
   ForbiddenException,
   BadRequestException,
+  Res,
 } from "@nestjs/common";
+import { Response } from "express";
 import { SessionsService } from "./sessions.service";
 import { UpdateSessionDto } from "./dto/update-session.dto";
 import { AdminUpdateSessionDto } from "./dto/admin-update-session.dto";
@@ -42,6 +44,35 @@ export class SessionsController {
       throw new ForbiddenException("Access denied");
     }
     return this.sessionsService.getAdminStats();
+  }
+
+  @Get(":id/attendance-sheet")
+  async getAttendanceSheet(
+    @Param("id") id: string,
+    @Request() req,
+    @Res() res: Response,
+  ) {
+    const session = await this.sessionsService.findOne(id);
+
+    if (req.user.role === "ADMIN") {
+      // OK
+    } else if (req.user.role === "TRAINER") {
+      if (session.trainer?.userId !== req.user.userId) {
+        throw new ForbiddenException("Access denied");
+      }
+    } else {
+      throw new ForbiddenException("Access denied");
+    }
+
+    const buffer = await this.sessionsService.getAttendanceSheet(id);
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="emargement-${id}.pdf"`,
+      "Content-Length": buffer.length,
+    });
+
+    res.end(buffer);
   }
 
   @Get(":id")
