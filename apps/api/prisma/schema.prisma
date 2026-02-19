@@ -118,3 +118,9 @@ model NotificationLog {
   error     String?
   metadata  String?  // JSON string
 }
+
+model SiteConfiguration {
+  key       String   @id
+  value     String   // JSON string
+  updatedAt DateTime @updatedAt
+}

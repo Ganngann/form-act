@@ -18,7 +18,7 @@ import { LoginThrottlerGuard } from "./login-throttler.guard";
 
 @Controller("auth")
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @UseGuards(LoginThrottlerGuard)
   @Post("forgot-password")
