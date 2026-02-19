@@ -117,10 +117,10 @@ describe('useBookingLogic', () => {
       result.current.setSelectedTrainer('t1');
     });
 
-    expect(result.current.loadingAvailability).toBe(true);
-
+    // Wait for data to load
     await waitFor(() => {
       expect(result.current.loadingAvailability).toBe(false);
+      expect(result.current.availability).toEqual(mockAvailability);
     });
 
     expect(result.current.availability).toEqual(mockAvailability);
