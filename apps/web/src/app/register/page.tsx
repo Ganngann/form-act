@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
-export default function LoginPage() {
+export default function RegisterPage() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,32 +19,20 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const res = await fetch(`${API_URL}/auth/login`, {
+      const res = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
         credentials: 'include',
       });
 
       if (!res.ok) {
-        throw new Error('Identifiants invalides');
+        const data = await res.json();
+        throw new Error(data.message || 'Inscription échouée');
       }
 
-      const user = await res.json();
-
-      const searchParams = new URLSearchParams(window.location.search);
-      const redirect = searchParams.get('redirect');
-
-      if (redirect && redirect.startsWith('/') && !redirect.startsWith('//')) {
-        router.push(redirect);
-      } else if (user.role === 'ADMIN') {
-        router.push('/admin');
-      } else if (user.role === 'TRAINER') {
-        router.push('/trainer');
-      } else {
-        router.push('/dashboard');
-      }
-
+      // Registration successful, redirection
+      router.push('/dashboard');
       router.refresh();
 
     } catch (err: any) {
@@ -55,10 +44,17 @@ export default function LoginPage() {
     <div className="flex h-screen items-center justify-center bg-gray-100">
       <Card className="w-96">
         <CardHeader>
-          <CardTitle>Connexion</CardTitle>
+          <CardTitle>Inscription</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+             <Input
+              type="text"
+              placeholder="Nom complet"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
             <Input
               type="email"
               placeholder="Email"
@@ -68,23 +64,18 @@ export default function LoginPage() {
             />
             <Input
               type="password"
-              placeholder="Mot de passe"
+              placeholder="Mot de passe (min. 6 caractères)"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
             {error && <p className="text-red-500 text-sm">{error}</p>}
-            <div className="text-right">
-              <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
-                Mot de passe oublié ?
+             <div className="text-right">
+              <Link href="/login" className="text-sm text-blue-600 hover:underline">
+                Déjà un compte ? Se connecter
               </Link>
             </div>
-            <div className="text-right">
-              <Link href="/register" className="text-sm text-blue-600 hover:underline">
-                Pas encore de compte ? S&apos;inscrire
-              </Link>
-            </div>
-            <Button type="submit" className="w-full">Se connecter</Button>
+            <Button type="submit" className="w-full">S&apos;inscrire</Button>
           </form>
         </CardContent>
       </Card>
