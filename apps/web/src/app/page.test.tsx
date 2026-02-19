@@ -47,7 +47,8 @@ describe('Home Page', () => {
     const ui = await Home();
     render(ui);
 
-    expect(screen.getByText(/Activez votre/i)).toBeDefined();
+    const heading = screen.getByRole('heading', { level: 1 });
+    expect(heading).toHaveTextContent(/Activez votre/i);
     expect(screen.getByTestId('search-hero')).toHaveTextContent('1 categories');
     expect(screen.getByRole('link', { name: /Nos Formations/i })).toBeDefined();
   });
