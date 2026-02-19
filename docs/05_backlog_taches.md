@@ -59,17 +59,37 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 - [ ] Ajout toggle "Subside IN COMPANY accepté" côté Admin.
 - [ ] Affichage lecture seule pour le Client.
 
-### US-06 : Admin - Gestion de l'Identité du Site (CMS)
+### US-06 : Admin - Gestion Complète du Contenu (CMS Home & Global)
 **Référence :** Demande Client (Parcours du site)
 **En tant que** Administrateur,
-**Je veux** pouvoir modifier le logo, le nom du site et les contenus textuels,
-**Afin de** gérer l'image de marque en toute autonomie sans faire appel à un développeur.
+**Je veux** pouvoir éditer **l'intégralité** des textes de la page d'accueil et les configurations globales,
+**Afin de** maîtriser totalement le message marketing sans toucher au code.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Section "Paramètres Généraux" dans l'admin.
-- [ ] Upload et gestion du Logo (Header, Favicon, Emails).
-- [ ] Champ éditable pour le Nom de la Plateforme (Impacte SEO et textes).
-- [ ] Éditeur (Rich Text) pour les contenus clés : Texte Accueil, Pied de page, Mentions Légales/CGV.
+- **1. Configuration Globale (Header/Footer)**
+    - [ ] Identité : Nom du site, Logo, Favicon.
+    - [ ] Coordonnées : Email, Téléphone, Adresse (affichés dans le Footer).
+    - [ ] Textes Légaux : Mentions Légales, CGV, Confidentialité (Pages dédiées).
+
+- **2. Édition Page Accueil - Section Hero**
+    - [ ] Tagline (ex: "The Signature of Expertise").
+    - [ ] Titre Principal (H1).
+    - [ ] Paragraphe d'accroche (Intro).
+
+- **3. Édition Page Accueil - Section Promo (Bento Grid)**
+    - [ ] Titre & Sous-titre du bloc promotionnel "Visiteurs".
+    - [ ] Texte descriptif & Label du bouton d'action.
+
+- **4. Édition Page Accueil - Arguments (Value Pillars)**
+    - [ ] Titre & Texte pour chacun des 3 piliers (ex: Qualité, Réseau, Tracking).
+
+- **5. Édition Page Accueil - Preuve Sociale (Citation)**
+    - [ ] Texte de la citation.
+    - [ ] Auteur & Poste.
+
+- **6. Édition Page Accueil - Appel à l'action (Final CTA)**
+    - [ ] Grand Titre de fin de page.
+    - [ ] Libellés des boutons (Devis / Catalogue).
 
 ### US-07 : Footer (Pied de Page)
 **Référence :** Demande Client (Parcours du site)
