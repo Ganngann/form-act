@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Participant } from "@/types/formation";
 
 interface ParticipantsSummaryProps {
     participants?: string | null;
@@ -27,7 +28,7 @@ export function ParticipantsSummary({ participants }: ParticipantsSummaryProps) 
 
         return (
             <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                {parts.map((p: any, i: number) => {
+                {parts.map((p: Participant, i: number) => {
                     const initials = ((p.firstName?.[0] || "") + (p.lastName?.[0] || "")).toUpperCase();
                     return (
                         <div key={i} className="flex items-center gap-3 p-3 bg-muted/5 hover:bg-muted/20 rounded-xl border border-border/40 transition-colors">
