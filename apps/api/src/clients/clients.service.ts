@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { UpdateClientProfileDto } from "./dto/update-client-profile.dto";
+import { CreateClientProfileDto } from "./dto/create-client-profile.dto";
 
 @Injectable()
 export class ClientsService {
@@ -17,6 +18,30 @@ export class ClientsService {
       },
       orderBy: {
         createdAt: "desc",
+      },
+    });
+  }
+
+  async createProfile(userId: string, data: CreateClientProfileDto) {
+    const existingClient = await this.prisma.client.findUnique({
+      where: { userId },
+    });
+
+    if (existingClient) {
+      throw new BadRequestException(
+        "Client profile already exists for this user.",
+      );
+    }
+
+    return this.prisma.client.create({
+      data: {
+        userId,
+        companyName: data.companyName,
+        vatNumber: data.vatNumber,
+        address: data.address,
+      },
+      include: {
+        user: { select: { email: true } },
       },
     });
   }

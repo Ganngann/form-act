@@ -13,6 +13,7 @@ describe("AuthController", () => {
     getUserProfile: jest.fn(),
     forgotPassword: jest.fn(),
     resetPassword: jest.fn(),
+    register: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -31,6 +32,33 @@ describe("AuthController", () => {
 
   it("should be defined", () => {
     expect(controller).toBeDefined();
+  });
+
+  describe("register", () => {
+    it("should register user, login and set cookie", async () => {
+      const dto = {
+        name: "User",
+        email: "test@example.com",
+        password: "password",
+      };
+      const user = { userId: "1", email: dto.email, role: "CLIENT" };
+      const token = { access_token: "jwt_token" };
+      const res = { cookie: jest.fn() } as unknown as Response;
+
+      mockAuthService.register.mockResolvedValue(user);
+      mockAuthService.login.mockResolvedValue(token);
+
+      const result = await controller.register(dto, res);
+
+      expect(mockAuthService.register).toHaveBeenCalledWith(dto);
+      expect(mockAuthService.login).toHaveBeenCalledWith(user);
+      expect(res.cookie).toHaveBeenCalledWith(
+        "Authentication",
+        "jwt_token",
+        expect.any(Object),
+      );
+      expect(result).toEqual(user);
+    });
   });
 
   describe("login", () => {

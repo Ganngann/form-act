@@ -10,7 +10,9 @@ import {
 } from "@nestjs/common";
 import { ClientsService } from "./clients.service";
 import { AuthGuard } from "@nestjs/passport";
+import { Post } from "@nestjs/common";
 import { UpdateClientProfileDto } from "./dto/update-client-profile.dto";
+import { CreateClientProfileDto } from "./dto/create-client-profile.dto";
 
 @Controller("clients")
 export class ClientsController {
@@ -23,6 +25,12 @@ export class ClientsController {
       throw new ForbiddenException("Access denied");
     }
     return this.clientsService.findAll();
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Post("me")
+  async createMyProfile(@Request() req, @Body() body: CreateClientProfileDto) {
+    return this.clientsService.createProfile(req.user.userId, body);
   }
 
   @UseGuards(AuthGuard("jwt"))
