@@ -67,8 +67,8 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 
 *Critères d'Acceptation (AC) :*
 - **1. Configuration Globale (Header/Footer)**
-    - [ ] Identité : Nom du site, Logo, Favicon.
-    - [ ] Coordonnées : Email, Téléphone, Adresse (affichés dans le Footer).
+    - [x] Identité : Nom du site, Logo, Favicon.
+    - [x] Coordonnées : Email, Téléphone, Adresse (affichés dans le Footer).
     - [ ] Textes Légaux : Mentions Légales, CGV, Confidentialité (Pages dédiées).
 
 - **2. Édition Page Accueil - Section Hero**
@@ -98,11 +98,11 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 **Afin de** naviguer en toute confiance.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Création du composant global `Footer`.
-- [ ] Liens vers : "Mentions Légales", "CGV", "Politique de Confidentialité".
-- [ ] Coordonnées de contact (Adresse, Email).
-- [ ] Copyright dynamique (Année).
-- [ ] *Lien avec US-06 : Les textes doivent être modifiables via l'admin.*
+- [x] Création du composant global `Footer`.
+- [x] Liens vers : "Mentions Légales", "CGV", "Politique de Confidentialité".
+- [x] Coordonnées de contact (Adresse, Email).
+- [x] Copyright dynamique (Année).
+- [x] *Lien avec US-06 : Les textes doivent être modifiables via l'admin.*
 
 ### US-08 : Inscription Spontanée Client
 **Référence :** Demande Client (Parcours du site)
@@ -218,12 +218,12 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 ### Bug-07 : Amélioration Seed (Dette Technique)
 - [x] Corriger `seed.ts` pour utiliser des `upsert` robustes sur les titres de formation et éviter les multiplications infinies au re-seed.
 
-### Bug-08 : Admin - Sélection Formateurs Experts
-**Symptôme :** L'administrateur ne peut pas sélectionner les formateurs experts lors de l'édition d'une formation.
-**Impact :** Bloquant pour la gestion des formations "Expertise".
-- [ ] Analyser le composant de sélection (Combobox/Select).
-- [ ] Vérifier la requête API de récupération des formateurs.
-- [ ] Corriger la liaison ID Formation <-> ID Formateur.
+### Bug-08 : Admin - Sélection Formateurs & Champs Formulaire
+**Symptôme :** Impossible d'activer le mode "Expertise" (Switch bloqué) et de sélectionner des formateurs (Checkboxes inactives). Le champ "Catégorie" ne semble pas prendre la valeur.
+**Impact :** Bloquant pour la création/édition correcte des formations.
+- [x] Analyser le composant de sélection (Combobox/Select).
+- [x] Vérifier la requête API de récupération des formateurs (Fix: `take=1000`).
+- [ ] **Corriger la liaison React Hook Form** pour : Catégorie, Switch Expertise, et Liste des Formateurs (Controller).
 
 ### Bug-09 : UI - Champs Formulaire Formateur
 **Symptôme :** Le texte des champs "Email" et "Biographie" chevauche les icônes sur la page d'édition.
