@@ -5,6 +5,11 @@ import { ValidationPipe } from "@nestjs/common";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Enable trust proxy for correct IP behind proxies (e.g. load balancers)
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.set("trust proxy", 1);
+
   app.use(cookieParser());
   app.enableCors({
     origin: [process.env.FRONTEND_URL || "http://localhost:3000"],
