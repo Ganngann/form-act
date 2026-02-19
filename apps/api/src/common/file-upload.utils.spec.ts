@@ -3,8 +3,15 @@ import {
   generateSecureFilename,
   ALLOWED_EXTENSIONS,
   ALLOWED_FILE_TYPES,
+  removeFile,
+  createDiskStorage,
 } from "./file-upload.utils";
 import { BadRequestException } from "@nestjs/common";
+import * as fs from "fs/promises";
+import { diskStorage } from "multer";
+
+jest.mock("fs/promises");
+jest.mock("multer");
 
 describe("File Validation Logic", () => {
   it("should generate ALLOWED_EXTENSIONS regex that matches all defined extensions", () => {
@@ -98,5 +105,64 @@ describe("generateSecureFilename", () => {
     const name1 = generateSecureFilename("image.png");
     const name2 = generateSecureFilename("image.png");
     expect(name1).not.toBe(name2);
+  });
+});
+
+describe("removeFile", () => {
+  it("should unlink file", async () => {
+    await removeFile("path/to/file");
+    expect(fs.unlink).toHaveBeenCalledWith("path/to/file");
+  });
+
+  it("should ignore ENOENT error", async () => {
+    const error: any = new Error("Not found");
+    error.code = "ENOENT";
+    (fs.unlink as jest.Mock).mockRejectedValue(error);
+
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+    await removeFile("path/to/file");
+    expect(consoleSpy).not.toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
+
+  it("should log other errors", async () => {
+    const error = new Error("Other error");
+    (fs.unlink as jest.Mock).mockRejectedValue(error);
+
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+    await removeFile("path/to/file");
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Error deleting file path/to/file:",
+      error,
+    );
+    consoleSpy.mockRestore();
+  });
+});
+
+describe("createDiskStorage", () => {
+  it("should create disk storage with correct config", () => {
+    const destination = "./uploads";
+    createDiskStorage(destination);
+    expect(diskStorage).toHaveBeenCalledWith({
+      destination,
+      filename: expect.any(Function),
+    });
+  });
+
+  it("should use generateSecureFilename in filename function", () => {
+    const destination = "./uploads";
+    createDiskStorage(destination);
+
+    // Get the configuration object passed to diskStorage
+    const config = (diskStorage as jest.Mock).mock.calls[0][0];
+    const filenameFn = config.filename;
+
+    const req = {};
+    const file = { originalname: "test.png" };
+    const cb = jest.fn();
+
+    filenameFn(req, file, cb);
+
+    expect(cb).toHaveBeenCalledWith(null, expect.stringMatching(/[a-f0-9]{32}\.png/));
   });
 });
