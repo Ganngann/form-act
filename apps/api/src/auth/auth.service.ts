@@ -6,6 +6,7 @@ import { User } from "@prisma/client";
 import { EmailService } from "../email/email.service";
 import * as crypto from "crypto";
 import { getFrontendUrl } from "../common/config";
+import { RegisterDto } from "./dto/register.dto";
 
 @Injectable()
 export class AuthService {
@@ -22,6 +23,31 @@ export class AuthService {
 
   async hashPassword(password: string): Promise<string> {
     return bcrypt.hash(password, 10);
+  }
+
+  async register(data: RegisterDto): Promise<Omit<User, "password">> {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: data.email },
+    });
+
+    if (existingUser) {
+      throw new BadRequestException("This email is already in use.");
+    }
+
+    const hashedPassword = await this.hashPassword(data.password);
+
+    const user = await this.prisma.user.create({
+      data: {
+        email: data.email,
+        name: data.name,
+        password: hashedPassword,
+        role: "CLIENT",
+      },
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = user;
+    return result;
   }
 
   async validateUser(

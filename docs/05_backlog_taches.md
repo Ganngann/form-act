@@ -59,17 +59,37 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 - [ ] Ajout toggle "Subside IN COMPANY accepté" côté Admin.
 - [ ] Affichage lecture seule pour le Client.
 
-### US-06 : Admin - Gestion de l'Identité du Site (CMS)
+### US-06 : Admin - Gestion Complète du Contenu (CMS Home & Global)
 **Référence :** Demande Client (Parcours du site)
 **En tant que** Administrateur,
-**Je veux** pouvoir modifier le logo, le nom du site et les contenus textuels,
-**Afin de** gérer l'image de marque en toute autonomie sans faire appel à un développeur.
+**Je veux** pouvoir éditer **l'intégralité** des textes de la page d'accueil et les configurations globales,
+**Afin de** maîtriser totalement le message marketing sans toucher au code.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Section "Paramètres Généraux" dans l'admin.
-- [ ] Upload et gestion du Logo (Header, Favicon, Emails).
-- [ ] Champ éditable pour le Nom de la Plateforme (Impacte SEO et textes).
-- [ ] Éditeur (Rich Text) pour les contenus clés : Texte Accueil, Pied de page, Mentions Légales/CGV.
+- **1. Configuration Globale (Header/Footer)**
+    - [x] Identité : Nom du site, Logo, Favicon.
+    - [x] Coordonnées : Email, Téléphone, Adresse (affichés dans le Footer).
+    - [ ] Textes Légaux : Mentions Légales, CGV, Confidentialité (Pages dédiées).
+
+- **2. Édition Page Accueil - Section Hero**
+    - [ ] Tagline (ex: "The Signature of Expertise").
+    - [ ] Titre Principal (H1).
+    - [ ] Paragraphe d'accroche (Intro).
+
+- **3. Édition Page Accueil - Section Promo (Bento Grid)**
+    - [ ] Titre & Sous-titre du bloc promotionnel "Visiteurs".
+    - [ ] Texte descriptif & Label du bouton d'action.
+
+- **4. Édition Page Accueil - Arguments (Value Pillars)**
+    - [ ] Titre & Texte pour chacun des 3 piliers (ex: Qualité, Réseau, Tracking).
+
+- **5. Édition Page Accueil - Preuve Sociale (Citation)**
+    - [ ] Texte de la citation.
+    - [ ] Auteur & Poste.
+
+- **6. Édition Page Accueil - Appel à l'action (Final CTA)**
+    - [ ] Grand Titre de fin de page.
+    - [ ] Libellés des boutons (Devis / Catalogue).
 
 ### US-07 : Footer (Pied de Page)
 **Référence :** Demande Client (Parcours du site)
@@ -78,11 +98,11 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 **Afin de** naviguer en toute confiance.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Création du composant global `Footer`.
-- [ ] Liens vers : "Mentions Légales", "CGV", "Politique de Confidentialité".
-- [ ] Coordonnées de contact (Adresse, Email).
-- [ ] Copyright dynamique (Année).
-- [ ] *Lien avec US-06 : Les textes doivent être modifiables via l'admin.*
+- [x] Création du composant global `Footer`.
+- [x] Liens vers : "Mentions Légales", "CGV", "Politique de Confidentialité".
+- [x] Coordonnées de contact (Adresse, Email).
+- [x] Copyright dynamique (Année).
+- [x] *Lien avec US-06 : Les textes doivent être modifiables via l'admin.*
 
 ### US-08 : Inscription Spontanée Client
 **Référence :** Demande Client (Parcours du site)
@@ -94,7 +114,6 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 - [ ] Formulaire d'inscription accessible publiquement (Lien "Espace Client" ou "S'inscrire").
 - [ ] Collecte des informations de base (Nom, Email, Mot de passe).
 - [ ] Redirection vers le Dashboard Client après inscription.
-- [ ] *Note : La validation TVA/Facturation se fera ultérieurement dans le profil.*
 
 ### US-09 : Formateur - Agenda & Synchronisation (iCal In)
 **Référence :** Bible 2.3 & Demande Client
@@ -199,12 +218,12 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 ### Bug-07 : Amélioration Seed (Dette Technique)
 - [x] Corriger `seed.ts` pour utiliser des `upsert` robustes sur les titres de formation et éviter les multiplications infinies au re-seed.
 
-### Bug-08 : Admin - Sélection Formateurs Experts
-**Symptôme :** L'administrateur ne peut pas sélectionner les formateurs experts lors de l'édition d'une formation.
-**Impact :** Bloquant pour la gestion des formations "Expertise".
-- [ ] Analyser le composant de sélection (Combobox/Select).
-- [ ] Vérifier la requête API de récupération des formateurs.
-- [ ] Corriger la liaison ID Formation <-> ID Formateur.
+### Bug-08 : Admin - Sélection Formateurs & Champs Formulaire
+**Symptôme :** Impossible d'activer le mode "Expertise" (Switch bloqué) et de sélectionner des formateurs (Checkboxes inactives). Le champ "Catégorie" ne semble pas prendre la valeur.
+**Impact :** Bloquant pour la création/édition correcte des formations.
+- [x] Analyser le composant de sélection (Combobox/Select).
+- [x] Vérifier la requête API de récupération des formateurs (Fix: `take=1000`).
+- [ ] **Corriger la liaison React Hook Form** pour : Catégorie, Switch Expertise, et Liste des Formateurs (Controller).
 
 ### Bug-09 : UI - Champs Formulaire Formateur
 **Symptôme :** Le texte des champs "Email" et "Biographie" chevauche les icônes sur la page d'édition.

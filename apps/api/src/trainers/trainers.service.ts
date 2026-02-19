@@ -109,7 +109,9 @@ export class TrainersService {
       if (data.expertiseZones && data.expertiseZones.length > 0) {
         // Filter out zones that are already in predilection
         const predIds = data.predilectionZones || [];
-        const validExpIds = data.expertiseZones.filter(id => !predIds.includes(id));
+        const validExpIds = data.expertiseZones.filter(
+          (id) => !predIds.includes(id),
+        );
 
         if (validExpIds.length > 0) {
           trainerData.expertiseZones = {

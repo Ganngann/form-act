@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SearchHero } from '@/components/home/SearchHero';
 import { BadgeCheck, Calendar, GraduationCap, Users, Shield, Zap, ArrowRight, Star, Quote } from 'lucide-react';
+import { getSiteConfig } from '@/lib/api-config';
+import { HomeHeroConfig, HomePromoConfig, HomeValueConfig, HomeTrustConfig, HomeCtaConfig } from '@/types/configuration';
 
 async function getCategories() {
   try {
@@ -38,8 +40,47 @@ async function getUserRole() {
 }
 
 export default async function Home() {
-  const categories = await getCategories();
-  const userRole = await getUserRole();
+  const [categories, userRole, heroConfig, promoConfig, valuesConfig, trustConfig, ctaConfig] = await Promise.all([
+    getCategories(),
+    getUserRole(),
+    getSiteConfig<HomeHeroConfig>("home_hero"),
+    getSiteConfig<HomePromoConfig>("home_promo"),
+    getSiteConfig<HomeValueConfig[]>("home_values"),
+    getSiteConfig<HomeTrustConfig>("home_trust"),
+    getSiteConfig<HomeCtaConfig>("home_cta")
+  ]);
+
+  // Defaults
+  const hero = heroConfig || {
+    tagline: "The Signature of Expertise",
+    title: "Activez votre <br /><span class=\"text-primary italic\">Expertise.</span>",
+    intro: "La puissance du réseau Form-Act dans une interface moderne pour propulser vos talents vers de nouveaux sommets."
+  };
+
+  const promo = promoConfig || {
+    title: "Plateforme n°1 <br />des Experts d'Élite",
+    subtitle: "Le Futur de la Formation",
+    description: "Accédez à des programmes exclusifs et gérez votre croissance dans une interface pensée pour la performance.",
+    buttonLabel: "Rejoindre le Réseau"
+  };
+
+  const values = valuesConfig || [
+    { title: "Qualiopi & <br />Certifications", text: "Toutes nos formations répondent aux référentiels de qualité les plus exigeants pour garantir votre satisfaction et vos financements." },
+    { title: "Réseau d'Experts <br />Indépendants", text: "Un accès direct aux meilleurs formateurs du marché, sélectionnés pour leur expertise technique et leur pédagogie innovante." },
+    { title: "Tracking & <br />Reporting Live", text: "Suivez l'impact de vos formations en temps réel grâce à notre dashboard intelligent et nos outils de reporting automatisés." }
+  ];
+
+  const trust = trustConfig || {
+    quote: "\"Form-Act a radicalement changé notre approche de la formation continue. La qualité des intervenants est simplement inégalée.\"",
+    author: "Julien Morel",
+    role: "DRH — TechCorp Solutions"
+  };
+
+  const cta = ctaConfig || {
+    title: "Prêt à transformer <br />vos équipes ?",
+    buttonPrimary: "Demander un Devis",
+    buttonSecondary: "Explorer le Catalogue"
+  };
 
   return (
     <main className="flex flex-col gap-24 pb-32">
@@ -47,14 +88,14 @@ export default async function Home() {
       <section className="container pt-20 px-4 md:pt-32">
         <div className="flex flex-col items-center text-center max-w-5xl mx-auto">
           <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-black uppercase tracking-[3px] text-primary mb-8 animate-in fade-in slide-in-from-bottom-2">
-            The Signature of Expertise
+            {hero.tagline}
           </span>
-          <h1 className="text-6xl sm:text-9xl font-bold tracking-tighter leading-[0.8] mb-10 text-balance animate-in fade-in slide-in-from-bottom-4 duration-700">
-            Activez votre <br />
-            <span className="text-primary italic">Expertise.</span>
-          </h1>
+          <h1
+            className="text-6xl sm:text-9xl font-bold tracking-tighter leading-[0.8] mb-10 text-balance animate-in fade-in slide-in-from-bottom-4 duration-700"
+            dangerouslySetInnerHTML={{ __html: hero.title }}
+          />
           <p className="text-xl md:text-2xl text-muted-foreground/80 max-w-2xl mb-14 leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-6 duration-1000">
-            La puissance du réseau Form-Act dans une interface moderne pour propulser vos talents vers de nouveaux sommets.
+            {hero.intro}
           </p>
 
           <div className="flex flex-col items-center gap-8 w-full animate-in fade-in slide-in-from-bottom-8 duration-1000">
@@ -105,12 +146,15 @@ export default async function Home() {
           ) : (
             <div className="md:col-span-2 md:row-span-2 p-12 bg-primary border-[1px] border-primary rounded-[3rem] flex flex-col justify-between group overflow-hidden relative shadow-2xl shadow-primary/30">
               <div className="relative z-10">
-                <span className="text-[10px] font-black text-white/50 uppercase tracking-[2px]">Le Futur de la Formation</span>
-                <h3 className="text-5xl font-bold mt-4 leading-tight text-white mb-6 tracking-tighter">Plateforme n°1 <br />des Experts d&apos;Élite</h3>
-                <p className="text-white/80 font-medium text-lg max-w-sm mb-8">Accédez à des programmes exclusifs et gérez votre croissance dans une interface pensée pour la performance.</p>
+                <span className="text-[10px] font-black text-white/50 uppercase tracking-[2px]">{promo.subtitle}</span>
+                <h3
+                  className="text-5xl font-bold mt-4 leading-tight text-white mb-6 tracking-tighter"
+                  dangerouslySetInnerHTML={{ __html: promo.title }}
+                />
+                <p className="text-white/80 font-medium text-lg max-w-sm mb-8">{promo.description}</p>
               </div>
               <Button asChild variant="secondary" className="bg-white text-primary hover:bg-white/90 font-black rounded-2xl h-16 w-fit relative z-10 px-10 transition-transform hover:scale-105 text-lg">
-                <Link href="/login">Rejoindre le Réseau <BadgeCheck className="ml-2 h-6 w-6" /></Link>
+                <Link href="/login">{promo.buttonLabel} <BadgeCheck className="ml-2 h-6 w-6" /></Link>
               </Button>
               <div className="absolute -bottom-20 -right-20 h-80 w-80 bg-white/10 rounded-full blur-3xl"></div>
             </div>
@@ -184,27 +228,20 @@ export default async function Home() {
       {/* Value Pillars */}
       <section className="container px-4 py-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          <div className="flex flex-col gap-6">
-            <div className="h-14 w-14 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
-              <Shield className="h-7 w-7" />
+          {values.map((v, i) => (
+            <div key={i} className="flex flex-col gap-6">
+              <div className="h-14 w-14 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
+                {i === 0 && <Shield className="h-7 w-7" />}
+                {i === 1 && <Users className="h-7 w-7" />}
+                {i === 2 && <Zap className="h-7 w-7" />}
+              </div>
+              <h3
+                className="text-3xl font-bold tracking-tight"
+                dangerouslySetInnerHTML={{ __html: v.title }}
+              />
+              <p className="text-muted-foreground font-medium leading-relaxed">{v.text}</p>
             </div>
-            <h3 className="text-3xl font-bold tracking-tight">Qualiopi & <br />Certifications</h3>
-            <p className="text-muted-foreground font-medium leading-relaxed">Toutes nos formations répondent aux référentiels de qualité les plus exigeants pour garantir votre satisfaction et vos financements.</p>
-          </div>
-          <div className="flex flex-col gap-6">
-            <div className="h-14 w-14 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
-              <Users className="h-7 w-7" />
-            </div>
-            <h3 className="text-3xl font-bold tracking-tight">Réseau d&apos;Experts <br />Indépendants</h3>
-            <p className="text-muted-foreground font-medium leading-relaxed">Un accès direct aux meilleurs formateurs du marché, sélectionnés pour leur expertise technique et leur pédagogie innovante.</p>
-          </div>
-          <div className="flex flex-col gap-6">
-            <div className="h-14 w-14 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
-              <Zap className="h-7 w-7" />
-            </div>
-            <h3 className="text-3xl font-bold tracking-tight">Tracking & <br />Reporting Live</h3>
-            <p className="text-muted-foreground font-medium leading-relaxed">Suivez l&apos;impact de vos formations en temps réel grâce à notre dashboard intelligent et nos outils de reporting automatisés.</p>
-          </div>
+          ))}
         </div>
       </section>
 
@@ -214,11 +251,11 @@ export default async function Home() {
         <div className="container px-4 flex flex-col items-center text-center">
           <Quote className="h-12 w-12 text-primary/20 mb-8" />
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight max-w-4xl text-balance italic">
-            &quot;Form-Act a radicalement changé notre approche de la formation continue. La qualité des intervenants est simplement inégalée.&quot;
+            {trust.quote}
           </h2>
           <div className="mt-10">
-            <p className="font-black text-xl">Julien Morel</p>
-            <p className="text-sm font-bold text-muted-foreground uppercase tracking-[3px] mt-2">DRH — TechCorp Solutions</p>
+            <p className="font-black text-xl">{trust.author}</p>
+            <p className="text-sm font-bold text-muted-foreground uppercase tracking-[3px] mt-2">{trust.role}</p>
           </div>
         </div>
       </section>
@@ -228,15 +265,16 @@ export default async function Home() {
         <div className="bg-primary rounded-[4rem] p-12 md:p-32 text-center text-white relative overflow-hidden group">
           <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
           <div className="relative z-10 flex flex-col items-center">
-            <h2 className="text-5xl md:text-8xl font-black tracking-tighter mb-10 leading-[0.85]">
-              Prêt à transformer <br />vos équipes ?
-            </h2>
+            <h2
+              className="text-5xl md:text-8xl font-black tracking-tighter mb-10 leading-[0.85]"
+              dangerouslySetInnerHTML={{ __html: cta.title }}
+            />
             <div className="flex flex-col sm:flex-row gap-6 mt-4">
               <Button asChild size="lg" variant="secondary" className="h-16 px-12 text-lg font-black rounded-2xl hover:bg-white hover:text-primary transition-all">
-                <a href="mailto:contact@form-act.com">Demander un Devis</a>
+                <a href="mailto:contact@form-act.com">{cta.buttonPrimary}</a>
               </Button>
               <Button asChild size="lg" variant="outline" className="h-16 px-12 text-lg font-black border-2 border-white/30 text-white rounded-2xl bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-white transition-all">
-                <Link href="/catalogue">Explorer le Catalogue</Link>
+                <Link href="/catalogue">{cta.buttonSecondary}</Link>
               </Button>
             </div>
           </div>

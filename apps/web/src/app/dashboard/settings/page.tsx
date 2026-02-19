@@ -53,16 +53,21 @@ export default function SettingsPage() {
 
     const fetchProfile = async () => {
         try {
-            const res = await fetch(`${API_URL}/clients/me`, { credentials: "include" });
+            const res = await fetch(`${API_URL}/auth/me`, { credentials: "include" });
             if (!res.ok) throw new Error("Impossible de charger le profil");
-            const data = await res.json();
-            setProfile(data);
-            setFormData({
-                companyName: data.companyName,
-                vatNumber: data.vatNumber,
-                address: data.address,
-                email: data.user.email,
-            });
+            const user = await res.json();
+
+            if (user.client) {
+                setProfile({ ...user.client, user: { email: user.email } });
+                setFormData({
+                    companyName: user.client.companyName,
+                    vatNumber: user.client.vatNumber,
+                    address: user.client.address,
+                    email: user.email,
+                });
+            } else {
+                setFormData((prev) => ({ ...prev, email: user.email }));
+            }
         } catch (err) {
             setError(err instanceof Error ? err.message : "Erreur");
         } finally {
@@ -110,9 +115,11 @@ export default function SettingsPage() {
         setError("");
         setSuccess("");
 
+        const method = profile ? "PATCH" : "POST";
+
         try {
             const res = await fetch(`${API_URL}/clients/me`, {
-                method: "PATCH",
+                method: method,
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -122,7 +129,7 @@ export default function SettingsPage() {
 
             if (!res.ok) throw new Error("Erreur lors de la mise à jour");
 
-            setSuccess("Paramètres mis à jour avec succès");
+            setSuccess(profile ? "Paramètres mis à jour avec succès" : "Profil créé avec succès");
             fetchProfile();
         } catch (err) {
             setError(err instanceof Error ? err.message : "Erreur");

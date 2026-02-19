@@ -25,6 +25,7 @@ describe("AuthService", () => {
               findUnique: jest.fn(),
               findFirst: jest.fn(),
               update: jest.fn(),
+              create: jest.fn(),
             },
           },
         },
@@ -60,6 +61,60 @@ describe("AuthService", () => {
         .mockImplementation(() => Promise.resolve("hashed"));
       const result = await service.hashPassword("pass");
       expect(result).toBe("hashed");
+    });
+  });
+
+  describe("register", () => {
+    it("should throw BadRequestException if email already exists", async () => {
+      const dto = {
+        name: "Test User",
+        email: "test@example.com",
+        password: "password123",
+      };
+      jest
+        .spyOn(prisma.user, "findUnique")
+        .mockResolvedValue({ id: "1" } as User);
+
+      await expect(service.register(dto)).rejects.toThrow(BadRequestException);
+    });
+
+    it("should create a new user", async () => {
+      const dto = {
+        name: "Test User",
+        email: "new@example.com",
+        password: "password123",
+      };
+      jest.spyOn(prisma.user, "findUnique").mockResolvedValue(null);
+      jest
+        .spyOn(bcrypt, "hash")
+        .mockImplementation(() => Promise.resolve("hashed"));
+
+      const createdUser = {
+        id: "1",
+        ...dto,
+        password: "hashed",
+        role: "CLIENT",
+      } as User;
+
+      jest.spyOn(prisma.user, "create").mockResolvedValue(createdUser);
+
+      const result = await service.register(dto);
+
+      expect(prisma.user.create).toHaveBeenCalledWith({
+        data: {
+          email: dto.email,
+          name: dto.name,
+          password: "hashed",
+          role: "CLIENT",
+        },
+      });
+      expect(result).toEqual({
+        id: "1",
+        name: dto.name,
+        email: dto.email,
+        role: "CLIENT",
+      });
+      expect(result).not.toHaveProperty("password");
     });
   });
 

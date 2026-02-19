@@ -41,6 +41,19 @@ export class FilesService {
     return new StreamableFile(file);
   }
 
+  async getPublicFile(filename: string): Promise<StreamableFile> {
+    const path = join(process.cwd(), "uploads", "public", filename);
+
+    if (filename.includes("..")) throw new NotFoundException();
+
+    if (!existsSync(path)) {
+      throw new NotFoundException("File not found");
+    }
+
+    const file = createReadStream(path);
+    return new StreamableFile(file);
+  }
+
   private async validateProofAccess(filename: string, user: UserPayload) {
     if (user.role === "ADMIN") return;
 

@@ -12,13 +12,14 @@ import { AuthService } from "./auth.service";
 import { Response } from "express";
 import { AuthGuard } from "@nestjs/passport";
 import { LoginDto } from "./dto/login.dto";
+import { RegisterDto } from "./dto/register.dto";
 import { ForgotPasswordDto } from "./dto/forgot-password.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { LoginThrottlerGuard } from "./login-throttler.guard";
 
 @Controller("auth")
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @UseGuards(LoginThrottlerGuard)
   @Post("forgot-password")
@@ -34,6 +35,27 @@ export class AuthController {
   async resetPassword(@Body() body: ResetPasswordDto) {
     await this.authService.resetPassword(body.token, body.password);
     return { message: "Mot de passe mis à jour avec succès." };
+  }
+
+  @UseGuards(LoginThrottlerGuard)
+  @Post("register")
+  async register(
+    @Body() body: RegisterDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const user = await this.authService.register(body);
+    const { access_token } = await this.authService.login(user);
+
+    res.cookie("Authentication", access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      domain: process.env.COOKIE_DOMAIN,
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
+    return user;
   }
 
   @UseGuards(LoginThrottlerGuard)
