@@ -5,7 +5,12 @@ export default {
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
-  collectCoverageFrom: ['**/*.(t|j)s'],
+  collectCoverageFrom: [
+    '**/*.(t|j)s',
+    '!**/main.ts',
+    '!**/*.module.ts',
+    '!**/index.ts',
+  ],
   collectCoverage: true,
   coverageDirectory: '../coverage',
   coverageReporters: ['text', 'json-summary', 'lcov'],

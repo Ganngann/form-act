@@ -63,6 +63,18 @@ describe("TrainersService", () => {
       const result = await service.findAll(0, 10);
       expect(result).toEqual({ data: [], total: 0 });
     });
+
+    it("should use default skip and take values", async () => {
+      mockPrismaService.formateur.findMany.mockResolvedValue([]);
+      mockPrismaService.formateur.count.mockResolvedValue(0);
+      await service.findAll();
+      expect(mockPrismaService.formateur.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          skip: 0,
+          take: 10,
+        }),
+      );
+    });
   });
 
   describe("findOne", () => {
@@ -88,6 +100,52 @@ describe("TrainersService", () => {
       await service.create({ firstName: "A", lastName: "B", email: "a@b.com" });
       expect(mockPrismaService.user.create).toHaveBeenCalled();
       expect(mockPrismaService.formateur.create).toHaveBeenCalled();
+    });
+
+    it("should create trainer with filtered expertise zones", async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      mockPrismaService.formateur.findUnique.mockResolvedValue(null);
+      mockPrismaService.user.create.mockResolvedValue({ id: "u1" });
+      mockPrismaService.formateur.create.mockResolvedValue({ id: "t1" });
+
+      await service.create({
+        firstName: "A",
+        lastName: "B",
+        email: "a@b.com",
+        predilectionZones: ["z1"],
+        expertiseZones: ["z1", "z2"], // z1 is in predilection, so should be filtered
+      });
+
+      expect(mockPrismaService.formateur.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            predilectionZones: { connect: [{ id: "z1" }] },
+            expertiseZones: { connect: [{ id: "z2" }] },
+          }),
+        }),
+      );
+    });
+
+    it("should create trainer with expertise zones when no predilection zones provided", async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      mockPrismaService.formateur.findUnique.mockResolvedValue(null);
+      mockPrismaService.user.create.mockResolvedValue({ id: "u1" });
+      mockPrismaService.formateur.create.mockResolvedValue({ id: "t1" });
+
+      await service.create({
+        firstName: "A",
+        lastName: "B",
+        email: "a@b.com",
+        expertiseZones: ["z1"],
+      });
+
+      expect(mockPrismaService.formateur.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            expertiseZones: { connect: [{ id: "z1" }] },
+          }),
+        }),
+      );
     });
 
     it("should throw if user exists", async () => {
@@ -118,6 +176,61 @@ describe("TrainersService", () => {
       expect(mockPrismaService.formateur.update).toHaveBeenCalled();
     });
 
+    it("should update linked user name when trainer name changes", async () => {
+      mockPrismaService.formateur.findUnique.mockResolvedValue({
+        id: "t1",
+        userId: "u1",
+        firstName: "OldFirst",
+        lastName: "OldLast",
+        predilectionZones: [],
+      });
+      mockPrismaService.formateur.update.mockResolvedValue({ id: "t1" });
+
+      // Partial update: only firstName
+      await service.update("t1", { firstName: "NewFirst" });
+      expect(mockPrismaService.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: "u1" },
+          data: expect.objectContaining({
+            name: "NewFirst OldLast",
+          }),
+        }),
+      );
+
+      // Partial update: only lastName
+      await service.update("t1", { lastName: "NewLast" });
+      expect(mockPrismaService.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: "u1" },
+          data: expect.objectContaining({
+            name: "OldFirst NewLast",
+          }),
+        }),
+      );
+    });
+
+    it("should update user email when trainer email changes", async () => {
+      mockPrismaService.formateur.findUnique.mockResolvedValue({
+        id: "t1",
+        userId: "u1",
+        firstName: "F",
+        lastName: "L",
+        predilectionZones: [],
+      });
+      mockPrismaService.formateur.update.mockResolvedValue({ id: "t1" });
+
+      await service.update("t1", { email: "new@test.com" });
+
+      expect(mockPrismaService.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: "u1" },
+          data: expect.objectContaining({
+            email: "new@test.com",
+          }),
+        }),
+      );
+    });
+
     it("should update zones", async () => {
       mockPrismaService.formateur.findUnique.mockResolvedValue({
         id: "t1",
@@ -128,6 +241,49 @@ describe("TrainersService", () => {
         expertiseZones: ["z3"],
       });
       expect(mockPrismaService.formateur.update).toHaveBeenCalled();
+    });
+
+    it("should update zones and filter expertise zones against new predilection zones", async () => {
+      mockPrismaService.formateur.findUnique.mockResolvedValue({
+        id: "t1",
+        predilectionZones: [{ id: "z1" }],
+      });
+      mockPrismaService.formateur.update.mockResolvedValue({ id: "t1" });
+
+      await service.update("t1", {
+        predilectionZones: ["z2"], // Changing predilection to z2
+        expertiseZones: ["z2", "z3"], // z2 duplicates predilection
+      });
+
+      expect(mockPrismaService.formateur.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            predilectionZones: { set: [{ id: "z2" }] },
+            expertiseZones: { set: [{ id: "z3" }] },
+          }),
+        }),
+      );
+    });
+
+    it("should update zones and filter expertise zones against existing predilection zones", async () => {
+      mockPrismaService.formateur.findUnique.mockResolvedValue({
+        id: "t1",
+        predilectionZones: [{ id: "z1" }],
+      });
+      mockPrismaService.formateur.update.mockResolvedValue({ id: "t1" });
+
+      await service.update("t1", {
+        // predilectionZones not provided, so uses existing (z1)
+        expertiseZones: ["z1", "z2"], // z1 duplicates existing predilection
+      });
+
+      expect(mockPrismaService.formateur.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            expertiseZones: { set: [{ id: "z2" }] },
+          }),
+        }),
+      );
     });
 
     it("should throw if not found", async () => {

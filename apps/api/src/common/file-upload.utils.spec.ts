@@ -3,8 +3,17 @@ import {
   generateSecureFilename,
   ALLOWED_EXTENSIONS,
   ALLOWED_FILE_TYPES,
+  removeFile,
+  createDiskStorage,
 } from "./file-upload.utils";
 import { BadRequestException } from "@nestjs/common";
+import * as fs from "fs/promises";
+import { diskStorage } from "multer";
+
+jest.mock("fs/promises");
+jest.mock("multer", () => ({
+  diskStorage: jest.fn().mockReturnValue({}),
+}));
 
 describe("File Validation Logic", () => {
   it("should generate ALLOWED_EXTENSIONS regex that matches all defined extensions", () => {
@@ -98,5 +107,70 @@ describe("generateSecureFilename", () => {
     const name1 = generateSecureFilename("image.png");
     const name2 = generateSecureFilename("image.png");
     expect(name1).not.toBe(name2);
+  });
+});
+
+describe("removeFile", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should verify file deletion", async () => {
+    (fs.unlink as jest.Mock).mockResolvedValue(undefined);
+    await removeFile("test.jpg");
+    expect(fs.unlink).toHaveBeenCalledWith("test.jpg");
+  });
+
+  it("should ignore ENOENT error", async () => {
+    const error: any = new Error("File not found");
+    error.code = "ENOENT";
+    (fs.unlink as jest.Mock).mockRejectedValue(error);
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+
+    await removeFile("test.jpg");
+
+    expect(fs.unlink).toHaveBeenCalledWith("test.jpg");
+    expect(consoleSpy).not.toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
+
+  it("should log other errors", async () => {
+    const error: any = new Error("Permission denied");
+    error.code = "EACCES";
+    (fs.unlink as jest.Mock).mockRejectedValue(error);
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+
+    await removeFile("test.jpg");
+
+    expect(fs.unlink).toHaveBeenCalledWith("test.jpg");
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Error deleting file test.jpg:",
+      error,
+    );
+    consoleSpy.mockRestore();
+  });
+});
+
+describe("createDiskStorage", () => {
+  it("should configure disk storage with correct filename logic", () => {
+    (diskStorage as jest.Mock).mockClear();
+    createDiskStorage("./uploads");
+    expect(diskStorage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        destination: "./uploads",
+        filename: expect.any(Function),
+      }),
+    );
+
+    // Get the filename function passed to diskStorage
+    const config = (diskStorage as jest.Mock).mock.calls[0][0];
+    const filenameFn = config.filename;
+
+    const file = { originalname: "test.jpg" };
+    const cb = jest.fn();
+
+    filenameFn(null, file, cb);
+
+    expect(cb).toHaveBeenCalledWith(null, expect.stringMatching(/^[a-f0-9]{32}\.jpg$/));
   });
 });
