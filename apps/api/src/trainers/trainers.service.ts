@@ -11,7 +11,7 @@ export class TrainersService {
   constructor(
     private prisma: PrismaService,
     private authService: AuthService,
-  ) { }
+  ) {}
 
   async findAll(skip: number = 0, take: number = 10, search?: string, includeInactive: boolean = false) {
     const where: Prisma.FormateurWhereInput = {};
