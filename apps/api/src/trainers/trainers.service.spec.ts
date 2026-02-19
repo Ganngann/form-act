@@ -279,7 +279,7 @@ describe("TrainersService", () => {
     });
 
     it("should not update user if trainer has no userId", async () => {
-       mockPrismaService.formateur.findUnique.mockResolvedValue({
+      mockPrismaService.formateur.findUnique.mockResolvedValue({
         id: "t1",
         predilectionZones: [],
         userId: null,
@@ -293,16 +293,16 @@ describe("TrainersService", () => {
 
     it("should not update user if trainer userId is undefined", async () => {
       mockPrismaService.formateur.findUnique.mockResolvedValue({
-       id: "t1",
-       predilectionZones: [],
-       // userId undefined
-     });
-     mockPrismaService.formateur.update.mockResolvedValue({ id: "t1" });
+        id: "t1",
+        predilectionZones: [],
+        // userId undefined
+      });
+      mockPrismaService.formateur.update.mockResolvedValue({ id: "t1" });
 
-     await service.update("t1", { firstName: "B" });
-     expect(mockPrismaService.formateur.update).toHaveBeenCalled();
-     expect(mockPrismaService.user.update).not.toHaveBeenCalled();
-   });
+      await service.update("t1", { firstName: "B" });
+      expect(mockPrismaService.formateur.update).toHaveBeenCalled();
+      expect(mockPrismaService.user.update).not.toHaveBeenCalled();
+    });
   });
 
   describe("remove", () => {
@@ -356,12 +356,12 @@ describe("TrainersService", () => {
     });
 
     it("should handle partially invalid month string", async () => {
-       await service.getAvailability("t1", "2023-invalid");
-       // Should fall through to no date filter or default filter, depending on implementation detail.
-       // In the code: if (!isNaN(year) && !isNaN(monthNum))
-       // So it skips the if block, and thus `where.date` is not set from month logic.
-       // Wait, the code says:
-       /*
+      await service.getAvailability("t1", "2023-invalid");
+      // Should fall through to no date filter or default filter, depending on implementation detail.
+      // In the code: if (!isNaN(year) && !isNaN(monthNum))
+      // So it skips the if block, and thus `where.date` is not set from month logic.
+      // Wait, the code says:
+      /*
         if (month) {
             const [year, monthNum] = month.split("-").map(Number);
             if (!isNaN(year) && !isNaN(monthNum)) {
@@ -371,10 +371,10 @@ describe("TrainersService", () => {
             ...
         }
        */
-       // So if month is provided but invalid, it enters `if (month)` but fails the `!isNaN` check.
-       // Thus `where.date` is NOT set.
-       // This matches the "invalid-month" case.
-       expect(mockPrismaService.session.findMany).toHaveBeenCalledWith(
+      // So if month is provided but invalid, it enters `if (month)` but fails the `!isNaN` check.
+      // Thus `where.date` is NOT set.
+      // This matches the "invalid-month" case.
+      expect(mockPrismaService.session.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { trainerId: "t1" },
         }),

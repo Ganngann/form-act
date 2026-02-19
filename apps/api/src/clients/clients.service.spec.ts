@@ -329,9 +329,7 @@ describe("ClientsService", () => {
     });
 
     it("should append to existing auditLog in updateById", async () => {
-      const existingLog = [
-        { date: "2023-01-01", by: "User", changes: [] },
-      ];
+      const existingLog = [{ date: "2023-01-01", by: "User", changes: [] }];
       const mockClient = {
         id: "c1",
         companyName: "Old",

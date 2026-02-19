@@ -115,7 +115,10 @@ describe("removeFile", () => {
   });
 
   it("should ignore ENOENT error", async () => {
-    const error: any = new Error("Not found");
+    interface SystemError extends Error {
+      code?: string;
+    }
+    const error = new Error("Not found") as SystemError;
     error.code = "ENOENT";
     (fs.unlink as jest.Mock).mockRejectedValue(error);
 
@@ -163,6 +166,9 @@ describe("createDiskStorage", () => {
 
     filenameFn(req, file, cb);
 
-    expect(cb).toHaveBeenCalledWith(null, expect.stringMatching(/[a-f0-9]{32}\.png/));
+    expect(cb).toHaveBeenCalledWith(
+      null,
+      expect.stringMatching(/[a-f0-9]{32}\.png/),
+    );
   });
 });
