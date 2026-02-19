@@ -59,6 +59,10 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
       .then((data) => {
         setTrainers(data)
         setLoadingTrainers(false)
+
+        if (data.length === 1) {
+          setSelectedTrainer(data[0].id)
+        }
       })
       .catch((err) => {
         console.error(err)

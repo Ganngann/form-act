@@ -10,6 +10,7 @@ describe("useBookingLogic", () => {
     id: "f1",
     title: "Formation 1",
     durationType: "HALF_DAY",
+    isExpertise: false,
   };
 
   beforeEach(() => {
@@ -77,5 +78,90 @@ describe("useBookingLogic", () => {
     expect(result.current.selectedDate).toBe(futureDate);
     expect(result.current.selectedSlot).toBe("ALL_DAY");
     expect(result.current.canBook).toBe(true);
+  });
+
+  it("should automatically select trainer if only one is returned", async () => {
+    const singleTrainer = [{ id: "t1", firstName: "John", lastName: "Doe" }];
+
+    // Mock fetch for zones first (initial load)
+    (global.fetch as any).mockImplementation((url: string) => {
+      if (url.includes("/zones")) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [{ id: "z1", name: "Zone 1" }],
+        });
+      }
+      if (url.includes("/dispatcher/trainers")) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => singleTrainer,
+        });
+      }
+      // Mock availability call that happens after auto-selection
+      if (url.includes("/trainers/t1/availability")) {
+          return Promise.resolve({
+              ok: true,
+              json: async () => [],
+          });
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => [],
+      });
+    });
+
+    const { result } = renderHook(() => useBookingLogic({ formation }));
+
+    // Select zone to trigger trainer fetch
+    await act(async () => {
+      result.current.setSelectedZone("z1");
+    });
+
+    // Wait for the effect to run and update state
+    await waitFor(() => {
+        expect(result.current.trainers).toEqual(singleTrainer);
+    });
+
+    // Check if trainer is automatically selected
+    expect(result.current.selectedTrainer).toBe("t1");
+  });
+
+  it("should NOT automatically select trainer if multiple are returned", async () => {
+    const multipleTrainers = [
+        { id: "t1", firstName: "John", lastName: "Doe" },
+        { id: "t2", firstName: "Jane", lastName: "Doe" }
+    ];
+
+    (global.fetch as any).mockImplementation((url: string) => {
+      if (url.includes("/zones")) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [{ id: "z1", name: "Zone 1" }],
+        });
+      }
+      if (url.includes("/dispatcher/trainers")) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => multipleTrainers,
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => [],
+      });
+    });
+
+    const { result } = renderHook(() => useBookingLogic({ formation }));
+
+    await act(async () => {
+      result.current.setSelectedZone("z1");
+    });
+
+    await waitFor(() => {
+        expect(result.current.trainers).toEqual(multipleTrainers);
+    });
+
+    // Check that no trainer is selected
+    expect(result.current.selectedTrainer).toBe("");
   });
 });
