@@ -216,8 +216,12 @@ export class TrainersService {
     } else {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
+      const defaultEndDate = new Date(today);
+      defaultEndDate.setMonth(today.getMonth() + 3);
+      defaultEndDate.setHours(23, 59, 59, 999);
       where.date = {
         gte: today,
+        lte: defaultEndDate,
       };
     }
 
