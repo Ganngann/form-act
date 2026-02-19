@@ -46,7 +46,7 @@ export function CtaForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
       <Card>
         <CardHeader>
-          <CardTitle>Appel à l'action (Fin de page)</CardTitle>
+          <CardTitle>Appel à l&apos;action (Fin de page)</CardTitle>
           <CardDescription>La dernière section avant le footer.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

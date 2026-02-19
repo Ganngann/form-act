@@ -53,17 +53,17 @@ export function HeroForm() {
           <div className="space-y-2">
             <Label htmlFor="tagline">Tagline (Slogan court)</Label>
             <Input id="tagline" {...register("tagline")} />
-            <p className="text-[10px] text-muted-foreground">Ex: "The Signature of Expertise"</p>
+            <p className="text-[10px] text-muted-foreground">Ex: &quot;The Signature of Expertise&quot;</p>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="title">Titre Principal (H1)</Label>
             <Input id="title" {...register("title")} />
-            <p className="text-[10px] text-muted-foreground">Supporte le HTML pour le formatage (br, span class="text-primary").</p>
+            <p className="text-[10px] text-muted-foreground">Supporte le HTML pour le formatage (br, span class=&quot;text-primary&quot;).</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="intro">Paragraphe d'intro</Label>
+            <Label htmlFor="intro">Paragraphe d&apos;intro</Label>
             <Textarea id="intro" {...register("intro")} />
           </div>
         </CardContent>

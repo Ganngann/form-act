@@ -14,7 +14,7 @@ export default function ContentPage() {
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-black tracking-tight">Gestion du Contenu</h1>
         <p className="text-muted-foreground font-medium">
-          Personnalisez les textes et configurations de la page d'accueil et du site.
+          Personnalisez les textes et configurations de la page d&apos;accueil et du site.
         </p>
       </div>
 
@@ -25,7 +25,7 @@ export default function ContentPage() {
           <TabsTrigger value="promo" className="rounded-lg py-2.5 px-4 font-bold">Promo (Grid)</TabsTrigger>
           <TabsTrigger value="values" className="rounded-lg py-2.5 px-4 font-bold">Arguments</TabsTrigger>
           <TabsTrigger value="trust" className="rounded-lg py-2.5 px-4 font-bold">Preuve Sociale</TabsTrigger>
-          <TabsTrigger value="cta" className="rounded-lg py-2.5 px-4 font-bold">Appel à l'action</TabsTrigger>
+          <TabsTrigger value="cta" className="rounded-lg py-2.5 px-4 font-bold">Appel à l&apos;action</TabsTrigger>
         </TabsList>
 
         <TabsContent value="global" className="focus-visible:ring-0">

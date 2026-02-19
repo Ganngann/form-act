@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class ConfigurationsService {
@@ -25,6 +25,7 @@ export class ConfigurationsService {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async updateConfiguration(key: string, value: any) {
     // Ensure value is an object/valid JSON
     const stringValue = JSON.stringify(value);

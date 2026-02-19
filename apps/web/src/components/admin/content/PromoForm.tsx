@@ -47,7 +47,7 @@ export function PromoForm() {
       <Card>
         <CardHeader>
           <CardTitle>Bento Grid (Bloc Promo)</CardTitle>
-          <CardDescription>Le bloc bleu/violet qui invite les visiteurs à s'inscrire.</CardDescription>
+          <CardDescription>Le bloc bleu/violet qui invite les visiteurs à s&apos;inscrire.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
