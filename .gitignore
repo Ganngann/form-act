@@ -48,3 +48,6 @@ Thumbs.db
 docs/formations.csv
 docs/07_liste_formations.md
 DEPLOY_PRIVATE.md
+scripts/seed_staging.sql
+scripts/seed_formations.sql
+scripts/convert_csv_to_sql.js
