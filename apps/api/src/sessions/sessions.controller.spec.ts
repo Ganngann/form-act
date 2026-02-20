@@ -402,13 +402,17 @@ describe("SessionsController", () => {
   describe("sendOffer", () => {
     it("should allow ADMIN", async () => {
       mockSessionsService.sendOffer.mockResolvedValue({});
-      await controller.sendOffer("1", { price: 100 }, { user: { role: "ADMIN" } });
+      await controller.sendOffer(
+        "1",
+        { price: 100 },
+        { user: { role: "ADMIN" } },
+      );
       expect(service.sendOffer).toHaveBeenCalledWith("1", 100);
     });
 
     it("should deny non-ADMIN", async () => {
       await expect(
-        controller.sendOffer("1", { price: 100 }, { user: { role: "CLIENT" } })
+        controller.sendOffer("1", { price: 100 }, { user: { role: "CLIENT" } }),
       ).rejects.toThrow(ForbiddenException);
     });
   });
@@ -423,18 +427,24 @@ describe("SessionsController", () => {
     });
 
     it("should allow CLIENT if owner", async () => {
-      mockSessionsService.findOne.mockResolvedValue({ client: { userId: "u1" } });
+      mockSessionsService.findOne.mockResolvedValue({
+        client: { userId: "u1" },
+      });
       mockSessionsService.acceptOffer.mockResolvedValue({});
 
-      await controller.acceptOffer("1", { user: { role: "CLIENT", userId: "u1" } });
+      await controller.acceptOffer("1", {
+        user: { role: "CLIENT", userId: "u1" },
+      });
       expect(service.acceptOffer).toHaveBeenCalledWith("1");
     });
 
     it("should deny CLIENT if not owner", async () => {
-      mockSessionsService.findOne.mockResolvedValue({ client: { userId: "u2" } });
+      mockSessionsService.findOne.mockResolvedValue({
+        client: { userId: "u2" },
+      });
 
       await expect(
-        controller.acceptOffer("1", { user: { role: "CLIENT", userId: "u1" } })
+        controller.acceptOffer("1", { user: { role: "CLIENT", userId: "u1" } }),
       ).rejects.toThrow(ForbiddenException);
     });
 
@@ -442,7 +452,7 @@ describe("SessionsController", () => {
       mockSessionsService.findOne.mockResolvedValue({});
 
       await expect(
-        controller.acceptOffer("1", { user: { role: "TRAINER" } })
+        controller.acceptOffer("1", { user: { role: "TRAINER" } }),
       ).rejects.toThrow(ForbiddenException);
     });
   });
