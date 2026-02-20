@@ -5,7 +5,7 @@ import { AuthService } from "../auth/auth.service";
 import { EmailService } from "../email/email.service";
 import { BadRequestException } from "@nestjs/common";
 import { CreateBookingDto } from "./create-booking.dto";
-import { User, Client } from "@prisma/client";
+import { User, Client, Session } from "@prisma/client";
 
 describe("CheckoutService", () => {
   let service: CheckoutService;
@@ -77,34 +77,27 @@ describe("CheckoutService", () => {
     };
 
     it("should use existing user if user already exists", async () => {
-      // User exists outside transaction
       const existingUser = { id: "1", email: "test@example.com" } as User;
+      const mockSession = { id: "s1", status: "PENDING_APPROVAL" } as unknown as Session;
+
       jest.spyOn(prisma.user, "findUnique").mockResolvedValue(existingUser);
 
-      // Client does not exist
       mockTx.client.findUnique.mockResolvedValue(null);
       mockTx.client.create.mockResolvedValue({ id: "c1", userId: "1" });
-      mockTx.session.findFirst.mockResolvedValue(null); // No conflict
-      mockTx.session.create.mockResolvedValue({ id: "s1" });
+      mockTx.session.findFirst.mockResolvedValue(null);
+      mockTx.session.create.mockResolvedValue(mockSession);
 
       await expect(service.processCheckout(mockDto)).resolves.not.toThrow();
 
-      // Should not create user
       expect(mockTx.user.create).not.toHaveBeenCalled();
-      // Should create client
       expect(mockTx.client.create).toHaveBeenCalled();
     });
 
     it("should throw BadRequestException if client already exists and belongs to another user", async () => {
-      // User does not exist
       jest.spyOn(prisma.user, "findUnique").mockResolvedValue(null);
-
-      // Inside tx:
-      // Create user returns new user
       const newUser = { id: "new-user-id", email: mockDto.email };
       mockTx.user.create.mockResolvedValue(newUser);
 
-      // Client exists but belongs to "other-user-id"
       mockTx.client.findUnique.mockResolvedValue({
         id: "1",
         vatNumber: "VAT123",
@@ -118,9 +111,7 @@ describe("CheckoutService", () => {
 
     it("should throw BadRequestException if trainer is not available", async () => {
       jest.spyOn(prisma.user, "findUnique").mockResolvedValue(null);
-      jest
-        .spyOn(authService, "hashPassword")
-        .mockResolvedValue("hashed_password");
+      jest.spyOn(authService, "hashPassword").mockResolvedValue("hashed_password");
 
       const mockUser = { id: "user-1", email: mockDto.email };
       const mockClient = { id: "client-1", ...mockDto, userId: "user-1" };
@@ -128,8 +119,6 @@ describe("CheckoutService", () => {
       mockTx.user.create.mockResolvedValue(mockUser);
       mockTx.client.findUnique.mockResolvedValue(null);
       mockTx.client.create.mockResolvedValue(mockClient);
-
-      // Conflict exists
       mockTx.session.findFirst.mockResolvedValue({ id: "conflict-session" });
 
       await expect(service.processCheckout(mockDto)).rejects.toThrow(
@@ -137,20 +126,18 @@ describe("CheckoutService", () => {
       );
     });
 
-    it("should successfully process checkout", async () => {
+    it("should successfully process checkout with PENDING_APPROVAL status even if trainer assigned", async () => {
       jest.spyOn(prisma.user, "findUnique").mockResolvedValue(null);
-      jest
-        .spyOn(authService, "hashPassword")
-        .mockResolvedValue("hashed_password");
+      jest.spyOn(authService, "hashPassword").mockResolvedValue("hashed_password");
 
       const mockUser = { id: "user-1", email: mockDto.email };
       const mockClient = { id: "client-1", ...mockDto, userId: "user-1" };
-      const mockSession = { id: "session-1", status: "CONFIRMED" };
+      const mockSession = { id: "session-1", status: "PENDING_APPROVAL" };
 
       mockTx.user.create.mockResolvedValue(mockUser);
       mockTx.client.findUnique.mockResolvedValue(null);
       mockTx.client.create.mockResolvedValue(mockClient);
-      mockTx.session.findFirst.mockResolvedValue(null); // No conflict
+      mockTx.session.findFirst.mockResolvedValue(null);
       mockTx.session.create.mockResolvedValue(mockSession);
 
       const result = await service.processCheckout(mockDto);
@@ -161,31 +148,44 @@ describe("CheckoutService", () => {
         session: mockSession,
       });
       expect(prisma.$transaction).toHaveBeenCalled();
+
+      // Verify correct status passed to create
+      expect(mockTx.session.create).toHaveBeenCalledWith(expect.objectContaining({
+        data: expect.objectContaining({
+          status: "PENDING_APPROVAL"
+        })
+      }));
+
       expect(emailService.sendEmail).toHaveBeenCalledWith(
         mockUser.email,
-        expect.any(String),
-        expect.any(String),
+        "Réception de votre demande de formation - Formact",
+        expect.stringContaining("Nous avons bien reçu votre demande")
       );
     });
 
-    it("should process checkout without trainerId (Manual Booking)", async () => {
+    it("should process checkout without trainerId (Manual Booking) as PENDING_APPROVAL", async () => {
       const manualDto = { ...mockDto, trainerId: undefined };
       jest.spyOn(prisma.user, "findUnique").mockResolvedValue(null);
 
       const mockUser = { id: "user-1", email: manualDto.email };
       const mockClient = { id: "client-1", ...manualDto, userId: "user-1" };
-      const mockSession = { id: "session-1", status: "PENDING" };
+      const mockSession = { id: "session-1", status: "PENDING_APPROVAL" };
 
       mockTx.user.create.mockResolvedValue(mockUser);
       mockTx.client.findUnique.mockResolvedValue(null);
       mockTx.client.create.mockResolvedValue(mockClient);
-      // No conflict check should happen if trainerId is missing
       mockTx.session.create.mockResolvedValue(mockSession);
 
       const result = await service.processCheckout(manualDto);
 
       expect(mockTx.session.findFirst).not.toHaveBeenCalled();
-      expect(result.session.status).toBe("PENDING");
+      expect(result.session.status).toBe("PENDING_APPROVAL");
+
+      expect(mockTx.session.create).toHaveBeenCalledWith(expect.objectContaining({
+        data: expect.objectContaining({
+          status: "PENDING_APPROVAL"
+        })
+      }));
     });
 
     it("should check for conflicts correctly when slot is ALL_DAY", async () => {
@@ -198,8 +198,6 @@ describe("CheckoutService", () => {
       mockTx.user.create.mockResolvedValue(mockUser);
       mockTx.client.findUnique.mockResolvedValue(null);
       mockTx.client.create.mockResolvedValue(mockClient);
-
-      // Conflict check should include AM and PM
       mockTx.session.findFirst.mockResolvedValue(null);
       mockTx.session.create.mockResolvedValue({ id: "s1" });
 

@@ -94,7 +94,7 @@ export class CheckoutService {
           formationId: data.formationId,
           trainerId: data.trainerId,
           clientId: client.id,
-          status: data.trainerId ? "CONFIRMED" : "PENDING",
+          status: "PENDING_APPROVAL",
         },
       });
 
@@ -106,13 +106,13 @@ export class CheckoutService {
     });
 
     // 4. Send Confirmation Email
-    const subject = "Confirmation de votre commande - Formact";
+    const subject = "Réception de votre demande de formation - Formact";
     const html = `
-      <h1>Merci pour votre commande !</h1>
-      <p>Votre session de formation a bien été enregistrée.</p>
+      <h1>Nous avons bien reçu votre demande !</h1>
+      <p>Votre demande de formation a bien été enregistrée.</p>
       <p>Date : ${new Date(data.date).toLocaleDateString("fr-BE")}</p>
       <p>Créneau : ${data.slot}</p>
-      <p>Nous reviendrons vers vous rapidement pour l'organisation logistique.</p>
+      <p>Nous reviendrons vers vous rapidement avec une offre tarifaire précise.</p>
     `;
 
     try {

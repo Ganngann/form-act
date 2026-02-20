@@ -69,6 +69,8 @@ export type Session = {
   client?: Client;
   trainer?: Trainer;
   billingData?: string;
+  status: string;
+  price?: number;
 };
 
 export type Formateur = Trainer;

@@ -8,6 +8,7 @@ import { ArrowLeft, Calendar, User, Info } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { SessionLogisticsManager } from '@/components/booking/session-logistics-manager';
+import { ClientOfferValidation } from '@/components/booking/client-offer-validation';
 
 async function getSession(id: string) {
     const cookieStore = cookies();
@@ -40,6 +41,8 @@ export default async function ClientSessionDetailPage({ params }: { params: { id
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-8">
+                    <ClientOfferValidation session={session} />
+
                     {/* Header Info Card */}
                     <section className="bg-white p-8 rounded-[2rem] border border-border shadow-sm space-y-8 relative overflow-hidden">
                         <div className="flex flex-col md:flex-row justify-between items-start gap-4">

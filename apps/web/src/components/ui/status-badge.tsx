@@ -30,6 +30,14 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
       colorClass = "bg-indigo-50 text-indigo-700 border-indigo-200";
       label = "Preuve reçue";
       break;
+    case 'PENDING_APPROVAL':
+      colorClass = "bg-amber-50 text-amber-700 border-amber-200";
+      label = "En attente d'approbation";
+      break;
+    case 'OFFER_SENT':
+      colorClass = "bg-blue-50 text-blue-700 border-blue-200";
+      label = "Offre reçue";
+      break;
   }
 
   return (

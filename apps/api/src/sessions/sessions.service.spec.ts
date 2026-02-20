@@ -250,25 +250,17 @@ describe("SessionsService", () => {
       );
     });
 
-    it("should auto-confirm PENDING session when trainer is assigned", async () => {
-      const mockSession = { id: "1", status: "PENDING" } as Session;
+    it("should NOT auto-confirm PENDING_APPROVAL session when trainer is assigned", async () => {
+      const mockSession = { id: "1", status: "PENDING_APPROVAL" } as Session;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       jest.spyOn(service, "findOne").mockResolvedValue(mockSession as any);
-      jest.spyOn(prisma.session, "update").mockResolvedValue({
-        ...mockSession,
-        status: "CONFIRMED",
-      });
+      jest.spyOn(prisma.session, "update").mockResolvedValue(mockSession);
 
       await service.adminUpdate("1", { trainerId: "t1" });
 
-      expect(prisma.session.update).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            trainer: { connect: { id: "t1" } },
-            status: "CONFIRMED",
-          }),
-        }),
-      );
+      const updateCall = (prisma.session.update as jest.Mock).mock.calls[0][0];
+      expect(updateCall.data.trainer).toEqual({ connect: { id: "t1" } });
+      expect(updateCall.data.status).toBeUndefined();
     });
 
     it("should send email on cancellation", async () => {
