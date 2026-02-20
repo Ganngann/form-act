@@ -222,7 +222,7 @@ export function CheckoutForm({ formationId, trainerId, date, slot, isLoggedIn, f
                         <div className="flex items-start justify-between border-b pb-6">
                             <div>
                                 <h2 className="text-2xl font-bold mb-1">Dernière étape</h2>
-                                <p className="text-muted-foreground">Vérifiez les détails avant d'envoyer votre demande.</p>
+                                <p className="text-muted-foreground">Vérifiez les détails avant d&apos;envoyer votre demande.</p>
                             </div>
                         </div>
 
@@ -260,7 +260,7 @@ export function CheckoutForm({ formationId, trainerId, date, slot, isLoggedIn, f
                         <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
                             <div className="flex-1 space-y-2">
                                 <div className="flex items-center gap-2 text-blue-700 font-bold">
-                                    Demande d'offre tarifaire
+                                    Demande d&apos;offre tarifaire
                                 </div>
                                 <p className="text-xs text-blue-600/80 leading-relaxed">
                                     Une offre précise incluant les frais de déplacement vous sera envoyée pour validation avant confirmation.

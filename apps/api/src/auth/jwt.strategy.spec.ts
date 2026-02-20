@@ -49,7 +49,11 @@ describe("JwtStrategy", () => {
     });
 
     it("should throw UnauthorizedException if user does not exist", async () => {
-      const payload = { sub: "nonexistent", email: "test@example.com", role: "ADMIN" };
+      const payload = {
+        sub: "nonexistent",
+        email: "test@example.com",
+        role: "ADMIN",
+      };
 
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 

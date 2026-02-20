@@ -293,7 +293,7 @@ export class SessionsService {
         `<h1>Votre session est confirmée !</h1>
          <p>Vous avez accepté l'offre pour la formation <strong>${updatedSession.formation.title}</strong>.</p>
          <p>La session est maintenant planifiée le ${new Date(updatedSession.date).toLocaleDateString()}.</p>
-         <p>Nous reviendrons vers vous pour les détails logistiques.</p>`
+         <p>Nous reviendrons vers vous pour les détails logistiques.</p>`,
       );
     }
 
@@ -304,7 +304,7 @@ export class SessionsService {
   }
 
   async sendOffer(id: string, price: number) {
-    const session = await this.findOne(id);
+    await this.findOne(id);
 
     const updatedSession = await this.prisma.session.update({
       where: { id },
@@ -328,7 +328,7 @@ export class SessionsService {
          <p>Nous avons analysé votre demande pour la formation <strong>${updatedSession.formation.title}</strong>.</p>
          <p><strong>Prix proposé :</strong> ${price} € HTVA (${priceTtc} € TTC)</p>
          <p>Veuillez vous connecter à votre espace client pour valider cette offre et confirmer la session.</p>
-         <p><a href="${process.env.FRONTEND_URL}/dashboard/sessions/${id}">Voir mon offre</a></p>`
+         <p><a href="${process.env.FRONTEND_URL}/dashboard/sessions/${id}">Voir mon offre</a></p>`,
       );
     }
 

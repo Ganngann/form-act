@@ -78,7 +78,10 @@ describe("CheckoutService", () => {
 
     it("should use existing user if user already exists", async () => {
       const existingUser = { id: "1", email: "test@example.com" } as User;
-      const mockSession = { id: "s1", status: "PENDING_APPROVAL" } as unknown as Session;
+      const mockSession = {
+        id: "s1",
+        status: "PENDING_APPROVAL",
+      } as unknown as Session;
 
       jest.spyOn(prisma.user, "findUnique").mockResolvedValue(existingUser);
 
@@ -111,7 +114,9 @@ describe("CheckoutService", () => {
 
     it("should throw BadRequestException if trainer is not available", async () => {
       jest.spyOn(prisma.user, "findUnique").mockResolvedValue(null);
-      jest.spyOn(authService, "hashPassword").mockResolvedValue("hashed_password");
+      jest
+        .spyOn(authService, "hashPassword")
+        .mockResolvedValue("hashed_password");
 
       const mockUser = { id: "user-1", email: mockDto.email };
       const mockClient = { id: "client-1", ...mockDto, userId: "user-1" };
@@ -128,7 +133,9 @@ describe("CheckoutService", () => {
 
     it("should successfully process checkout with PENDING_APPROVAL status even if trainer assigned", async () => {
       jest.spyOn(prisma.user, "findUnique").mockResolvedValue(null);
-      jest.spyOn(authService, "hashPassword").mockResolvedValue("hashed_password");
+      jest
+        .spyOn(authService, "hashPassword")
+        .mockResolvedValue("hashed_password");
 
       const mockUser = { id: "user-1", email: mockDto.email };
       const mockClient = { id: "client-1", ...mockDto, userId: "user-1" };
@@ -150,16 +157,18 @@ describe("CheckoutService", () => {
       expect(prisma.$transaction).toHaveBeenCalled();
 
       // Verify correct status passed to create
-      expect(mockTx.session.create).toHaveBeenCalledWith(expect.objectContaining({
-        data: expect.objectContaining({
-          status: "PENDING_APPROVAL"
-        })
-      }));
+      expect(mockTx.session.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: "PENDING_APPROVAL",
+          }),
+        }),
+      );
 
       expect(emailService.sendEmail).toHaveBeenCalledWith(
         mockUser.email,
         "Réception de votre demande de formation - Formact",
-        expect.stringContaining("Nous avons bien reçu votre demande")
+        expect.stringContaining("Nous avons bien reçu votre demande"),
       );
     });
 
@@ -181,11 +190,13 @@ describe("CheckoutService", () => {
       expect(mockTx.session.findFirst).not.toHaveBeenCalled();
       expect(result.session.status).toBe("PENDING_APPROVAL");
 
-      expect(mockTx.session.create).toHaveBeenCalledWith(expect.objectContaining({
-        data: expect.objectContaining({
-          status: "PENDING_APPROVAL"
-        })
-      }));
+      expect(mockTx.session.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: "PENDING_APPROVAL",
+          }),
+        }),
+      );
     });
 
     it("should check for conflicts correctly when slot is ALL_DAY", async () => {
