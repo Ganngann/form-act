@@ -22,6 +22,8 @@ describe("SessionsController", () => {
     getAdminStats: jest.fn(),
     getBillingPreview: jest.fn(),
     billSession: jest.fn(),
+    sendOffer: jest.fn(),
+    acceptOffer: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -393,6 +395,54 @@ describe("SessionsController", () => {
           },
           { user: { role: "CLIENT" } },
         ),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("sendOffer", () => {
+    it("should allow ADMIN", async () => {
+      mockSessionsService.sendOffer.mockResolvedValue({});
+      await controller.sendOffer("1", { price: 100 }, { user: { role: "ADMIN" } });
+      expect(service.sendOffer).toHaveBeenCalledWith("1", 100);
+    });
+
+    it("should deny non-ADMIN", async () => {
+      await expect(
+        controller.sendOffer("1", { price: 100 }, { user: { role: "CLIENT" } })
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("acceptOffer", () => {
+    it("should allow ADMIN", async () => {
+      mockSessionsService.findOne.mockResolvedValue({});
+      mockSessionsService.acceptOffer.mockResolvedValue({});
+
+      await controller.acceptOffer("1", { user: { role: "ADMIN" } });
+      expect(service.acceptOffer).toHaveBeenCalledWith("1");
+    });
+
+    it("should allow CLIENT if owner", async () => {
+      mockSessionsService.findOne.mockResolvedValue({ client: { userId: "u1" } });
+      mockSessionsService.acceptOffer.mockResolvedValue({});
+
+      await controller.acceptOffer("1", { user: { role: "CLIENT", userId: "u1" } });
+      expect(service.acceptOffer).toHaveBeenCalledWith("1");
+    });
+
+    it("should deny CLIENT if not owner", async () => {
+      mockSessionsService.findOne.mockResolvedValue({ client: { userId: "u2" } });
+
+      await expect(
+        controller.acceptOffer("1", { user: { role: "CLIENT", userId: "u1" } })
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it("should deny non-ADMIN/non-CLIENT", async () => {
+      mockSessionsService.findOne.mockResolvedValue({});
+
+      await expect(
+        controller.acceptOffer("1", { user: { role: "TRAINER" } })
       ).rejects.toThrow(ForbiddenException);
     });
   });
