@@ -35,9 +35,18 @@ vi.mock('lucide-react', () => ({
 
 describe('Home Page', () => {
   beforeEach(() => {
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ([{ id: '1', name: 'Cat 1' }]),
+    global.fetch = vi.fn().mockImplementation((url) => {
+      if (typeof url === 'string' && url.includes('/categories')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ([{ id: '1', name: 'Cat 1' }]),
+        });
+      }
+      return Promise.resolve({
+        ok: false,
+        status: 404,
+        json: async () => ({}),
+      });
     });
     // Mock console.error to avoid noise if fetch fails in tests
     vi.spyOn(console, 'error').mockImplementation(() => { });
