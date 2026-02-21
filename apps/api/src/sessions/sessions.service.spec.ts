@@ -3,6 +3,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { SessionsService } from "./sessions.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { EmailService } from "../email/email.service";
+import { EmailTemplatesService } from "../email-templates/email-templates.service";
 import { NotFoundException } from "@nestjs/common";
 import { Session, Formation } from "@prisma/client";
 
@@ -10,6 +11,7 @@ describe("SessionsService", () => {
   let service: SessionsService;
   let prisma: PrismaService;
   let emailService: EmailService;
+  let emailTemplatesService: EmailTemplatesService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -33,12 +35,24 @@ describe("SessionsService", () => {
             sendEmailWithAttachments: jest.fn(),
           },
         },
+        {
+          provide: EmailTemplatesService,
+          useValue: {
+            getRenderedTemplate: jest.fn().mockResolvedValue({
+              subject: "Rendered Subject",
+              body: "Rendered Body",
+            }),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<SessionsService>(SessionsService);
     prisma = module.get<PrismaService>(PrismaService);
     emailService = module.get<EmailService>(EmailService);
+    emailTemplatesService = module.get<EmailTemplatesService>(
+      EmailTemplatesService,
+    );
   });
 
   afterEach(() => {
@@ -278,13 +292,13 @@ describe("SessionsService", () => {
       expect(emailService.sendEmail).toHaveBeenCalledTimes(2);
       expect(emailService.sendEmail).toHaveBeenCalledWith(
         "client@test.com",
-        expect.stringContaining("Annulation"),
-        expect.any(String),
+        "Rendered Subject",
+        "Rendered Body",
       );
       expect(emailService.sendEmail).toHaveBeenCalledWith(
         "trainer@test.com",
-        expect.stringContaining("Annulation"),
-        expect.any(String),
+        "Rendered Subject",
+        "Rendered Body",
       );
     });
 
@@ -528,8 +542,8 @@ describe("SessionsService", () => {
         );
         expect(emailService.sendEmail).toHaveBeenCalledWith(
           "c@test.com",
-          expect.stringContaining("Facture disponible"),
-          expect.stringContaining("150"),
+          "Rendered Subject",
+          "Rendered Body",
         );
       });
 
@@ -593,8 +607,8 @@ describe("SessionsService", () => {
       );
       expect(emailService.sendEmail).toHaveBeenCalledWith(
         "client@test.com",
-        expect.stringContaining("Proposition tarifaire"),
-        expect.stringContaining("100"),
+        "Rendered Subject",
+        "Rendered Body",
       );
     });
 
@@ -645,8 +659,8 @@ describe("SessionsService", () => {
       );
       expect(emailService.sendEmail).toHaveBeenCalledWith(
         "client@test.com",
-        expect.stringContaining("Confirmation de session"),
-        expect.stringContaining("Votre session est confirmée"),
+        "Rendered Subject",
+        "Rendered Body",
       );
     });
 

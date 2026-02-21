@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { NotificationsService } from "./notifications.service";
 import { EmailService } from "../email/email.service";
+import { EmailTemplatesService } from "../email-templates/email-templates.service";
 import { NotificationLogService } from "./notification-log.service";
 import { SessionsService } from "../sessions/sessions.service";
 import { PdfService, SessionWithRelations } from "../files/pdf.service";
@@ -8,6 +9,7 @@ import { PdfService, SessionWithRelations } from "../files/pdf.service";
 describe("NotificationsService", () => {
   let service: NotificationsService;
   let emailService: EmailService;
+  let emailTemplatesService: EmailTemplatesService;
   let logService: NotificationLogService;
   let sessionsService: SessionsService;
 
@@ -20,6 +22,15 @@ describe("NotificationsService", () => {
           useValue: {
             sendEmail: jest.fn(),
             sendEmailWithAttachments: jest.fn(),
+          },
+        },
+        {
+          provide: EmailTemplatesService,
+          useValue: {
+            getRenderedTemplate: jest.fn().mockResolvedValue({
+              subject: "Rendered Subject",
+              body: "Rendered Body",
+            }),
           },
         },
         {
@@ -49,6 +60,9 @@ describe("NotificationsService", () => {
 
     service = module.get<NotificationsService>(NotificationsService);
     emailService = module.get<EmailService>(EmailService);
+    emailTemplatesService = module.get<EmailTemplatesService>(
+      EmailTemplatesService,
+    );
     logService = module.get<NotificationLogService>(NotificationLogService);
     sessionsService = module.get<SessionsService>(SessionsService);
   });
@@ -121,8 +135,8 @@ describe("NotificationsService", () => {
 
       expect(emailService.sendEmail).toHaveBeenCalledWith(
         "client@acme.com",
-        expect.stringContaining("Informations logistiques manquantes"),
-        expect.any(String),
+        "Rendered Subject",
+        "Rendered Body",
       );
     });
 
@@ -176,8 +190,8 @@ describe("NotificationsService", () => {
       await service.handleCron();
       expect(emailService.sendEmail).toHaveBeenCalledWith(
         "client@acme.com",
-        expect.stringContaining("Rappel : Liste des participants attendue"),
-        expect.any(String),
+        "Rendered Subject",
+        "Rendered Body",
       );
     });
 
@@ -204,8 +218,8 @@ describe("NotificationsService", () => {
       await service.handleCron();
       expect(emailService.sendEmail).toHaveBeenCalledWith(
         "client@acme.com",
-        expect.stringContaining("URGENT : Liste des participants manquante"),
-        expect.any(String),
+        "Rendered Subject",
+        "Rendered Body",
       );
     });
   });
@@ -222,8 +236,8 @@ describe("NotificationsService", () => {
       await service.handleCron();
       expect(emailService.sendEmail).toHaveBeenCalledWith(
         "client@acme.com",
-        expect.stringContaining("Votre programme de formation"),
-        expect.any(String),
+        "Rendered Subject",
+        "Rendered Body",
       );
     });
   });
@@ -240,8 +254,8 @@ describe("NotificationsService", () => {
       await service.handleCron();
       expect(emailService.sendEmail).toHaveBeenCalledWith(
         "trainer@api.com",
-        expect.stringContaining("Rappel de votre mission"),
-        expect.any(String),
+        "Rendered Subject",
+        "Rendered Body",
       );
     });
   });
@@ -258,8 +272,8 @@ describe("NotificationsService", () => {
       await service.handleCron();
       expect(emailService.sendEmailWithAttachments).toHaveBeenCalledWith(
         "trainer@api.com",
-        expect.stringContaining("Votre Pack Documentaire"),
-        expect.any(String),
+        "Rendered Subject",
+        "Rendered Body",
         expect.any(Array),
       );
     });
@@ -282,10 +296,8 @@ describe("NotificationsService", () => {
       await service.handleCron();
       expect(emailService.sendEmail).toHaveBeenCalledWith(
         "trainer@api.com",
-        expect.stringContaining(
-          "Action requise : Dépôt de la feuille d'émargement",
-        ),
-        expect.any(String),
+        "Rendered Subject",
+        "Rendered Body",
       );
       expect(logService.createLog).toHaveBeenCalledWith(
         expect.objectContaining({
