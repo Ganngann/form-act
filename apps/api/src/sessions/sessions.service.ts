@@ -479,7 +479,7 @@ export class SessionsService {
       doc.text(`Formation : ${session.formation.title}`, leftX);
       doc.moveDown(0.5);
       doc.text(
-        `Date : ${new Date(session.date).toLocaleDateString("fr-FR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}`,
+        `Date : ${new Date(session.date).toLocaleDateString("fr-FR", { weekday: "long", year: "numeric", month: "long", day: "numeric", timeZone: "Europe/Paris" })}`,
       );
       doc.moveDown(0.5);
 

@@ -758,5 +758,96 @@ describe("SessionsService", () => {
         const result = await service.generateAttendanceSheet("1");
         expect(result).toBeInstanceOf(Buffer);
       });
+
+    it("should handle PM slot", async () => {
+      const session = {
+        id: "1",
+        status: "CONFIRMED",
+        date: new Date(),
+        formation: { title: "Test Formation" },
+        client: { companyName: "Client Inc", address: "Address" },
+        trainer: { firstName: "John", lastName: "Doe" },
+        participants: JSON.stringify([{ name: "P1" }]),
+        slot: "PM",
+      } as any;
+
+      jest.spyOn(service, "findOne").mockResolvedValue(session);
+
+      const result = await service.generateAttendanceSheet("1");
+      expect(result).toBeInstanceOf(Buffer);
+    });
+
+    it("should handle ALL_DAY slot", async () => {
+      const session = {
+        id: "1",
+        status: "CONFIRMED",
+        date: new Date(),
+        formation: { title: "Test Formation" },
+        client: { companyName: "Client Inc", address: "Address" },
+        trainer: { firstName: "John", lastName: "Doe" },
+        participants: JSON.stringify([{ name: "P1" }]),
+        slot: "ALL_DAY",
+      } as any;
+
+      jest.spyOn(service, "findOne").mockResolvedValue(session);
+
+      const result = await service.generateAttendanceSheet("1");
+      expect(result).toBeInstanceOf(Buffer);
+    });
+
+    it("should handle missing client company name and address, and missing trainer", async () => {
+      const session = {
+        id: "1",
+        status: "CONFIRMED",
+        date: new Date(),
+        formation: { title: "Test Formation" },
+        client: { companyName: null, address: null },
+        location: null,
+        trainer: null,
+        participants: JSON.stringify([{ name: "P1" }]),
+        slot: "AM",
+      } as any;
+
+      jest.spyOn(service, "findOne").mockResolvedValue(session);
+
+      const result = await service.generateAttendanceSheet("1");
+      expect(result).toBeInstanceOf(Buffer);
+    });
+
+    it("should handle malformed participants JSON", async () => {
+      const session = {
+        id: "1",
+        status: "CONFIRMED",
+        date: new Date(),
+        formation: { title: "Test Formation" },
+        client: { companyName: "C", address: "A" },
+        trainer: { firstName: "T", lastName: "T" },
+        participants: "{invalid}",
+        slot: "AM",
+      } as any;
+
+      jest.spyOn(service, "findOne").mockResolvedValue(session);
+
+      const result = await service.generateAttendanceSheet("1");
+      expect(result).toBeInstanceOf(Buffer);
+    });
+
+    it("should handle participant with no name fields", async () => {
+      const session = {
+        id: "1",
+        status: "CONFIRMED",
+        date: new Date(),
+        formation: { title: "Test Formation" },
+        client: { companyName: "C", address: "A" },
+        trainer: { firstName: "T", lastName: "T" },
+        participants: JSON.stringify([{ email: "only@email.com" }]),
+        slot: "AM",
+      } as any;
+
+      jest.spyOn(service, "findOne").mockResolvedValue(session);
+
+      const result = await service.generateAttendanceSheet("1");
+      expect(result).toBeInstanceOf(Buffer);
+    });
   });
 });
