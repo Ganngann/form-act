@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { Prisma, Session, Formation } from "@prisma/client";
 import { AdminUpdateSessionDto } from "./dto/admin-update-session.dto";
@@ -140,6 +140,42 @@ export class SessionsService {
         status: "PROOF_RECEIVED",
       },
     });
+  }
+
+  async sendLogisticsReminder(id: string) {
+    const session = await this.findOne(id);
+    if (!session) throw new NotFoundException("Session not found");
+
+    if (this.isLogisticsStrictlyComplete(session)) {
+      throw new BadRequestException("Logistics already complete");
+    }
+
+    if (session.client?.user?.email) {
+      await this.emailService.sendEmail(
+        session.client.user.email,
+        "Action requise : Informations logistiques manquantes",
+        `<p>Bonjour ${session.client.companyName},</p>
+         <p>Merci de compléter les informations logistiques pour votre session de formation du ${new Date(
+           session.date,
+         ).toLocaleDateString()}.</p>
+         <p>Veuillez vous rendre sur votre <a href="${
+           process.env.FRONTEND_URL
+         }/dashboard/sessions/${id}">Espace Client</a> pour finaliser les détails.</p>
+         <p>Cordialement,<br>L'équipe Formact</p>`,
+      );
+
+      // Log the reminder
+      await this.prisma.notificationLog.create({
+        data: {
+          type: "LOGISTICS_REMINDER_MANUAL",
+          recipient: session.client.user.email,
+          status: "SENT",
+          metadata: JSON.stringify({ sessionId: session.id }),
+        },
+      });
+    }
+
+    return { message: "Reminder sent" };
   }
 
   calculatePricing(session: Session & { formation: Formation }) {

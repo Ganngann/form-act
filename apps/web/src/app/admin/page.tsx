@@ -2,6 +2,7 @@ import { LogoutButton } from '@/components/LogoutButton';
 import { API_URL } from '@/lib/config';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import { AdminHeader } from '@/components/admin/AdminHeader';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { MasterCalendar } from '@/components/admin/master-calendar';
 import { AdminBentoStats } from '@/components/admin/AdminBentoStats';
@@ -35,24 +36,19 @@ export default async function AdminDashboard() {
   return (
     <div className="space-y-12">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
-        <div>
-          <span className="inline-block px-3 py-1 rounded-md bg-primary/5 border border-primary/20 text-[10px] font-black uppercase tracking-widest text-primary mb-4">
-            Espace Administrateur
-          </span>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-gray-900 mb-2">
-            Dashboard
-          </h1>
-          <p className="text-muted-foreground font-medium text-lg max-w-2xl">
-            Vue d&apos;ensemble de l&apos;activité, gestion des sessions et suivi des priorités.
-          </p>
-        </div>
+      <AdminHeader
+        className="mb-8"
+        badge="Espace Administrateur"
+        badgeClassName="bg-primary/5 border-primary/20 text-primary"
+        title="Dashboard"
+        description="Vue d'ensemble de l'activité, gestion des sessions et suivi des priorités."
+      >
         <div className="hidden md:block">
           <div className="h-16 w-16 bg-primary/5 rounded-2xl flex items-center justify-center text-primary">
             <LayoutDashboard className="h-8 w-8" />
           </div>
         </div>
-      </div>
+      </AdminHeader>
 
       <div className="grid grid-cols-1 gap-12">
         {/* Actions Prioritaires */}
