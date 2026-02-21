@@ -4,6 +4,7 @@ import { Prisma, Session, Formation } from "@prisma/client";
 import { AdminUpdateSessionDto } from "./dto/admin-update-session.dto";
 import { AdminBillSessionDto } from "./dto/admin-bill-session.dto";
 import { EmailService } from "../email/email.service";
+import { EmailTemplatesService } from "../email-templates/email-templates.service";
 import * as PDFDocument from "pdfkit";
 
 @Injectable()
@@ -11,6 +12,7 @@ export class SessionsService {
   constructor(
     private prisma: PrismaService,
     private emailService: EmailService,
+    private emailTemplatesService: EmailTemplatesService,
   ) {}
 
   async findOne(id: string) {
@@ -229,11 +231,18 @@ export class SessionsService {
     // Notify Client
     if (updated.client?.user?.email) {
       try {
+        const template = await this.emailTemplatesService.getRenderedTemplate(
+          "SESSION_INVOICED",
+          {
+            formation_title: updated.formation.title,
+            date: new Date(updated.date).toLocaleDateString("fr-BE"),
+            finalPrice: billingData.finalPrice,
+          },
+        );
         await this.emailService.sendEmail(
           updated.client.user.email,
-          `Facture disponible : ${updated.formation.title}`,
-          `<p>La session du ${new Date(updated.date).toLocaleDateString()} a été validée pour facturation.</p>
-            <p>Montant Final : ${billingData.finalPrice} €</p>`,
+          template.subject,
+          template.body,
         );
       } catch (e) {
         console.error("Failed to send billing email:", e);
@@ -286,18 +295,32 @@ export class SessionsService {
     if (data.status === "CANCELLED" && session.status !== "CANCELLED") {
       // Notify Client
       if (updatedSession.client?.user?.email) {
+        const template = await this.emailTemplatesService.getRenderedTemplate(
+          "SESSION_CANCELLED_CLIENT",
+          {
+            formation_title: updatedSession.formation.title,
+            date: new Date(updatedSession.date).toLocaleDateString("fr-BE"),
+          },
+        );
         await this.emailService.sendEmail(
           updatedSession.client.user.email,
-          `Annulation de session : ${updatedSession.formation.title}`,
-          `<p>Votre session prévue le ${updatedSession.date} a été annulée.</p>`,
+          template.subject,
+          template.body,
         );
       }
       // Notify Trainer
       if (updatedSession.trainer?.email) {
+        const template = await this.emailTemplatesService.getRenderedTemplate(
+          "SESSION_CANCELLED_TRAINER",
+          {
+            formation_title: updatedSession.formation.title,
+            date: new Date(updatedSession.date).toLocaleDateString("fr-BE"),
+          },
+        );
         await this.emailService.sendEmail(
           updatedSession.trainer.email,
-          `Annulation de mission : ${updatedSession.formation.title}`,
-          `<p>La session prévue le ${updatedSession.date} a été annulée.</p>`,
+          template.subject,
+          template.body,
         );
       }
     }
@@ -324,13 +347,17 @@ export class SessionsService {
 
     // Notify Client
     if (updatedSession.client?.user?.email) {
+      const template = await this.emailTemplatesService.getRenderedTemplate(
+        "SESSION_CONFIRMATION",
+        {
+          formation_title: updatedSession.formation.title,
+          date: new Date(updatedSession.date).toLocaleDateString("fr-BE"),
+        },
+      );
       await this.emailService.sendEmail(
         updatedSession.client.user.email,
-        `Confirmation de session : ${updatedSession.formation.title}`,
-        `<h1>Votre session est confirmée !</h1>
-         <p>Vous avez accepté l'offre pour la formation <strong>${updatedSession.formation.title}</strong>.</p>
-         <p>La session est maintenant planifiée le ${new Date(updatedSession.date).toLocaleDateString()}.</p>
-         <p>Nous reviendrons vers vous pour les détails logistiques.</p>`,
+        template.subject,
+        template.body,
       );
     }
 
@@ -358,14 +385,19 @@ export class SessionsService {
     // Notify Client
     if (updatedSession.client?.user?.email) {
       const priceTtc = (Number(price) * 1.21).toFixed(2);
+      const template = await this.emailTemplatesService.getRenderedTemplate(
+        "SESSION_OFFER",
+        {
+          formation_title: updatedSession.formation.title,
+          price: price,
+          priceTtc: priceTtc,
+          link: `${process.env.FRONTEND_URL}/dashboard/sessions/${id}`,
+        },
+      );
       await this.emailService.sendEmail(
         updatedSession.client.user.email,
-        `Proposition tarifaire : ${updatedSession.formation.title}`,
-        `<h1>Une offre est disponible pour votre demande</h1>
-         <p>Nous avons analysé votre demande pour la formation <strong>${updatedSession.formation.title}</strong>.</p>
-         <p><strong>Prix proposé :</strong> ${price} € HTVA (${priceTtc} € TTC)</p>
-         <p>Veuillez vous connecter à votre espace client pour valider cette offre et confirmer la session.</p>
-         <p><a href="${process.env.FRONTEND_URL}/dashboard/sessions/${id}">Voir mon offre</a></p>`,
+        template.subject,
+        template.body,
       );
     }
 

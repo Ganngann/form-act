@@ -6,6 +6,7 @@ import { AuthService } from "./auth.service";
 import { JwtStrategy } from "./jwt.strategy";
 import { AuthController } from "./auth.controller";
 import { EmailModule } from "../email/email.module";
+import { EmailTemplatesModule } from "../email-templates/email-templates.module";
 import { getJwtSecret } from "./jwt.config";
 
 @Module({
@@ -13,6 +14,7 @@ import { getJwtSecret } from "./jwt.config";
     PrismaModule,
     PassportModule,
     EmailModule,
+    EmailTemplatesModule,
     JwtModule.register({
       secret: getJwtSecret(),
       signOptions: { expiresIn: "1d" },
