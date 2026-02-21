@@ -4,6 +4,7 @@ import { CalendarExport } from '@/components/trainer/calendar-export';
 import { Card, CardContent } from '@/components/ui/card';
 import { Settings, RefreshCw, Calendar, Link as LinkIcon, AlertTriangle } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { PasswordChangeForm } from '@/components/auth/password-change-form';
 
 async function getCalendarData() {
     const cookieStore = cookies();
@@ -86,6 +87,8 @@ export default async function TrainerSettingsPage() {
                         <CalendarExport url={calendarUrl} />
                     </CardContent>
                 </Card>
+
+                <PasswordChangeForm />
 
                 {/* Future Settings Placeholders */}
                 <Card className="rounded-[2rem] border-dashed border-2 border-border/60 bg-muted/5 shadow-none opacity-60">

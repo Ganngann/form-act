@@ -16,6 +16,7 @@ import { RegisterDto } from "./dto/register.dto";
 import { ForgotPasswordDto } from "./dto/forgot-password.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { LoginThrottlerGuard } from "./login-throttler.guard";
+import { ChangePasswordDto } from "./dto/change-password.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -86,6 +87,13 @@ export class AuthController {
   logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie("Authentication", { path: "/" });
     return { success: true };
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Post("change-password")
+  async changePassword(@Req() req, @Body() body: ChangePasswordDto) {
+    await this.authService.changePassword(req.user.userId, body);
+    return { message: "Mot de passe modifié avec succès" };
   }
 
   @UseGuards(AuthGuard("jwt"))
