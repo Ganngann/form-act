@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from "@nestjs/common";
+import { Injectable, BadRequestException, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "../prisma/prisma.service";
 import * as bcrypt from "bcrypt";
@@ -7,6 +7,7 @@ import { EmailService } from "../email/email.service";
 import * as crypto from "crypto";
 import { getFrontendUrl } from "../common/config";
 import { RegisterDto } from "./dto/register.dto";
+import { ChangePasswordDto } from "./dto/change-password.dto";
 
 @Injectable()
 export class AuthService {
@@ -140,6 +141,28 @@ export class AuthService {
           select: { id: true },
         },
         client: true, // Include client details for checkout pre-fill
+      },
+    });
+  }
+
+  async changePassword(userId: string, dto: ChangePasswordDto): Promise<void> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new UnauthorizedException("Utilisateur non trouvé");
+    }
+
+    // Check old password
+    const isMatch = await bcrypt.compare(dto.oldPassword, user.password);
+    if (!isMatch) {
+      throw new BadRequestException("Ancien mot de passe incorrect");
+    }
+
+    const hashedPassword = await this.hashPassword(dto.newPassword);
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        password: hashedPassword,
       },
     });
   }

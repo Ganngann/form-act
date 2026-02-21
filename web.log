@@ -1,0 +1,22 @@
+
+> web@0.1.0 dev
+> next dev
+
+   ▲ Next.js 14.1.0
+   - Local:        http://localhost:3000
+   - Environments: .env
+
+ ✓ Ready in 2.1s
+ ○ Compiling /login ...
+ ✓ Compiled /login in 6.2s (622 modules)
+ ✓ Compiled in 786ms (270 modules)
+ ○ Compiling /src/middleware ...
+ ✓ Compiled /src/middleware in 759ms (131 modules)
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 3.7s (1790 modules)
+ ○ Compiling /dashboard/settings ...
+ ✓ Compiled /dashboard/settings in 2.2s (1976 modules)
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 3.5s (2090 modules)
+ ○ Compiling /admin/settings ...
+ ✓ Compiled /admin/settings in 893ms (2181 modules)

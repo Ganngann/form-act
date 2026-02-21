@@ -6,7 +6,7 @@ import { EmailService } from "../email/email.service";
 import * as bcrypt from "bcrypt";
 import { User } from "@prisma/client";
 
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, UnauthorizedException } from "@nestjs/common";
 
 describe("AuthService", () => {
   let service: AuthService;
@@ -252,6 +252,54 @@ describe("AuthService", () => {
           },
         }),
       );
+    });
+  });
+
+  describe("changePassword", () => {
+    it("should throw UnauthorizedException if user not found", async () => {
+      jest.spyOn(prisma.user, "findUnique").mockResolvedValue(null);
+      await expect(
+        service.changePassword("1", {
+          oldPassword: "old",
+          newPassword: "new",
+        }),
+      ).rejects.toThrow(UnauthorizedException);
+    });
+
+    it("should throw BadRequestException if old password incorrect", async () => {
+      const mockUser = { id: "1", password: "hashed_old" } as User;
+      jest.spyOn(prisma.user, "findUnique").mockResolvedValue(mockUser);
+      jest
+        .spyOn(bcrypt, "compare")
+        .mockImplementation(() => Promise.resolve(false));
+
+      await expect(
+        service.changePassword("1", {
+          oldPassword: "wrong",
+          newPassword: "new",
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it("should update password if correct", async () => {
+      const mockUser = { id: "1", password: "hashed_old" } as User;
+      jest.spyOn(prisma.user, "findUnique").mockResolvedValue(mockUser);
+      jest
+        .spyOn(bcrypt, "compare")
+        .mockImplementation(() => Promise.resolve(true));
+      jest
+        .spyOn(bcrypt, "hash")
+        .mockImplementation(() => Promise.resolve("hashed_new"));
+
+      await service.changePassword("1", {
+        oldPassword: "old",
+        newPassword: "new",
+      });
+
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: "1" },
+        data: { password: "hashed_new" },
+      });
     });
   });
 });
