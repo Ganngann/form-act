@@ -4,6 +4,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import * as bcrypt from "bcrypt";
 import { User } from "@prisma/client";
 import { EmailService } from "../email/email.service";
+import { EmailTemplatesService } from "../email-templates/email-templates.service";
 import * as crypto from "crypto";
 import { getFrontendUrl } from "../common/config";
 import { RegisterDto } from "./dto/register.dto";
@@ -19,6 +20,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private emailService: EmailService,
+    private emailTemplatesService: EmailTemplatesService,
   ) {}
 
   async hashPassword(password: string): Promise<string> {
@@ -90,15 +92,15 @@ export class AuthService {
     const frontendUrl = getFrontendUrl();
     const resetLink = `${frontendUrl}/auth/reset-password?token=${token}`;
 
-    await this.emailService.sendEmail(
-      email,
-      "Réinitialisation de votre mot de passe",
-      `<p>Bonjour ${user.name || "Client"},</p>
-       <p>Vous avez demandé la réinitialisation de votre mot de passe.</p>
-       <p>Cliquez sur le lien ci-dessous pour définir un nouveau mot de passe (valable 1h) :</p>
-       <p><a href="${resetLink}">${resetLink}</a></p>
-       <p>Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>`,
+    const template = await this.emailTemplatesService.getRenderedTemplate(
+      "PASSWORD_RESET",
+      {
+        name: user.name || "Client",
+        resetLink,
+      },
     );
+
+    await this.emailService.sendEmail(email, template.subject, template.body);
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {

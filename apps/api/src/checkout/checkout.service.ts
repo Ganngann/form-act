@@ -3,6 +3,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateBookingDto } from "./create-booking.dto";
 import { AuthService } from "../auth/auth.service";
 import { EmailService } from "../email/email.service";
+import { EmailTemplatesService } from "../email-templates/email-templates.service";
 
 @Injectable()
 export class CheckoutService {
@@ -10,6 +11,7 @@ export class CheckoutService {
     private prisma: PrismaService,
     private authService: AuthService,
     private emailService: EmailService,
+    private emailTemplatesService: EmailTemplatesService,
   ) {}
 
   async processCheckout(data: CreateBookingDto) {
@@ -106,17 +108,19 @@ export class CheckoutService {
     });
 
     // 4. Send Confirmation Email
-    const subject = "Réception de votre demande de formation - Formact";
-    const html = `
-      <h1>Nous avons bien reçu votre demande !</h1>
-      <p>Votre demande de formation a bien été enregistrée.</p>
-      <p>Date : ${new Date(data.date).toLocaleDateString("fr-BE")}</p>
-      <p>Créneau : ${data.slot}</p>
-      <p>Nous reviendrons vers vous rapidement avec une offre tarifaire précise.</p>
-    `;
-
     try {
-      await this.emailService.sendEmail(result.user.email, subject, html);
+      const template = await this.emailTemplatesService.getRenderedTemplate(
+        "CHECKOUT_CONFIRMATION",
+        {
+          date: new Date(data.date).toLocaleDateString("fr-BE"),
+          slot: data.slot,
+        },
+      );
+      await this.emailService.sendEmail(
+        result.user.email,
+        template.subject,
+        template.body,
+      );
     } catch (e) {
       console.error("Failed to send confirmation email", e);
     }

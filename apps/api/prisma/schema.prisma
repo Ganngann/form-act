@@ -125,3 +125,12 @@ model SiteConfiguration {
   value     String   // JSON string
   updatedAt DateTime @updatedAt
 }
+
+model EmailTemplate {
+  id        String   @id @default(uuid())
+  type      String   @unique
+  subject   String
+  body      String   // HTML content
+  variables String?  // JSON string
+  updatedAt DateTime @updatedAt
+}

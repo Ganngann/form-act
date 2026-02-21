@@ -16,6 +16,7 @@ import { EmailModule } from "./email/email.module";
 import { NotificationsModule } from "./notifications/notifications.module";
 import { CalendarModule } from "./calendar/calendar.module";
 import { ConfigurationsModule } from "./configurations/configurations.module";
+import { EmailTemplatesModule } from "./email-templates/email-templates.module";
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ConfigurationsModule } from "./configurations/configurations.module";
     NotificationsModule,
     CalendarModule,
     ConfigurationsModule,
+    EmailTemplatesModule,
   ],
   controllers: [AppController],
   providers: [],

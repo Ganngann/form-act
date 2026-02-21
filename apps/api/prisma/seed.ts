@@ -388,6 +388,103 @@ async function main() {
       create: config
     });
   }
+
+  // 9. Email Templates
+  console.log('Seeding Email Templates...');
+  const emailTemplates = [
+    {
+      type: 'CHECKOUT_CONFIRMATION',
+      subject: 'Réception de votre demande de formation - Formact',
+      body: '<h1>Nous avons bien reçu votre demande !</h1><p>Votre demande de formation a bien été enregistrée.</p><p>Date : {{date}}</p><p>Créneau : {{slot}}</p><p>Nous reviendrons vers vous rapidement avec une offre tarifaire précise.</p>',
+      variables: JSON.stringify(['date', 'slot']),
+    },
+    {
+      type: 'PASSWORD_RESET',
+      subject: 'Réinitialisation de votre mot de passe',
+      body: '<p>Bonjour {{name}},</p><p>Vous avez demandé la réinitialisation de votre mot de passe.</p><p>Cliquez sur le lien ci-dessous pour définir un nouveau mot de passe (valable 1h) :</p><p><a href="{{resetLink}}">{{resetLink}}</a></p><p>Si vous n\'êtes pas à l\'origine de cette demande, ignorez cet email.</p>',
+      variables: JSON.stringify(['name', 'resetLink']),
+    },
+    {
+      type: 'SESSION_OFFER',
+      subject: 'Proposition tarifaire : {{formation_title}}',
+      body: '<h1>Une offre est disponible pour votre demande</h1><p>Nous avons analysé votre demande pour la formation <strong>{{formation_title}}</strong>.</p><p><strong>Prix proposé :</strong> {{price}} € HTVA ({{priceTtc}} € TTC)</p><p>Veuillez vous connecter à votre espace client pour valider cette offre et confirmer la session.</p><p><a href="{{link}}">Voir mon offre</a></p>',
+      variables: JSON.stringify(['formation_title', 'price', 'priceTtc', 'link']),
+    },
+    {
+      type: 'SESSION_CONFIRMATION',
+      subject: 'Confirmation de session : {{formation_title}}',
+      body: '<h1>Votre session est confirmée !</h1><p>Vous avez accepté l\'offre pour la formation <strong>{{formation_title}}</strong>.</p><p>La session est maintenant planifiée le {{date}}.</p><p>Nous reviendrons vers vous pour les détails logistiques.</p>',
+      variables: JSON.stringify(['formation_title', 'date']),
+    },
+    {
+      type: 'SESSION_INVOICED',
+      subject: 'Facture disponible : {{formation_title}}',
+      body: '<p>La session du {{date}} a été validée pour facturation.</p><p>Montant Final : {{finalPrice}} €</p>',
+      variables: JSON.stringify(['formation_title', 'date', 'finalPrice']),
+    },
+    {
+      type: 'SESSION_CANCELLED_CLIENT',
+      subject: 'Annulation de session : {{formation_title}}',
+      body: '<p>Votre session prévue le {{date}} a été annulée.</p>',
+      variables: JSON.stringify(['formation_title', 'date']),
+    },
+    {
+      type: 'SESSION_CANCELLED_TRAINER',
+      subject: 'Annulation de mission : {{formation_title}}',
+      body: '<p>La session prévue le {{date}} a été annulée.</p>',
+      variables: JSON.stringify(['formation_title', 'date']),
+    },
+    {
+      type: 'LOGISTICS_REMINDER_48H',
+      subject: 'Action requise : Informations logistiques manquantes',
+      body: '<p>Bonjour {{companyName}},</p><p>Merci de compléter les informations logistiques pour votre session de formation du {{date}}.</p><p>Cordialement,<br>L\'équipe Formact</p>',
+      variables: JSON.stringify(['companyName', 'date']),
+    },
+    {
+      type: 'PARTICIPANTS_ALERT_J15',
+      subject: 'Rappel : Liste des participants attendue',
+      body: '<p>Bonjour {{companyName}},</p><p>La formation approche (J-15). Merci de renseigner la liste des participants.</p>',
+      variables: JSON.stringify(['companyName']),
+    },
+    {
+      type: 'PARTICIPANTS_CRITICAL_J9',
+      subject: 'URGENT : Liste des participants manquante',
+      body: '<p>Bonjour {{companyName}},</p><p>Sans liste de participants sous 24h, la session risque d\'être annulée.</p>',
+      variables: JSON.stringify(['companyName']),
+    },
+    {
+      type: 'PROGRAM_SEND_J30',
+      subject: 'Votre programme de formation',
+      body: '<p>Bonjour,</p><p>Voici le programme pour votre formation à venir : <a href="{{programLink}}">Télécharger le programme</a></p>',
+      variables: JSON.stringify(['programLink']),
+    },
+    {
+      type: 'MISSION_REMINDER_J21',
+      subject: 'Rappel de votre mission',
+      body: '<p>Bonjour {{firstName}},</p><p>Rappel pour la session du {{date}}.</p><p>Client : {{companyName}}</p><p>Lieu : {{location}}</p>',
+      variables: JSON.stringify(['firstName', 'date', 'companyName', 'location']),
+    },
+    {
+      type: 'DOC_PACK_J7',
+      subject: 'Votre Pack Documentaire (Feuille d\'émargement)',
+      body: '<p>Bonjour {{firstName}},</p><p>Voici la feuille d\'émargement pour la session du {{date}}.</p><p>Rappel : Les modifications client sont désormais verrouillées.</p>',
+      variables: JSON.stringify(['firstName', 'date']),
+    },
+    {
+      type: 'PROOF_REMINDER_J1',
+      subject: 'Action requise : Dépôt de la feuille d\'émargement',
+      body: '<p>Bonjour {{firstName}},</p><p>La session de formation du {{date}} pour le client {{companyName}} est terminée.</p><p>Merci de déposer la feuille d\'émargement signée sur votre espace formateur afin de déclencher la facturation.</p><p>Cordialement,<br>L\'équipe Formact</p>',
+      variables: JSON.stringify(['firstName', 'date', 'companyName']),
+    },
+  ];
+
+  for (const template of emailTemplates) {
+    await prisma.emailTemplate.upsert({
+      where: { type: template.type },
+      update: {}, // Don't overwrite if exists
+      create: template,
+    });
+  }
 }
 
 main()
