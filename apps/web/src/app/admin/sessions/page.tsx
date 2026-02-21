@@ -2,6 +2,7 @@ import { API_URL } from '@/lib/config';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { AdminHeader } from '@/components/admin/AdminHeader';
 import { AdminBentoStats } from '@/components/admin/AdminBentoStats';
 import { SessionRadarCard } from '@/components/admin/SessionRadarCard';
 import { SessionSearchBar } from '@/components/admin/SessionSearchBar';
@@ -47,24 +48,18 @@ export default async function SessionsListPage({
   return (
     <div className="space-y-12">
       {/* Header with Title and Archives Link */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-        <div>
-          <span className="inline-block px-3 py-1 rounded-md bg-indigo-50 border border-indigo-200 text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-4">
-            Opérations
-          </span>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-gray-900 mb-2">
-            Suivi des Sessions
-          </h1>
-          <p className="text-muted-foreground font-medium text-lg max-w-2xl text-slate-500 font-medium">
-            Gérez le flux opérationnel et le planning des sessions actives.
-          </p>
-        </div>
+      <AdminHeader
+        badge="Opérations"
+        badgeClassName="bg-indigo-50 border-indigo-200 text-indigo-600"
+        title="Suivi des Sessions"
+        description="Gérez le flux opérationnel et le planning des sessions actives."
+      >
         <Button variant="outline" asChild className="rounded-xl border-slate-200 font-bold gap-2">
           <Link href="/admin/sessions/archives">
             <Archive className="h-4 w-4" /> Voir les Archives
           </Link>
         </Button>
-      </div>
+      </AdminHeader>
 
       {/* 1. Bento Stats Section */}
       <AdminBentoStats activeFilter={searchParams.filter} />

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { API_URL } from '@/lib/config';
 import { Plus, Users, Search } from 'lucide-react';
+import { AdminHeader } from '@/components/admin/AdminHeader';
 import { TrainerActions } from '@/components/admin/TrainerActions';
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -27,25 +28,19 @@ export default async function TrainersPage({
 
   return (
     <div className="space-y-12">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-        <div>
-          <span className="inline-block px-3 py-1 rounded-md bg-orange-50 border border-orange-200 text-[10px] font-black uppercase tracking-widest text-orange-600 mb-4">
-            Ressources Humaines
-          </span>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-gray-900 mb-2">
-            Annuaire Formateurs
-          </h1>
-          <p className="text-muted-foreground font-medium text-lg max-w-2xl">
-            Gérez votre équipe pédagogique, leurs disponibilités et leurs zones d&apos;expertise.
-          </p>
-        </div>
+      <AdminHeader
+        badge="Ressources Humaines"
+        badgeClassName="bg-orange-50 border-orange-200 text-orange-600"
+        title="Annuaire Formateurs"
+        description="Gérez votre équipe pédagogique, leurs disponibilités et leurs zones d'expertise."
+      >
         <Link href="/admin/trainers/new">
           <Button className="rounded-xl font-bold h-12 px-8 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all">
             <Plus className="mr-2 h-5 w-5" />
             Nouveau Formateur
           </Button>
         </Link>
-      </div>
+      </AdminHeader>
 
       <Card className="border-none shadow-xl bg-white/50 backdrop-blur-sm rounded-[2.5rem] overflow-hidden">
         <div className="p-6 border-b border-gray-100">

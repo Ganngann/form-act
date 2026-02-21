@@ -6,8 +6,9 @@ import { API_URL } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ChevronLeft, Save, Edit2, History, Briefcase } from "lucide-react";
+import { Save, Edit2, History, Briefcase } from "lucide-react";
 import Link from "next/link";
+import { AdminHeader } from '@/components/admin/AdminHeader';
 import { StatusBadge } from "@/components/ui/status-badge";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -101,19 +102,16 @@ export default function AdminClientDetailPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" asChild>
-                        <Link href="/admin/clients">
-                            <ChevronLeft className="h-5 w-5" />
-                        </Link>
-                    </Button>
-                    <h1 className="text-2xl font-bold">{client.companyName}</h1>
-                </div>
+            <AdminHeader
+                backLink="/admin/clients"
+                title={client.companyName}
+                badge="Base Installée"
+                badgeClassName="bg-blue-50 border-blue-200 text-blue-600"
+            >
                 <Button onClick={() => setIsEditing(!isEditing)} variant={isEditing ? "outline" : "default"}>
                     {isEditing ? "Annuler" : <><Edit2 className="h-4 w-4 mr-2" /> Modifier</>}
                 </Button>
-            </div>
+            </AdminHeader>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Informations Principales */}
