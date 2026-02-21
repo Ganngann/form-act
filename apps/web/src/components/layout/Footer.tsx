@@ -15,6 +15,8 @@ export async function Footer() {
     social: { linkedin: "", facebook: "" }
   };
 
+  const social = data.social || { linkedin: "", facebook: "" };
+
   return (
     <footer className="bg-muted/30 border-t border-border mt-auto">
       <div className="container py-12 md:py-24 px-4">
@@ -33,13 +35,13 @@ export async function Footer() {
               La plateforme de référence pour les experts de la formation professionnelle.
             </p>
             <div className="flex gap-4">
-              {data.social.linkedin && (
-                <a href={data.social.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-background border rounded-lg hover:border-primary hover:text-primary transition-colors">
+              {social.linkedin && (
+                <a href={social.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-background border rounded-lg hover:border-primary hover:text-primary transition-colors">
                   <Linkedin className="h-4 w-4" />
                 </a>
               )}
-              {data.social.facebook && (
-                <a href={data.social.facebook} target="_blank" rel="noopener noreferrer" className="p-2 bg-background border rounded-lg hover:border-primary hover:text-primary transition-colors">
+              {social.facebook && (
+                <a href={social.facebook} target="_blank" rel="noopener noreferrer" className="p-2 bg-background border rounded-lg hover:border-primary hover:text-primary transition-colors">
                   <Facebook className="h-4 w-4" />
                 </a>
               )}
