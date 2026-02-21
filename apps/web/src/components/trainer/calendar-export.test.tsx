@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { CalendarExport } from './calendar-export';
 
@@ -24,22 +24,26 @@ describe('CalendarExport', () => {
   });
 
   it('copies text to clipboard and changes button state', async () => {
+    vi.useFakeTimers();
     render(<CalendarExport url="https://example.com/cal.ics" />);
 
     const button = screen.getByRole('button', { name: /Copier/i });
-    fireEvent.click(button);
 
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('https://example.com/cal.ics');
-
-    await waitFor(() => {
-        expect(screen.getByText('Copié !')).toBeInTheDocument();
+    // Use act for the click since it triggers async state updates
+    await act(async () => {
+      fireEvent.click(button);
     });
 
-    // Wait for reset (mock timers would be better, but this works for basic verification)
-    await new Promise((r) => setTimeout(r, 2100));
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('https://example.com/cal.ics');
+    expect(screen.getByText('Copié !')).toBeInTheDocument();
 
-    // Since we're not using fake timers in this specific test file configuration,
-    // relying on real timeout might be flaky.
-    // However, checking the positive transition is the most critical part for coverage.
+    // Fast forward reset timer (2s)
+    act(() => {
+      vi.advanceTimersByTime(2100);
+    });
+
+    expect(screen.getByText('Copier')).toBeInTheDocument();
+
+    vi.useRealTimers();
   });
 });
