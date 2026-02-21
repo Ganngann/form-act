@@ -144,10 +144,10 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 **Afin de** sécuriser mon compte.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Section "Sécurité" dans le profil utilisateur.
-- [ ] Formulaire : Ancien mot de passe / Nouveau mot de passe / Confirmation.
-- [ ] Validation de complexité (Min 8 caractères).
-- [ ] Feedback visuel "Mot de passe mis à jour".
+- [x] Section "Sécurité" dans le profil utilisateur.
+- [x] Formulaire : Ancien mot de passe / Nouveau mot de passe / Confirmation.
+- [x] Validation de complexité (Min 8 caractères).
+- [x] Feedback visuel "Mot de passe mis à jour".
 
 ### US-12 : Admin - Désactivation Formateur
 **Référence :** Demande Client
@@ -168,9 +168,9 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 **Afin de** visualiser l'intégralité des dossiers en un clic.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Bouton "Voir tout" ou "Réinitialiser" à côté de la barre de recherche/filtres.
-- [ ] Action : Remet tous les filtres (Recherche, Statut, Date) à zéro.
-- [ ] Recharge la liste complète des sessions (hors archives).
+- [x] Bouton "Voir tout" ou "Réinitialiser" à côté de la barre de recherche/filtres.
+- [x] Action : Remet tous les filtres (Recherche, Statut, Date) à zéro.
+- [x] Recharge la liste complète des sessions (hors archives).
 
 ### US-14 : Admin - Relance Manuelle Logistique Client
 **Référence :** Demande Client
@@ -179,9 +179,9 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 **Afin de** débloquer un dossier sans attendre l'automatisme (ou en cas de non-réception).
 
 *Critères d'Acceptation (AC) :*
-- [ ] Bouton "Relancer Client (Logistique)" sur la fiche session (si logistique incomplète).
-- [ ] Envoi immédiat de l'email type "Relance Logistique" (avec lien formulaire).
-- [ ] Feedback visuel "Email de relance envoyé".
+- [x] Bouton "Relancer Client (Logistique)" sur la fiche session (si logistique incomplète).
+- [x] Envoi immédiat de l'email type "Relance Logistique" (avec lien formulaire).
+- [x] Feedback visuel "Email de relance envoyé".
 
 ### US-15 : Admin - Édition Textes Emails (CMS)
 **Référence :** Demande Client
