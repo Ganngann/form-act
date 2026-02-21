@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Package, Edit2, Wifi, FileText, Tv, Save, MapPin } from "lucide-react";
+import { Package, Edit2, Wifi, FileText, Tv, Save, MapPin, Send, Check } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -42,6 +42,29 @@ export function AdminLogisticsCard({ session }: AdminLogisticsCardProps) {
     const [videoMaterial, setVideoMaterial] = useState<string[]>(initialLogistics.videoMaterial || []);
     const [writingMaterial, setWritingMaterial] = useState<string[]>(initialLogistics.writingMaterial || []);
     const [accessDetails, setAccessDetails] = useState(initialLogistics.accessDetails || "");
+    const [sending, setSending] = useState(false);
+    const [sent, setSent] = useState(false);
+
+    const handleRemind = async () => {
+        if (!confirm("Voulez-vous envoyer un email de relance au client ?")) return;
+        setSending(true);
+        try {
+            const res = await fetch(`${API_URL}/sessions/${session.id}/remind-logistics`, {
+                method: "POST",
+                credentials: "include"
+            });
+            if (!res.ok) {
+                const json = await res.json();
+                throw new Error(json.message || "Erreur lors de l'envoi");
+            }
+            setSent(true);
+            setTimeout(() => setSent(false), 3000); // Reset after 3s
+        } catch (e: any) {
+            alert(e.message);
+        } finally {
+            setSending(false);
+        }
+    };
 
     const handleSave = async () => {
         setLoading(true);
@@ -105,14 +128,36 @@ export function AdminLogisticsCard({ session }: AdminLogisticsCardProps) {
                         <Package className="h-5 w-5 text-primary" /> Logistique
                     </CardTitle>
                     {!isEditing ? (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setIsEditing(true)}
-                            className="rounded-xl h-8 text-primary hover:text-primary hover:bg-primary/10 font-bold gap-2"
-                        >
-                            <Edit2 className="h-3.5 w-3.5" /> Modifier
-                        </Button>
+                        <div className="flex gap-2">
+                            {!session.isLogisticsComplete && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleRemind}
+                                    disabled={sending || sent}
+                                    className={`rounded-xl h-8 font-bold gap-2 transition-all ${
+                                        sent
+                                            ? "bg-green-50 text-green-600 border-green-200"
+                                            : "text-amber-600 border-amber-200 hover:bg-amber-50"
+                                    }`}
+                                >
+                                    {sent ? (
+                                        <Check className="h-3.5 w-3.5" />
+                                    ) : (
+                                        <Send className="h-3.5 w-3.5" />
+                                    )}
+                                    {sent ? "Relance envoyée" : "Relancer Client"}
+                                </Button>
+                            )}
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setIsEditing(true)}
+                                className="rounded-xl h-8 text-primary hover:text-primary hover:bg-primary/10 font-bold gap-2"
+                            >
+                                <Edit2 className="h-3.5 w-3.5" /> Modifier
+                            </Button>
+                        </div>
                     ) : (
                         <div className="flex gap-2">
                             <Button

@@ -24,6 +24,9 @@ describe("SessionsService", () => {
               update: jest.fn(),
               count: jest.fn(),
             },
+            notificationLog: {
+              create: jest.fn(),
+            },
           },
         },
         {
@@ -681,6 +684,56 @@ describe("SessionsService", () => {
 
       expect(prisma.session.update).toHaveBeenCalled();
       expect(emailService.sendEmail).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("sendLogisticsReminder", () => {
+    it("should send email and log reminder if logistics incomplete", async () => {
+      const session = {
+        id: "1",
+        date: new Date(),
+        client: { companyName: "ACME", user: { email: "client@acme.com" } },
+        logistics: null,
+      } as any;
+
+      jest.spyOn(service, "findOne").mockResolvedValue(session);
+      jest.spyOn(service, "isLogisticsStrictlyComplete").mockReturnValue(false);
+      jest.spyOn(prisma.notificationLog, "create").mockResolvedValue({} as any);
+
+      await service.sendLogisticsReminder("1");
+
+      expect(emailService.sendEmail).toHaveBeenCalledWith(
+        "client@acme.com",
+        "Action requise : Informations logistiques manquantes",
+        expect.stringContaining("dashboard/sessions/1"),
+      );
+      expect(prisma.notificationLog.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            type: "LOGISTICS_REMINDER_MANUAL",
+            recipient: "client@acme.com",
+            status: "SENT",
+          }),
+        }),
+      );
+    });
+
+    it("should throw BadRequestException if logistics already complete", async () => {
+      const session = { id: "1" } as any;
+      jest.spyOn(service, "findOne").mockResolvedValue(session);
+      jest.spyOn(service, "isLogisticsStrictlyComplete").mockReturnValue(true);
+
+      await expect(service.sendLogisticsReminder("1")).rejects.toThrow(
+        "Logistics already complete",
+      );
+      expect(emailService.sendEmail).not.toHaveBeenCalled();
+    });
+
+    it("should throw NotFoundException if session not found", async () => {
+      jest.spyOn(service, "findOne").mockResolvedValue(null);
+      await expect(service.sendLogisticsReminder("1")).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });
