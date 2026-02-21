@@ -2,7 +2,112 @@
 
 Ce document centralise toutes les tâches du projet. Il a été réorganisé pour prioriser la stabilité et la conformité métier (Bible) avant l'extension fonctionnelle.
 
-## 🚨 Sprint Actuel : Ajustements & Tunnel de Vente (Terminé ✅)
+## 🚨 Sprint Actuel : Standardisation Admin (En cours 🚧)
+
+Ce sprint vise à corriger les inconsistances d'interface et d'architecture identifiées dans l'administration.
+
+### US-01 : Standardisation du composant `AdminHeader`
+**Objectif :** Faire évoluer le composant `AdminHeader` pour qu'il puisse remplacer tous les en-têtes "custom" actuellement dispersés dans l'application, en supportant nativement les fils d'Ariane et les badges de statut.
+
+**Spécifications Techniques :**
+1.  Modifier `apps/web/src/components/admin/AdminHeader.tsx`.
+2.  Ajouter une prop optionnelle `breadcrumbs`:
+    ```typescript
+    interface BreadcrumbItem {
+      label: string;
+      href?: string; // Si absent, c'est l'élément actif (non cliquable)
+    }
+    breadcrumbs?: BreadcrumbItem[];
+    ```
+3.  Ajouter une prop optionnelle `statusBadge`:
+    ```typescript
+    statusBadge?: React.ReactNode; // Pour passer un <StatusBadge /> ou un <Badge />
+    ```
+4.  Ajouter une prop optionnelle `actions` (remplace `children` pour plus de clarté, mais garder `children` pour la rétrocompatibilité ou le déprécier) :
+    ```typescript
+    actions?: React.ReactNode; // Boutons d'action à droite (ex: "Modifier", "Supprimer")
+    ```
+5.  **Mise en page :**
+    *   Si `breadcrumbs` est présent, l'afficher au-dessus du titre (style : texte petit, gris, séparateurs `/`).
+    *   Si `statusBadge` est présent, l'afficher à droite du titre ou sur la même ligne selon l'espace disponible (responsive).
+
+*Critères d'Acceptation (AC) :*
+- [ ] Le composant accepte et affiche correctement un tableau de fil d'Ariane.
+- [ ] Le composant accepte et positionne correctement un badge de statut à côté du titre.
+- [ ] Les pages existantes utilisant `AdminHeader` (Dashboard, Clients Liste) ne sont pas cassées (rétrocompatibilité).
+
+### US-02 : Migration de la Page Détail Client vers un Server Component
+**Objectif :** Corriger l'architecture de la page `/admin/clients/[id]` qui est actuellement un Client Component chargeant ses données via `useEffect`, ce qui est inconsistant avec le reste de l'app.
+
+**Tâches :**
+1.  **Transformer la page :**
+    *   Renommer `AdminClientDetailPage` en `ClientDetailPage`.
+    *   Supprimer `"use client"`.
+    *   Remplacer `useParams` par la prop `params`.
+    *   Remplacer le `fetch` dans `useEffect` par un appel `fetch` direct dans le composant `async`.
+    *   Gérer les cas d'erreur (404) avec la fonction `notFound()` de Next.js.
+2.  **Extraire l'interactivité :**
+    *   Créer un nouveau composant client `ClientEditForm` (dans `components/admin/clients/`).
+    *   Y déplacer toute la logique de formulaire (state `formData`, `isEditing`, `handleSave`).
+    *   La page Server Component passe les données initiales (`initialData`) à ce formulaire.
+3.  **Gestion des Audit Logs :**
+    *   Parser le JSON `auditLog` côté serveur (dans la page) et passer le tableau typé au composant d'affichage (qui peut rester un composant UI simple).
+
+*Critères d'Acceptation (AC) :*
+- [ ] La page `/admin/clients/[id]` est un Server Component (`console.log` s'affiche dans le terminal serveur).
+- [ ] Aucun "Flash of Loading Content" n'est visible pour les données initiales (le HTML arrive pré-rempli).
+- [ ] La modification et la sauvegarde des données client fonctionnent toujours.
+
+### US-03 : Unification des En-têtes de Page
+**Objectif :** Supprimer tout le code de header dupliqué/custom dans les pages de détail et utiliser le nouveau `AdminHeader` standardisé (dépend de US-01).
+
+**Périmètre (Pages à modifier) :**
+*   `/admin/trainers/[id]/page.tsx`
+*   `/admin/trainers/[id]/edit/page.tsx`
+*   `/admin/trainers/new/page.tsx`
+*   `/admin/formations/[id]/page.tsx`
+*   `/admin/formations/new/page.tsx`
+*   `/admin/sessions/[id]/page.tsx`
+*   `/admin/sessions/archives/page.tsx`
+*   `/admin/settings/page.tsx`
+
+**Tâches :**
+1.  Pour chaque page, remplacer le bloc `div` contenant le titre, le bouton retour et le fil d'Ariane manuel par :
+    ```tsx
+    <AdminHeader
+      title="..."
+      breadcrumbs={[ { label: 'Admin', href: '/admin' }, { label: '...', href: '...' } ]}
+      statusBadge={<StatusBadge ... />} // Si applicable
+      actions={<Button>...</Button>}    // Si applicable
+    />
+    ```
+2.  Supprimer les composants UI "jetables" ou les styles inline qui servaient à construire ces anciens headers.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Toutes les pages citées utilisent `AdminHeader`.
+- [ ] L'apparence visuelle (titres, alignements) est strictement identique d'une page à l'autre.
+- [ ] La navigation (fil d'Ariane + bouton retour) est fonctionnelle partout.
+
+### US-04 : Standardisation des Tableaux de Données
+**Objectif :** Remplacer les implémentations hétérogènes de tableaux (tables HTML natives avec classes Tailwind custom) par les composants `shadcn/ui` (`Table`, `TableHeader`, `TableRow`, `TableCell`) pour assurer une cohérence visuelle avec la page Clients.
+
+**Périmètre :**
+*   `/admin/trainers/page.tsx` (Liste des formateurs)
+*   `/components/admin/FormationsTable.tsx` (Liste des formations)
+*   `/components/admin/CategoriesTable.tsx` (Liste des catégories)
+
+**Tâches :**
+1.  Importer les composants `Table` depuis `@/components/ui/table`.
+2.  Remplacer les balises `<table>`, `<thead>`, `<tbody>`, `<tr>`, `<th>`, `<td>` par leurs équivalents UI.
+3.  Vérifier que les espacements (padding), les alignements de texte et les couleurs de bordures correspondent exactement au standard défini dans la page `Clients`.
+
+*Critères d'Acceptation (AC) :*
+- [ ] Tous les tableaux de l'admin ont le même look & feel (hauteur de ligne, font-weight des headers, hover effects).
+- [ ] Le code est simplifié en utilisant les composants UI partagés plutôt que des classes CSS répétées.
+
+---
+
+## 🏗️ Sprint Précédent : Ajustements & Tunnel de Vente (Terminé ✅)
 
 ### US-01 : Sélection Automatique Formateur (UX)
 **Référence :** Retour Démo 18/02
