@@ -230,9 +230,10 @@ export class SessionsService {
     if (data.status !== undefined) updateData.status = data.status;
 
     // Auto-confirm if assigning trainer to a PENDING session
-    if (session.status === "PENDING" && data.trainerId && !data.status) {
-      updateData.status = "CONFIRMED";
-    }
+    // Removed for US-02/US-03 workflow: Status must be updated via Offer/Accept flow
+    // if (session.status === "PENDING" && data.trainerId && !data.status) {
+    //   updateData.status = "CONFIRMED";
+    // }
 
     const updatedSession = await this.prisma.session.update({
       where: { id },
@@ -267,6 +268,73 @@ export class SessionsService {
     return updatedSession;
   }
 
+  async acceptOffer(id: string) {
+    const session = await this.findOne(id);
+    if (session.status !== "OFFER_SENT") {
+      throw new Error("Session is not in OFFER_SENT status");
+    }
+
+    const updatedSession = await this.prisma.session.update({
+      where: { id },
+      data: {
+        status: "CONFIRMED",
+      },
+      include: {
+        client: { include: { user: true } },
+        formation: true,
+      },
+    });
+
+    // Notify Client
+    if (updatedSession.client?.user?.email) {
+      await this.emailService.sendEmail(
+        updatedSession.client.user.email,
+        `Confirmation de session : ${updatedSession.formation.title}`,
+        `<h1>Votre session est confirmée !</h1>
+         <p>Vous avez accepté l'offre pour la formation <strong>${updatedSession.formation.title}</strong>.</p>
+         <p>La session est maintenant planifiée le ${new Date(updatedSession.date).toLocaleDateString()}.</p>
+         <p>Nous reviendrons vers vous pour les détails logistiques.</p>`,
+      );
+    }
+
+    // Notify Admin (optional, but good for awareness)
+    // Could send to a generic admin email if available, or just rely on dashboard.
+
+    return updatedSession;
+  }
+
+  async sendOffer(id: string, price: number) {
+    await this.findOne(id);
+
+    const updatedSession = await this.prisma.session.update({
+      where: { id },
+      data: {
+        price,
+        status: "OFFER_SENT",
+      },
+      include: {
+        client: { include: { user: true } },
+        formation: true,
+      },
+    });
+
+    // Notify Client
+    if (updatedSession.client?.user?.email) {
+      const priceTtc = (Number(price) * 1.21).toFixed(2);
+      await this.emailService.sendEmail(
+        updatedSession.client.user.email,
+        `Proposition tarifaire : ${updatedSession.formation.title}`,
+        `<h1>Une offre est disponible pour votre demande</h1>
+         <p>Nous avons analysé votre demande pour la formation <strong>${updatedSession.formation.title}</strong>.</p>
+         <p><strong>Prix proposé :</strong> ${price} € HTVA (${priceTtc} € TTC)</p>
+         <p>Veuillez vous connecter à votre espace client pour valider cette offre et confirmer la session.</p>
+         <p><a href="${process.env.FRONTEND_URL}/dashboard/sessions/${id}">Voir mon offre</a></p>`,
+      );
+    }
+
+    return updatedSession;
+  }
+
   async getAdminStats() {
     const now = new Date();
     const in7Days = new Date();
@@ -279,8 +347,8 @@ export class SessionsService {
       missingProof,
       readyToBill,
     ] = await Promise.all([
-      // 1. Demandes à valider (PENDING)
-      this.prisma.session.count({ where: { status: "PENDING" } }),
+      // 1. Demandes à valider (PENDING_APPROVAL)
+      this.prisma.session.count({ where: { status: "PENDING_APPROVAL" } }),
 
       // 2. Sessions sans formateur (CONFIRMED et trainerId est null)
       this.prisma.session.count({

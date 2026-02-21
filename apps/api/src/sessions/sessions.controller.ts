@@ -173,6 +173,33 @@ export class SessionsController {
     return this.sessionsService.adminUpdate(id, body);
   }
 
+  @Patch(":id/offer")
+  async sendOffer(
+    @Param("id") id: string,
+    @Body() body: { price: number },
+    @Request() req,
+  ) {
+    if (req.user.role !== "ADMIN") {
+      throw new ForbiddenException("Access denied");
+    }
+    return this.sessionsService.sendOffer(id, body.price);
+  }
+
+  @Patch(":id/accept")
+  async acceptOffer(@Param("id") id: string, @Request() req) {
+    const session = await this.sessionsService.findOne(id);
+
+    if (req.user.role === "CLIENT") {
+      if (session.client?.userId !== req.user.userId) {
+        throw new ForbiddenException("Access denied");
+      }
+    } else if (req.user.role !== "ADMIN") {
+      throw new ForbiddenException("Access denied");
+    }
+
+    return this.sessionsService.acceptOffer(id);
+  }
+
   @Get(":id/billing-preview")
   async getBillingPreview(@Param("id") id: string, @Request() req) {
     if (req.user.role !== "ADMIN") {

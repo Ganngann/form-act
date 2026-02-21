@@ -95,7 +95,8 @@ model Session {
   formation   Formation @relation(fields: [formationId], references: [id])
   trainerId   String?
   trainer     Formateur? @relation(fields: [trainerId], references: [id])
-  status      String    @default("PENDING")
+  status      String    @default("PENDING_APPROVAL")
+  price       Decimal?  // Negotiated price for this specific session (HTVA)
   clientId    String?
   client      Client?   @relation(fields: [clientId], references: [id])
 

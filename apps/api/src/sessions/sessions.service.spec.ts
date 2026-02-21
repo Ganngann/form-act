@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Test, TestingModule } from "@nestjs/testing";
 import { SessionsService } from "./sessions.service";
 import { PrismaService } from "../prisma/prisma.service";
@@ -131,7 +132,6 @@ describe("SessionsService", () => {
           where: expect.objectContaining({
             status: "CONFIRMED",
             date: { gte: expect.any(Date), lte: expect.any(Date) },
-            // OR clause removed, we filter in JS
           }),
         }),
       );
@@ -218,7 +218,6 @@ describe("SessionsService", () => {
   describe("adminUpdate", () => {
     it("should update trainer connect", async () => {
       const mockSession = { id: "1" } as Session;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       jest.spyOn(service, "findOne").mockResolvedValue(mockSession as any);
       jest.spyOn(prisma.session, "update").mockResolvedValue(mockSession);
 
@@ -235,11 +234,10 @@ describe("SessionsService", () => {
 
     it("should update trainer disconnect", async () => {
       const mockSession = { id: "1" } as Session;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       jest.spyOn(service, "findOne").mockResolvedValue(mockSession as any);
       jest.spyOn(prisma.session, "update").mockResolvedValue(mockSession);
 
-      await service.adminUpdate("1", { trainerId: "" }); // Empty string -> disconnect
+      await service.adminUpdate("1", { trainerId: "" });
 
       expect(prisma.session.update).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -250,25 +248,16 @@ describe("SessionsService", () => {
       );
     });
 
-    it("should auto-confirm PENDING session when trainer is assigned", async () => {
-      const mockSession = { id: "1", status: "PENDING" } as Session;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    it("should NOT auto-confirm PENDING_APPROVAL session when trainer is assigned", async () => {
+      const mockSession = { id: "1", status: "PENDING_APPROVAL" } as Session;
       jest.spyOn(service, "findOne").mockResolvedValue(mockSession as any);
-      jest.spyOn(prisma.session, "update").mockResolvedValue({
-        ...mockSession,
-        status: "CONFIRMED",
-      });
+      jest.spyOn(prisma.session, "update").mockResolvedValue(mockSession);
 
       await service.adminUpdate("1", { trainerId: "t1" });
 
-      expect(prisma.session.update).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            trainer: { connect: { id: "t1" } },
-            status: "CONFIRMED",
-          }),
-        }),
-      );
+      const updateCall = (prisma.session.update as jest.Mock).mock.calls[0][0];
+      expect(updateCall.data.trainer).toEqual({ connect: { id: "t1" } });
+      expect(updateCall.data.status).toBeUndefined();
     });
 
     it("should send email on cancellation", async () => {
@@ -281,7 +270,6 @@ describe("SessionsService", () => {
         trainer: { email: "trainer@test.com" },
       } as unknown as Session;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       jest.spyOn(service, "findOne").mockResolvedValue(mockSession as any);
       jest.spyOn(prisma.session, "update").mockResolvedValue(updatedSession);
 
@@ -302,7 +290,6 @@ describe("SessionsService", () => {
 
     it("should NOT send email if already cancelled", async () => {
       const mockSession = { id: "1", status: "CANCELLED" } as Session;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       jest.spyOn(service, "findOne").mockResolvedValue(mockSession as any);
       jest.spyOn(prisma.session, "update").mockResolvedValue(mockSession);
 
@@ -335,11 +322,10 @@ describe("SessionsService", () => {
       expect(result).toEqual({
         pendingRequests: 5,
         noTrainer: 5,
-        missingLogistics: 2, // 2 incomplete sessions
+        missingLogistics: 2,
         missingProof: 5,
         readyToBill: 5,
       });
-      // Called 4 times for other metrics
       expect(prisma.session.count).toHaveBeenCalledTimes(4);
       expect(prisma.session.findMany).toHaveBeenCalledTimes(1);
     });
@@ -359,7 +345,6 @@ describe("SessionsService", () => {
         participants: validParticipants,
         logistics: validLogistics,
       } as Session;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(service.isLogisticsStrictlyComplete(s as any)).toBe(false);
     });
 
@@ -369,7 +354,6 @@ describe("SessionsService", () => {
         participants: "[]",
         logistics: validLogistics,
       } as Session;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(service.isLogisticsStrictlyComplete(s as any)).toBe(false);
     });
 
@@ -379,7 +363,6 @@ describe("SessionsService", () => {
         participants: validParticipants,
         logistics: "invalid",
       } as Session;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(service.isLogisticsStrictlyComplete(s as any)).toBe(false);
     });
 
@@ -389,7 +372,6 @@ describe("SessionsService", () => {
         participants: validParticipants,
         logistics: JSON.stringify({ subsidies: "yes", videoMaterial: ["A"] }),
       } as Session;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(service.isLogisticsStrictlyComplete(s as any)).toBe(false);
     });
 
@@ -399,7 +381,6 @@ describe("SessionsService", () => {
         participants: validParticipants,
         logistics: JSON.stringify({ wifi: "yes", videoMaterial: ["A"] }),
       } as Session;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(service.isLogisticsStrictlyComplete(s as any)).toBe(false);
     });
 
@@ -409,7 +390,6 @@ describe("SessionsService", () => {
         participants: validParticipants,
         logistics: JSON.stringify({ wifi: "yes", subsidies: "yes" }),
       } as Session;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(service.isLogisticsStrictlyComplete(s as any)).toBe(false);
     });
 
@@ -423,7 +403,6 @@ describe("SessionsService", () => {
           videoMaterial: ["A"],
         }),
       } as Session;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(service.isLogisticsStrictlyComplete(s as any)).toBe(true);
     });
 
@@ -437,7 +416,6 @@ describe("SessionsService", () => {
           writingMaterial: ["A"],
         }),
       } as Session;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(service.isLogisticsStrictlyComplete(s as any)).toBe(true);
     });
 
@@ -451,7 +429,6 @@ describe("SessionsService", () => {
           videoMaterial: ["NONE"],
         }),
       } as Session;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(service.isLogisticsStrictlyComplete(s as any)).toBe(true);
     });
   });
@@ -584,6 +561,126 @@ describe("SessionsService", () => {
           updatedSession,
         );
       });
+    });
+  });
+
+  describe("sendOffer", () => {
+    it("should update session with price and OFFER_SENT status, and send email", async () => {
+      const session = {
+        id: "1",
+        formation: { title: "Formation" },
+        client: { user: { email: "client@test.com" } },
+      } as unknown as Session;
+
+      const updatedSession = {
+        ...session,
+        status: "OFFER_SENT",
+        price: 100,
+      } as unknown as Session;
+
+      jest.spyOn(service, "findOne").mockResolvedValue(session as any);
+      jest
+        .spyOn(prisma.session, "update")
+        .mockResolvedValue(updatedSession as any);
+
+      await service.sendOffer("1", 100);
+
+      expect(prisma.session.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: "1" },
+          data: { price: 100, status: "OFFER_SENT" },
+        }),
+      );
+      expect(emailService.sendEmail).toHaveBeenCalledWith(
+        "client@test.com",
+        expect.stringContaining("Proposition tarifaire"),
+        expect.stringContaining("100"),
+      );
+    });
+
+    it("should update session but NOT send email if client email missing", async () => {
+      const session = {
+        id: "1",
+        formation: { title: "Formation" },
+        client: { user: { email: null } },
+      } as unknown as Session;
+
+      jest.spyOn(service, "findOne").mockResolvedValue(session as any);
+      jest.spyOn(prisma.session, "update").mockResolvedValue(session as any);
+
+      await service.sendOffer("1", 100);
+
+      expect(prisma.session.update).toHaveBeenCalled();
+      expect(emailService.sendEmail).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("acceptOffer", () => {
+    it("should update session status to CONFIRMED and send email if status is OFFER_SENT", async () => {
+      const session = {
+        id: "1",
+        status: "OFFER_SENT",
+        formation: { title: "Formation" },
+        date: new Date(),
+        client: { user: { email: "client@test.com" } },
+      } as unknown as Session;
+
+      const updatedSession = {
+        ...session,
+        status: "CONFIRMED",
+      } as unknown as Session;
+
+      jest.spyOn(service, "findOne").mockResolvedValue(session as any);
+      jest
+        .spyOn(prisma.session, "update")
+        .mockResolvedValue(updatedSession as any);
+
+      await service.acceptOffer("1");
+
+      expect(prisma.session.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: "1" },
+          data: { status: "CONFIRMED" },
+        }),
+      );
+      expect(emailService.sendEmail).toHaveBeenCalledWith(
+        "client@test.com",
+        expect.stringContaining("Confirmation de session"),
+        expect.stringContaining("Votre session est confirmée"),
+      );
+    });
+
+    it("should throw Error if session status is not OFFER_SENT", async () => {
+      const session = {
+        id: "1",
+        status: "PENDING_APPROVAL",
+      } as unknown as Session;
+
+      jest.spyOn(service, "findOne").mockResolvedValue(session as any);
+
+      await expect(service.acceptOffer("1")).rejects.toThrow(
+        "Session is not in OFFER_SENT status",
+      );
+    });
+
+    it("should update session but NOT send email if client email missing", async () => {
+      const session = {
+        id: "1",
+        status: "OFFER_SENT",
+        formation: { title: "Formation" },
+        date: new Date(),
+        client: { user: { email: null } },
+      } as unknown as Session;
+
+      jest.spyOn(service, "findOne").mockResolvedValue(session as any);
+      jest
+        .spyOn(prisma.session, "update")
+        .mockResolvedValue({ ...session, status: "CONFIRMED" } as any);
+
+      await service.acceptOffer("1");
+
+      expect(prisma.session.update).toHaveBeenCalled();
+      expect(emailService.sendEmail).not.toHaveBeenCalled();
     });
   });
 });

@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { AdminSessionControls } from '@/components/admin/admin-session-controls';
 import { AdminBillingControls } from '@/components/admin/admin-billing-controls';
+import { AdminPriceProposal } from '@/components/admin/admin-price-proposal';
 import { StatusBadge } from '@/components/ui/status-badge';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -190,6 +191,7 @@ export default async function SessionDetailPage({ params }: { params: { id: stri
                 {/* Sidebar Controls */}
                 <div className="space-y-6">
                     <div className="sticky top-6 space-y-6">
+                        <AdminPriceProposal session={session} />
                         <AdminBillingControls session={session} />
                         <AdminSessionControls session={session} trainers={trainers} />
                     </div>

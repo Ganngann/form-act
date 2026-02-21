@@ -43,7 +43,7 @@ export function BookingWidget({ formation }: BookingWidgetProps) {
     <div className="sticky top-4 space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle>Réserver cette formation</CardTitle>
+          <CardTitle>Demander une formation</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
 
@@ -89,7 +89,7 @@ export function BookingWidget({ formation }: BookingWidgetProps) {
               router.push(`/checkout?${params.toString()}`)
             }}
           >
-            {selectedTrainer === 'manual' ? "Envoyer la demande" : "Réserver"}
+            Envoyer une demande
           </Button>
 
         </CardContent>

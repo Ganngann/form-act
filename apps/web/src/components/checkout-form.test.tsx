@@ -32,7 +32,11 @@ describe("CheckoutForm", () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        global.fetch = vi.fn();
+        // Default mock to prevent network errors
+        global.fetch = vi.fn().mockResolvedValue({
+            ok: true,
+            json: () => Promise.resolve({}),
+        });
         global.alert = vi.fn();
         window.scrollTo = vi.fn();
         // Mock window.location
@@ -129,7 +133,8 @@ describe("CheckoutForm", () => {
 
         await waitFor(() => {
             expect(screen.getByText("Dernière étape")).toBeDefined();
-            expect(screen.getByText(/Estimation :/i)).toBeDefined();
+            // Updated text expectation
+            expect(screen.getByText(/Demande d'offre tarifaire/i)).toBeDefined();
             expect(screen.getByText("Jean Dupont")).toBeDefined();
             expect(screen.getByText("My Company")).toBeDefined();
         });
@@ -156,10 +161,11 @@ describe("CheckoutForm", () => {
         fireEvent.click(screen.getByText("Vérifier et continuer"));
 
         await waitFor(() => {
-            expect(screen.getByText("Confirmer la réservation")).toBeDefined();
+            // Updated text expectation
+            expect(screen.getByText("Envoyer ma demande")).toBeDefined();
         });
 
-        fireEvent.click(screen.getByText("Confirmer la réservation"));
+        fireEvent.click(screen.getByText("Envoyer ma demande"));
 
         await waitFor(() => {
             expect(screen.getByText("Server Error")).toBeDefined();
@@ -177,10 +183,11 @@ describe("CheckoutForm", () => {
         fireEvent.click(screen.getByText("Vérifier et continuer"));
 
         await waitFor(() => {
-            expect(screen.getByText("Confirmer la réservation")).toBeDefined();
+            // Updated text expectation
+            expect(screen.getByText("Envoyer ma demande")).toBeDefined();
         });
 
-        fireEvent.click(screen.getByText("Confirmer la réservation"));
+        fireEvent.click(screen.getByText("Envoyer ma demande"));
 
         await waitFor(() => {
             expect(window.location.href).toBe(`${ROUTES.dashboard}?success=booking`);
@@ -264,10 +271,10 @@ describe("CheckoutForm", () => {
         fireEvent.click(screen.getByText("Vérifier et continuer"));
 
         await waitFor(() => {
-            expect(screen.getByText("Confirmer la réservation")).toBeDefined();
+            expect(screen.getByText("Envoyer ma demande")).toBeDefined();
         });
 
-        fireEvent.click(screen.getByText("Confirmer la réservation"));
+        fireEvent.click(screen.getByText("Envoyer ma demande"));
 
         await waitFor(() => {
             expect(screen.getByText("Une erreur inattendue est survenue")).toBeDefined();

@@ -85,10 +85,10 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
             </Link>
           </Button>
           <h1 className="text-3xl md:text-4xl font-black tracking-tighter">
-            {trainerId ? "Finaliser votre réservation" : "Demande de prise en charge"}
+            Finaliser votre demande
           </h1>
           <p className="text-muted-foreground mt-2 font-medium">
-            Vous êtes sur le point de réserver <span className="text-primary font-bold">{formation.title}</span>.
+            Vous êtes sur le point de demander une session pour <span className="text-primary font-bold">{formation.title}</span>.
           </p>
         </div>
       </div>
