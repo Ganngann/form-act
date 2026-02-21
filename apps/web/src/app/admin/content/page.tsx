@@ -1,6 +1,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AdminHeader } from '@/components/admin/AdminHeader';
 import { GlobalForm } from "@/components/admin/content/GlobalForm";
 import { HeroForm } from "@/components/admin/content/HeroForm";
 import { PromoForm } from "@/components/admin/content/PromoForm";
@@ -11,12 +12,10 @@ import { CtaForm } from "@/components/admin/content/CtaForm";
 export default function ContentPage() {
   return (
     <div className="flex flex-col gap-8 w-full max-w-4xl">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-black tracking-tight">Gestion du Contenu</h1>
-        <p className="text-muted-foreground font-medium">
-          Personnalisez les textes et configurations de la page d&apos;accueil et du site.
-        </p>
-      </div>
+      <AdminHeader
+        title="Gestion du Contenu"
+        description="Personnalisez les textes et configurations de la page d'accueil et du site."
+      />
 
       <Tabs defaultValue="global" className="w-full">
         <TabsList className="w-full justify-start h-auto p-1 bg-muted/50 rounded-xl mb-6 overflow-x-auto">
