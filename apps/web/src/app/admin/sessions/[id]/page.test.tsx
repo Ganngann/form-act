@@ -48,6 +48,8 @@ vi.mock('lucide-react', () => ({
     Building2: () => <span>Icon</span>,
     Edit2: () => <span>Icon</span>,
     Save: () => <span>Icon</span>,
+    Send: () => <span>Icon</span>,
+    Check: () => <span>Icon</span>,
 }));
 
 describe('SessionDetailPage', () => {
