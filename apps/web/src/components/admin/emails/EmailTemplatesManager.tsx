@@ -81,7 +81,7 @@ export function EmailTemplatesManager() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Modèles d'Emails Automatiques</CardTitle>
+          <CardTitle>Modèles d&apos;Emails Automatiques</CardTitle>
           <CardDescription>
             Gérez le contenu des emails envoyés automatiquement par la plateforme.
           </CardDescription>
