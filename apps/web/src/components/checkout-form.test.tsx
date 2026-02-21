@@ -93,6 +93,7 @@ describe("CheckoutForm", () => {
     });
 
     it("check VAT error (fetch fails)", async () => {
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
         (global.fetch as any).mockRejectedValue(new Error("Network"));
         render(<CheckoutForm {...defaultProps} />);
         const vatInput = screen.getByLabelText(/Numéro de TVA/i);
@@ -102,9 +103,11 @@ describe("CheckoutForm", () => {
         await waitFor(() => {
             expect(global.alert).toHaveBeenCalledWith("Impossible de vérifier le numéro de TVA.");
         });
+        consoleSpy.mockRestore();
     });
 
     it("check VAT error (response not ok)", async () => {
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
         (global.fetch as any).mockResolvedValue({ ok: false });
         render(<CheckoutForm {...defaultProps} />);
         const vatInput = screen.getByLabelText(/Numéro de TVA/i);
@@ -114,6 +117,7 @@ describe("CheckoutForm", () => {
         await waitFor(() => {
             expect(global.alert).toHaveBeenCalledWith("Impossible de vérifier le numéro de TVA.");
         });
+        consoleSpy.mockRestore();
     });
 
     it("skips VAT check if too short", async () => {

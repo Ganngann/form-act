@@ -23,6 +23,8 @@ describe("useBookingLogic", () => {
 
   it("should handle manual booking mode correctly for HALF_DAY", async () => {
     const { result } = renderHook(() => useBookingLogic({ formation }));
+    // Wait for initial zones fetch to complete
+    await waitFor(() => expect(result.current.loadingZones).toBe(false));
 
     // Simulate selecting manual trainer
     act(() => {
@@ -61,6 +63,8 @@ describe("useBookingLogic", () => {
   it("should handle manual booking mode correctly for FULL_DAY", async () => {
     const fullDayFormation = { ...formation, durationType: "FULL_DAY" };
     const { result } = renderHook(() => useBookingLogic({ formation: fullDayFormation }));
+    // Wait for initial zones fetch to complete
+    await waitFor(() => expect(result.current.loadingZones).toBe(false));
 
     act(() => {
       result.current.setSelectedTrainer("manual");
@@ -99,10 +103,10 @@ describe("useBookingLogic", () => {
       }
       // Mock availability call that happens after auto-selection
       if (url.includes("/trainers/t1/availability")) {
-          return Promise.resolve({
-              ok: true,
-              json: async () => [],
-          });
+        return Promise.resolve({
+          ok: true,
+          json: async () => [],
+        });
       }
       return Promise.resolve({
         ok: true,
@@ -111,6 +115,7 @@ describe("useBookingLogic", () => {
     });
 
     const { result } = renderHook(() => useBookingLogic({ formation }));
+    await waitFor(() => expect(result.current.loadingZones).toBe(false));
 
     // Select zone to trigger trainer fetch
     await act(async () => {
@@ -119,7 +124,7 @@ describe("useBookingLogic", () => {
 
     // Wait for the effect to run and update state
     await waitFor(() => {
-        expect(result.current.trainers).toEqual(singleTrainer);
+      expect(result.current.trainers).toEqual(singleTrainer);
     });
 
     // Check if trainer is automatically selected
@@ -128,8 +133,8 @@ describe("useBookingLogic", () => {
 
   it("should NOT automatically select trainer if multiple are returned", async () => {
     const multipleTrainers = [
-        { id: "t1", firstName: "John", lastName: "Doe" },
-        { id: "t2", firstName: "Jane", lastName: "Doe" }
+      { id: "t1", firstName: "John", lastName: "Doe" },
+      { id: "t2", firstName: "Jane", lastName: "Doe" }
     ];
 
     (global.fetch as any).mockImplementation((url: string) => {
@@ -152,13 +157,14 @@ describe("useBookingLogic", () => {
     });
 
     const { result } = renderHook(() => useBookingLogic({ formation }));
+    await waitFor(() => expect(result.current.loadingZones).toBe(false));
 
     await act(async () => {
       result.current.setSelectedZone("z1");
     });
 
     await waitFor(() => {
-        expect(result.current.trainers).toEqual(multipleTrainers);
+      expect(result.current.trainers).toEqual(multipleTrainers);
     });
 
     // Check that no trainer is selected

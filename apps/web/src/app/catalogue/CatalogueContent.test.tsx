@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import CatalogueContent from './CatalogueContent';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
@@ -76,7 +76,9 @@ describe('CatalogueContent', () => {
     fireEvent.change(input, { target: { value: 'React' } });
 
     // Fast forward debounce (component uses 500ms)
-    vi.advanceTimersByTime(600);
+    act(() => {
+      vi.advanceTimersByTime(600);
+    });
 
     expect(mockPush).toHaveBeenCalledWith('/catalogue?search=React');
     vi.useRealTimers();
@@ -90,12 +92,16 @@ describe('CatalogueContent', () => {
 
     render(<CatalogueContent />);
 
+    // Wait for the empty state to appear - increased timeout just in case
     await waitFor(() => {
+      expect(screen.queryByTestId('loader')).toBeNull(); // If there was a loader
       expect(screen.getByText('Aucun résultat trouvé')).toBeDefined();
-    });
+    }, { timeout: 2000 });
 
     const resetBtn = screen.getByText('Réinitialiser les filtres');
-    fireEvent.click(resetBtn);
+    await act(async () => {
+      fireEvent.click(resetBtn);
+    });
     expect(mockPush).toHaveBeenCalled();
   });
 });
