@@ -87,6 +87,29 @@ Ce document centralise toutes les tâches du projet. Il a été réorganisé pou
 - [x] Coordonnées de contact (Adresse, Email).
 - [x] Copyright dynamique (Année).
 
+---
+
+## 🐛 Nouveaux Bugs Signalés (À investiguer)
+
+### Bug-10 : Admin - Erreur 500 lors de l'envoi d'une offre
+**Symptôme :** Erreur "Internal Server Error" (500) au clic sur "Envoyer l'offre au client".
+- [ ] Analyser les logs backend (Cause probable : calcul `priceTtc` ou `EmailService`).
+- [ ] Corriger la gestion des types Decimal/Number dans `sendOffer`.
+- [ ] Ajouter un feedback d'erreur explicite côté UI.
+ 
+### Bug-11 : Admin - Dysfonctionnement du filtre "Demandes"
+**Symptôme :** Le clic sur le bloc Bento "Demandes" (status=PENDING) n'affiche pas le bon libellé de vue et ne filtre pas correctement les sessions.
+- [ ] Harmoniser le code de statut entre le frontend (`PENDING`) et le backend (`PENDING_APPROVAL`).
+- [ ] Mettre à jour `SessionsListPage` pour qu'il reconnaisse le paramètre `status` dans le libellé de la vue active.
+- [ ] Vérifier que les statistiques du Bento correspondent bien aux filtres appliqués.
+ 
+### Bug-12 : Admin - Perte de la catégorie lors de l'édition d'une formation
+**Symptôme :** Dans la liste des formations, la catégorie est bien affichée. Cependant, lors de l'ouverture du formulaire de modification, le champ "Catégorie" revient à "Sélectionner..." (vide).
+- [ ] Vérifier le mapping du champ `categoryId` dans le `defaultValue` du formulaire `FormationForm`.
+- [ ] S'assurer que la liste des catégories est chargée avant l'initialisation des valeurs du formulaire.
+- [ ] Vérifier si le composant `Select` (UI) reçoit bien la valeur initiale.
+
+
 ### US-08 : Inscription Spontanée Client
 **Référence :** Demande Client (Parcours du site)
 **En tant que** Prospect Client,
