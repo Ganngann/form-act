@@ -16,6 +16,9 @@ interface UserPayload {
 
 @Injectable()
 export class FilesService {
+  // Whitelist of allowed folders to prevent arbitrary file access
+  private readonly ALLOWED_FOLDERS = ["proofs", "avatars", "public"];
+
   constructor(private prisma: PrismaService) {}
 
   async getFile(
@@ -23,6 +26,10 @@ export class FilesService {
     filename: string,
     user: UserPayload,
   ): Promise<StreamableFile> {
+    if (!this.ALLOWED_FOLDERS.includes(type)) {
+      throw new ForbiddenException("Access to this folder is forbidden");
+    }
+
     const path = join(process.cwd(), "uploads", type, filename);
 
     // Basic Path Traversal protection
