@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield, CreditCard, History, User } from "lucide-react";
+import { PasswordChangeForm } from "@/components/auth/password-change-form";
 
 interface ClientProfile {
     id: string;
@@ -261,15 +262,7 @@ export default function SettingsPage() {
                 </TabsContent>
 
                 <TabsContent value="security" className="mt-0 outline-none">
-                    <Card className="rounded-[2rem] border-border shadow-sm bg-muted/5 border-dashed">
-                        <CardContent className="p-20 text-center flex flex-col items-center">
-                            <Shield className="h-12 w-12 text-muted-foreground mb-4 opacity-20" />
-                            <h3 className="text-xl font-bold mb-2">Sécurité du compte</h3>
-                            <p className="text-muted-foreground font-medium max-w-xs mx-auto">
-                                Le changement de mot de passe et l&apos;authentification à deux facteurs seront disponibles prochainement.
-                            </p>
-                        </CardContent>
-                    </Card>
+                    <PasswordChangeForm />
                 </TabsContent>
 
                 <TabsContent value="history" className="mt-0 outline-none">

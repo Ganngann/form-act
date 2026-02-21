@@ -24,6 +24,8 @@ describe("SessionsController", () => {
     billSession: jest.fn(),
     sendOffer: jest.fn(),
     acceptOffer: jest.fn(),
+    isLogisticsStrictlyComplete: jest.fn(),
+    sendLogisticsReminder: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -453,6 +455,20 @@ describe("SessionsController", () => {
 
       await expect(
         controller.acceptOffer("1", { user: { role: "TRAINER" } }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("remindLogistics", () => {
+    it("should allow ADMIN", async () => {
+      mockSessionsService.sendLogisticsReminder.mockResolvedValue({});
+      await controller.remindLogistics("1", { user: { role: "ADMIN" } });
+      expect(service.sendLogisticsReminder).toHaveBeenCalledWith("1");
+    });
+
+    it("should deny non-ADMIN", async () => {
+      await expect(
+        controller.remindLogistics("1", { user: { role: "CLIENT" } }),
       ).rejects.toThrow(ForbiddenException);
     });
   });

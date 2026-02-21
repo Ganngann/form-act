@@ -79,17 +79,21 @@ export class SessionsController {
   async findOne(@Param("id") id: string, @Request() req) {
     const session = await this.sessionsService.findOne(id);
 
-    if (req.user.role === "ADMIN") return session;
+    const isLogisticsComplete =
+      this.sessionsService.isLogisticsStrictlyComplete(session);
+    const sessionWithStatus = { ...session, isLogisticsComplete };
+
+    if (req.user.role === "ADMIN") return sessionWithStatus;
     if (
       req.user.role === "TRAINER" &&
       session.trainer?.userId === req.user.userId
     )
-      return session;
+      return sessionWithStatus;
     if (
       req.user.role === "CLIENT" &&
       session.client?.userId === req.user.userId
     )
-      return session;
+      return sessionWithStatus;
 
     throw new ForbiddenException("Access denied");
   }
@@ -202,6 +206,14 @@ export class SessionsController {
       throw new ForbiddenException("Access denied");
     }
     return this.sessionsService.adminUpdate(id, body);
+  }
+
+  @Post(":id/remind-logistics")
+  async remindLogistics(@Param("id") id: string, @Request() req) {
+    if (req.user.role !== "ADMIN") {
+      throw new ForbiddenException("Access denied");
+    }
+    return this.sessionsService.sendLogisticsReminder(id);
   }
 
   @Patch(":id/offer")

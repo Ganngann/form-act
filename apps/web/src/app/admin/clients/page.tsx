@@ -2,6 +2,7 @@ import { API_URL } from '@/lib/config';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { Building2, Mail, Calendar, MoreHorizontal, Eye, ArrowRight } from 'lucide-react';
+import { AdminHeader } from '@/components/admin/AdminHeader';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -51,24 +52,18 @@ export default async function ClientsPage() {
 
   return (
     <div className="space-y-12">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-        <div>
-          <span className="inline-block px-3 py-1 rounded-md bg-blue-50 border border-blue-200 text-[10px] font-black uppercase tracking-widest text-blue-600 mb-4">
-            Base Installée
-          </span>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-gray-900 mb-2">
-            Portefeuille Clients
-          </h1>
-          <p className="text-muted-foreground font-medium text-lg max-w-2xl">
-            Suivi des entreprises partenaires et de leurs accès utilisateurs.
-          </p>
-        </div>
+      <AdminHeader
+        badge="Base Installée"
+        badgeClassName="bg-blue-50 border-blue-200 text-blue-600"
+        title="Portefeuille Clients"
+        description="Suivi des entreprises partenaires et de leurs accès utilisateurs."
+      >
         <div className="hidden md:block">
           <div className="h-16 w-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
             <Building2 className="h-8 w-8" />
           </div>
         </div>
-      </div>
+      </AdminHeader>
 
       <Card className="border-none shadow-xl bg-white/50 backdrop-blur-sm rounded-[2.5rem] overflow-hidden">
         <div className="p-0">

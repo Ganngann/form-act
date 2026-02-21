@@ -16,6 +16,7 @@ const navItems = [
   { href: '/admin/clients', label: "Clients", icon: Briefcase, exact: false },
   { href: '/admin/formations', label: "Formations", icon: BookOpen, exact: false },
   { href: '/admin/categories', label: "Catégories", icon: Tags, exact: false },
+  { href: '/admin/settings', label: "Paramètres", icon: Settings, exact: false },
 ];
 
 export function Sidebar() {
