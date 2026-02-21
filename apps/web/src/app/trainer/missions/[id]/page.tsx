@@ -197,6 +197,16 @@ export default async function MissionDetailsPage({ params }: { params: { id: str
 
                     {/* Right Column: Actions & Participants */}
                     <div className="lg:col-span-1 space-y-8">
+                        {/* Download Attendance Sheet */}
+                        {['CONFIRMED', 'PROOF_RECEIVED', 'INVOICED', 'ARCHIVED'].includes(session.status) && (
+                            <Button variant="outline" className="w-full h-12 rounded-xl border-dashed border-2 border-primary/20 text-primary hover:bg-primary/5 hover:border-primary font-bold gap-2" asChild>
+                                <a href={`${API_URL}/sessions/${session.id}/attendance-sheet`} target="_blank" rel="noopener noreferrer">
+                                    <FileText className="h-4 w-4" />
+                                    Télécharger la liste d'émargement
+                                </a>
+                            </Button>
+                        )}
+
                         {/* Administrative Action */}
                         <div className="bg-white p-2 rounded-[2.5rem] shadow-sm border border-border">
                             <ProofUploadWidget

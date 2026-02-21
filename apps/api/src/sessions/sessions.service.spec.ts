@@ -3,8 +3,34 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { SessionsService } from "./sessions.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { EmailService } from "../email/email.service";
-import { NotFoundException } from "@nestjs/common";
+import { NotFoundException, BadRequestException } from "@nestjs/common";
 import { Session, Formation } from "@prisma/client";
+
+const mockDoc = {
+  on: jest.fn((event, cb) => {
+    if (event === "end") cb();
+    if (event === "data") cb(Buffer.from("pdf"));
+  }),
+  fontSize: jest.fn().mockReturnThis(),
+  font: jest.fn().mockReturnThis(),
+  text: jest.fn().mockReturnThis(),
+  moveDown: jest.fn().mockReturnThis(),
+  moveTo: jest.fn().mockReturnThis(),
+  lineTo: jest.fn().mockReturnThis(),
+  stroke: jest.fn().mockReturnThis(),
+  strokeColor: jest.fn().mockReturnThis(),
+  addPage: jest.fn().mockReturnThis(),
+  rect: jest.fn().mockReturnThis(),
+  end: jest.fn(),
+  y: 100,
+};
+
+jest.mock("pdfkit", () => {
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation(() => mockDoc),
+  };
+});
 
 describe("SessionsService", () => {
   let service: SessionsService;
@@ -682,5 +708,55 @@ describe("SessionsService", () => {
       expect(prisma.session.update).toHaveBeenCalled();
       expect(emailService.sendEmail).not.toHaveBeenCalled();
     });
+  });
+
+  describe("generateAttendanceSheet", () => {
+    it("should generate PDF buffer for CONFIRMED session", async () => {
+      const session = {
+        id: "1",
+        status: "CONFIRMED",
+        date: new Date(),
+        formation: { title: "Test Formation" },
+        client: { companyName: "Client Inc", address: "Address" },
+        trainer: { firstName: "John", lastName: "Doe" },
+        participants: JSON.stringify([{ name: "P1" }]),
+        slot: "AM",
+      } as any;
+
+      jest.spyOn(service, "findOne").mockResolvedValue(session);
+
+      const result = await service.generateAttendanceSheet("1");
+      expect(result).toBeInstanceOf(Buffer);
+      expect(result.toString()).toBe("pdf");
+    });
+
+    it("should throw BadRequestException if status is invalid", async () => {
+      const session = {
+        id: "1",
+        status: "PENDING",
+      } as any;
+      jest.spyOn(service, "findOne").mockResolvedValue(session);
+
+      await expect(service.generateAttendanceSheet("1")).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it("should handle empty participants", async () => {
+        const session = {
+          id: "1",
+          status: "CONFIRMED",
+          date: new Date(),
+          formation: { title: "Test Formation" },
+          client: { companyName: "Client Inc", address: "Address" },
+          trainer: { firstName: "John", lastName: "Doe" },
+          participants: null,
+        } as any;
+
+        jest.spyOn(service, "findOne").mockResolvedValue(session);
+
+        const result = await service.generateAttendanceSheet("1");
+        expect(result).toBeInstanceOf(Buffer);
+      });
   });
 });

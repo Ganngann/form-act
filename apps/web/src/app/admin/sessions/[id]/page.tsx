@@ -7,7 +7,7 @@ import { AdminPriceProposal } from '@/components/admin/admin-price-proposal';
 import { StatusBadge } from '@/components/ui/status-badge';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, MapPin, Calendar, Clock, User, Users, Package, Building2 } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Clock, User, Users, Package, Building2, FileText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -176,10 +176,18 @@ export default async function SessionDetailPage({ params }: { params: { id: stri
 
                         {/* Participants */}
                         <Card className="rounded-[2rem] border-transparent shadow-sm bg-white h-full">
-                            <CardHeader className="pb-2">
+                            <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
                                 <CardTitle className="text-lg font-black flex items-center gap-2">
                                     <Users className="h-5 w-5 text-blue-600" /> Participants
                                 </CardTitle>
+                                {['CONFIRMED', 'PROOF_RECEIVED', 'INVOICED', 'ARCHIVED'].includes(session.status) && (
+                                    <Button variant="outline" size="sm" asChild className="h-8 text-xs font-bold gap-2 bg-white hover:bg-slate-50">
+                                        <a href={`${API_URL}/sessions/${session.id}/attendance-sheet`} target="_blank" rel="noopener noreferrer">
+                                            <FileText className="h-3 w-3" />
+                                            Télécharger
+                                        </a>
+                                    </Button>
+                                )}
                             </CardHeader>
                             <CardContent className="pt-4">
                                 <ParticipantsSummary participants={session.participants} />

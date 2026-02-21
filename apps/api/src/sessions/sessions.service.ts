@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { Prisma, Session, Formation } from "@prisma/client";
 import { AdminUpdateSessionDto } from "./dto/admin-update-session.dto";
 import { AdminBillSessionDto } from "./dto/admin-bill-session.dto";
 import { EmailService } from "../email/email.service";
+import * as PDFDocument from "pdfkit";
 
 @Injectable()
 export class SessionsService {
@@ -437,5 +438,146 @@ export class SessionsService {
     } catch {
       return false; // Invalid JSON means incomplete
     }
+  }
+
+  async generateAttendanceSheet(id: string): Promise<Buffer> {
+    const session = await this.findOne(id);
+
+    // Allow if status is confirmed or later
+    const validStatuses = [
+      "CONFIRMED",
+      "PROOF_RECEIVED",
+      "INVOICED",
+      "ARCHIVED",
+    ];
+    if (!validStatuses.includes(session.status)) {
+      throw new BadRequestException(
+        "L'émargement n'est disponible que pour les sessions confirmées",
+      );
+    }
+
+    return new Promise((resolve, reject) => {
+      const DocClass = (PDFDocument as any).default || PDFDocument;
+      const doc = new DocClass({ margin: 50, size: "A4" });
+
+      const buffers: Buffer[] = [];
+      doc.on("data", (buffer) => buffers.push(buffer));
+      doc.on("end", () => resolve(Buffer.concat(buffers)));
+      doc.on("error", reject);
+
+      // --- Header ---
+      doc
+        .fontSize(18)
+        .font("Helvetica-Bold")
+        .text("FEUILLE D'ÉMARGEMENT", { align: "center" });
+      doc.moveDown();
+
+      // --- Session Info ---
+      doc.fontSize(11).font("Helvetica");
+      const leftX = 50;
+
+      doc.text(`Formation : ${session.formation.title}`, leftX);
+      doc.moveDown(0.5);
+      doc.text(
+        `Date : ${new Date(session.date).toLocaleDateString("fr-FR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}`,
+      );
+      doc.moveDown(0.5);
+
+      const slotLabel =
+        session.slot === "AM"
+          ? "Matin (09:00 - 12:30)"
+          : session.slot === "PM"
+            ? "Après-midi (13:30 - 17:00)"
+            : "Journée complète (09:00 - 17:00)";
+      doc.text(`Horaire : ${slotLabel}`);
+      doc.moveDown(0.5);
+
+      doc.text(`Client : ${session.client?.companyName || "Non spécifié"}`);
+      doc.moveDown(0.5);
+
+      const trainerName = session.trainer
+        ? `${session.trainer.firstName} ${session.trainer.lastName}`
+        : "Non assigné";
+      doc.text(`Formateur : ${trainerName}`);
+      doc.moveDown(0.5);
+
+      const location =
+        session.location || session.client?.address || "Non spécifié";
+      doc.text(`Lieu : ${location}`);
+      doc.moveDown(2);
+
+      // --- Table Headers ---
+      const tableTop = doc.y;
+      const nameX = 50;
+      const sign1X = 300;
+      const sign2X = 450;
+
+      doc.font("Helvetica-Bold");
+      doc.text("Nom / Prénom", nameX, tableTop);
+
+      if (session.slot === "AM") {
+        doc.text("Signature (Matin)", sign1X, tableTop);
+      } else if (session.slot === "PM") {
+        doc.text("Signature (Après-midi)", sign1X, tableTop);
+      } else {
+        doc.text("Matin", sign1X, tableTop);
+        doc.text("Après-midi", sign2X, tableTop);
+      }
+
+      doc.moveTo(nameX, doc.y + 5).lineTo(550, doc.y + 5).stroke();
+      doc.moveDown(1.5);
+      doc.font("Helvetica");
+
+      // --- Participants ---
+      let participants: any[] = [];
+      try {
+        participants = session.participants
+          ? JSON.parse(session.participants)
+          : [];
+      } catch (e) {
+        // ignore
+      }
+
+      if (participants.length === 0) {
+        doc.text("Aucun participant enregistré.", nameX);
+      } else {
+        participants.forEach((p) => {
+          const currentY = doc.y;
+
+          // Avoid page break in the middle of a row if possible
+          if (currentY > 750) {
+            doc.addPage();
+            // Could re-print headers here
+          }
+
+          const name =
+            p.name ||
+            `${p.firstName || ""} ${p.lastName || ""}`.trim() ||
+            "Participant";
+          doc.text(name, nameX, currentY + 10);
+
+          // Draw line for signature
+          doc
+            .moveTo(nameX, currentY + 30)
+            .lineTo(550, currentY + 30)
+            .strokeColor("#cccccc")
+            .stroke();
+          doc.strokeColor("black"); // reset
+
+          doc.y = currentY + 35;
+        });
+      }
+
+      // --- Footer / Trainer Signature ---
+      doc.moveDown(4);
+      if (doc.y > 700) doc.addPage();
+
+      doc.fontSize(10).font("Helvetica-Oblique");
+      doc.text("Signature du Formateur :", 350);
+      doc.moveDown(3);
+      doc.moveTo(350, doc.y).lineTo(550, doc.y).stroke();
+
+      doc.end();
+    });
   }
 }

@@ -456,4 +456,83 @@ describe("SessionsController", () => {
       ).rejects.toThrow(ForbiddenException);
     });
   });
+
+  describe("downloadAttendanceSheet", () => {
+    it("should allow ADMIN", async () => {
+      mockSessionsService.findOne.mockResolvedValue({
+        formation: { title: "Title" },
+        date: new Date(),
+      });
+      (mockSessionsService as any).generateAttendanceSheet = jest
+        .fn()
+        .mockResolvedValue(Buffer.from("pdf"));
+
+      const res = {
+        set: jest.fn(),
+        end: jest.fn(),
+      };
+
+      await controller.downloadAttendanceSheet(
+        "1",
+        { user: { role: "ADMIN" } },
+        res as any,
+      );
+
+      expect(service.generateAttendanceSheet).toHaveBeenCalledWith("1");
+      expect(res.set).toHaveBeenCalledWith(
+        expect.objectContaining({
+          "Content-Type": "application/pdf",
+        }),
+      );
+      expect(res.end).toHaveBeenCalledWith(Buffer.from("pdf"));
+    });
+
+    it("should allow TRAINER if owner", async () => {
+      mockSessionsService.findOne.mockResolvedValue({
+        trainer: { userId: "u1" },
+        formation: { title: "Title" },
+        date: new Date(),
+      });
+      (mockSessionsService as any).generateAttendanceSheet = jest
+        .fn()
+        .mockResolvedValue(Buffer.from("pdf"));
+
+      const res = { set: jest.fn(), end: jest.fn() };
+
+      await controller.downloadAttendanceSheet(
+        "1",
+        { user: { role: "TRAINER", userId: "u1" } },
+        res as any,
+      );
+      expect(service.generateAttendanceSheet).toHaveBeenCalledWith("1");
+    });
+
+    it("should deny TRAINER if not owner", async () => {
+      mockSessionsService.findOne.mockResolvedValue({
+        trainer: { userId: "u2" },
+      });
+      const res = { set: jest.fn(), end: jest.fn() };
+
+      await expect(
+        controller.downloadAttendanceSheet(
+          "1",
+          { user: { role: "TRAINER", userId: "u1" } },
+          res as any,
+        ),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it("should deny CLIENT", async () => {
+      mockSessionsService.findOne.mockResolvedValue({});
+      const res = { set: jest.fn(), end: jest.fn() };
+
+      await expect(
+        controller.downloadAttendanceSheet(
+          "1",
+          { user: { role: "CLIENT" } },
+          res as any,
+        ),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
 });
