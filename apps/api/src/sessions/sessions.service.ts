@@ -366,13 +366,24 @@ export class SessionsService {
     return updatedSession;
   }
 
-  async sendOffer(id: string, price: number) {
+  async sendOffer(id: string, price: number | string) {
     await this.findOne(id);
+
+    let cleanPrice: number;
+    if (typeof price === "string") {
+      cleanPrice = Number(price.replace(",", "."));
+    } else {
+      cleanPrice = Number(price);
+    }
+
+    if (isNaN(cleanPrice)) {
+      throw new BadRequestException("Invalid price format");
+    }
 
     const updatedSession = await this.prisma.session.update({
       where: { id },
       data: {
-        price,
+        price: cleanPrice,
         status: "OFFER_SENT",
       },
       include: {
@@ -383,21 +394,26 @@ export class SessionsService {
 
     // Notify Client
     if (updatedSession.client?.user?.email) {
-      const priceTtc = (Number(price) * 1.21).toFixed(2);
-      const template = await this.emailTemplatesService.getRenderedTemplate(
-        "SESSION_OFFER",
-        {
-          formation_title: updatedSession.formation.title,
-          price: price,
-          priceTtc: priceTtc,
-          link: `${process.env.FRONTEND_URL}/dashboard/sessions/${id}`,
-        },
-      );
-      await this.emailService.sendEmail(
-        updatedSession.client.user.email,
-        template.subject,
-        template.body,
-      );
+      try {
+        const priceTtc = (cleanPrice * 1.21).toFixed(2);
+        const template = await this.emailTemplatesService.getRenderedTemplate(
+          "SESSION_OFFER",
+          {
+            formation_title: updatedSession.formation.title,
+            price: cleanPrice,
+            priceTtc: priceTtc,
+            link: `${process.env.FRONTEND_URL}/dashboard/sessions/${id}`,
+          },
+        );
+        await this.emailService.sendEmail(
+          updatedSession.client.user.email,
+          template.subject,
+          template.body,
+        );
+      } catch (e) {
+        console.error("Failed to send offer email:", e);
+        // Continue, do not fail the request
+      }
     }
 
     return updatedSession;

@@ -4,7 +4,7 @@ import { SessionsService } from "./sessions.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { EmailService } from "../email/email.service";
 import { EmailTemplatesService } from "../email-templates/email-templates.service";
-import { NotFoundException } from "@nestjs/common";
+import { NotFoundException, BadRequestException } from "@nestjs/common";
 import { Session, Formation } from "@prisma/client";
 
 describe("SessionsService", () => {
@@ -629,6 +629,67 @@ describe("SessionsService", () => {
 
       expect(prisma.session.update).toHaveBeenCalled();
       expect(emailService.sendEmail).not.toHaveBeenCalled();
+    });
+
+    it("should calculate priceTtc correctly with string input containing comma", async () => {
+      const session = {
+        id: "1",
+        client: { user: { email: "test@test.com" } },
+        formation: { title: "Test" },
+      } as unknown as Session;
+
+      const updatedSession = { ...session, status: "OFFER_SENT", price: 100 };
+
+      jest.spyOn(service, "findOne").mockResolvedValue(session as any);
+      jest
+        .spyOn(prisma.session, "update")
+        .mockResolvedValue(updatedSession as any);
+
+      // Simulate calling with string "100,00"
+      await service.sendOffer("1", "100,00");
+
+      // Expectation: price passed to Prisma should be 100
+      expect(prisma.session.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ price: 100 }),
+        }),
+      );
+      // Expectation: priceTtc should be "121.00"
+      expect(emailTemplatesService.getRenderedTemplate).toHaveBeenCalledWith(
+        "SESSION_OFFER",
+        expect.objectContaining({ priceTtc: "121.00", price: 100 }),
+      );
+    });
+
+    it("should throw BadRequestException for invalid price input", async () => {
+      const session = { id: "1" };
+      jest.spyOn(service, "findOne").mockResolvedValue(session as any);
+
+      await expect(service.sendOffer("1", "invalid")).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it("should not crash if email sending fails", async () => {
+      const session = {
+        id: "1",
+        client: { user: { email: "test@test.com" } },
+        formation: { title: "Test" },
+      } as unknown as Session;
+
+      const updatedSession = { ...session, status: "OFFER_SENT", price: 100 };
+
+      jest.spyOn(service, "findOne").mockResolvedValue(session as any);
+      jest
+        .spyOn(prisma.session, "update")
+        .mockResolvedValue(updatedSession as any);
+      jest
+        .spyOn(emailService, "sendEmail")
+        .mockRejectedValue(new Error("Email error"));
+      // Mock console.error to avoid polluting output
+      jest.spyOn(console, "error").mockImplementation(() => {});
+
+      await expect(service.sendOffer("1", 100)).resolves.not.toThrow();
     });
   });
 
