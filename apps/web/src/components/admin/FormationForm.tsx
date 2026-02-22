@@ -81,15 +81,21 @@ export function FormationForm({
     } = useForm<FormData>({
         resolver: zodResolver(schema) as any,
         defaultValues: {
-            title: "",
-            description: "",
-            level: "",
-            duration: "",
-            durationType: "HALF_DAY",
-            isPublished: true,
-            categoryId: undefined,
-            isExpertise: false,
-            authorizedTrainerIds: [],
+            title: initialData?.title || "",
+            description: initialData?.description || "",
+            level: initialData?.level || "",
+            duration: initialData?.duration || "",
+            durationType: initialData?.durationType || "HALF_DAY",
+            price: initialData?.price,
+            categoryId: initialData?.categoryId || initialData?.category?.id || undefined,
+            isExpertise: initialData?.isExpertise || false,
+            authorizedTrainerIds: initialData?.authorizedTrainers?.map(t => t.id) || [],
+            isPublished: initialData?.isPublished ?? true,
+            programLink: initialData?.programLink || "",
+            methodology: initialData?.methodology || "",
+            inclusions: initialData?.inclusions || "",
+            imageUrl: initialData?.imageUrl || "",
+            agreementCodes: initialData?.agreementCodes || "",
         },
     })
 
@@ -97,40 +103,20 @@ export function FormationForm({
     const authorizedTrainerIds = watch("authorizedTrainerIds");
 
     useEffect(() => {
-        if (initialData) {
-            reset({
-                title: initialData.title,
-                description: initialData.description,
-                level: initialData.level,
-                duration: initialData.duration,
-                durationType: initialData.durationType,
-                price: initialData.price,
-                categoryId: initialData.categoryId || initialData.category?.id || undefined,
-                isExpertise: initialData.isExpertise,
-                authorizedTrainerIds: initialData.authorizedTrainers?.map(t => t.id) || [],
-                isPublished: initialData.isPublished,
-                programLink: initialData.programLink || "",
-                methodology: initialData.methodology || "",
-                inclusions: initialData.inclusions || "",
-                imageUrl: initialData.imageUrl || "",
-                agreementCodes: initialData.agreementCodes || "",
-            })
-
-            if (initialData.agreementCodes) {
-                try {
-                    const parsed = JSON.parse(initialData.agreementCodes)
-                    if (Array.isArray(parsed)) {
-                        setAgreements(parsed)
-                    }
-                } catch (e) {
-                    console.error("Failed to parse agreement codes", e)
-                    setAgreements([])
+        if (initialData?.agreementCodes) {
+            try {
+                const parsed = JSON.parse(initialData.agreementCodes)
+                if (Array.isArray(parsed)) {
+                    setAgreements(parsed)
                 }
-            } else {
+            } catch (e) {
+                console.error("Failed to parse agreement codes", e)
                 setAgreements([])
             }
+        } else {
+            setAgreements([])
         }
-    }, [initialData, reset])
+    }, [initialData])
 
     const addAgreement = () => {
         setAgreements([...agreements, { region: "", code: "" }])
