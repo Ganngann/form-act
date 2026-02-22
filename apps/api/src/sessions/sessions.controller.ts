@@ -188,7 +188,7 @@ export class SessionsController {
   @Patch(":id/offer")
   async sendOffer(
     @Param("id") id: string,
-    @Body() body: { price: number },
+    @Body() body: { price: number | string },
     @Request() req,
   ) {
     if (req.user.role !== "ADMIN") {

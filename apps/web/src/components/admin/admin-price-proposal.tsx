@@ -26,10 +26,13 @@ export function AdminPriceProposal({ session }: { session: any }) {
         body: JSON.stringify({ price }),
         credentials: "include"
       });
-      if (!res.ok) throw new Error("Erreur lors de l'envoi");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.message || "Erreur lors de l'envoi");
+      }
       router.refresh();
-    } catch (e) {
-      alert("Impossible d'envoyer l'offre");
+    } catch (e: any) {
+      alert(e.message || "Impossible d'envoyer l'offre");
     } finally {
       setLoading(false);
     }
