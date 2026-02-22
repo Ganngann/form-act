@@ -104,7 +104,7 @@ export function FormationForm({
                 duration: initialData.duration,
                 durationType: initialData.durationType,
                 price: initialData.price,
-                categoryId: initialData.categoryId,
+                categoryId: initialData.categoryId || initialData.category?.id || undefined,
                 isExpertise: initialData.isExpertise,
                 authorizedTrainerIds: initialData.authorizedTrainers?.map(t => t.id) || [],
                 isPublished: initialData.isPublished,
