@@ -24,6 +24,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 
 const formSchema = z.object({
   email: z.string().email('Email invalide'),
@@ -32,6 +34,7 @@ const formSchema = z.object({
   bio: z.string().optional(),
   predilectionZones: z.array(z.string()).optional(),
   expertiseZones: z.array(z.string()).optional(),
+  isActive: z.boolean().default(true),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -61,6 +64,7 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
     bio: initialData?.bio || '',
     predilectionZones: initialData?.predilectionZones?.map((z: any) => z.id) || [],
     expertiseZones: initialData?.expertiseZones?.map((z: any) => z.id) || [],
+    isActive: initialData?.isActive !== false,
   };
 
   const {
@@ -161,7 +165,34 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
               </TabsList>
             </Card>
 
-            <Card className="rounded-[2.5rem] border-none shadow-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-8">
+            <Card className={cn(
+              "rounded-[2.5rem] border-none shadow-xl p-8 transition-all duration-500",
+              watch("isActive")
+                ? "bg-gradient-to-br from-indigo-600 to-violet-700 text-white"
+                : "bg-gradient-to-br from-slate-600 to-slate-800 text-slate-300"
+            )}>
+              <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center mb-6">
+                <BadgeCheck className={cn("h-6 w-6", watch("isActive") ? "text-white" : "text-slate-400")} />
+              </div>
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 mb-2">Statut Compte</h4>
+              <div className="flex items-center justify-between mb-4">
+                <span className={cn("font-black text-xl italic", watch("isActive") ? "text-white" : "text-slate-100")}>
+                  {watch("isActive") ? "Activé" : "Désactivé"}
+                </span>
+                <Switch
+                  checked={watch("isActive")}
+                  onCheckedChange={(checked) => setValue("isActive", checked, { shouldDirty: true })}
+                  className="data-[state=checked]:bg-white data-[state=checked]:text-indigo-600"
+                />
+              </div>
+              <p className="text-[10px] opacity-60 font-medium leading-relaxed italic">
+                {watch("isActive")
+                  ? "Le formateur est visible et affectable aux sessions."
+                  : "Désactivé du catalogue et des affectations."}
+              </p>
+            </Card>
+
+            <Card className="rounded-[2.5rem] border-none shadow-xl bg-blue-50 text-blue-900 p-8">
               <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center mb-6">
                 <BadgeCheck className="h-6 w-6 text-white" />
               </div>
@@ -206,7 +237,7 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
                     <label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Email Professionnel</label>
                     <div className="relative">
                       <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                      <Input id="email" type="email" {...register('email')} placeholder="jean.dupont@formact.com" className="pl-14 h-16 rounded-2xl border-gray-100 bg-gray-50/30 focus:bg-white font-bold text-lg transition-all px-6 outline-none" />
+                      <Input id="email" type="email" {...register('email')} placeholder="jean.dupont@formact.com" className="pl-14 h-16 rounded-2xl border-gray-100 bg-gray-50/30 focus:bg-white font-bold text-lg transition-all pr-6 outline-none" />
                     </div>
                     {errors.email && <p className="text-red-500 text-[10px] font-bold ml-1">{errors.email.message}</p>}
                   </div>
@@ -219,7 +250,7 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
                         id="bio"
                         {...register('bio')}
                         placeholder="Parlez-nous de votre expérience..."
-                        className="pl-14 pt-6 min-h-[180px] rounded-[2rem] border-gray-100 bg-gray-50/30 focus:bg-white font-medium text-base transition-all px-6 resize-none leading-relaxed"
+                        className="pl-14 pt-6 min-h-[180px] rounded-[2rem] border-gray-100 bg-gray-50/30 focus:bg-white font-medium text-base transition-all pr-6 resize-none leading-relaxed"
                       />
                     </div>
                   </div>
