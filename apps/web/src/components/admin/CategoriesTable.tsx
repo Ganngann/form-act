@@ -98,7 +98,7 @@ export function CategoriesTable({ initialCategories }: CategoriesTableProps) {
 
   return (
     <div className="space-y-6">
-      <Card className="border-none shadow-xl bg-white/50 backdrop-blur-sm rounded-[2rem] overflow-hidden">
+      <Card className="border-none shadow-xl bg-white/50 backdrop-blur-sm rounded-[2.5rem] overflow-hidden">
         <form onSubmit={handleCreateQuick} className="p-6 flex flex-col md:flex-row items-center gap-4">
           <div className="flex-1 w-full">
             <h2 className="text-sm font-black text-gray-900 tracking-widest uppercase mb-4 flex items-center gap-2 px-1">
@@ -127,9 +127,10 @@ export function CategoriesTable({ initialCategories }: CategoriesTableProps) {
         </form>
       </Card>
 
-      <div className="rounded-[2.5rem] border-none shadow-xl bg-white overflow-hidden">
-        <Table>
-          <TableHeader className="bg-gray-50/50">
+      <Card className="border-none shadow-xl bg-white/50 backdrop-blur-sm rounded-[2.5rem] overflow-hidden">
+        <div className="p-0">
+          <Table>
+            <TableHeader className="bg-gray-50/50">
             <TableRow className="hover:bg-transparent border-gray-100">
               <TableHead className="pl-8 h-14 font-bold text-gray-600 uppercase text-xs tracking-wider">Nom de la thématique</TableHead>
               <TableHead className="pr-8 h-14 font-bold text-gray-600 uppercase text-xs tracking-wider text-right">Actions</TableHead>
@@ -222,7 +223,8 @@ export function CategoriesTable({ initialCategories }: CategoriesTableProps) {
             )}
           </TableBody>
         </Table>
-      </div>
+        </div>
+      </Card>
     </div>
   )
 }
