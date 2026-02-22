@@ -109,7 +109,7 @@ export function FormationDialog({
         duration: formation.duration,
         durationType: formation.durationType,
         price: formation.price,
-        categoryId: formation.categoryId,
+        categoryId: formation.categoryId || formation.category?.id || undefined,
         isExpertise: formation.isExpertise,
         authorizedTrainerIds: formation.authorizedTrainers?.map(t => t.id) || [],
         isPublished: formation.isPublished,

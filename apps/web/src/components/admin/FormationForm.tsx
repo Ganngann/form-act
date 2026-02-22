@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react"
+// ... imports
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -104,7 +105,7 @@ export function FormationForm({
                 duration: initialData.duration,
                 durationType: initialData.durationType,
                 price: initialData.price,
-                categoryId: initialData.categoryId,
+                categoryId: initialData.categoryId || initialData.category?.id || undefined,
                 isExpertise: initialData.isExpertise,
                 authorizedTrainerIds: initialData.authorizedTrainers?.map(t => t.id) || [],
                 isPublished: initialData.isPublished,
