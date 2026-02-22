@@ -43,7 +43,15 @@ export default async function SessionsListPage({
   searchParams: { status?: string, filter?: string, q?: string }
 }) {
   const sessions = await getSessions(searchParams.status, searchParams.filter, searchParams.q);
-  const activeLabel = searchParams.filter ? FILTER_LABELS[searchParams.filter] : 'TOUTES LES SESSIONS';
+
+  let activeLabel = 'TOUTES LES SESSIONS';
+  if (searchParams.filter && FILTER_LABELS[searchParams.filter]) {
+    activeLabel = FILTER_LABELS[searchParams.filter];
+  } else if (searchParams.status === 'PENDING_APPROVAL') {
+    activeLabel = 'DEMANDES À VALIDER';
+  }
+
+  const activeFilter = searchParams.status === 'PENDING_APPROVAL' ? 'PENDING_APPROVAL' : searchParams.filter;
 
   return (
     <div className="space-y-12">
@@ -62,7 +70,7 @@ export default async function SessionsListPage({
       </AdminHeader>
 
       {/* 1. Bento Stats Section */}
-      <AdminBentoStats activeFilter={searchParams.filter} />
+      <AdminBentoStats activeFilter={activeFilter} />
 
       {/* 2. View Status Bar & Search */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-inner">
