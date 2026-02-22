@@ -51,8 +51,10 @@ export default async function TrainerDetailPage({ params }: { params: { id: stri
                 </span>
                 <span>•</span>
                 <div className="flex items-center gap-1.5">
-                  <div className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
-                  <span className="text-xs font-bold text-green-700">Compte Actif</span>
+                  <div className={`h-2 w-2 rounded-full ${trainer.isActive !== false ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]" : "bg-gray-400"}`} />
+                  <span className={`text-xs font-bold ${trainer.isActive !== false ? "text-green-700" : "text-gray-500"}`}>
+                    {trainer.isActive !== false ? "Compte Actif" : "Compte Désactivé"}
+                  </span>
                 </div>
               </div>
             </div>
