@@ -34,7 +34,7 @@ const formSchema = z.object({
   bio: z.string().optional(),
   predilectionZones: z.array(z.string()).optional(),
   expertiseZones: z.array(z.string()).optional(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean(),
 });
 
 type FormData = z.infer<typeof formSchema>;
