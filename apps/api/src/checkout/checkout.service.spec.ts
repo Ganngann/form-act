@@ -3,6 +3,7 @@ import { CheckoutService } from "./checkout.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { AuthService } from "../auth/auth.service";
 import { EmailService } from "../email/email.service";
+import { EmailTemplatesService } from "../email-templates/email-templates.service";
 import { BadRequestException } from "@nestjs/common";
 import { CreateBookingDto } from "./create-booking.dto";
 import { User, Client, Session } from "@prisma/client";
@@ -12,6 +13,7 @@ describe("CheckoutService", () => {
   let prisma: PrismaService;
   let authService: AuthService;
   let emailService: EmailService;
+  let emailTemplatesService: EmailTemplatesService;
 
   // Mock transaction client
   const mockTx = {
@@ -48,6 +50,15 @@ describe("CheckoutService", () => {
             sendEmail: jest.fn(),
           },
         },
+        {
+          provide: EmailTemplatesService,
+          useValue: {
+            getRenderedTemplate: jest.fn().mockResolvedValue({
+              subject: "Rendered Subject",
+              body: "Rendered Body",
+            }),
+          },
+        },
       ],
     }).compile();
 
@@ -55,6 +66,9 @@ describe("CheckoutService", () => {
     prisma = module.get<PrismaService>(PrismaService);
     authService = module.get<AuthService>(AuthService);
     emailService = module.get<EmailService>(EmailService);
+    emailTemplatesService = module.get<EmailTemplatesService>(
+      EmailTemplatesService,
+    );
 
     jest.clearAllMocks();
   });
@@ -167,8 +181,8 @@ describe("CheckoutService", () => {
 
       expect(emailService.sendEmail).toHaveBeenCalledWith(
         mockUser.email,
-        "Réception de votre demande de formation - Formact",
-        expect.stringContaining("Nous avons bien reçu votre demande"),
+        "Rendered Subject",
+        "Rendered Body",
       );
     });
 

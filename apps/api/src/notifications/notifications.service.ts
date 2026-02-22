@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { EmailService } from "../email/email.service";
+import { EmailTemplatesService } from "../email-templates/email-templates.service";
 import { NotificationLogService } from "./notification-log.service";
 import { SessionsService } from "../sessions/sessions.service";
 import { PdfService, SessionWithRelations } from "../files/pdf.service";
@@ -11,6 +12,7 @@ export class NotificationsService {
 
   constructor(
     private readonly emailService: EmailService,
+    private readonly emailTemplatesService: EmailTemplatesService,
     private readonly logService: NotificationLogService,
     private readonly sessionsService: SessionsService,
     private readonly pdfService: PdfService,
@@ -68,14 +70,17 @@ export class NotificationsService {
       if (await this.logService.hasLog(type, session.id)) return;
 
       if (session.client?.user?.email) {
+        const template = await this.emailTemplatesService.getRenderedTemplate(
+          "LOGISTICS_REMINDER_48H",
+          {
+            companyName: session.client.companyName,
+            date: new Date(session.date).toLocaleDateString("fr-BE"),
+          },
+        );
         await this.emailService.sendEmail(
           session.client.user.email,
-          "Action requise : Informations logistiques manquantes",
-          `<p>Bonjour ${session.client.companyName},</p>
-           <p>Merci de compléter les informations logistiques pour votre session de formation du ${new Date(
-             session.date,
-           ).toLocaleDateString()}.</p>
-           <p>Cordialement,<br>L'équipe Formact</p>`,
+          template.subject,
+          template.body,
         );
         await this.logService.createLog({
           type,
@@ -98,11 +103,16 @@ export class NotificationsService {
       if (await this.logService.hasLog(type, session.id)) return;
 
       if (session.client?.user?.email) {
+        const template = await this.emailTemplatesService.getRenderedTemplate(
+          "PARTICIPANTS_ALERT_J15",
+          {
+            companyName: session.client.companyName,
+          },
+        );
         await this.emailService.sendEmail(
           session.client.user.email,
-          "Rappel : Liste des participants attendue",
-          `<p>Bonjour ${session.client.companyName},</p>
-           <p>La formation approche (J-15). Merci de renseigner la liste des participants.</p>`,
+          template.subject,
+          template.body,
         );
         await this.logService.createLog({
           type,
@@ -124,11 +134,16 @@ export class NotificationsService {
       if (await this.logService.hasLog(type, session.id)) return;
 
       if (session.client?.user?.email) {
+        const template = await this.emailTemplatesService.getRenderedTemplate(
+          "PARTICIPANTS_CRITICAL_J9",
+          {
+            companyName: session.client.companyName,
+          },
+        );
         await this.emailService.sendEmail(
           session.client.user.email,
-          "URGENT : Liste des participants manquante",
-          `<p>Bonjour ${session.client.companyName},</p>
-           <p>Sans liste de participants sous 24h, la session risque d'être annulée.</p>`,
+          template.subject,
+          template.body,
         );
         await this.logService.createLog({
           type,
@@ -149,11 +164,16 @@ export class NotificationsService {
 
       const programLink = session.formation.programLink;
       if (programLink && session.client?.user?.email) {
+        const template = await this.emailTemplatesService.getRenderedTemplate(
+          "PROGRAM_SEND_J30",
+          {
+            programLink,
+          },
+        );
         await this.emailService.sendEmail(
           session.client.user.email,
-          "Votre programme de formation",
-          `<p>Bonjour,</p>
-           <p>Voici le programme pour votre formation à venir : <a href="${programLink}">Télécharger le programme</a></p>`,
+          template.subject,
+          template.body,
         );
         await this.logService.createLog({
           type,
@@ -173,13 +193,19 @@ export class NotificationsService {
       if (await this.logService.hasLog(type, session.id)) return;
 
       if (session.trainer?.email) {
+        const template = await this.emailTemplatesService.getRenderedTemplate(
+          "MISSION_REMINDER_J21",
+          {
+            firstName: session.trainer.firstName,
+            date: new Date(session.date).toLocaleDateString("fr-BE"),
+            companyName: session.client?.companyName || "Inconnu",
+            location: session.location || session.client?.address || "À confirmer",
+          },
+        );
         await this.emailService.sendEmail(
           session.trainer.email,
-          "Rappel de votre mission",
-          `<p>Bonjour ${session.trainer.firstName},</p>
-           <p>Rappel pour la session du ${new Date(session.date).toLocaleDateString()}.</p>
-           <p>Client : ${session.client?.companyName}</p>
-           <p>Lieu : ${session.location || session.client?.address}</p>`,
+          template.subject,
+          template.body,
         );
         await this.logService.createLog({
           type,
@@ -202,14 +228,18 @@ export class NotificationsService {
         const pdfBuffer =
           await this.pdfService.generateAttendanceSheet(session);
 
+        const template = await this.emailTemplatesService.getRenderedTemplate(
+          "DOC_PACK_J7",
+          {
+            firstName: session.trainer.firstName,
+            date: new Date(session.date).toLocaleDateString("fr-BE"),
+          },
+        );
+
         await this.emailService.sendEmailWithAttachments(
           session.trainer.email,
-          "Votre Pack Documentaire (Feuille d'émargement)",
-          `<p>Bonjour ${session.trainer.firstName},</p>
-             <p>Voici la feuille d'émargement pour la session du ${new Date(
-               session.date,
-             ).toLocaleDateString()}.</p>
-             <p>Rappel : Les modifications client sont désormais verrouillées.</p>`,
+          template.subject,
+          template.body,
           [{ filename: "emargement.pdf", content: pdfBuffer }],
         );
 
@@ -242,15 +272,18 @@ export class NotificationsService {
       if (await this.logService.hasLog(type, session.id)) return;
 
       if (session.trainer?.email) {
+        const template = await this.emailTemplatesService.getRenderedTemplate(
+          "PROOF_REMINDER_J1",
+          {
+            firstName: session.trainer.firstName,
+            date: sessionDate.toLocaleDateString("fr-BE"),
+            companyName: session.client?.companyName || "Inconnu",
+          },
+        );
         await this.emailService.sendEmail(
           session.trainer.email,
-          "Action requise : Dépôt de la feuille d'émargement",
-          `<p>Bonjour ${session.trainer.firstName},</p>
-           <p>La session de formation du ${sessionDate.toLocaleDateString()} pour le client ${
-             session.client?.companyName || "Inconnu"
-           } est terminée.</p>
-           <p>Merci de déposer la feuille d'émargement signée sur votre espace formateur afin de déclencher la facturation.</p>
-           <p>Cordialement,<br>L'équipe Formact</p>`,
+          template.subject,
+          template.body,
         );
         await this.logService.createLog({
           type,

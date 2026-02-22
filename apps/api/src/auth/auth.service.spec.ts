@@ -3,6 +3,7 @@ import { AuthService } from "./auth.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { JwtService } from "@nestjs/jwt";
 import { EmailService } from "../email/email.service";
+import { EmailTemplatesService } from "../email-templates/email-templates.service";
 import * as bcrypt from "bcrypt";
 import { User } from "@prisma/client";
 
@@ -13,6 +14,7 @@ describe("AuthService", () => {
   let prisma: PrismaService;
   let jwtService: JwtService;
   let emailService: EmailService;
+  let emailTemplatesService: EmailTemplatesService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -41,6 +43,15 @@ describe("AuthService", () => {
             sendEmail: jest.fn(),
           },
         },
+        {
+          provide: EmailTemplatesService,
+          useValue: {
+            getRenderedTemplate: jest.fn().mockResolvedValue({
+              subject: "Rendered Subject",
+              body: "Rendered Body",
+            }),
+          },
+        },
       ],
     }).compile();
 
@@ -48,6 +59,9 @@ describe("AuthService", () => {
     prisma = module.get<PrismaService>(PrismaService);
     jwtService = module.get<JwtService>(JwtService);
     emailService = module.get<EmailService>(EmailService);
+    emailTemplatesService = module.get<EmailTemplatesService>(
+      EmailTemplatesService,
+    );
   });
 
   it("should be defined", () => {
@@ -218,8 +232,8 @@ describe("AuthService", () => {
       );
       expect(emailService.sendEmail).toHaveBeenCalledWith(
         "test@test.com",
-        expect.stringContaining("Réinitialisation"),
-        expect.any(String),
+        "Rendered Subject",
+        "Rendered Body",
       );
     });
   });

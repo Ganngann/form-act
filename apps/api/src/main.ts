@@ -5,9 +5,19 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import * as cookieParser from "cookie-parser";
 import { ValidationPipe } from "@nestjs/common";
+import helmet from "helmet";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Security Enhancement: Helmet
+  // Sets various HTTP headers to secure the app (CSP, X-Frame-Options, etc.)
+  // We allow cross-origin resource sharing for static files (images/PDFs) to be loaded by the frontend.
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: { policy: "cross-origin" },
+    }),
+  );
 
   // Enable trust proxy for correct IP behind proxies (e.g. load balancers)
   const expressApp = app.getHttpAdapter().getInstance();

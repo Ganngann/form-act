@@ -1,4 +1,4 @@
-# 📋 Backlog Produit - Form-Act
+# 📋 Backlog Produit & Suivi Technique - Form-Act
 
 Ce document centralise toutes les tâches du projet. Il a été réorganisé pour prioriser la stabilité et la conformité métier (Bible) avant l'extension fonctionnelle.
 
@@ -195,105 +195,63 @@ Ce sprint vise à corriger les inconsistances d'interface et d'architecture iden
 ---
 
 ## 🐛 Nouveaux Bugs Signalés (À investiguer)
+## 🛑 1. Bugs Prioritaires (À corriger)
 
 ### Bug-10 : Admin - Erreur 500 lors de l'envoi d'une offre
 **Symptôme :** Erreur "Internal Server Error" (500) au clic sur "Envoyer l'offre au client".
 - [ ] Analyser les logs backend (Cause probable : calcul `priceTtc` ou `EmailService`).
 - [ ] Corriger la gestion des types Decimal/Number dans `sendOffer`.
 - [ ] Ajouter un feedback d'erreur explicite côté UI.
- 
+
 ### Bug-11 : Admin - Dysfonctionnement du filtre "Demandes"
 **Symptôme :** Le clic sur le bloc Bento "Demandes" (status=PENDING) n'affiche pas le bon libellé de vue et ne filtre pas correctement les sessions.
 - [ ] Harmoniser le code de statut entre le frontend (`PENDING`) et le backend (`PENDING_APPROVAL`).
 - [ ] Mettre à jour `SessionsListPage` pour qu'il reconnaisse le paramètre `status` dans le libellé de la vue active.
 - [ ] Vérifier que les statistiques du Bento correspondent bien aux filtres appliqués.
- 
+
 ### Bug-12 : Admin - Perte de la catégorie lors de l'édition d'une formation
 **Symptôme :** Dans la liste des formations, la catégorie est bien affichée. Cependant, lors de l'ouverture du formulaire de modification, le champ "Catégorie" revient à "Sélectionner..." (vide).
 - [ ] Vérifier le mapping du champ `categoryId` dans le `defaultValue` du formulaire `FormationForm`.
 - [ ] S'assurer que la liste des catégories est chargée avant l'initialisation des valeurs du formulaire.
 - [ ] Vérifier si le composant `Select` (UI) reçoit bien la valeur initiale.
 
-
-### US-08 : Inscription Spontanée Client
-**Référence :** Demande Client (Parcours du site)
-**En tant que** Prospect Client,
-**Je veux** créer mon compte sans devoir initier une demande de formation,
-**Afin de** préparer mes informations de facturation et accéder à mon espace personnel.
-
-*Critères d'Acceptation (AC) :*
-- [x] Formulaire d'inscription accessible publiquement via `/register`.
-- [x] Collecte des informations de base (Nom, Email, Mot de passe).
-- [x] Redirection vers le Dashboard Client après inscription.
-
 ---
 
-## 🏗️ Prochain Sprint : Optimisation & Services Additionnels
+## 🏗️ 2. Roadmap : Optimisations & Evolutions (En cours)
+
+### US-06 : Admin - Textes Légaux (Finalisation)
+**En tant que** Administrateur,
+**Je veux** pouvoir éditer les pages de textes légaux,
+**Afin de** respecter les obligations juridiques.
+- [ ] Textes Légaux : Mentions Légales, CGV, Confidentialité (Gestion des pages dédiées via CMS).
 
 ### US-10 : Téléchargement Liste Participants (Admin/Formateur)
 **Référence :** Demande Client
 **En tant que** Formateur ou Administrateur,
 **Je veux** télécharger la liste des participants formattée (Liste d'émargement),
 **Afin de** la faire signer le jour J ou d'en disposer pour gestion.
-
 *Critères d'Acceptation (AC) :*
 - [ ] Bouton "Télécharger Liste Émargement (PDF)" sur le détail de la mission (Espace Formateur).
 - [ ] Bouton "Télécharger Liste" sur la fiche session (Espace Admin).
 - [ ] Le PDF doit contenir : Infos Session, Liste Noms/Prénoms, Colonne Signature.
 - [ ] Accessible dès que la session est confirmée.
 
-### US-11 : Tous - Modification du Mot de Passe
-**Référence :** Demande Client
-**En tant que** Utilisateur (Admin, Client, Formateur),
-**Je veux** modifier mon mot de passe actuel depuis mon profil,
-**Afin de** sécuriser mon compte.
-
-*Critères d'Acceptation (AC) :*
-- [ ] Section "Sécurité" dans le profil utilisateur.
-- [ ] Formulaire : Ancien mot de passe / Nouveau mot de passe / Confirmation.
-- [ ] Validation de complexité (Min 8 caractères).
-- [ ] Feedback visuel "Mot de passe mis à jour".
-
 ### US-12 : Admin - Désactivation Formateur
 **Référence :** Demande Client
 **En tant que** Administrateur,
 **Je veux** désactiver un formateur qui ne collabore plus avec nous,
 **Afin de** l'exclure des nouvelles assignations et bloquer son accès, sans perdre l'historique.
-
 *Critères d'Acceptation (AC) :*
 - [ ] Toggle "Actif / Inactif" sur la fiche formateur.
 - [ ] Si Inactif : Impossible de se connecter.
 - [ ] Si Inactif : Exclu des résultats de recherche pour les nouvelles sessions.
 - [ ] Si Inactif : Conservé dans l'historique des sessions passées.
 
-### US-13 : Admin - Reset Filtres Sessions
-**Référence :** Demande Client
-**En tant que** Administrateur,
-**Je veux** un bouton pour désactiver tous les filtres actifs sur la liste des sessions,
-**Afin de** visualiser l'intégralité des dossiers en un clic.
-
-*Critères d'Acceptation (AC) :*
-- [ ] Bouton "Voir tout" ou "Réinitialiser" à côté de la barre de recherche/filtres.
-- [ ] Action : Remet tous les filtres (Recherche, Statut, Date) à zéro.
-- [ ] Recharge la liste complète des sessions (hors archives).
-
-### US-14 : Admin - Relance Manuelle Logistique Client
-**Référence :** Demande Client
-**En tant que** Administrateur,
-**Je veux** déclencher manuellement l'email de rappel logistique à un client,
-**Afin de** débloquer un dossier sans attendre l'automatisme (ou en cas de non-réception).
-
-*Critères d'Acceptation (AC) :*
-- [ ] Bouton "Relancer Client (Logistique)" sur la fiche session (si logistique incomplète).
-- [ ] Envoi immédiat de l'email type "Relance Logistique" (avec lien formulaire).
-- [ ] Feedback visuel "Email de relance envoyé".
-
 ### US-15 : Admin - Édition Textes Emails (CMS)
 **Référence :** Demande Client
 **En tant que** Administrateur,
 **Je veux** modifier le contenu des emails automatiques (Offre, Validation, Relance),
 **Afin de** personnaliser ma communication sans développeur.
-
 *Critères d'Acceptation (AC) :*
 - [ ] Section "Modèles d'Emails" dans l'admin.
 - [ ] Liste des templates editables (Sujet + Corps).
@@ -307,36 +265,38 @@ Ce sprint vise à corriger les inconsistances d'interface et d'architecture iden
 
 ---
 
-## 🏗️ Sprint Précédent : Stabilisation & Finance (Terminé ✅)
-
-### US-33 : Admin - Préparation Facturation
-**Référence Bible :** Section 5.1 (Calcul Prix) & 5.2 (Odoo Prep)
-- [x] Liste des sessions terminées avec preuve validée.
-- [x] Calcul automatique du prix : Base + Distance + Options.
-- [x] Champ "Ajustement Admin" éditable pour figer le Prix Final.
-
-### US-34 : Admin - Clôture Facturation
-**Référence Bible :** Section 5.2 (Odoo Prep)
-- [x] Action "Marquer comme Facturé".
-- [x] Envoi email notification client.
-- [x] Archivage de la session (Statut `INVOICED`).
-
-### Bugs & Corrections Post-Audit
-- [x] **Bug-03 : Checkout & Récapitulatif** : Ajout étape confirmation + mention "Estimation".
-- [x] **Audit-UX-01 : Module Logistique Client** : Verrouillage J-7 et édition libre avant.
-- [x] **Bug-08 : Admin - Sélection Formateurs** : Fix liaison React Hook Form & Controller.
-- [x] **Bug-09 : UI - Champs Formateur** : Fix chevauchement icônes (Padding).
-- [x] **Tech-01 : Refactorisation Dialog UI** : Migration vers Radix UI.
-
----
-
-## 🧊 Frigo / V2 (Post-MVP)
+## 🧊 3. Frigo / V2 (Post-MVP)
 - [ ] **US-09 : Formateur - Agenda & Synchronisation (iCal In)** : Import d'agenda Google/Outlook.
 - [ ] **US-35 : Formateur - Reporting & Honoraires** : Vue gains mensuels estimatifs.
 - [ ] **US-38 : Conformité RGPD** : Anonymisation auto après 24 mois.
 
 ---
 
-## 🗄️ Archives (Historique)
-- [x] **Diamant Refonte Admin V2** : BentoStats, RadarCard, SearchBar, ArchivesPage.
-- [x] **Sprints 1 à 5** : Fondations, Auth, Catalogue, Espace Client/Formateur.
+## 🗄️ 4. Historique des Livraisons (Archives Terminé ✅)
+
+### Flow : Request -> Offer -> Validation (Tunnel de Vente)
+- [x] **US-01** : Sélection automatique du formateur intelligent.
+- [x] **US-02** : Nouveau flux "Demande de formation" (Statut `PENDING_APPROVAL`).
+- [x] **US-03** : Interface Admin de proposition tarifaire (Envoi d'offre).
+- [x] **US-04** : Dashboard Client : Validation et acceptation de l'offre.
+- [x] **US-05** : Gestion stricte des subsides FormTS (Admin only).
+
+### Espace Admin V2 & Finance
+- [x] **Bento Dashboard** : Stats interactives (Demandes, Logistique, Facturation).
+- [x] **Radar Card** : Nouvelle visualisation opérationnelle des sessions.
+- [x] **US-13** : Reset intelligent des filtres de recherche.
+- [x] **US-14** : Bouton de relance manuelle de la logistique client.
+- [x] **US-33** : Outil de préparation à la facturation (Calcul km/matériel).
+- [x] **US-34** : Clôture et archivage des sessions facturées.
+
+### CMS, Profils & Public
+- [x] **US-06** : CMS complet de la Home Page (Hero, Promo, Témoignages).
+- [x] **US-07** : Footer structuré avec politique de contact.
+- [x] **US-08** : Page `/register` publique pour inscription spontanée.
+- [x] **US-11** : Module de changement de mot de passe (Profil).
+
+### Maintenance & Qualité
+- [x] **Bug-03** : Ajout récapitulatif estimation au checkout.
+- [x] **Bug-08** : Fix liaison React Hook Form sur les experts/catégories.
+- [x] **Bug-09** : Corrections cosmétiques formulaires formateurs.
+- [x] **Tech-01** : Migration vers Radix UI pour les modales.

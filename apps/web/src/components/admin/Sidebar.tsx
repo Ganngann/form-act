@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Calendar, Users, Briefcase, BookOpen, Tags, FileText, Settings, Archive, Palette } from 'lucide-react';
+import { LayoutDashboard, Calendar, Users, Briefcase, BookOpen, Tags, FileText, Settings, Archive, Palette, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 
 const navItems = [
   { href: '/admin', label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: '/admin/content', label: "Contenu", icon: Palette, exact: false },
+  { href: '/admin/emails', label: "Emails", icon: Mail, exact: false },
   { href: '/admin/sessions', label: "Sessions", icon: Calendar, exact: true },
   { href: '/admin/sessions/archives', label: "Archives", icon: Archive, exact: false },
   { href: '/admin/calendar', label: "Calendrier", icon: Calendar, exact: false },
