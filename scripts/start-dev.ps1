@@ -40,17 +40,13 @@ try {
     Set-Location "..\.."
 }
 
-# 4. Push Schema to DB (using migrate dev for consistent history or db push for prototyping)
-# Using migrate dev --name init is safer if we want to track migrations, but db push is faster for pure dev.
-# Given previous steps used migrate, let's try migrate first, fallback to push if needed? 
-# Actually, 'prisma migrate dev' is interactive if name is missing. 'prisma db push' updates schema without history.
-# For a "launch" script, 'migrate deploy' is for prod, 'migrate dev' is for dev.
+# 4. Push Schema to DB
 Write-Log "💾 Applying database migrations..." "Yellow"
 Set-Location "apps/api"
 try {
-    # Provide a name automatically if needed or use previous migration state
-    # If migrations exists, just applying them.
-    pnpm prisma migrate dev
+    # Using migrate dev --accept-utils or similar if needed, but for now just standard
+    # We use --skip-generate because we just did it
+    pnpm prisma migrate dev --skip-generate
 } finally {
     Set-Location "..\.."
 }

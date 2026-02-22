@@ -407,11 +407,11 @@ export function FormationForm({
                                 <CardContent className="p-8 space-y-6">
                                     <div className="grid gap-6">
                                         <div className="space-y-2">
-                                            <Label htmlFor="imageUrl" className="text-xs font-black uppercase text-gray-400 ml-1 tracking-widest">Image de couverture (URL)</Label>
+                                            <Label htmlFor="imageUrl" className="text-xs font-black uppercase text-gray-400 ml-1 tracking-widest">Image de couverture (URL) - Optionnel</Label>
                                             <Input id="imageUrl" {...register("imageUrl")} placeholder="https://cdn.example.com/cover.jpg" className="h-12 border-gray-100 bg-gray-50/50 rounded-xl font-mono text-xs" />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="programLink" className="text-xs font-black uppercase text-gray-400 ml-1 tracking-widest">Lien Programme (PDF/Web)</Label>
+                                            <Label htmlFor="programLink" className="text-xs font-black uppercase text-gray-400 ml-1 tracking-widest">Lien Programme (PDF/Web) - Optionnel</Label>
                                             <Input id="programLink" {...register("programLink")} placeholder="https://docs.example.com/formation-prog.pdf" className="h-12 border-gray-100 bg-gray-50/50 rounded-xl font-mono text-xs" />
                                         </div>
                                     </div>

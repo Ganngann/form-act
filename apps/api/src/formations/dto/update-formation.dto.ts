@@ -6,6 +6,7 @@ import {
   IsUUID,
   Min,
   IsUrl,
+  ValidateIf,
 } from "class-validator";
 
 export class UpdateFormationDto {
@@ -48,6 +49,7 @@ export class UpdateFormationDto {
 
   @IsString()
   @IsOptional()
+  @ValidateIf((o) => o.programLink && o.programLink !== "")
   @IsUrl()
   programLink?: string;
 
@@ -65,6 +67,7 @@ export class UpdateFormationDto {
 
   @IsString()
   @IsOptional()
+  @ValidateIf((o) => o.imageUrl && o.imageUrl !== "")
   @IsUrl()
   imageUrl?: string;
 

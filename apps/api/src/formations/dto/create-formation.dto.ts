@@ -7,6 +7,7 @@ import {
   IsUUID,
   Min,
   IsUrl,
+  ValidateIf,
 } from "class-validator";
 
 export class CreateFormationDto {
@@ -49,6 +50,7 @@ export class CreateFormationDto {
 
   @IsString()
   @IsOptional()
+  @ValidateIf((o) => o.programLink && o.programLink !== "")
   @IsUrl()
   programLink?: string;
 
@@ -66,6 +68,7 @@ export class CreateFormationDto {
 
   @IsString()
   @IsOptional()
+  @ValidateIf((o) => o.imageUrl && o.imageUrl !== "")
   @IsUrl()
   imageUrl?: string;
 
