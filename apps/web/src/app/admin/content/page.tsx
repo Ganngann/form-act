@@ -8,6 +8,7 @@ import { PromoForm } from "@/components/admin/content/PromoForm";
 import { ValuesForm } from "@/components/admin/content/ValuesForm";
 import { TrustForm } from "@/components/admin/content/TrustForm";
 import { CtaForm } from "@/components/admin/content/CtaForm";
+import { LegalForm } from "@/components/admin/content/LegalForm";
 
 export default function ContentPage() {
   return (
@@ -25,6 +26,7 @@ export default function ContentPage() {
           <TabsTrigger value="values" className="rounded-lg py-2.5 px-4 font-bold">Arguments</TabsTrigger>
           <TabsTrigger value="trust" className="rounded-lg py-2.5 px-4 font-bold">Preuve Sociale</TabsTrigger>
           <TabsTrigger value="cta" className="rounded-lg py-2.5 px-4 font-bold">Appel à l&apos;action</TabsTrigger>
+          <TabsTrigger value="legal" className="rounded-lg py-2.5 px-4 font-bold">Légal</TabsTrigger>
         </TabsList>
 
         <TabsContent value="global" className="focus-visible:ring-0">
@@ -44,6 +46,9 @@ export default function ContentPage() {
         </TabsContent>
         <TabsContent value="cta" className="focus-visible:ring-0">
           <CtaForm />
+        </TabsContent>
+        <TabsContent value="legal" className="focus-visible:ring-0">
+          <LegalForm />
         </TabsContent>
       </Tabs>
     </div>

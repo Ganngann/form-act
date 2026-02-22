@@ -43,10 +43,17 @@ export interface HomeCtaConfig {
   buttonSecondary: string;
 }
 
+export interface LegalTextsConfig {
+  mentions: string;
+  cgv: string;
+  privacy: string;
+}
+
 export type SiteConfigKey =
   | 'global_settings'
   | 'home_hero'
   | 'home_promo'
   | 'home_values'
   | 'home_trust'
-  | 'home_cta';
+  | 'home_cta'
+  | 'legal_texts';
