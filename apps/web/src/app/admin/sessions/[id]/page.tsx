@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { AdminLogisticsCard } from '@/components/admin/AdminLogisticsCard';
 import { ParticipantsSummary } from '@/components/admin/ParticipantsSummary';
 import { AttendanceSheetButton } from '@/components/common/AttendanceSheetButton';
+import { AdminHeader } from '@/components/admin/AdminHeader';
 
 async function getSession(id: string) {
     const cookieStore = cookies();
@@ -54,38 +55,21 @@ export default async function SessionDetailPage({ params }: { params: { id: stri
 
     return (
         <div className="space-y-8 max-w-6xl mx-auto pb-20">
-            {/* Header with Breadcrumb */}
-            <div className="space-y-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
-                    <Link href="/admin" className="hover:text-primary transition-colors">Admin</Link>
-                    <span>/</span>
-                    <Link href="/admin/sessions" className="hover:text-primary transition-colors">Sessions</Link>
-                    <span>/</span>
-                    <span className="text-gray-900">Détail</span>
-                </div>
-
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div className="flex items-center gap-4">
-                        <Button variant="outline" size="icon" asChild className="rounded-xl h-10 w-10 border-border bg-white shadow-sm">
-                            <Link href="/admin/sessions"><ArrowLeft className="h-5 w-5" /></Link>
-                        </Button>
-                        <div>
-                            <h1 className="text-3xl font-black tracking-tight text-gray-900">{session.formation.title}</h1>
-                            <div className="flex items-center gap-3 text-muted-foreground font-medium text-sm mt-1">
-                                <span className="flex items-center gap-1">
-                                    <Building2 className="h-3.5 w-3.5" />
-                                    {session.client?.companyName || "Entreprise Inconnue"}
-                                </span>
-                                <span>•</span>
-                                <Badge variant="secondary" className="font-bold text-[10px] tracking-wide uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                                    {session.formation.category?.name || "Général"}
-                                </Badge>
-                            </div>
-                        </div>
-                    </div>
-                    <StatusBadge status={session.status} className="px-4 py-1.5 text-sm rounded-full" />
-                </div>
-            </div>
+            <AdminHeader
+                backLink="/admin/sessions"
+                breadcrumbs={[
+                    { label: "Admin", href: "/admin" },
+                    { label: "Sessions", href: "/admin/sessions" },
+                    { label: "Détail" }
+                ]}
+                title={session.formation.title}
+                description={session.client?.companyName || "Entreprise Inconnue"}
+                statusBadge={<StatusBadge status={session.status} className="px-4 py-1.5 text-sm rounded-full" />}
+            >
+                <Badge variant="secondary" className="font-bold text-[10px] tracking-wide uppercase px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 border-none">
+                    {session.formation.category?.name || "Général"}
+                </Badge>
+            </AdminHeader>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Content (2 cols) */}

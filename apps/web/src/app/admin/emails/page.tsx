@@ -1,11 +1,15 @@
 import { EmailTemplatesManager } from '@/components/admin/emails/EmailTemplatesManager';
+import { AdminHeader } from '@/components/admin/AdminHeader';
 
 export default function EmailsPage() {
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Emails</h2>
-      </div>
+    <div className="space-y-12">
+      <AdminHeader
+        badge="Communication"
+        badgeClassName="bg-violet-50 border-violet-200 text-violet-600"
+        title="Gabarits E-mail"
+        description="Personnalisez les modèles d'e-mail envoyés aux clients et aux formateurs."
+      />
       <EmailTemplatesManager />
     </div>
   );

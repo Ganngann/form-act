@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { AdminTrainerControls } from '@/components/admin/AdminTrainerControls';
 import { Separator } from '@/components/ui/separator';
+import { AdminHeader } from '@/components/admin/AdminHeader';
 
 async function getTrainer(id: string) {
   const cookieStore = cookies();
@@ -28,39 +29,24 @@ export default async function TrainerDetailPage({ params }: { params: { id: stri
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto pb-20 px-4 md:px-8 w-full">
-      {/* Header with Breadcrumb */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
-          <Link href="/admin" className="hover:text-primary transition-colors">Admin</Link>
-          <span>/</span>
-          <Link href="/admin/trainers" className="hover:text-primary transition-colors">Formateurs</Link>
-          <span>/</span>
-          <span className="text-gray-900">Détail</span>
-        </div>
-
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex items-center gap-4">
-            <Button variant="outline" size="icon" asChild className="rounded-xl h-10 w-10 border-border bg-white shadow-sm">
-              <Link href="/admin/trainers"><ArrowLeft className="h-5 w-5" /></Link>
-            </Button>
-            <div>
-              <h1 className="text-3xl font-black tracking-tight text-gray-900">{trainer.firstName} {trainer.lastName}</h1>
-              <div className="flex items-center gap-3 text-muted-foreground font-medium text-sm mt-1">
-                <span className="flex items-center gap-1 italic">
-                  ID: {trainer.id.slice(0, 8)}
-                </span>
-                <span>•</span>
-                <div className="flex items-center gap-1.5">
-                  <div className={`h-2 w-2 rounded-full ${trainer.isActive !== false ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]" : "bg-gray-400"}`} />
-                  <span className={`text-xs font-bold ${trainer.isActive !== false ? "text-green-700" : "text-gray-500"}`}>
-                    {trainer.isActive !== false ? "Compte Actif" : "Compte Désactivé"}
-                  </span>
-                </div>
-              </div>
-            </div>
+      <AdminHeader
+        backLink="/admin/trainers"
+        breadcrumbs={[
+          { label: "Admin", href: "/admin" },
+          { label: "Formateurs", href: "/admin/trainers" },
+          { label: "Détail" }
+        ]}
+        title={`${trainer.firstName} ${trainer.lastName}`}
+        description={`Identifiant unique : ${trainer.id.slice(0, 8)}`}
+        statusBadge={
+          <div className="flex items-center gap-1.5 bg-white/50 backdrop-blur-sm px-3 py-1.5 rounded-full border border-gray-100 shadow-sm">
+            <div className={`h-2 w-2 rounded-full ${trainer.isActive !== false ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]" : "bg-gray-400"}`} />
+            <span className={`text-[10px] font-black uppercase tracking-widest ${trainer.isActive !== false ? "text-green-700" : "text-gray-500"}`}>
+              {trainer.isActive !== false ? "Compte Actif" : "Compte Désactivé"}
+            </span>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content (2 cols) */}

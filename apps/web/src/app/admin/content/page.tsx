@@ -14,6 +14,8 @@ export default function ContentPage() {
   return (
     <div className="flex flex-col gap-8 w-full max-w-4xl">
       <AdminHeader
+        badge="CMS"
+        badgeClassName="bg-purple-50 border-purple-200 text-purple-600"
         title="Gestion du Contenu"
         description="Personnalisez les textes et configurations de la page d'accueil et du site."
       />

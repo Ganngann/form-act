@@ -72,11 +72,16 @@ export function ClientEditForm({ client, auditLogs }: ClientEditFormProps) {
         <div className="space-y-6">
             <AdminHeader
                 backLink="/admin/clients"
+                breadcrumbs={[
+                    { label: "Admin", href: "/admin" },
+                    { label: "Clients", href: "/admin/clients" },
+                    { label: "Fiche Client" }
+                ]}
                 title={client.companyName}
                 badge="Base Installée"
                 badgeClassName="bg-blue-50 border-blue-200 text-blue-600"
             >
-                <Button onClick={() => setIsEditing(!isEditing)} variant={isEditing ? "outline" : "default"}>
+                <Button onClick={() => setIsEditing(!isEditing)} variant={isEditing ? "outline" : "default"} className="rounded-xl font-bold">
                     {isEditing ? "Annuler" : <><Edit2 className="h-4 w-4 mr-2" /> Modifier</>}
                 </Button>
             </AdminHeader>
