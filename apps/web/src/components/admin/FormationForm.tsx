@@ -100,7 +100,6 @@ export function FormationForm({
     })
 
     const isExpertise = watch("isExpertise");
-    const authorizedTrainerIds = watch("authorizedTrainerIds");
 
     useEffect(() => {
         if (initialData?.agreementCodes) {
@@ -334,32 +333,42 @@ export function FormationForm({
                                             <div className="space-y-4 animate-in fade-in zoom-in-95 duration-300">
                                                 <p className="text-xs font-bold text-amber-700 uppercase tracking-widest pl-1">Sélection restrictive</p>
                                                 <ScrollArea className="h-48 rounded-2xl bg-gray-50 border border-gray-100 p-2">
-                                                    <div className="space-y-1">
-                                                        {trainers.map((trainer) => (
-                                                            <div
-                                                                key={trainer.id}
-                                                                className={cn(
-                                                                    "flex items-center gap-3 p-3 rounded-xl transition-all cursor-pointer group",
-                                                                    authorizedTrainerIds?.includes(trainer.id) ? "bg-amber-100/50" : "hover:bg-white hover:shadow-sm"
-                                                                )}
-                                                                onClick={() => {
-                                                                    const current = authorizedTrainerIds || [];
-                                                                    if (current.includes(trainer.id)) {
-                                                                        setValue("authorizedTrainerIds", current.filter(id => id !== trainer.id));
-                                                                    } else {
-                                                                        setValue("authorizedTrainerIds", [...current, trainer.id]);
-                                                                    }
-                                                                }}
-                                                            >
-                                                                <Checkbox
-                                                                    checked={authorizedTrainerIds?.includes(trainer.id)}
-                                                                    onCheckedChange={() => { }}
-                                                                    className="border-amber-300 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
-                                                                />
-                                                                <span className="font-bold text-sm text-gray-700">{trainer.firstName} {trainer.lastName}</span>
+                                                    <Controller
+                                                        control={control}
+                                                        name="authorizedTrainerIds"
+                                                        render={({ field }) => (
+                                                            <div className="space-y-1">
+                                                                {trainers.map((trainer) => (
+                                                                    <div
+                                                                        key={trainer.id}
+                                                                        className={cn(
+                                                                            "flex items-center gap-3 p-3 rounded-xl transition-all group",
+                                                                            field.value?.includes(trainer.id) ? "bg-amber-100/50" : "hover:bg-white hover:shadow-sm"
+                                                                        )}
+                                                                    >
+                                                                        <Checkbox
+                                                                            id={`trainer-${trainer.id}`}
+                                                                            checked={field.value?.includes(trainer.id)}
+                                                                            onCheckedChange={(checked) => {
+                                                                                const current = field.value || [];
+                                                                                const newValue = checked
+                                                                                    ? [...current, trainer.id]
+                                                                                    : current.filter(id => id !== trainer.id);
+                                                                                field.onChange(newValue);
+                                                                            }}
+                                                                            className="border-amber-300 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
+                                                                        />
+                                                                        <Label
+                                                                            htmlFor={`trainer-${trainer.id}`}
+                                                                            className="font-bold text-sm text-gray-700 flex-1 cursor-pointer"
+                                                                        >
+                                                                            {trainer.firstName} {trainer.lastName}
+                                                                        </Label>
+                                                                    </div>
+                                                                ))}
                                                             </div>
-                                                        ))}
-                                                    </div>
+                                                        )}
+                                                    />
                                                 </ScrollArea>
                                             </div>
                                         )}
