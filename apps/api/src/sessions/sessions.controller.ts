@@ -10,6 +10,7 @@ import {
   UploadedFile,
   UseGuards,
   Request,
+  Res,
   ForbiddenException,
   BadRequestException,
 } from "@nestjs/common";
@@ -25,11 +26,15 @@ import {
   MAX_FILE_SIZE,
   removeFile,
 } from "../common/file-upload.utils";
+import { PdfService } from "../files/pdf.service";
 
 @Controller("sessions")
 @UseGuards(AuthGuard("jwt"))
 export class SessionsController {
-  constructor(private readonly sessionsService: SessionsService) {}
+  constructor(
+    private readonly sessionsService: SessionsService,
+    private readonly pdfService: PdfService,
+  ) {}
 
   @Get("me")
   async findMySessions(@Request() req) {
@@ -65,6 +70,49 @@ export class SessionsController {
       return sessionWithStatus;
 
     throw new ForbiddenException("Access denied");
+  }
+
+  @Get(":id/attendance-sheet")
+  async downloadAttendanceSheet(
+    @Param("id") id: string,
+    @Request() req,
+    @Res() res,
+  ) {
+    const session = await this.sessionsService.findOne(id);
+
+    // Permission Check
+    if (req.user.role === "ADMIN") {
+      // OK
+    } else if (req.user.role === "TRAINER") {
+      if (session.trainer?.userId !== req.user.userId) {
+        throw new ForbiddenException("Access denied");
+      }
+    } else {
+      throw new ForbiddenException("Access denied");
+    }
+
+    // Status Check
+    const allowedStatuses = [
+      "CONFIRMED",
+      "PROOF_RECEIVED",
+      "INVOICED",
+      "ARCHIVED",
+    ];
+    if (!allowedStatuses.includes(session.status)) {
+      throw new ForbiddenException(
+        "Attendance sheet is not available for this session status",
+      );
+    }
+
+    const pdfBuffer = await this.pdfService.generateAttendanceSheet(session);
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="emargement-${session.formation.title}-${session.date}.pdf"`,
+      "Content-Length": pdfBuffer.length,
+    });
+
+    res.send(pdfBuffer);
   }
 
   @Get()

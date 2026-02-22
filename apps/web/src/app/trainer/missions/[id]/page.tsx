@@ -3,6 +3,7 @@ import { API_URL } from '@/lib/config';
 import { Participant } from '@/types/formation';
 
 import { ProofUploadWidget } from '@/components/trainer/proof-upload-widget';
+import { AttendanceSheetButton } from '@/components/common/AttendanceSheetButton';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
@@ -208,11 +209,20 @@ export default async function MissionDetailsPage({ params }: { params: { id: str
 
                         {/* Participants List */}
                         <Card className="rounded-[2rem] border-border shadow-sm bg-white overflow-hidden">
-                            <CardHeader className="p-6 pb-4 border-b border-border/50 flex flex-row items-center justify-between">
-                                <CardTitle className="text-lg font-black tracking-tight flex items-center gap-2">
-                                    <Users className="h-5 w-5 text-primary" /> Participants
-                                </CardTitle>
-                                <Badge variant="secondary" className="font-bold">{participants.length}</Badge>
+                            <CardHeader className="p-6 pb-4 border-b border-border/50 flex flex-col gap-4">
+                                <div className="flex flex-row items-center justify-between w-full">
+                                    <CardTitle className="text-lg font-black tracking-tight flex items-center gap-2">
+                                        <Users className="h-5 w-5 text-primary" /> Participants
+                                    </CardTitle>
+                                    <Badge variant="secondary" className="font-bold">{participants.length}</Badge>
+                                </div>
+                                <AttendanceSheetButton
+                                    sessionId={session.id}
+                                    status={session.status}
+                                    className="w-full"
+                                    variant="outline"
+                                    label="Télécharger Émargement (PDF)"
+                                />
                             </CardHeader>
                             <CardContent className="p-6">
                                 {participants.length > 0 ? (

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SessionsController } from "./sessions.controller";
 import { SessionsService } from "./sessions.service";
+import { PdfService } from "../files/pdf.service";
 import { ForbiddenException, BadRequestException } from "@nestjs/common";
 
 jest.mock("../common/file-upload.utils", () => ({
@@ -12,6 +13,7 @@ import { removeFile } from "../common/file-upload.utils";
 describe("SessionsController", () => {
   let controller: SessionsController;
   let service: SessionsService;
+  let pdfService: PdfService;
 
   const mockSessionsService = {
     findOne: jest.fn(),
@@ -28,6 +30,10 @@ describe("SessionsController", () => {
     sendLogisticsReminder: jest.fn(),
   };
 
+  const mockPdfService = {
+    generateAttendanceSheet: jest.fn(),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
@@ -37,11 +43,16 @@ describe("SessionsController", () => {
           provide: SessionsService,
           useValue: mockSessionsService,
         },
+        {
+          provide: PdfService,
+          useValue: mockPdfService,
+        },
       ],
     }).compile();
 
     controller = module.get<SessionsController>(SessionsController);
     service = module.get<SessionsService>(SessionsService);
+    pdfService = module.get<PdfService>(PdfService);
   });
 
   it("should be defined", () => {
@@ -470,6 +481,99 @@ describe("SessionsController", () => {
       await expect(
         controller.remindLogistics("1", { user: { role: "CLIENT" } }),
       ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("downloadAttendanceSheet", () => {
+    const mockRes = {
+      set: jest.fn(),
+      send: jest.fn(),
+    };
+
+    it("should deny access to CLIENT", async () => {
+      mockSessionsService.findOne.mockResolvedValue({});
+      await expect(
+        controller.downloadAttendanceSheet(
+          "1",
+          { user: { role: "CLIENT" } },
+          mockRes,
+        ),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it("should deny access to TRAINER if not assigned", async () => {
+      mockSessionsService.findOne.mockResolvedValue({
+        trainer: { userId: "other" },
+      });
+      await expect(
+        controller.downloadAttendanceSheet(
+          "1",
+          { user: { role: "TRAINER", userId: "me" } },
+          mockRes,
+        ),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it("should deny access if status is not valid", async () => {
+      mockSessionsService.findOne.mockResolvedValue({
+        status: "PENDING_APPROVAL",
+      });
+      await expect(
+        controller.downloadAttendanceSheet(
+          "1",
+          { user: { role: "ADMIN" } },
+          mockRes,
+        ),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it("should allow ADMIN and generate PDF if status is valid", async () => {
+      const mockSession = {
+        status: "CONFIRMED",
+        formation: { title: "Test" },
+        date: new Date(),
+      };
+      mockSessionsService.findOne.mockResolvedValue(mockSession);
+      mockPdfService.generateAttendanceSheet.mockResolvedValue(
+        Buffer.from("pdf"),
+      );
+
+      await controller.downloadAttendanceSheet(
+        "1",
+        { user: { role: "ADMIN" } },
+        mockRes,
+      );
+
+      expect(pdfService.generateAttendanceSheet).toHaveBeenCalledWith(
+        mockSession,
+      );
+      expect(mockRes.set).toHaveBeenCalled();
+      expect(mockRes.send).toHaveBeenCalledWith(Buffer.from("pdf"));
+    });
+
+    it("should allow TRAINER and generate PDF if assigned and status is valid", async () => {
+      const mockSession = {
+        status: "CONFIRMED",
+        formation: { title: "Test" },
+        date: new Date(),
+        trainer: { userId: "me" },
+      };
+      mockSessionsService.findOne.mockResolvedValue(mockSession);
+      mockPdfService.generateAttendanceSheet.mockResolvedValue(
+        Buffer.from("pdf"),
+      );
+
+      await controller.downloadAttendanceSheet(
+        "1",
+        { user: { role: "TRAINER", userId: "me" } },
+        mockRes,
+      );
+
+      expect(pdfService.generateAttendanceSheet).toHaveBeenCalledWith(
+        mockSession,
+      );
+      expect(mockRes.set).toHaveBeenCalled();
+      expect(mockRes.send).toHaveBeenCalledWith(Buffer.from("pdf"));
     });
   });
 });
