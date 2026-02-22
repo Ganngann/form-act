@@ -38,6 +38,11 @@ describe('getComputedStatus', () => {
     expect(getComputedStatus(session)).toBe('PENDING');
   });
 
+  it('should return PENDING_APPROVAL if db status is PENDING_APPROVAL', () => {
+    const session = { ...baseSession, status: 'PENDING_APPROVAL' };
+    expect(getComputedStatus(session)).toBe('PENDING_APPROVAL');
+  });
+
   describe('Past Sessions', () => {
     const pastSession = {
       ...baseSession,

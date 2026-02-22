@@ -221,9 +221,9 @@ async function main() {
     });
   };
 
-  // --- 1. DEMANDES (PENDING) - Prévues pour dans 3-4 mois ---
+  // --- 1. DEMANDES (PENDING_APPROVAL) - Prévues pour dans 3-4 mois ---
   for (let i = 0; i < 4; i++) {
-    await createSession(90 + (i * 7), 'PENDING', { trainerId: null });
+    await createSession(90 + (i * 7), 'PENDING_APPROVAL', { trainerId: null });
   }
 
   // --- 2. ASSIGNATIONS (CONFIRMED sans Formateur) - Prévues pour dans 2 mois ---

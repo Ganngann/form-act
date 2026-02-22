@@ -2,6 +2,7 @@ import { differenceInDays, isBefore, isPast, differenceInHours } from "date-fns"
 
 export type SessionStatus =
   | "PENDING"
+  | "PENDING_APPROVAL"
   | "CONFIRMED"
   | "CANCELLED"
   | "LOGISTICS_MISSING" // > 48h after booking, logistics empty
@@ -41,10 +42,11 @@ export interface SessionData {
 export function getComputedStatus(session: SessionData): SessionStatus {
   const now = new Date();
   const sessionDate = new Date(session.date);
-  const dbStatus = session.status as "PENDING" | "CONFIRMED" | "CANCELLED";
+  const dbStatus = session.status;
 
   if (dbStatus === "CANCELLED") return "CANCELLED";
   if (dbStatus === "PENDING") return "PENDING";
+  if (dbStatus === "PENDING_APPROVAL") return "PENDING_APPROVAL";
 
   // From here, session is CONFIRMED (or other positive status)
 
@@ -97,6 +99,7 @@ export function getComputedStatus(session: SessionData): SessionStatus {
 
 export const STATUS_COLORS: Record<SessionStatus, string> = {
   PENDING: "bg-orange-100 text-orange-800 border-orange-200",
+  PENDING_APPROVAL: "bg-amber-100 text-amber-800 border-amber-200",
   CONFIRMED: "bg-blue-100 text-blue-800 border-blue-200",
   CANCELLED: "bg-red-100 text-red-800 border-red-200 line-through opacity-50",
   LOGISTICS_MISSING: "bg-red-50 text-red-700 border-red-200 animate-pulse",
@@ -109,6 +112,7 @@ export const STATUS_COLORS: Record<SessionStatus, string> = {
 
 export const STATUS_LABELS: Record<SessionStatus, string> = {
   PENDING: "En attente",
+  PENDING_APPROVAL: "En attente d'approbation",
   CONFIRMED: "Confirmé",
   CANCELLED: "Annulé",
   LOGISTICS_MISSING: "Logistique manquante",
