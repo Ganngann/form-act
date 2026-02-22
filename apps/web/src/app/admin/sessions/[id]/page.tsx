@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { AdminLogisticsCard } from '@/components/admin/AdminLogisticsCard';
 import { ParticipantsSummary } from '@/components/admin/ParticipantsSummary';
+import { AttendanceSheetButton } from '@/components/common/AttendanceSheetButton';
 
 async function getSession(id: string) {
     const cookieStore = cookies();
@@ -176,10 +177,17 @@ export default async function SessionDetailPage({ params }: { params: { id: stri
 
                         {/* Participants */}
                         <Card className="rounded-[2rem] border-transparent shadow-sm bg-white h-full">
-                            <CardHeader className="pb-2">
+                            <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
                                 <CardTitle className="text-lg font-black flex items-center gap-2">
                                     <Users className="h-5 w-5 text-blue-600" /> Participants
                                 </CardTitle>
+                                <AttendanceSheetButton
+                                    sessionId={session.id}
+                                    status={session.status}
+                                    variant="outline"
+                                    size="sm"
+                                    label="Télécharger"
+                                />
                             </CardHeader>
                             <CardContent className="pt-4">
                                 <ParticipantsSummary participants={session.participants} />
