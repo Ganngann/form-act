@@ -2,22 +2,43 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Calendar, Users, Briefcase, BookOpen, Tags, FileText, Settings, Archive, Palette, Mail } from 'lucide-react';
+import { LayoutDashboard, Calendar, Users, Briefcase, BookOpen, Tags, Settings, Archive, Palette, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 
-const navItems = [
+interface NavChild {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+}
+
+interface NavItem {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+  exact?: boolean;
+  children?: NavChild[];
+}
+
+const navItems: NavItem[] = [
   { href: '/admin', label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: '/admin/content', label: "Contenu", icon: Palette, exact: false },
-  { href: '/admin/emails', label: "Emails", icon: Mail, exact: false },
-  { href: '/admin/sessions', label: "Sessions", icon: Calendar, exact: true },
-  { href: '/admin/sessions/archives', label: "Archives", icon: Archive, exact: false },
-  { href: '/admin/calendar', label: "Calendrier", icon: Calendar, exact: false },
-  { href: '/admin/trainers', label: "Formateurs", icon: Users, exact: false },
-  { href: '/admin/clients', label: "Clients", icon: Briefcase, exact: false },
-  { href: '/admin/formations', label: "Formations", icon: BookOpen, exact: false },
-  { href: '/admin/categories', label: "Catégories", icon: Tags, exact: false },
-  { href: '/admin/settings', label: "Paramètres", icon: Settings, exact: false },
+  { href: '/admin/content', label: "Contenu", icon: Palette },
+  { href: '/admin/emails', label: "Emails", icon: Mail },
+  {
+    href: '/admin/sessions',
+    label: "Sessions",
+    icon: Calendar,
+    exact: true,
+    children: [
+      { href: '/admin/sessions/archives', label: "Archives", icon: Archive },
+    ]
+  },
+  { href: '/admin/calendar', label: "Calendrier", icon: Calendar },
+  { href: '/admin/trainers', label: "Formateurs", icon: Users },
+  { href: '/admin/clients', label: "Clients", icon: Briefcase },
+  { href: '/admin/formations', label: "Formations", icon: BookOpen },
+  { href: '/admin/categories', label: "Catégories", icon: Tags },
+  { href: '/admin/settings', label: "Paramètres", icon: Settings },
 ];
 
 export function Sidebar() {
@@ -38,32 +59,64 @@ export function Sidebar() {
       <nav className="flex flex-col gap-1 pr-4">
         {navItems.map((item) => {
           const Icon = item.icon;
+          // A parent is active if we're on its exact path, or on a sub-path
+          // that is NOT one of its children (those will highlight themselves)
+          const isChildActive = item.children?.some(c => pathname.startsWith(c.href));
           const isActive = item.exact
             ? pathname === item.href
-            : pathname.startsWith(item.href);
+            : !isChildActive && pathname.startsWith(item.href);
 
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-4 px-4 py-3 rounded-xl font-bold transition-all duration-200 group relative overflow-hidden",
-                isActive
-                  ? "bg-white text-primary shadow-sm border border-border/50"
-                  : "text-muted-foreground hover:text-primary hover:bg-white/50 border border-transparent"
+            <div key={item.href}>
+              <Link
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-4 px-4 py-3 rounded-xl font-bold transition-all duration-200 group relative overflow-hidden",
+                  isActive
+                    ? "bg-white text-primary shadow-sm border border-border/50"
+                    : "text-muted-foreground hover:text-primary hover:bg-white/50 border border-transparent"
+                )}
+              >
+                <div className={cn(
+                  "h-8 w-8 rounded-lg flex items-center justify-center transition-colors",
+                  isActive ? "bg-primary/10 text-primary" : "bg-transparent group-hover:bg-primary/5"
+                )}>
+                  <Icon className="h-4 w-4" />
+                </div>
+                <span className="text-sm font-bold">{item.label}</span>
+                {isActive && (
+                  <div className="absolute inset-y-0 left-0 w-1 bg-primary rounded-r-full" />
+                )}
+              </Link>
+
+              {/* Sub-items */}
+              {item.children && (
+                <div className="ml-6 pl-4 border-l-2 border-border/40 mt-0.5 mb-1 flex flex-col gap-0.5">
+                  {item.children.map((child) => {
+                    const ChildIcon = child.icon;
+                    const isChildItemActive = pathname.startsWith(child.href);
+                    return (
+                      <Link
+                        key={child.href}
+                        href={child.href}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 group",
+                          isChildItemActive
+                            ? "bg-white text-primary shadow-sm border border-border/50"
+                            : "text-muted-foreground hover:text-primary hover:bg-white/50"
+                        )}
+                      >
+                        <ChildIcon className={cn(
+                          "h-3.5 w-3.5 shrink-0 transition-colors",
+                          isChildItemActive ? "text-primary" : "text-muted-foreground group-hover:text-primary"
+                        )} />
+                        <span>{child.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
               )}
-            >
-              <div className={cn(
-                "h-8 w-8 rounded-lg flex items-center justify-center transition-colors",
-                isActive ? "bg-primary/10 text-primary" : "bg-transparent group-hover:bg-primary/5"
-              )}>
-                <Icon className="h-4 w-4" />
-              </div>
-              <span className="text-sm font-bold">{item.label}</span>
-              {isActive && (
-                <div className="absolute inset-y-0 left-0 w-1 bg-primary rounded-r-full" />
-              )}
-            </Link>
+            </div>
           );
         })}
       </nav>
