@@ -32,9 +32,9 @@ Ce sprint vise à corriger les inconsistances d'interface et d'architecture iden
     *   Si `statusBadge` est présent, l'afficher à droite du titre ou sur la même ligne selon l'espace disponible (responsive).
 
 *Critères d'Acceptation (AC) :*
-- [ ] Le composant accepte et affiche correctement un tableau de fil d'Ariane.
-- [ ] Le composant accepte et positionne correctement un badge de statut à côté du titre.
-- [ ] Les pages existantes utilisant `AdminHeader` (Dashboard, Clients Liste) ne sont pas cassées (rétrocompatibilité).
+- [x] Le composant accepte et affiche correctement un tableau de fil d'Ariane.
+- [x] Le composant accepte et positionne correctement un badge de statut à côté du titre.
+- [x] Les pages existantes utilisant `AdminHeader` (Dashboard, Clients Liste) ne sont pas cassées (rétrocompatibilité).
 
 ### US-02 : Migration de la Page Détail Client vers un Server Component
 **Objectif :** Corriger l'architecture de la page `/admin/clients/[id]` qui est actuellement un Client Component chargeant ses données via `useEffect`, ce qui est inconsistant avec le reste de l'app.
@@ -54,9 +54,9 @@ Ce sprint vise à corriger les inconsistances d'interface et d'architecture iden
     *   Parser le JSON `auditLog` côté serveur (dans la page) et passer le tableau typé au composant d'affichage (qui peut rester un composant UI simple).
 
 *Critères d'Acceptation (AC) :*
-- [ ] La page `/admin/clients/[id]` est un Server Component (`console.log` s'affiche dans le terminal serveur).
-- [ ] Aucun "Flash of Loading Content" n'est visible pour les données initiales (le HTML arrive pré-rempli).
-- [ ] La modification et la sauvegarde des données client fonctionnent toujours.
+- [x] La page `/admin/clients/[id]` est un Server Component (`console.log` s'affiche dans le terminal serveur).
+- [x] Aucun "Flash of Loading Content" n'est visible pour les données initiales (le HTML arrive pré-rempli).
+- [x] La modification et la sauvegarde des données client fonctionnent toujours.
 
 ### US-03 : Unification des En-têtes de Page
 **Objectif :** Supprimer tout le code de header dupliqué/custom dans les pages de détail et utiliser le nouveau `AdminHeader` standardisé (dépend de US-01).
@@ -84,9 +84,9 @@ Ce sprint vise à corriger les inconsistances d'interface et d'architecture iden
 2.  Supprimer les composants UI "jetables" ou les styles inline qui servaient à construire ces anciens headers.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Toutes les pages citées utilisent `AdminHeader`.
-- [ ] L'apparence visuelle (titres, alignements) est strictement identique d'une page à l'autre.
-- [ ] La navigation (fil d'Ariane + bouton retour) est fonctionnelle partout.
+- [x] Toutes les pages citées utilisent `AdminHeader`.
+- [x] L'apparence visuelle (titres, alignements) est strictement identique d'une page à l'autre.
+- [x] La navigation (fil d'Ariane + bouton retour) est fonctionnelle partout.
 
 ### US-04 : Standardisation des Tableaux de Données
 **Objectif :** Remplacer les implémentations hétérogènes de tableaux (tables HTML natives avec classes Tailwind custom) par les composants `shadcn/ui` (`Table`, `TableHeader`, `TableRow`, `TableCell`) pour assurer une cohérence visuelle avec la page Clients.
@@ -102,8 +102,8 @@ Ce sprint vise à corriger les inconsistances d'interface et d'architecture iden
 3.  Vérifier que les espacements (padding), les alignements de texte et les couleurs de bordures correspondent exactement au standard défini dans la page `Clients`.
 
 *Critères d'Acceptation (AC) :*
-- [ ] Tous les tableaux de l'admin ont le même look & feel (hauteur de ligne, font-weight des headers, hover effects).
-- [ ] Le code est simplifié en utilisant les composants UI partagés plutôt que des classes CSS répétées.
+- [x] Tous les tableaux de l'admin ont le même look & feel (hauteur de ligne, font-weight des headers, hover effects).
+- [x] Le code est simplifié en utilisant les composants UI partagés plutôt que des classes CSS répétées.
 
 ---
 
@@ -174,7 +174,7 @@ Ce sprint vise à corriger les inconsistances d'interface et d'architecture iden
 - **1. Configuration Globale (Header/Footer)**
     - [x] Identité : Nom du site, Logo, Favicon.
     - [x] Coordonnées : Email, Téléphone, Adresse (affichés dans le Footer).
-    - [ ] Textes Légaux : Mentions Légales, CGV, Confidentialité (Pages dédiées).
+    - [x] Textes Légaux : Mentions Légales, CGV, Confidentialité (Pages dédiées).
 - **2. Edition Page Accueil (Hero, Promo, Arguments, Preuve, CTA)**
     - [x] Création des formulaires d'édition pour chaque bloc.
     - [x] Persistance en base.
@@ -199,21 +199,21 @@ Ce sprint vise à corriger les inconsistances d'interface et d'architecture iden
 
 ### Bug-10 : Admin - Erreur 500 lors de l'envoi d'une offre
 **Symptôme :** Erreur "Internal Server Error" (500) au clic sur "Envoyer l'offre au client".
-- [ ] Analyser les logs backend (Cause probable : calcul `priceTtc` ou `EmailService`).
-- [ ] Corriger la gestion des types Decimal/Number dans `sendOffer`.
-- [ ] Ajouter un feedback d'erreur explicite côté UI.
+- [x] Analyser les logs backend (Cause probable : calcul `priceTtc` ou `EmailService`).
+- [x] Corriger la gestion des types Decimal/Number dans `sendOffer`.
+- [x] Ajouter un feedback d'erreur explicite côté UI.
 
 ### Bug-11 : Admin - Dysfonctionnement du filtre "Demandes"
 **Symptôme :** Le clic sur le bloc Bento "Demandes" (status=PENDING) n'affiche pas le bon libellé de vue et ne filtre pas correctement les sessions.
-- [ ] Harmoniser le code de statut entre le frontend (`PENDING`) et le backend (`PENDING_APPROVAL`).
-- [ ] Mettre à jour `SessionsListPage` pour qu'il reconnaisse le paramètre `status` dans le libellé de la vue active.
-- [ ] Vérifier que les statistiques du Bento correspondent bien aux filtres appliqués.
+- [x] Harmoniser le code de statut entre le frontend (`PENDING`) et le backend (`PENDING_APPROVAL`).
+- [x] Mettre à jour `SessionsListPage` pour qu'il reconnaisse le paramètre `status` dans le libellé de la vue active.
+- [x] Vérifier que les statistiques du Bento correspondent bien aux filtres appliqués.
 
 ### Bug-12 : Admin - Perte de la catégorie lors de l'édition d'une formation
 **Symptôme :** Dans la liste des formations, la catégorie est bien affichée. Cependant, lors de l'ouverture du formulaire de modification, le champ "Catégorie" revient à "Sélectionner..." (vide).
-- [ ] Vérifier le mapping du champ `categoryId` dans le `defaultValue` du formulaire `FormationForm`.
-- [ ] S'assurer que la liste des catégories est chargée avant l'initialisation des valeurs du formulaire.
-- [ ] Vérifier si le composant `Select` (UI) reçoit bien la valeur initiale.
+- [x] Vérifier le mapping du champ `categoryId` dans le `defaultValue` du formulaire `FormationForm`.
+- [x] S'assurer que la liste des catégories est chargée avant l'initialisation des valeurs du formulaire.
+- [x] Vérifier si le composant `Select` (UI) reçoit bien la valeur initiale.
 
 ---
 
@@ -223,7 +223,7 @@ Ce sprint vise à corriger les inconsistances d'interface et d'architecture iden
 **En tant que** Administrateur,
 **Je veux** pouvoir éditer les pages de textes légaux,
 **Afin de** respecter les obligations juridiques.
-- [ ] Textes Légaux : Mentions Légales, CGV, Confidentialité (Gestion des pages dédiées via CMS).
+- [x] Textes Légaux : Mentions Légales, CGV, Confidentialité (Gestion des pages dédiées via CMS).
 
 ### US-10 : Téléchargement Liste Participants (Admin/Formateur)
 **Référence :** Demande Client
@@ -231,10 +231,10 @@ Ce sprint vise à corriger les inconsistances d'interface et d'architecture iden
 **Je veux** télécharger la liste des participants formattée (Liste d'émargement),
 **Afin de** la faire signer le jour J ou d'en disposer pour gestion.
 *Critères d'Acceptation (AC) :*
-- [ ] Bouton "Télécharger Liste Émargement (PDF)" sur le détail de la mission (Espace Formateur).
-- [ ] Bouton "Télécharger Liste" sur la fiche session (Espace Admin).
-- [ ] Le PDF doit contenir : Infos Session, Liste Noms/Prénoms, Colonne Signature.
-- [ ] Accessible dès que la session est confirmée.
+- [x] Bouton "Télécharger Liste Émargement (PDF)" sur le détail de la mission (Espace Formateur).
+- [x] Bouton "Télécharger Liste" sur la fiche session (Espace Admin).
+- [x] Le PDF doit contenir : Infos Session, Liste Noms/Prénoms, Colonne Signature.
+- [x] Accessible dès que la session est confirmée.
 
 ### US-12 : Admin - Désactivation Formateur
 **Référence :** Demande Client
@@ -242,10 +242,10 @@ Ce sprint vise à corriger les inconsistances d'interface et d'architecture iden
 **Je veux** désactiver un formateur qui ne collabore plus avec nous,
 **Afin de** l'exclure des nouvelles assignations et bloquer son accès, sans perdre l'historique.
 *Critères d'Acceptation (AC) :*
-- [ ] Toggle "Actif / Inactif" sur la fiche formateur.
+- [x] Toggle "Actif / Inactif" sur la fiche formateur.
 - [ ] Si Inactif : Impossible de se connecter.
 - [ ] Si Inactif : Exclu des résultats de recherche pour les nouvelles sessions.
-- [ ] Si Inactif : Conservé dans l'historique des sessions passées.
+- [x] Si Inactif : Conservé dans l'historique des sessions passées.
 
 ### US-15 : Admin - Édition Textes Emails (CMS)
 **Référence :** Demande Client
@@ -253,15 +253,15 @@ Ce sprint vise à corriger les inconsistances d'interface et d'architecture iden
 **Je veux** modifier le contenu des emails automatiques (Offre, Validation, Relance),
 **Afin de** personnaliser ma communication sans développeur.
 *Critères d'Acceptation (AC) :*
-- [ ] Section "Modèles d'Emails" dans l'admin.
-- [ ] Liste des templates editables (Sujet + Corps).
-- [ ] Support des variables dynamiques (ex: `{{client_name}}`).
+- [x] Section "Modèles d'Emails" dans l'admin.
+- [x] Liste des templates editables (Sujet + Corps).
+- [x] Support des variables dynamiques (ex: `{{client_name}}`).
 
 ### Tech-02 : UI - Standardisation Header Admin
 **But :** Harmoniser les en-têtes des pages d'administration.
-- [ ] Créer un composant réutilisable `AdminHeader`.
-- [ ] Props : `badge`, `title`, `description`, `backButton`, `children` (actions).
-- [ ] Remplacer les en-têtes "en dur" dans les pages Admin.
+- [x] Créer un composant réutilisable `AdminHeader`.
+- [x] Props : `badge`, `title`, `description`, `backButton`, `children` (actions).
+- [x] Remplacer les en-têtes "en dur" dans les pages Admin.
 
 ---
 
