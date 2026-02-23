@@ -62,13 +62,14 @@ vi.mock("@radix-ui/react-switch", () => ({
 }));
 
 vi.mock("@/components/ui/checkbox", () => ({
-  Checkbox: ({ checked, onCheckedChange }: any) => (
+  Checkbox: ({ checked, onCheckedChange, ...props }: any) => (
     <input
       type="checkbox"
       checked={checked || false}
       onChange={(e) => onCheckedChange(e.target.checked)}
       role="checkbox"
       data-state={checked ? "checked" : "unchecked"}
+      {...props}
     />
   ),
 }));
