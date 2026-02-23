@@ -38,6 +38,9 @@ export class LoginThrottlerGuard implements CanActivate {
     if (record) {
       if (now > record.expiresAt) {
         // Expired, reset
+        // Security Fix: Delete and re-set to move the entry to the end of the Map.
+        // This ensures the Map remains sorted by insertion/update time, allowing O(1) cleanup.
+        LoginThrottlerGuard.storage.delete(ip);
         LoginThrottlerGuard.storage.set(ip, {
           count: 1,
           expiresAt: now + this.TTL,
@@ -73,6 +76,11 @@ export class LoginThrottlerGuard implements CanActivate {
     for (const [key, value] of LoginThrottlerGuard.storage.entries()) {
       if (now > value.expiresAt) {
         LoginThrottlerGuard.storage.delete(key);
+      } else {
+        // Security Fix: Since Map iterates in insertion order and we re-insert on update,
+        // encountering a non-expired entry means all subsequent entries are also valid (newer).
+        // This stops the iteration early, preventing DoS attacks with large Maps.
+        break;
       }
     }
   }
