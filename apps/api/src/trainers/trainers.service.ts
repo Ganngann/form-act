@@ -259,7 +259,15 @@ export class TrainersService {
       include: {
         formation: true,
         client: {
-          include: { user: true },
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                name: true,
+              },
+            },
+          },
         },
       },
       orderBy: {

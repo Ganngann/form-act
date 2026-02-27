@@ -36,8 +36,14 @@ export class TrainersController {
     return this.trainersService.getAvailability(id, month);
   }
 
+  @UseGuards(AuthGuard("jwt"))
   @Get(":id/missions")
-  async getMissions(@Param("id") id: string) {
+  async getMissions(@Param("id") id: string, @Request() req) {
+    const trainer = await this.trainersService.findOne(id);
+    if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
+      throw new ForbiddenException("Access denied");
+    }
+
     return this.trainersService.getMissions(id);
   }
 
