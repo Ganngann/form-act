@@ -187,7 +187,24 @@ describe("TrainersService", () => {
   describe("getMissions", () => {
     it("should return missions", async () => {
       await service.getMissions("t1");
-      expect(mockPrismaService.session.findMany).toHaveBeenCalled();
+      expect(mockPrismaService.session.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ trainerId: "t1" }),
+          include: expect.objectContaining({
+            client: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    email: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          }),
+        }),
+      );
     });
   });
 

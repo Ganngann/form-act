@@ -43,9 +43,29 @@ describe("TrainersController", () => {
   });
 
   describe("getMissions", () => {
-    it("should call service", async () => {
-      await controller.getMissions("1");
+    it("should allow Owner", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u1" });
+      await controller.getMissions("1", {
+        user: { role: "TRAINER", userId: "u1" },
+      });
       expect(service.getMissions).toHaveBeenCalledWith("1");
+    });
+
+    it("should allow ADMIN", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u1" });
+      await controller.getMissions("1", {
+        user: { role: "ADMIN", userId: "u2" },
+      });
+      expect(service.getMissions).toHaveBeenCalledWith("1");
+    });
+
+    it("should deny others", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u1" });
+      await expect(
+        controller.getMissions("1", {
+          user: { role: "TRAINER", userId: "u2" },
+        }),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 
