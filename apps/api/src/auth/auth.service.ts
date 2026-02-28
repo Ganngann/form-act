@@ -57,7 +57,10 @@ export class AuthService {
     email: string,
     pass: string,
   ): Promise<Omit<User, "password"> | null> {
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: { formateur: { select: { isActive: true } } }
+    });
 
     // Mitigate timing attack: Always compare password, even if user not found.
     const passwordToCompare =
@@ -65,8 +68,12 @@ export class AuthService {
     const isMatch = await bcrypt.compare(pass, passwordToCompare);
 
     if (user && isMatch && user.password) {
+      if (user.role === "TRAINER" && user.formateur && user.formateur.isActive === false) {
+        throw new UnauthorizedException("Ce compte a été désactivé");
+      }
+
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = user;
+      const { password, formateur, ...result } = user;
       return result;
     }
     return null;
