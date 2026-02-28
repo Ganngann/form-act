@@ -145,6 +145,10 @@ describe("AuthService", () => {
         .mockImplementation(() => Promise.resolve(true));
 
       const result = await service.validateUser("test@example.com", "pass");
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { email: "test@example.com" },
+        include: { formateur: { select: { isActive: true } } }
+      });
       expect(result).toEqual({ id: "1", email: "test@example.com" });
     });
 
@@ -167,6 +171,21 @@ describe("AuthService", () => {
 
       const result = await service.validateUser("test@example.com", "pass");
       expect(result).toBeNull();
+    });
+
+    it("should throw UnauthorizedException if trainer is inactive", async () => {
+      const mockUser = {
+        id: "1",
+        email: "test@example.com",
+        password: "hashed",
+        role: "TRAINER",
+        formateur: { isActive: false },
+      } as any;
+      jest.spyOn(prisma.user, "findUnique").mockResolvedValue(mockUser);
+      jest.spyOn(bcrypt, "compare").mockImplementation(() => Promise.resolve(true));
+
+      await expect(service.validateUser("test@example.com", "pass")).rejects.toThrow(UnauthorizedException);
+      await expect(service.validateUser("test@example.com", "pass")).rejects.toThrow("Ce compte a été désactivé");
     });
   });
 
