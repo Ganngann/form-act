@@ -22,3 +22,7 @@
 **Vulnerability:** The application relied on `req.ip` for security controls (like rate limiting) but did not enable `trust proxy` in `main.ts`, meaning the IP would always be the load balancer's IP in production.
 **Learning:** NestJS/Express defaults to `trust proxy: false`. Without this, any IP-based logic (Rate Limiting, IP Whitelisting) is ineffective behind a proxy and can lead to self-DoS (blocking all users).
 **Prevention:** Always verify `app.set('trust proxy', 1)` (or appropriate value) in `main.ts` for any application intended to run behind a reverse proxy.
+## 2025-03-01 - Missing Authentication on Admin Controller
+**Vulnerability:** The `AdminTrainersController` in `apps/api` was missing `@UseGuards(AuthGuard('jwt'), RolesGuard)` and `@Roles('ADMIN')`, exposing admin trainer routes (create, update, delete) to unauthenticated users.
+**Learning:** Controllers prefixed with `admin/` are not automatically protected by any global guard in this project.
+**Prevention:** Always explicitly decorate `admin/` controllers with authentication and role-based authorization guards. Check for global guard absence.
