@@ -22,3 +22,10 @@
 **Vulnerability:** The application relied on `req.ip` for security controls (like rate limiting) but did not enable `trust proxy` in `main.ts`, meaning the IP would always be the load balancer's IP in production.
 **Learning:** NestJS/Express defaults to `trust proxy: false`. Without this, any IP-based logic (Rate Limiting, IP Whitelisting) is ineffective behind a proxy and can lead to self-DoS (blocking all users).
 **Prevention:** Always verify `app.set('trust proxy', 1)` (or appropriate value) in `main.ts` for any application intended to run behind a reverse proxy.
+
+## 2025-06-21 - Unprotected Admin Endpoints
+**Vulnerability:** The `AdminTrainersController` in the NestJS API was completely unprotected, lacking both authentication (`AuthGuard`) and authorization (`RolesGuard`).
+**Learning:** In NestJS, controllers are publicly accessible by default unless specifically decorated with `@UseGuards()`. Adding new admin controllers without copying the security decorators from existing ones immediately exposes administrative functions to the internet.
+**Prevention:**
+1. Always implement security unit tests using `Reflector` to assert that `__guards__` and `roles` metadata are present on all classes/methods intended to be secure.
+2. Consider implementing a global guard or a base `AdminController` class that automatically enforces admin-level authentication to prevent developer oversight on new endpoints.
