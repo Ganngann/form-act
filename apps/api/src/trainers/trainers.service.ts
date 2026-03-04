@@ -61,7 +61,7 @@ export class TrainersService {
   }
 
   async create(data: CreateTrainerDto) {
-    const tempPassword = "password123";
+    const tempPassword = crypto.randomBytes(16).toString("hex");
     const hashedPassword = await this.authService.hashPassword(tempPassword);
 
     return this.prisma.$transaction(async (tx) => {

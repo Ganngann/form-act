@@ -80,7 +80,7 @@ describe("CheckoutService", () => {
   describe("processCheckout", () => {
     const mockDto: CreateBookingDto = {
       email: "test@example.com",
-      password: "password123",
+      password: "SecurePass123!",
       companyName: "Test Company",
       vatNumber: "VAT123",
       address: "123 St",
