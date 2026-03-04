@@ -83,7 +83,7 @@ describe("AuthService", () => {
       const dto = {
         name: "Test User",
         email: "test@example.com",
-        password: "password123",
+        password: "SecurePass123!",
       };
       jest
         .spyOn(prisma.user, "findUnique")
@@ -96,7 +96,7 @@ describe("AuthService", () => {
       const dto = {
         name: "Test User",
         email: "new@example.com",
-        password: "password123",
+        password: "SecurePass123!",
       };
       jest.spyOn(prisma.user, "findUnique").mockResolvedValue(null);
       jest
