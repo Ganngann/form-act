@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { createReadStream, existsSync } from "fs";
-import { join } from "path";
+import { resolve } from "path";
 
 interface UserPayload {
   userId: string;
@@ -30,13 +30,16 @@ export class FilesService {
       throw new ForbiddenException("Access to this folder is forbidden");
     }
 
-    const path = join(process.cwd(), "uploads", type, filename);
+    const basePath = resolve(process.cwd(), "uploads", type);
+    const targetPath = resolve(basePath, filename);
 
-    // Basic Path Traversal protection
-    if (filename.includes("..") || type.includes(".."))
+    // Security Enhancement: Prevent Path Traversal
+    // Ensure the resolved target path is still within the allowed base directory.
+    if (!targetPath.startsWith(basePath + '/')) {
       throw new NotFoundException();
+    }
 
-    if (!existsSync(path)) {
+    if (!existsSync(targetPath)) {
       throw new NotFoundException("File not found");
     }
 
@@ -44,20 +47,25 @@ export class FilesService {
       await this.validateProofAccess(filename, user);
     }
 
-    const file = createReadStream(path);
+    const file = createReadStream(targetPath);
     return new StreamableFile(file);
   }
 
   async getPublicFile(filename: string): Promise<StreamableFile> {
-    const path = join(process.cwd(), "uploads", "public", filename);
+    const basePath = resolve(process.cwd(), "uploads", "public");
+    const targetPath = resolve(basePath, filename);
 
-    if (filename.includes("..")) throw new NotFoundException();
+    // Security Enhancement: Prevent Path Traversal
+    // Ensure the resolved target path is still within the public uploads directory.
+    if (!targetPath.startsWith(basePath + '/')) {
+      throw new NotFoundException();
+    }
 
-    if (!existsSync(path)) {
+    if (!existsSync(targetPath)) {
       throw new NotFoundException("File not found");
     }
 
-    const file = createReadStream(path);
+    const file = createReadStream(targetPath);
     return new StreamableFile(file);
   }
 
