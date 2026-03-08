@@ -22,3 +22,8 @@
 **Vulnerability:** The application relied on `req.ip` for security controls (like rate limiting) but did not enable `trust proxy` in `main.ts`, meaning the IP would always be the load balancer's IP in production.
 **Learning:** NestJS/Express defaults to `trust proxy: false`. Without this, any IP-based logic (Rate Limiting, IP Whitelisting) is ineffective behind a proxy and can lead to self-DoS (blocking all users).
 **Prevention:** Always verify `app.set('trust proxy', 1)` (or appropriate value) in `main.ts` for any application intended to run behind a reverse proxy.
+
+## 2026-03-08 - Path Traversal Vulnerability in File Downloads
+**Vulnerability:** The application relied on naive `filename.includes("..")` checks for path traversal protection in file downloads. This is insufficient, as attackers could potentially bypass it using URL encoding or other path manipulations.
+**Learning:** Checking for substrings like `..` is an incomplete defense against path traversal, as the Node.js path resolver behaves differently than simple string searches and various encodings can slip past.
+**Prevention:** To prevent path traversal and partial directory match vulnerabilities in file services, always compute absolute paths using `path.resolve()` and secure boundary checks utilizing `targetPath.startsWith(basePath + '/')`. Never rely on weak string includes checks.
