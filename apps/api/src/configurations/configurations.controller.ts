@@ -14,11 +14,14 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { RolesGuard } from "../auth/roles.guard";
+import { Roles } from "../auth/roles.decorator";
 import { ConfigurationsService } from "./configurations.service";
 import {
   createDiskStorage,
   fileFilter,
   MAX_FILE_SIZE,
+  removeFile,
 } from "../common/file-upload.utils";
 
 @Controller("configurations")
@@ -30,7 +33,8 @@ export class ConfigurationsController {
     return this.configurationsService.getConfiguration(key);
   }
 
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Roles("ADMIN")
   @Put(":key")
   async updateConfiguration(
     @Param("key") key: string,
@@ -44,7 +48,8 @@ export class ConfigurationsController {
     return this.configurationsService.updateConfiguration(key, body);
   }
 
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Roles("ADMIN")
   @Post("upload")
   @UseInterceptors(
     FileInterceptor("file", {
@@ -54,14 +59,22 @@ export class ConfigurationsController {
     }),
   )
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Request() req) {
-    if (req.user.role !== "ADMIN") {
-      throw new ForbiddenException("Only admins can upload files");
-    }
     if (!file) throw new BadRequestException("File is required");
 
-    // Return the public URL
-    // Assuming /files/public serves from ./uploads/public
-    // Need to verify static serving or FilesController
-    return { url: `/files/public/${file.filename}` };
+    try {
+      if (req.user.role !== "ADMIN") {
+        throw new ForbiddenException("Only admins can upload files");
+      }
+
+      // Return the public URL
+      // Assuming /files/public serves from ./uploads/public
+      // Need to verify static serving or FilesController
+      return { url: `/files/public/${file.filename}` };
+    } catch (error) {
+      if (file && file.path) {
+        await removeFile(file.path);
+      }
+      throw error;
+    }
   }
 }
