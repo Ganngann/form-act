@@ -7,12 +7,18 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { TrainersService } from "./trainers.service";
 import { CreateTrainerDto } from "./dto/create-trainer.dto";
 import { UpdateTrainerDto } from "./dto/update-trainer.dto";
+import { AuthGuard } from "@nestjs/passport";
+import { RolesGuard } from "../auth/roles.guard";
+import { Roles } from "../auth/roles.decorator";
 
 @Controller("admin/trainers")
+@UseGuards(AuthGuard("jwt"), RolesGuard)
+@Roles("ADMIN")
 export class AdminTrainersController {
   constructor(private readonly trainersService: TrainersService) {}
 
