@@ -61,10 +61,11 @@ export class TrainersService {
   }
 
   async create(data: CreateTrainerDto) {
-    const tempPassword = "password123";
+    // 🛡️ Sentinel: Securely generate temporary password
+    const tempPassword = crypto.randomBytes(16).toString("hex");
     const hashedPassword = await this.authService.hashPassword(tempPassword);
 
-    return this.prisma.$transaction(async (tx) => {
+    const formateur = await this.prisma.$transaction(async (tx) => {
       const existingUser = await tx.user.findUnique({
         where: { email: data.email },
       });
@@ -122,6 +123,11 @@ export class TrainersService {
 
       return formateur;
     });
+
+    // Generate a password reset token so the new trainer can set their password
+    await this.authService.forgotPassword(data.email);
+
+    return formateur;
   }
 
   async update(id: string, data: UpdateTrainerDto) {
