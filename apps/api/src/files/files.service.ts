@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { createReadStream, existsSync } from "fs";
-import { join } from "path";
+import { resolve, sep } from "path";
 
 interface UserPayload {
   userId: string;
@@ -30,11 +30,13 @@ export class FilesService {
       throw new ForbiddenException("Access to this folder is forbidden");
     }
 
-    const path = join(process.cwd(), "uploads", type, filename);
+    const basePath = resolve(process.cwd(), "uploads", type);
+    const path = resolve(basePath, filename);
 
-    // Basic Path Traversal protection
-    if (filename.includes("..") || type.includes(".."))
+    // Robust Path Traversal protection
+    if (!path.startsWith(basePath + sep)) {
       throw new NotFoundException();
+    }
 
     if (!existsSync(path)) {
       throw new NotFoundException("File not found");
@@ -49,9 +51,13 @@ export class FilesService {
   }
 
   async getPublicFile(filename: string): Promise<StreamableFile> {
-    const path = join(process.cwd(), "uploads", "public", filename);
+    const basePath = resolve(process.cwd(), "uploads", "public");
+    const path = resolve(basePath, filename);
 
-    if (filename.includes("..")) throw new NotFoundException();
+    // Robust Path Traversal protection
+    if (!path.startsWith(basePath + sep)) {
+      throw new NotFoundException();
+    }
 
     if (!existsSync(path)) {
       throw new NotFoundException("File not found");
