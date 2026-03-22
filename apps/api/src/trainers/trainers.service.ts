@@ -61,10 +61,10 @@ export class TrainersService {
   }
 
   async create(data: CreateTrainerDto) {
-    const tempPassword = "password123";
+    const tempPassword = crypto.randomBytes(16).toString("hex");
     const hashedPassword = await this.authService.hashPassword(tempPassword);
 
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       const existingUser = await tx.user.findUnique({
         where: { email: data.email },
       });
@@ -122,6 +122,10 @@ export class TrainersService {
 
       return formateur;
     });
+
+    await this.authService.forgotPassword(data.email);
+
+    return result;
   }
 
   async update(id: string, data: UpdateTrainerDto) {
