@@ -13,6 +13,8 @@ jest.mock("fs", () => ({
 jest.mock("path", () => ({
   ...jest.requireActual("path"),
   join: jest.fn((...args) => args.join("/")),
+  resolve: jest.requireActual("path").resolve,
+  sep: jest.requireActual("path").sep,
 }));
 
 describe("FilesService", () => {
