@@ -11,17 +11,17 @@ export class TrainersService {
   constructor(
     private prisma: PrismaService,
     private authService: AuthService,
-  ) { }
+  ) {}
 
   async findAll(skip: number = 0, take: number = 10, search?: string) {
     const where: Prisma.FormateurWhereInput = search
       ? {
-        OR: [
-          { firstName: { contains: search } },
-          { lastName: { contains: search } },
-          { email: { contains: search } },
-        ],
-      }
+          OR: [
+            { firstName: { contains: search } },
+            { lastName: { contains: search } },
+            { email: { contains: search } },
+          ],
+        }
       : {};
 
     const [data, total] = await Promise.all([
@@ -61,10 +61,12 @@ export class TrainersService {
   }
 
   async create(data: CreateTrainerDto) {
-    const tempPassword = "password123";
+    // 🛡️ Sentinel: Prevent unauthorized access by generating a cryptographically secure random password
+    // instead of a hardcoded string. The user will reset it via forgotPassword below.
+    const tempPassword = crypto.randomBytes(16).toString("hex");
     const hashedPassword = await this.authService.hashPassword(tempPassword);
 
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       const existingUser = await tx.user.findUnique({
         where: { email: data.email },
       });
@@ -122,6 +124,11 @@ export class TrainersService {
 
       return formateur;
     });
+
+    // 🛡️ Sentinel: Trigger password reset flow so the new trainer can securely set their password
+    await this.authService.forgotPassword(data.email);
+
+    return result;
   }
 
   async update(id: string, data: UpdateTrainerDto) {
