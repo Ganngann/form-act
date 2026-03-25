@@ -31,6 +31,7 @@ describe("TrainersService", () => {
 
   const mockAuthService = {
     hashPassword: jest.fn().mockResolvedValue("hashed"),
+    forgotPassword: jest.fn().mockResolvedValue(undefined),
   };
 
   beforeEach(async () => {
