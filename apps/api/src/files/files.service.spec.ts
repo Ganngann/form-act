@@ -10,10 +10,28 @@ jest.mock("fs", () => ({
   createReadStream: jest.fn(),
 }));
 
-jest.mock("path", () => ({
-  ...jest.requireActual("path"),
-  join: jest.fn((...args) => args.join("/")),
-}));
+jest.mock("path", () => {
+  const path = jest.requireActual("path");
+  return {
+    ...path,
+    join: jest.fn((...args) => args.join("/")),
+    resolve: jest.fn((...args) => {
+      // Very naive implementation to make `resolve` collapse `..` for the test
+      const parts = [];
+      const joined = args.join("/");
+      for (const part of joined.split("/")) {
+        if (part === "" && parts.length > 0) continue; // handle double slashes
+        if (part === "..") {
+          parts.pop();
+        } else if (part !== ".") {
+          parts.push(part);
+        }
+      }
+      return parts.join("/");
+    }),
+    sep: "/",
+  };
+});
 
 describe("FilesService", () => {
   let service: FilesService;
