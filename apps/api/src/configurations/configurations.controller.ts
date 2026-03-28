@@ -19,6 +19,7 @@ import {
   createDiskStorage,
   fileFilter,
   MAX_FILE_SIZE,
+  removeFile,
 } from "../common/file-upload.utils";
 
 @Controller("configurations")
@@ -54,14 +55,22 @@ export class ConfigurationsController {
     }),
   )
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Request() req) {
-    if (req.user.role !== "ADMIN") {
-      throw new ForbiddenException("Only admins can upload files");
-    }
     if (!file) throw new BadRequestException("File is required");
 
-    // Return the public URL
-    // Assuming /files/public serves from ./uploads/public
-    // Need to verify static serving or FilesController
-    return { url: `/files/public/${file.filename}` };
+    try {
+      if (req.user.role !== "ADMIN") {
+        throw new ForbiddenException("Only admins can upload files");
+      }
+
+      // Return the public URL
+      // Assuming /files/public serves from ./uploads/public
+      // Need to verify static serving or FilesController
+      return { url: `/files/public/${file.filename}` };
+    } catch (error) {
+      if (file && file.path) {
+        await removeFile(file.path);
+      }
+      throw error;
+    }
   }
 }
