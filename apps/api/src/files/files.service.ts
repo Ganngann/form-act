@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { createReadStream, existsSync } from "fs";
-import { join } from "path";
+import { resolve, sep } from "path";
 
 interface UserPayload {
   userId: string;
@@ -30,13 +30,20 @@ export class FilesService {
       throw new ForbiddenException("Access to this folder is forbidden");
     }
 
-    const path = join(process.cwd(), "uploads", type, filename);
-
-    // Basic Path Traversal protection
+    // Basic Path Traversal protection for parameters to prevent authorization bypass
     if (filename.includes("..") || type.includes(".."))
       throw new NotFoundException();
 
-    if (!existsSync(path)) {
+    const baseUploadsDir = resolve(process.cwd(), "uploads");
+    const typeDir = resolve(baseUploadsDir, type);
+    const targetPath = resolve(typeDir, filename);
+
+    // Strict Path Traversal boundary protection
+    if (!typeDir.startsWith(baseUploadsDir + sep) || !targetPath.startsWith(typeDir + sep)) {
+      throw new NotFoundException();
+    }
+
+    if (!existsSync(targetPath)) {
       throw new NotFoundException("File not found");
     }
 
@@ -44,20 +51,28 @@ export class FilesService {
       await this.validateProofAccess(filename, user);
     }
 
-    const file = createReadStream(path);
+    const file = createReadStream(targetPath);
     return new StreamableFile(file);
   }
 
   async getPublicFile(filename: string): Promise<StreamableFile> {
-    const path = join(process.cwd(), "uploads", "public", filename);
-
+    // Basic Path Traversal protection for parameters
     if (filename.includes("..")) throw new NotFoundException();
 
-    if (!existsSync(path)) {
+    const baseUploadsDir = resolve(process.cwd(), "uploads");
+    const publicDir = resolve(baseUploadsDir, "public");
+    const targetPath = resolve(publicDir, filename);
+
+    // Strict Path Traversal boundary protection
+    if (!targetPath.startsWith(publicDir + sep)) {
+      throw new NotFoundException();
+    }
+
+    if (!existsSync(targetPath)) {
       throw new NotFoundException("File not found");
     }
 
-    const file = createReadStream(path);
+    const file = createReadStream(targetPath);
     return new StreamableFile(file);
   }
 

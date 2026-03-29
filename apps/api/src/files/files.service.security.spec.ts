@@ -11,10 +11,7 @@ jest.mock("fs", () => ({
 }));
 
 // Mock path.join
-jest.mock("path", () => ({
-  ...jest.requireActual("path"),
-  join: jest.fn((...args) => args.join("/")),
-}));
+// Mock path completely removed, let it use the real one
 
 describe("FilesService Security", () => {
   let service: FilesService;
