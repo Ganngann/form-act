@@ -31,6 +31,7 @@ describe("TrainersService", () => {
 
   const mockAuthService = {
     hashPassword: jest.fn().mockResolvedValue("hashed"),
+    forgotPassword: jest.fn().mockResolvedValue(undefined),
   };
 
   beforeEach(async () => {
@@ -88,6 +89,7 @@ describe("TrainersService", () => {
       await service.create({ firstName: "A", lastName: "B", email: "a@b.com" });
       expect(mockPrismaService.user.create).toHaveBeenCalled();
       expect(mockPrismaService.formateur.create).toHaveBeenCalled();
+      expect(mockAuthService.forgotPassword).toHaveBeenCalledWith("a@b.com");
     });
 
     it("should throw if user exists", async () => {
