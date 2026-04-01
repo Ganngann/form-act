@@ -13,6 +13,7 @@ jest.mock("fs", () => ({
 jest.mock("path", () => ({
   ...jest.requireActual("path"),
   join: jest.fn((...args) => args.join("/")),
+  // We use actual resolve and sep for path boundary testing
 }));
 
 describe("FilesService", () => {
@@ -59,6 +60,20 @@ describe("FilesService", () => {
       );
     });
 
+    it("should throw NotFoundException for path traversal escaping boundary", async () => {
+      // simulate an encoded path traversal or a flaw in previous string checks
+      // e.g., using path segments that collapse when resolved but don't explicitly contain '..'
+      // This is simulated by spying on resolve if needed, but since we use actual path.resolve,
+      // it handles absolute path injections.
+      // E.g., if a user passes an absolute path like '/etc/passwd' to `getPublicFile`
+      // `path.resolve(basePath, '/etc/passwd')` resolves to `/etc/passwd`
+      // which does NOT start with `basePath`.
+      // The `includes("..")` check won't catch this!
+      await expect(service.getPublicFile("/etc/passwd")).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
     it("should throw NotFoundException if file does not exist", async () => {
       (existsSync as jest.Mock).mockReturnValue(false);
       await expect(service.getPublicFile("test.jpg")).rejects.toThrow(
@@ -77,6 +92,16 @@ describe("FilesService", () => {
     it("should throw NotFoundException for path traversal", async () => {
       await expect(
         service.getFile("proofs", "../test.jpg", {
+          userId: "1",
+          role: "ADMIN",
+          email: "a@a.com",
+        }),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it("should throw NotFoundException for absolute path injection", async () => {
+      await expect(
+        service.getFile("proofs", "/etc/shadow", {
           userId: "1",
           role: "ADMIN",
           email: "a@a.com",
