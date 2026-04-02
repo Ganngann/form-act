@@ -12,6 +12,8 @@ jest.mock("fs", () => ({
 
 jest.mock("path", () => ({
   ...jest.requireActual("path"),
+  resolve: jest.requireActual("path").resolve,
+  sep: jest.requireActual("path").sep,
   join: jest.fn((...args) => args.join("/")),
 }));
 
