@@ -22,3 +22,8 @@
 **Vulnerability:** The application relied on `req.ip` for security controls (like rate limiting) but did not enable `trust proxy` in `main.ts`, meaning the IP would always be the load balancer's IP in production.
 **Learning:** NestJS/Express defaults to `trust proxy: false`. Without this, any IP-based logic (Rate Limiting, IP Whitelisting) is ineffective behind a proxy and can lead to self-DoS (blocking all users).
 **Prevention:** Always verify `app.set('trust proxy', 1)` (or appropriate value) in `main.ts` for any application intended to run behind a reverse proxy.
+
+## 2024-04-07 - Unsanitized HTML rendering from API responses
+**Vulnerability:** The React frontend used `dangerouslySetInnerHTML` to render content directly from an API endpoint without any client-side sanitization.
+**Learning:** Even if content comes from an internal API, assuming it is safe opens the door to Stored XSS if the API/DB is ever compromised or if admin panels lack strict input validation.
+**Prevention:** Always use a robust HTML sanitization library like `sanitize-html` or `DOMPurify` before injecting dynamic remote content using `dangerouslySetInnerHTML`.
