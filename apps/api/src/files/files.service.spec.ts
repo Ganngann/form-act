@@ -12,7 +12,6 @@ jest.mock("fs", () => ({
 
 jest.mock("path", () => ({
   ...jest.requireActual("path"),
-  join: jest.fn((...args) => args.join("/")),
 }));
 
 describe("FilesService", () => {
@@ -53,8 +52,14 @@ describe("FilesService", () => {
   });
 
   describe("getPublicFile", () => {
-    it("should throw NotFoundException for path traversal", async () => {
+    it("should throw NotFoundException for relative path traversal", async () => {
       await expect(service.getPublicFile("../test.jpg")).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it("should throw NotFoundException for absolute path traversal", async () => {
+      await expect(service.getPublicFile("/etc/passwd")).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -74,9 +79,19 @@ describe("FilesService", () => {
   });
 
   describe("getFile", () => {
-    it("should throw NotFoundException for path traversal", async () => {
+    it("should throw NotFoundException for relative path traversal", async () => {
       await expect(
         service.getFile("proofs", "../test.jpg", {
+          userId: "1",
+          role: "ADMIN",
+          email: "a@a.com",
+        }),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it("should throw NotFoundException for absolute path traversal", async () => {
+      await expect(
+        service.getFile("proofs", "/etc/passwd", {
           userId: "1",
           role: "ADMIN",
           email: "a@a.com",

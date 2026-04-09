@@ -22,3 +22,8 @@
 **Vulnerability:** The application relied on `req.ip` for security controls (like rate limiting) but did not enable `trust proxy` in `main.ts`, meaning the IP would always be the load balancer's IP in production.
 **Learning:** NestJS/Express defaults to `trust proxy: false`. Without this, any IP-based logic (Rate Limiting, IP Whitelisting) is ineffective behind a proxy and can lead to self-DoS (blocking all users).
 **Prevention:** Always verify `app.set('trust proxy', 1)` (or appropriate value) in `main.ts` for any application intended to run behind a reverse proxy.
+
+## 2026-04-09 - Path Traversal bypass via Absolute Paths
+**Vulnerability:** The application used `path.join()` alongside basic `..` substring checks to protect against path traversal in file downloads. However, `path.join` treats absolute paths (like `/etc/passwd`) as relative path segments, meaning it returned `/base/etc/passwd`, failing the substring check but returning unexpected paths if absolute path resolution was expected elsewhere. To make matters worse, using `path.resolve` directly without strict boundary checks allowed complete path replacement.
+**Learning:** `path.join` does not normalize absolute paths to the system root, whereas `path.resolve` does. Simply checking for `..` in a string does not prevent an attacker from supplying an absolute path if `path.resolve` or similar logic processes it later.
+**Prevention:** Always use `path.resolve()` to compute the intended absolute path and explicitly verify boundaries using `targetPath.startsWith(basePath + path.sep)`. Do not rely solely on substring filters like `.includes('..')`.
