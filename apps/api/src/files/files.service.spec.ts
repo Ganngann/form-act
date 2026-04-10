@@ -4,15 +4,10 @@ import { PrismaService } from "../prisma/prisma.service";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { existsSync, createReadStream } from "fs";
 
-// Mock fs and path
+// Mock fs
 jest.mock("fs", () => ({
   existsSync: jest.fn(),
   createReadStream: jest.fn(),
-}));
-
-jest.mock("path", () => ({
-  ...jest.requireActual("path"),
-  join: jest.fn((...args) => args.join("/")),
 }));
 
 describe("FilesService", () => {
