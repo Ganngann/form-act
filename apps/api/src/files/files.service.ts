@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { createReadStream, existsSync } from "fs";
-import { join } from "path";
+import { resolve, sep } from "path";
 
 interface UserPayload {
   userId: string;
@@ -30,13 +30,19 @@ export class FilesService {
       throw new ForbiddenException("Access to this folder is forbidden");
     }
 
-    const path = join(process.cwd(), "uploads", type, filename);
-
     // Basic Path Traversal protection
     if (filename.includes("..") || type.includes(".."))
       throw new NotFoundException();
 
-    if (!existsSync(path)) {
+    const basePath = resolve(process.cwd(), "uploads", type);
+    const targetPath = resolve(basePath, filename);
+
+    // Strict boundary check to prevent absolute path injection (e.g., /etc/passwd)
+    if (!targetPath.startsWith(basePath + sep)) {
+      throw new NotFoundException();
+    }
+
+    if (!existsSync(targetPath)) {
       throw new NotFoundException("File not found");
     }
 
@@ -44,20 +50,26 @@ export class FilesService {
       await this.validateProofAccess(filename, user);
     }
 
-    const file = createReadStream(path);
+    const file = createReadStream(targetPath);
     return new StreamableFile(file);
   }
 
   async getPublicFile(filename: string): Promise<StreamableFile> {
-    const path = join(process.cwd(), "uploads", "public", filename);
-
     if (filename.includes("..")) throw new NotFoundException();
 
-    if (!existsSync(path)) {
+    const basePath = resolve(process.cwd(), "uploads", "public");
+    const targetPath = resolve(basePath, filename);
+
+    // Strict boundary check to prevent absolute path injection
+    if (!targetPath.startsWith(basePath + sep)) {
+      throw new NotFoundException();
+    }
+
+    if (!existsSync(targetPath)) {
       throw new NotFoundException("File not found");
     }
 
-    const file = createReadStream(path);
+    const file = createReadStream(targetPath);
     return new StreamableFile(file);
   }
 
