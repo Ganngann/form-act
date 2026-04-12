@@ -22,3 +22,8 @@
 **Vulnerability:** The application relied on `req.ip` for security controls (like rate limiting) but did not enable `trust proxy` in `main.ts`, meaning the IP would always be the load balancer's IP in production.
 **Learning:** NestJS/Express defaults to `trust proxy: false`. Without this, any IP-based logic (Rate Limiting, IP Whitelisting) is ineffective behind a proxy and can lead to self-DoS (blocking all users).
 **Prevention:** Always verify `app.set('trust proxy', 1)` (or appropriate value) in `main.ts` for any application intended to run behind a reverse proxy.
+
+## 2026-04-12 - [Arbitrary File Upload DoS in NestJS Interceptors]
+**Vulnerability:** Arbitrary File Upload DoS in `ConfigurationsController`. Authorization checks were inside the route handler, but `FileInterceptor` runs *before* the handler, allowing any authenticated user to upload files to disk before being rejected, risking disk exhaustion.
+**Learning:** In NestJS, interceptors execute before route handlers. Inline authorization checks inside handlers are insufficient to protect interceptor logic (like file uploads).
+**Prevention:** Always use route-level guards (e.g., `@Roles('ADMIN')` with `RolesGuard`) to enforce authorization *before* interceptors execute. Add a `removeFile` fallback in `try...catch` blocks for defense in depth.
