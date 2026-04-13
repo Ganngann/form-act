@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { SearchHero } from '@/components/home/SearchHero';
 import { BadgeCheck, Calendar, GraduationCap, Users, Shield, Zap, ArrowRight, Star, Quote } from 'lucide-react';
 import { getSiteConfig } from '@/lib/api-config';
+import sanitizeHtml from 'sanitize-html';
 import { HomeHeroConfig, HomePromoConfig, HomeValueConfig, HomeTrustConfig, HomeCtaConfig } from '@/types/configuration';
 
 async function getCategories() {
@@ -92,7 +93,7 @@ export default async function Home() {
           </span>
           <h1
             className="text-6xl sm:text-9xl font-bold tracking-tighter leading-[0.8] mb-10 text-balance animate-in fade-in slide-in-from-bottom-4 duration-700"
-            dangerouslySetInnerHTML={{ __html: hero.title }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(hero.title, { allowedTags: sanitizeHtml.defaults.allowedTags.concat(['span']), allowedAttributes: { '*': ['class', 'className'] } }) }}
           />
           <p className="text-xl md:text-2xl text-muted-foreground/80 max-w-2xl mb-14 leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-6 duration-1000">
             {hero.intro}
@@ -149,7 +150,7 @@ export default async function Home() {
                 <span className="text-[10px] font-black text-white/50 uppercase tracking-[2px]">{promo.subtitle}</span>
                 <h3
                   className="text-5xl font-bold mt-4 leading-tight text-white mb-6 tracking-tighter"
-                  dangerouslySetInnerHTML={{ __html: promo.title }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(promo.title, { allowedTags: sanitizeHtml.defaults.allowedTags.concat(['span']), allowedAttributes: { '*': ['class', 'className'] } }) }}
                 />
                 <p className="text-white/80 font-medium text-lg max-w-sm mb-8">{promo.description}</p>
               </div>
@@ -237,7 +238,7 @@ export default async function Home() {
               </div>
               <h3
                 className="text-3xl font-bold tracking-tight"
-                dangerouslySetInnerHTML={{ __html: v.title }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(v.title, { allowedTags: sanitizeHtml.defaults.allowedTags.concat(['span']), allowedAttributes: { '*': ['class', 'className'] } }) }}
               />
               <p className="text-muted-foreground font-medium leading-relaxed">{v.text}</p>
             </div>
@@ -267,7 +268,7 @@ export default async function Home() {
           <div className="relative z-10 flex flex-col items-center">
             <h2
               className="text-5xl md:text-8xl font-black tracking-tighter mb-10 leading-[0.85]"
-              dangerouslySetInnerHTML={{ __html: cta.title }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(cta.title, { allowedTags: sanitizeHtml.defaults.allowedTags.concat(['span']), allowedAttributes: { '*': ['class', 'className'] } }) }}
             />
             <div className="flex flex-col sm:flex-row gap-6 mt-4">
               <Button asChild size="lg" variant="secondary" className="h-16 px-12 text-lg font-black rounded-2xl hover:bg-white hover:text-primary transition-all">
