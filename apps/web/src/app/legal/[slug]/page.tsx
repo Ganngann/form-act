@@ -1,6 +1,7 @@
 import { getSiteConfig } from "@/lib/api-config";
 import { LegalTextsConfig } from "@/types/configuration";
 import { notFound } from "next/navigation";
+import sanitizeHtml from "sanitize-html";
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -40,7 +41,7 @@ export default async function LegalPage({ params }: { params: { slug: string } }
       <h1 className="text-4xl font-black mb-8">{title}</h1>
       <div className="prose prose-lg max-w-none">
         {content ? (
-          <div dangerouslySetInnerHTML={{ __html: content }} />
+          <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(content, { allowedTags: sanitizeHtml.defaults.allowedTags.concat(['span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'img']), allowedAttributes: { '*': ['class', 'className'], 'img': ['src', 'alt', 'title', 'width', 'height'] } }) }} />
         ) : (
           <p className="text-muted-foreground font-medium">
             Contenu en cours de rédaction.
