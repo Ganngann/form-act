@@ -22,3 +22,7 @@
 **Vulnerability:** The application relied on `req.ip` for security controls (like rate limiting) but did not enable `trust proxy` in `main.ts`, meaning the IP would always be the load balancer's IP in production.
 **Learning:** NestJS/Express defaults to `trust proxy: false`. Without this, any IP-based logic (Rate Limiting, IP Whitelisting) is ineffective behind a proxy and can lead to self-DoS (blocking all users).
 **Prevention:** Always verify `app.set('trust proxy', 1)` (or appropriate value) in `main.ts` for any application intended to run behind a reverse proxy.
+## 2026-02-18 - Unauthorized File Storage (DoS Risk) in ConfigurationsController
+**Vulnerability:** Similar to a previous finding, the NestJS `FileInterceptor` uploads and saves files to disk *before* the controller method executes. Because `ConfigurationsController.uploadFile` checked authorization inline, an unauthorized user could successfully upload files that are saved to disk, leading to potential disk exhaustion (DoS).
+**Learning:** Declarative guards (like `RolesGuard`) must be used for endpoints handling file uploads to ensure authorization runs *before* the interceptor processes and saves the file.
+**Prevention:** Enforce the use of `@Roles` and `RolesGuard` on all file upload endpoints rather than inline `if (req.user.role)` checks.
