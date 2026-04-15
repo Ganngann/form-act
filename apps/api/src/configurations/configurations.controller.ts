@@ -14,6 +14,8 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { RolesGuard } from "../auth/roles.guard";
+import { Roles } from "../auth/roles.decorator";
 import { ConfigurationsService } from "./configurations.service";
 import {
   createDiskStorage,
@@ -30,7 +32,8 @@ export class ConfigurationsController {
     return this.configurationsService.getConfiguration(key);
   }
 
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Roles("ADMIN")
   @Put(":key")
   async updateConfiguration(
     @Param("key") key: string,
@@ -44,7 +47,8 @@ export class ConfigurationsController {
     return this.configurationsService.updateConfiguration(key, body);
   }
 
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Roles("ADMIN")
   @Post("upload")
   @UseInterceptors(
     FileInterceptor("file", {
