@@ -22,3 +22,8 @@
 **Vulnerability:** The application relied on `req.ip` for security controls (like rate limiting) but did not enable `trust proxy` in `main.ts`, meaning the IP would always be the load balancer's IP in production.
 **Learning:** NestJS/Express defaults to `trust proxy: false`. Without this, any IP-based logic (Rate Limiting, IP Whitelisting) is ineffective behind a proxy and can lead to self-DoS (blocking all users).
 **Prevention:** Always verify `app.set('trust proxy', 1)` (or appropriate value) in `main.ts` for any application intended to run behind a reverse proxy.
+
+## 2024-04-16 - Absolute Path Injection in FilesService
+**Vulnerability:** A local file inclusion (LFI) vulnerability was found in the `FilesService` due to the use of `path.join` along with a simple `.includes("..")` string check. This allowed an attacker to retrieve arbitrary system files (like `/etc/passwd`) by providing absolute paths, as `path.join` normalizes absolute paths by appending them directly (e.g., `path.join('/app/uploads', '/etc/passwd')` becomes `/app/uploads/etc/passwd`).
+**Learning:** `path.join` does not evaluate absolute paths the same way the OS does, leading to simple bypasses of string-based boundary checks. When checking file paths dynamically built from user inputs, `path.resolve` must be used to get the true absolute path.
+**Prevention:** Always use `path.resolve` to combine base paths with user-provided filenames, and explicitly check if the resolved `targetPath` strictly `startsWith` the expected `basePath` plus the OS-specific directory separator (`path.sep`). Ensure that absolute path injections are also unit tested.

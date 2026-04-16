@@ -10,12 +10,6 @@ jest.mock("fs", () => ({
   createReadStream: jest.fn(),
 }));
 
-// Mock path.join
-jest.mock("path", () => ({
-  ...jest.requireActual("path"),
-  join: jest.fn((...args) => args.join("/")),
-}));
-
 describe("FilesService Security", () => {
   let service: FilesService;
 
@@ -46,12 +40,14 @@ describe("FilesService Security", () => {
     const user = { userId: "1", role: "ADMIN", email: "admin@test.com" };
 
     // Testing with a hypothetical sensitive folder
-    await expect(service.getFile("secrets", "passwords.txt", user))
-      .rejects.toThrow(ForbiddenException);
+    await expect(
+      service.getFile("secrets", "passwords.txt", user),
+    ).rejects.toThrow(ForbiddenException);
 
     // Testing with a hypothetical system folder
-    await expect(service.getFile("etc", "passwd", user))
-      .rejects.toThrow(ForbiddenException);
+    await expect(service.getFile("etc", "passwd", user)).rejects.toThrow(
+      ForbiddenException,
+    );
   });
 
   it("should allow access to whitelisted folders (public)", async () => {
