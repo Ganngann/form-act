@@ -11,17 +11,17 @@ export class TrainersService {
   constructor(
     private prisma: PrismaService,
     private authService: AuthService,
-  ) { }
+  ) {}
 
   async findAll(skip: number = 0, take: number = 10, search?: string) {
     const where: Prisma.FormateurWhereInput = search
       ? {
-        OR: [
-          { firstName: { contains: search } },
-          { lastName: { contains: search } },
-          { email: { contains: search } },
-        ],
-      }
+          OR: [
+            { firstName: { contains: search } },
+            { lastName: { contains: search } },
+            { email: { contains: search } },
+          ],
+        }
       : {};
 
     const [data, total] = await Promise.all([
@@ -61,10 +61,10 @@ export class TrainersService {
   }
 
   async create(data: CreateTrainerDto) {
-    const tempPassword = "password123";
+    const tempPassword = crypto.randomBytes(16).toString("hex");
     const hashedPassword = await this.authService.hashPassword(tempPassword);
 
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       const existingUser = await tx.user.findUnique({
         where: { email: data.email },
       });
@@ -122,6 +122,14 @@ export class TrainersService {
 
       return formateur;
     });
+
+    try {
+      await this.authService.forgotPassword(data.email);
+    } catch (e) {
+      console.error("Failed to send password setup email:", e);
+    }
+
+    return result;
   }
 
   async update(id: string, data: UpdateTrainerDto) {
