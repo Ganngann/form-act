@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { createReadStream, existsSync } from "fs";
-import { join } from "path";
+import { resolve, sep, join } from "path";
 
 interface UserPayload {
   userId: string;
@@ -30,13 +30,23 @@ export class FilesService {
       throw new ForbiddenException("Access to this folder is forbidden");
     }
 
-    const path = join(process.cwd(), "uploads", type, filename);
+    // Explicitly construct absolute paths safely.
+    // To prevent LFI where an attacker passes absolute paths (e.g. filename="/etc/passwd"),
+    // use join first to safely combine segments. Join naturally evaluates absolute paths
+    // as regular relative segments if they are not the first argument. Then resolve.
+    const basePath = resolve(join(process.cwd(), "uploads", type));
+    const targetPath = resolve(join(basePath, filename));
 
-    // Basic Path Traversal protection
+    // Basic Path Traversal protection (legacy)
     if (filename.includes("..") || type.includes(".."))
       throw new NotFoundException();
 
-    if (!existsSync(path)) {
+    // Strict boundary check to verify target path remains inside base path
+    if (!targetPath.startsWith(basePath + sep)) {
+      throw new NotFoundException();
+    }
+
+    if (!existsSync(targetPath)) {
       throw new NotFoundException("File not found");
     }
 
@@ -44,20 +54,26 @@ export class FilesService {
       await this.validateProofAccess(filename, user);
     }
 
-    const file = createReadStream(path);
+    const file = createReadStream(targetPath);
     return new StreamableFile(file);
   }
 
   async getPublicFile(filename: string): Promise<StreamableFile> {
-    const path = join(process.cwd(), "uploads", "public", filename);
+    const basePath = resolve(join(process.cwd(), "uploads", "public"));
+    // Use join first to safely combine segments and neutralize absolute paths
+    const targetPath = resolve(join(basePath, filename));
 
     if (filename.includes("..")) throw new NotFoundException();
 
-    if (!existsSync(path)) {
+    if (!targetPath.startsWith(basePath + sep)) {
+      throw new NotFoundException();
+    }
+
+    if (!existsSync(targetPath)) {
       throw new NotFoundException("File not found");
     }
 
-    const file = createReadStream(path);
+    const file = createReadStream(targetPath);
     return new StreamableFile(file);
   }
 
