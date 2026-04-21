@@ -22,3 +22,8 @@
 **Vulnerability:** The application relied on `req.ip` for security controls (like rate limiting) but did not enable `trust proxy` in `main.ts`, meaning the IP would always be the load balancer's IP in production.
 **Learning:** NestJS/Express defaults to `trust proxy: false`. Without this, any IP-based logic (Rate Limiting, IP Whitelisting) is ineffective behind a proxy and can lead to self-DoS (blocking all users).
 **Prevention:** Always verify `app.set('trust proxy', 1)` (or appropriate value) in `main.ts` for any application intended to run behind a reverse proxy.
+
+## 2025-05-31 - Insecure Hardcoded Temporary Passwords
+**Vulnerability:** The application used a hardcoded string (`"password123"`) as the temporary password when creating new trainer accounts, allowing immediate compromise of newly created accounts before the user could set their own password.
+**Learning:** Hardcoded secrets and passwords in code, even for temporary use cases, are a critical security vulnerability.
+**Prevention:** Always use cryptographically secure random generation, such as `crypto.randomBytes(16).toString('hex')`, for temporary passwords or tokens, and ensure they are delivered securely (e.g., via a password reset email flow).
