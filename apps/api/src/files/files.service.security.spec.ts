@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FilesService } from "./files.service";
 import { PrismaService } from "../prisma/prisma.service";
-import { ForbiddenException } from "@nestjs/common";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { existsSync, createReadStream } from "fs";
 
 // Mock fs
@@ -10,11 +10,8 @@ jest.mock("fs", () => ({
   createReadStream: jest.fn(),
 }));
 
-// Mock path.join
-jest.mock("path", () => ({
-  ...jest.requireActual("path"),
-  join: jest.fn((...args) => args.join("/")),
-}));
+// We must not mock path here so that resolve and join work correctly
+// and so that the path traversal checks properly evaluate true/false
 
 describe("FilesService Security", () => {
   let service: FilesService;
@@ -46,20 +43,19 @@ describe("FilesService Security", () => {
     const user = { userId: "1", role: "ADMIN", email: "admin@test.com" };
 
     // Testing with a hypothetical sensitive folder
-    await expect(service.getFile("secrets", "passwords.txt", user))
-      .rejects.toThrow(ForbiddenException);
+    await expect(
+      service.getFile("secrets", "passwords.txt", user),
+    ).rejects.toThrow(ForbiddenException);
 
     // Testing with a hypothetical system folder
-    await expect(service.getFile("etc", "passwd", user))
-      .rejects.toThrow(ForbiddenException);
+    await expect(service.getFile("etc", "passwd", user)).rejects.toThrow(
+      ForbiddenException,
+    );
   });
 
   it("should allow access to whitelisted folders (public)", async () => {
     const user = { userId: "1", role: "ADMIN", email: "admin@test.com" };
 
-    // Should not throw ForbiddenException about folder
-    // Note: It might throw NotFound or other errors depending on mocking depth,
-    // but if it returns stream or proceeds, it means folder check passed.
     const result = await service.getFile("public", "logo.png", user);
     expect(result).toBeDefined();
   });
@@ -69,5 +65,17 @@ describe("FilesService Security", () => {
 
     const result = await service.getFile("avatars", "user.jpg", user);
     expect(result).toBeDefined();
+  });
+
+  it("should block absolute path overrides due to path traversal", async () => {
+    const user = { userId: "1", role: "ADMIN", email: "admin@test.com" };
+
+    await expect(
+      service.getFile("public", "/etc/passwd", user),
+    ).rejects.toThrow(NotFoundException);
+
+    await expect(service.getPublicFile("/etc/passwd")).rejects.toThrow(
+      NotFoundException,
+    );
   });
 });

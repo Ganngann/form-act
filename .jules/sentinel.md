@@ -22,3 +22,8 @@
 **Vulnerability:** The application relied on `req.ip` for security controls (like rate limiting) but did not enable `trust proxy` in `main.ts`, meaning the IP would always be the load balancer's IP in production.
 **Learning:** NestJS/Express defaults to `trust proxy: false`. Without this, any IP-based logic (Rate Limiting, IP Whitelisting) is ineffective behind a proxy and can lead to self-DoS (blocking all users).
 **Prevention:** Always verify `app.set('trust proxy', 1)` (or appropriate value) in `main.ts` for any application intended to run behind a reverse proxy.
+
+## 2024-05-27 - [Fix Path Traversal LFI Vulnerability in FilesService]
+**Vulnerability:** Path Traversal via absolute path override leading to Local File Inclusion (LFI). The `files.service.ts` utilized `path.join` and simple `..` substring checks which failed to account for `path.resolve` behaviors and absolute path injections (like `/etc/passwd`).
+**Learning:** In Node.js, checking for `..` is insufficient to prevent path traversal when `path.resolve` is used or when inputs contain absolute paths which override the base directory context.
+**Prevention:** Always securely construct paths by resolving relative to the expected base path: `resolve(basePath, filename)`. Critically, enforce a strict boundary check using `targetPath.startsWith(basePath + path.sep)` to ensure the calculated final path cannot escape the intended directory.
