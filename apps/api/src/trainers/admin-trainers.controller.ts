@@ -1,5 +1,6 @@
 import {
   Controller,
+  UseGuards,
   Get,
   Post,
   Body,
@@ -8,11 +9,16 @@ import {
   Delete,
   Query,
 } from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
+import { RolesGuard } from "../auth/roles.guard";
+import { Roles } from "../auth/roles.decorator";
 import { TrainersService } from "./trainers.service";
 import { CreateTrainerDto } from "./dto/create-trainer.dto";
 import { UpdateTrainerDto } from "./dto/update-trainer.dto";
 
 @Controller("admin/trainers")
+@UseGuards(AuthGuard("jwt"), RolesGuard)
+@Roles("ADMIN")
 export class AdminTrainersController {
   constructor(private readonly trainersService: TrainersService) {}
 
