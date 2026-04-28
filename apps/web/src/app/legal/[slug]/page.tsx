@@ -1,4 +1,5 @@
 import { getSiteConfig } from "@/lib/api-config";
+import { sanitize } from "@/lib/sanitize";
 import { LegalTextsConfig } from "@/types/configuration";
 import { notFound } from "next/navigation";
 
@@ -40,7 +41,7 @@ export default async function LegalPage({ params }: { params: { slug: string } }
       <h1 className="text-4xl font-black mb-8">{title}</h1>
       <div className="prose prose-lg max-w-none">
         {content ? (
-          <div dangerouslySetInnerHTML={{ __html: content }} />
+          <div dangerouslySetInnerHTML={{ __html: sanitize(content) }} />
         ) : (
           <p className="text-muted-foreground font-medium">
             Contenu en cours de rédaction.
