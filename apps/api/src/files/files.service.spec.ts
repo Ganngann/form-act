@@ -4,15 +4,10 @@ import { PrismaService } from "../prisma/prisma.service";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { existsSync, createReadStream } from "fs";
 
-// Mock fs and path
+// Mock fs
 jest.mock("fs", () => ({
   existsSync: jest.fn(),
   createReadStream: jest.fn(),
-}));
-
-jest.mock("path", () => ({
-  ...jest.requireActual("path"),
-  join: jest.fn((...args) => args.join("/")),
 }));
 
 describe("FilesService", () => {
@@ -59,6 +54,12 @@ describe("FilesService", () => {
       );
     });
 
+    it("should throw NotFoundException for absolute path traversal", async () => {
+      await expect(service.getPublicFile("/etc/passwd")).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
     it("should throw NotFoundException if file does not exist", async () => {
       (existsSync as jest.Mock).mockReturnValue(false);
       await expect(service.getPublicFile("test.jpg")).rejects.toThrow(
@@ -77,6 +78,16 @@ describe("FilesService", () => {
     it("should throw NotFoundException for path traversal", async () => {
       await expect(
         service.getFile("proofs", "../test.jpg", {
+          userId: "1",
+          role: "ADMIN",
+          email: "a@a.com",
+        }),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it("should throw NotFoundException for absolute path traversal", async () => {
+      await expect(
+        service.getFile("proofs", "/etc/passwd", {
           userId: "1",
           role: "ADMIN",
           email: "a@a.com",

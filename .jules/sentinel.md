@@ -22,3 +22,8 @@
 **Vulnerability:** The application relied on `req.ip` for security controls (like rate limiting) but did not enable `trust proxy` in `main.ts`, meaning the IP would always be the load balancer's IP in production.
 **Learning:** NestJS/Express defaults to `trust proxy: false`. Without this, any IP-based logic (Rate Limiting, IP Whitelisting) is ineffective behind a proxy and can lead to self-DoS (blocking all users).
 **Prevention:** Always verify `app.set('trust proxy', 1)` (or appropriate value) in `main.ts` for any application intended to run behind a reverse proxy.
+
+## 2024-05-02 - Path Traversal (LFI) via Absolute Paths in File Services
+**Vulnerability:** The `FilesService` used `path.join(process.cwd(), "uploads", type, filename)` to resolve file paths and only checked `filename.includes("..")` to prevent path traversal. This failed to protect against Local File Inclusion (LFI) using absolute paths (e.g., `/etc/passwd`), because `path.join` on absolute strings simply appends them as relative, ignoring their root-changing behavior, while standard Node APIs will fetch the actual OS path.
+**Learning:** `path.join` and simple `..` string checks are insufficient for boundary validation. If the underlying API resolves absolute paths, they bypass these naive filters. Additionally, using `jest.mock("path")` suppresses the actual pathing behavior in tests, leading to false confidence.
+**Prevention:** Always use `path.resolve` to establish an absolute target path, and strictly verify it with `targetPath.startsWith(basePath + path.sep)`. Remove dangerous mocks like `jest.mock("path")` in security tests to ensure the tests validate real OS-level path parsing.
