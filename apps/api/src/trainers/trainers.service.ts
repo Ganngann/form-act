@@ -11,17 +11,17 @@ export class TrainersService {
   constructor(
     private prisma: PrismaService,
     private authService: AuthService,
-  ) { }
+  ) {}
 
   async findAll(skip: number = 0, take: number = 10, search?: string) {
     const where: Prisma.FormateurWhereInput = search
       ? {
-        OR: [
-          { firstName: { contains: search } },
-          { lastName: { contains: search } },
-          { email: { contains: search } },
-        ],
-      }
+          OR: [
+            { firstName: { contains: search } },
+            { lastName: { contains: search } },
+            { email: { contains: search } },
+          ],
+        }
       : {};
 
     const [data, total] = await Promise.all([
