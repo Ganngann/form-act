@@ -22,3 +22,10 @@
 **Vulnerability:** The application relied on `req.ip` for security controls (like rate limiting) but did not enable `trust proxy` in `main.ts`, meaning the IP would always be the load balancer's IP in production.
 **Learning:** NestJS/Express defaults to `trust proxy: false`. Without this, any IP-based logic (Rate Limiting, IP Whitelisting) is ineffective behind a proxy and can lead to self-DoS (blocking all users).
 **Prevention:** Always verify `app.set('trust proxy', 1)` (or appropriate value) in `main.ts` for any application intended to run behind a reverse proxy.
+## 2026-03-12 - Missing Input Sanitization in Frontend Render
+
+**Vulnerability:** Found uses of `dangerouslySetInnerHTML` directly rendering configuration strings like `hero.title`, `promo.title`, `v.title`, `cta.title`, and legal document contents. This leaves the frontend highly susceptible to Stored XSS if the API content config or database values are ever compromised or not sanitized properly on the backend.
+
+**Learning:** When using `dangerouslySetInnerHTML` in React/Next.js to render HTML content originating from a CMS, API, or database, the content must be sanitized before rendering to protect against XSS.
+
+**Prevention:** Always use a library like `sanitize-html` to wrap the variable passed to `__html`. For this project, I created a custom `sanitize.ts` utility that allows safe tags/attributes and wrapped the vulnerable variables.
