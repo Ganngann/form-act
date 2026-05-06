@@ -13,6 +13,8 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { Roles } from "../auth/roles.decorator";
+import { RolesGuard } from "../auth/roles.guard";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ConfigurationsService } from "./configurations.service";
 import {
@@ -30,7 +32,8 @@ export class ConfigurationsController {
     return this.configurationsService.getConfiguration(key);
   }
 
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Roles("ADMIN")
   @Put(":key")
   async updateConfiguration(
     @Param("key") key: string,
@@ -44,7 +47,8 @@ export class ConfigurationsController {
     return this.configurationsService.updateConfiguration(key, body);
   }
 
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Roles("ADMIN")
   @Post("upload")
   @UseInterceptors(
     FileInterceptor("file", {
