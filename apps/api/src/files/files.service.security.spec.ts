@@ -10,12 +10,6 @@ jest.mock("fs", () => ({
   createReadStream: jest.fn(),
 }));
 
-// Mock path.join
-jest.mock("path", () => ({
-  ...jest.requireActual("path"),
-  join: jest.fn((...args) => args.join("/")),
-}));
-
 describe("FilesService Security", () => {
   let service: FilesService;
 
