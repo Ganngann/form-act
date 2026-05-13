@@ -22,3 +22,8 @@
 **Vulnerability:** The application relied on `req.ip` for security controls (like rate limiting) but did not enable `trust proxy` in `main.ts`, meaning the IP would always be the load balancer's IP in production.
 **Learning:** NestJS/Express defaults to `trust proxy: false`. Without this, any IP-based logic (Rate Limiting, IP Whitelisting) is ineffective behind a proxy and can lead to self-DoS (blocking all users).
 **Prevention:** Always verify `app.set('trust proxy', 1)` (or appropriate value) in `main.ts` for any application intended to run behind a reverse proxy.
+
+## $(date +%Y-%m-%d) - XSS Vulnerability in dangerouslySetInnerHTML
+**Vulnerability:** Unsanitized user inputs and dynamic content (e.g. `hero.title`, `legal content`) were rendered directly to the DOM in `apps/web` components via React's `dangerouslySetInnerHTML`.
+**Learning:** By default, dynamic or admin-provided content rendered with `dangerouslySetInnerHTML` allows execution of malicious scripts if an attacker can inject an `<script>` or `<img onerror=...>` tag into the data source.
+**Prevention:** Always wrap dynamically rendered HTML content with a sanitizer library like `sanitize-html`. Use custom configurations to preserve necessary layout tags and classes (e.g. `class` and `className` attributes) so structural styles are not stripped out.
