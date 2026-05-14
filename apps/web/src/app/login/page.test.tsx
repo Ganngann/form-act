@@ -48,6 +48,48 @@ describe('LoginPage', () => {
     });
   });
 
+  it('handles generic error with fallback message', async () => {
+    const user = userEvent.setup();
+    (global.fetch as any).mockRejectedValue(new Error(''));
+
+    render(<LoginPage />);
+
+    await user.type(screen.getByPlaceholderText('Email'), 'error@test.com');
+    await user.type(screen.getByPlaceholderText('Mot de passe'), 'any');
+    await user.click(screen.getByRole('button', { name: 'Se connecter' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Login failed')).toBeDefined();
+    });
+  });
+
+  it('shows loading state during submission', async () => {
+    const user = userEvent.setup();
+    let resolveFetch: (value: any) => void;
+    const fetchPromise = new Promise((resolve) => {
+      resolveFetch = resolve;
+    });
+    (global.fetch as any).mockReturnValue(fetchPromise);
+
+    render(<LoginPage />);
+
+    await user.type(screen.getByPlaceholderText('Email'), 'admin@test.com');
+    await user.type(screen.getByPlaceholderText('Mot de passe'), 'pass');
+    await user.click(screen.getByRole('button', { name: 'Se connecter' }));
+
+    expect(screen.getByRole('button', { name: 'Chargement...' })).toBeDefined();
+    expect(screen.getByRole('button', { name: 'Chargement...' })).toBeDisabled();
+
+    resolveFetch!({
+      ok: true,
+      json: async () => ({ role: 'ADMIN' }),
+    });
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith('/admin');
+    });
+  });
+
   it('redirects ADMIN on success', async () => {
     const user = userEvent.setup();
     (global.fetch as any).mockResolvedValue({

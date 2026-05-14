@@ -11,11 +11,13 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
       const res = await fetch(`${API_URL}/auth/login`, {
@@ -47,7 +49,9 @@ export default function LoginPage() {
       router.refresh();
 
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,7 +88,9 @@ export default function LoginPage() {
                 Pas encore de compte ? S&apos;inscrire
               </Link>
             </div>
-            <Button type="submit" className="w-full">Se connecter</Button>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Chargement...' : 'Se connecter'}
+            </Button>
           </form>
         </CardContent>
       </Card>
