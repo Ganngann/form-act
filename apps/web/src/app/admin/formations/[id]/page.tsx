@@ -1,12 +1,17 @@
 import { FormationForm } from '@/components/admin/FormationForm';
 import { API_URL } from '@/lib/config';
+import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 
 async function getFormation(id: string) {
+    const cookieStore = cookies();
+    const token = cookieStore.get('Authentication')?.value;
+
     const res = await fetch(`${API_URL}/formations/${id}`, {
+        headers: token ? { Cookie: `Authentication=${token}` } : {},
         cache: 'no-store',
     });
     if (!res.ok) throw new Error('Failed to fetch formation');
@@ -14,9 +19,13 @@ async function getFormation(id: string) {
 }
 
 async function getMetadata() {
+    const cookieStore = cookies();
+    const token = cookieStore.get('Authentication')?.value;
+    const headers = token ? { Cookie: `Authentication=${token}` } : {};
+
     const [catsRes, trainersRes] = await Promise.all([
-        fetch(`${API_URL}/categories`, { cache: 'no-store' }),
-        fetch(`${API_URL}/admin/trainers?take=1000`, { cache: 'no-store' })
+        fetch(`${API_URL}/categories`, { headers, cache: 'no-store' }),
+        fetch(`${API_URL}/admin/trainers?take=1000`, { headers, cache: 'no-store' })
     ]);
 
     const categories = await catsRes.json();
