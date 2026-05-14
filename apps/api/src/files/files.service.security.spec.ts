@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FilesService } from "./files.service";
 import { PrismaService } from "../prisma/prisma.service";
-import { ForbiddenException } from "@nestjs/common";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { existsSync, createReadStream } from "fs";
 
 // Mock fs
@@ -71,5 +71,27 @@ describe("FilesService Security", () => {
 
     const result = await service.getFile("avatars", "user.jpg", user);
     expect(result).toBeDefined();
+  });
+
+  it("should reject URI-encoded path traversal", async () => {
+    const user = { userId: "1", role: "ADMIN", email: "admin@test.com" };
+    // %2e%2e%2f is ../
+    await expect(
+      service.getFile("public", "%2e%2e%2fetc/passwd", user),
+    ).rejects.toThrow(NotFoundException);
+  });
+
+  it("should reject null bytes in filename", async () => {
+    const user = { userId: "1", role: "ADMIN", email: "admin@test.com" };
+    await expect(
+      service.getFile("public", "test.jpg\0.php", user),
+    ).rejects.toThrow(NotFoundException);
+  });
+
+  it("should reject invalid URI encoding", async () => {
+    const user = { userId: "1", role: "ADMIN", email: "admin@test.com" };
+    await expect(service.getFile("public", "test%G1.jpg", user)).rejects.toThrow(
+      NotFoundException,
+    );
   });
 });

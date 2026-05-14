@@ -30,14 +30,13 @@ export class FilesService {
       throw new ForbiddenException("Access to this folder is forbidden");
     }
 
+    const decodedFilename = this.decodeAndValidatePath(filename);
+    if (type.includes("..")) throw new NotFoundException();
+
     const basePath = join(process.cwd(), "uploads", type);
-    const targetPath = resolve(basePath, filename);
+    const targetPath = resolve(basePath, decodedFilename);
 
-    // Basic Path Traversal protection
-    if (filename.includes("..") || type.includes(".."))
-      throw new NotFoundException();
-
-    // Prevent absolute path injection
+    // Prevent absolute path injection and ensure boundary
     if (!targetPath.startsWith(basePath + sep)) {
       throw new NotFoundException();
     }
@@ -47,7 +46,7 @@ export class FilesService {
     }
 
     if (type === "proofs") {
-      await this.validateProofAccess(filename, user);
+      await this.validateProofAccess(decodedFilename, user);
     }
 
     const file = createReadStream(targetPath);
@@ -55,12 +54,12 @@ export class FilesService {
   }
 
   async getPublicFile(filename: string): Promise<StreamableFile> {
+    const decodedFilename = this.decodeAndValidatePath(filename);
+
     const basePath = join(process.cwd(), "uploads", "public");
-    const targetPath = resolve(basePath, filename);
+    const targetPath = resolve(basePath, decodedFilename);
 
-    if (filename.includes("..")) throw new NotFoundException();
-
-    // Prevent absolute path injection
+    // Prevent absolute path injection and ensure boundary
     if (!targetPath.startsWith(basePath + sep)) {
       throw new NotFoundException();
     }
@@ -71,6 +70,22 @@ export class FilesService {
 
     const file = createReadStream(targetPath);
     return new StreamableFile(file);
+  }
+
+  private decodeAndValidatePath(filename: string): string {
+    let decoded: string;
+    try {
+      decoded = decodeURIComponent(filename);
+    } catch (e) {
+      throw new NotFoundException();
+    }
+
+    // Check for null byte and traversal
+    if (decoded.includes("\0") || decoded.includes("..")) {
+      throw new NotFoundException();
+    }
+
+    return decoded;
   }
 
   private async validateProofAccess(filename: string, user: UserPayload) {
