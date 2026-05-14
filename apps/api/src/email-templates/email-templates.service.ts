@@ -25,13 +25,21 @@ export class EmailTemplatesService {
   }
 
   async update(type: string, updateDto: UpdateEmailTemplateDto) {
+    this.logger.log(`Updating email template: ${type}`);
     // Ensure exists
     await this.findOne(type);
 
-    return this.prisma.emailTemplate.update({
-      where: { type },
-      data: updateDto,
-    });
+    try {
+      const updated = await this.prisma.emailTemplate.update({
+        where: { type },
+        data: updateDto,
+      });
+      this.logger.log(`Successfully updated email template: ${type}`);
+      return updated;
+    } catch (error) {
+      this.logger.error(`Failed to update email template: ${type}`, error.stack);
+      throw error;
+    }
   }
 
   async getRenderedTemplate(type: string, variables: Record<string, any>) {

@@ -8,4 +8,8 @@ export class UpdateEmailTemplateDto {
   @IsString()
   @IsOptional()
   body?: string;
+
+  @IsString()
+  @IsOptional()
+  variables?: string;
 }
