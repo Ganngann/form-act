@@ -1,12 +1,20 @@
 import { TrainerForm } from '@/components/admin/TrainerForm';
 import { API_URL } from '@/lib/config';
+import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 
 async function getTrainer(id: string) {
+    const cookieStore = cookies();
+    const token = cookieStore.get('Authentication')?.value;
+
+    const headers: Record<string, string> = {};
+    if (token) headers['Cookie'] = `Authentication=${token}`;
+
     const res = await fetch(`${API_URL}/admin/trainers/${id}`, {
+        headers,
         cache: 'no-store',
     });
     if (!res.ok) throw new Error('Failed to fetch trainer');

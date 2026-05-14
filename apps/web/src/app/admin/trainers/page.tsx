@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +19,14 @@ import {
 } from "@/components/ui/table";
 
 async function getTrainers(page: number = 0, search: string = '') {
+  const cookieStore = cookies();
+  const token = cookieStore.get('Authentication')?.value;
+
+  const headers: Record<string, string> = {};
+  if (token) headers['Cookie'] = `Authentication=${token}`;
+
   const res = await fetch(`${API_URL}/admin/trainers?skip=${page * 10}&take=10&search=${search}`, {
+    headers,
     cache: 'no-store',
   });
   if (!res.ok) throw new Error('Failed to fetch trainers');
