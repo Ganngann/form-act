@@ -23,6 +23,11 @@
 **Learning:** NestJS/Express defaults to `trust proxy: false`. Without this, any IP-based logic (Rate Limiting, IP Whitelisting) is ineffective behind a proxy and can lead to self-DoS (blocking all users).
 **Prevention:** Always verify `app.set('trust proxy', 1)` (or appropriate value) in `main.ts` for any application intended to run behind a reverse proxy.
 
+## 2026-06-15 - Missing Authentication on Admin Controller
+**Vulnerability:** The `AdminTrainersController` was missing authentication and role-based guards, allowing unauthenticated users to perform administrative actions on trainers.
+**Learning:** When creating new controllers, especially admin ones, it is easy to forget to add security decorators.
+**Prevention:** Always verify that admin controllers include `@UseGuards(AuthGuard("jwt"), RolesGuard)` and `@Roles("ADMIN")`.
+
 ## 2026-02-15 - Absolute Path Injection in File Retrieval
 **Vulnerability:** The file retrieval methods in `FilesService` used `path.join(process.cwd(), "uploads", type, filename)`. Since `path.join` appends absolute paths natively if `filename` begins with `/` (e.g. `/etc/passwd`), this allowed arbitrary file reading, bypassing simple `includes("..")` checks.
 **Learning:** `path.join` handles absolute path arguments by replacing earlier path segments. A user input of `/etc/passwd` will become the root.
