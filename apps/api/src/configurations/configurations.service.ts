@@ -6,21 +6,18 @@ export class ConfigurationsService {
   constructor(private prisma: PrismaService) {}
 
   async getConfiguration(key: string) {
-    const config = await this.prisma.siteConfiguration.findUnique({
-      where: { key },
-    });
-
-    if (!config) {
-      // Return empty JSON object if not found, or throw?
-      // For CMS, returning default/empty might be safer for frontend not to crash
-      // But let's return null and let controller decide, or just return {}
-      return {};
-    }
-
     try {
+      const config = await this.prisma.siteConfiguration.findUnique({
+        where: { key },
+      });
+
+      if (!config) {
+        return {};
+      }
+
       return JSON.parse(config.value);
     } catch (e) {
-      console.error(`Failed to parse configuration for key ${key}`, e);
+      console.error(`[ConfigurationsService] Error fetching key "${key}":`, e.message);
       return {};
     }
   }

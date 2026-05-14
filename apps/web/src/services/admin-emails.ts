@@ -26,7 +26,7 @@ export const adminEmailsService = {
 
   updateTemplate: (type: string, data: UpdateEmailTemplateData): Promise<EmailTemplate> =>
     fetchWithAuth(`/email-templates/${type}`, {
-      method: 'PATCH',
+      method: 'POST',
       body: JSON.stringify(data),
     }),
 };
