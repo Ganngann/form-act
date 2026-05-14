@@ -15,8 +15,11 @@ async function getTrainer(id: string) {
   const cookieStore = cookies();
   const token = cookieStore.get('Authentication')?.value;
 
+  const headers: Record<string, string> = {};
+  if (token) headers['Cookie'] = `Authentication=${token}`;
+
   const res = await fetch(`${API_URL}/admin/trainers/${id}`, {
-    headers: token ? { Cookie: `Authentication=${token}` } : {},
+    headers,
     cache: 'no-store',
   });
   if (!res.ok) return null;

@@ -10,8 +10,11 @@ async function getFormation(id: string) {
     const cookieStore = cookies();
     const token = cookieStore.get('Authentication')?.value;
 
+    const headers: Record<string, string> = {};
+    if (token) headers['Cookie'] = `Authentication=${token}`;
+
     const res = await fetch(`${API_URL}/formations/${id}`, {
-        headers: token ? { Cookie: `Authentication=${token}` } : {},
+        headers,
         cache: 'no-store',
     });
     if (!res.ok) throw new Error('Failed to fetch formation');
@@ -21,7 +24,8 @@ async function getFormation(id: string) {
 async function getMetadata() {
     const cookieStore = cookies();
     const token = cookieStore.get('Authentication')?.value;
-    const headers = token ? { Cookie: `Authentication=${token}` } : {};
+    const headers: Record<string, string> = {};
+    if (token) headers['Cookie'] = `Authentication=${token}`;
 
     const [catsRes, trainersRes] = await Promise.all([
         fetch(`${API_URL}/categories`, { headers, cache: 'no-store' }),

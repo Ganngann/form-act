@@ -6,7 +6,8 @@ import { AdminHeader } from '@/components/admin/AdminHeader';
 async function getData() {
     const cookieStore = cookies();
     const token = cookieStore.get('Authentication')?.value;
-    const headers = token ? { Cookie: `Authentication=${token}` } : {};
+    const headers: Record<string, string> = {};
+    if (token) headers['Cookie'] = `Authentication=${token}`;
 
     const [catsRes, trainersRes] = await Promise.all([
         fetch(`${API_URL}/categories`, { headers, cache: 'no-store' }),
