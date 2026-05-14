@@ -94,6 +94,7 @@ export class TrainersService {
         firstName: data.firstName,
         lastName: data.lastName,
         bio: data.bio,
+        isActive: data.isActive ?? true,
         user: { connect: { id: user.id } },
       };
 
