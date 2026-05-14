@@ -27,3 +27,13 @@
 **Vulnerability:** The `AdminTrainersController` was missing authentication and role-based guards, allowing unauthenticated users to perform administrative actions on trainers.
 **Learning:** When creating new controllers, especially admin ones, it is easy to forget to add security decorators.
 **Prevention:** Always verify that admin controllers include `@UseGuards(AuthGuard("jwt"), RolesGuard)` and `@Roles("ADMIN")`.
+
+## 2026-02-15 - Absolute Path Injection in File Retrieval
+**Vulnerability:** The file retrieval methods in `FilesService` used `path.join(process.cwd(), "uploads", type, filename)`. Since `path.join` appends absolute paths natively if `filename` begins with `/` (e.g. `/etc/passwd`), this allowed arbitrary file reading, bypassing simple `includes("..")` checks.
+**Learning:** `path.join` handles absolute path arguments by replacing earlier path segments. A user input of `/etc/passwd` will become the root.
+**Prevention:** To safely construct paths, use `path.join` for the trusted base path, then `path.resolve(basePath, filename)`, followed by an explicit validation `targetPath.startsWith(basePath + path.sep)`. This ensures absolute payloads evaluate properly but fail the boundary verification check.
+
+## $(date +%Y-%m-%d) - XSS Vulnerability in dangerouslySetInnerHTML
+**Vulnerability:** Unsanitized user inputs and dynamic content (e.g. `hero.title`, `legal content`) were rendered directly to the DOM in `apps/web` components via React's `dangerouslySetInnerHTML`.
+**Learning:** By default, dynamic or admin-provided content rendered with `dangerouslySetInnerHTML` allows execution of malicious scripts if an attacker can inject an `<script>` or `<img onerror=...>` tag into the data source.
+**Prevention:** Always wrap dynamically rendered HTML content with a sanitizer library like `sanitize-html`. Use custom configurations to preserve necessary layout tags and classes (e.g. `class` and `className` attributes) so structural styles are not stripped out.
