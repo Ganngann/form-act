@@ -57,7 +57,7 @@ async function main() {
     { firstName: 'Nicolas', lastName: 'Petit', email: 'nicolas.petit@example.com', zones: ['WVL', 'OVL'], experts: ['WVL', 'OVL', 'VBR', 'BRU'] },
   ];
 
-  const trainers = [];
+  const trainers: any[] = [];
   for (const t of trainersData) {
     const user = await prisma.user.upsert({
       where: { email: t.email },
@@ -95,7 +95,7 @@ async function main() {
     { title: 'Leadership & Coaching', experts: true, cat: 'Management' },
   ];
 
-  const formations = [];
+  const formations: any[] = [];
   for (const f of formationsData) {
     const assignedTrainers = f.experts
       ? trainers.sort(() => 0.5 - Math.random()).slice(0, 2)
@@ -131,7 +131,7 @@ async function main() {
     { name: 'Green Energy SA', vat: 'BE0666666666', email: 'office@greenenergy.be' },
   ];
 
-  const clients = [];
+  const clients: any[] = [];
   for (const c of clientsData) {
     const user = await prisma.user.upsert({
       where: { email: c.email },

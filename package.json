@@ -10,7 +10,8 @@
         "test": "turbo run test",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
         "init:project": "bash scripts/init-project.sh",
-        "start:windows": "powershell -ExecutionPolicy Bypass -File scripts/start-dev.ps1"
+        "start:windows": "powershell -ExecutionPolicy Bypass -File scripts/start-dev.ps1",
+        "build:prod": "powershell -ExecutionPolicy Bypass -File scripts/build-prod.ps1"
     },
     "devDependencies": {
         "@testing-library/user-event": "^14.6.1",
