@@ -257,6 +257,21 @@ Ce sprint vise à corriger les inconsistances d'interface et d'architecture iden
 - [x] Liste des templates editables (Sujet + Corps).
 - [x] Support des variables dynamiques (ex: `{{client_name}}`).
 
+### US-16 : Admin - Correction Validation Création Formateur (isActive)
+**Référence :** Bug Validation DTO
+**En tant que** Administrateur,
+**Je veux** que le formulaire de création de formateur accepte la propriété `isActive`,
+**Afin de** pouvoir définir le statut du compte dès l'enregistrement sans erreur de validation.
+
+*Critères d'Acceptation (AC) :*
+- [x] La soumission du formulaire "Nouveau Formateur" ne retourne plus l'erreur "property isActive should not exist".
+- [x] Le `CreateTrainerDto` inclut désormais la propriété `isActive` (boolean, optionnel).
+- [x] Le statut (Actif/Désactivé) choisi dans l'interface est bien persisté en base de données.
+
+**Spécifications Techniques :**
+- [x] Backend : Ajouter `@IsBoolean()` et `@IsOptional()` sur `isActive` dans `apps/api/src/trainers/dto/create-trainer.dto.ts`.
+- [x] Backend : S'assurer que `trainers.service.ts` passe bien cette valeur à Prisma lors du `create`.
+
 ### Tech-02 : UI - Standardisation Header Admin
 **But :** Harmoniser les en-têtes des pages d'administration.
 - [x] Créer un composant réutilisable `AdminHeader`.

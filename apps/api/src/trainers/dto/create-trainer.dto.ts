@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsEmail,
   IsNotEmpty,
   IsOptional,
@@ -32,4 +33,8 @@ export class CreateTrainerDto {
   @IsString()
   @IsOptional()
   bio?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 }
