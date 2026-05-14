@@ -199,7 +199,8 @@ export class NotificationsService {
             firstName: session.trainer.firstName,
             date: new Date(session.date).toLocaleDateString("fr-BE"),
             companyName: session.client?.companyName || "Inconnu",
-            location: session.location || session.client?.address || "À confirmer",
+            location:
+              session.location || session.client?.address || "À confirmer",
           },
         );
         await this.emailService.sendEmail(

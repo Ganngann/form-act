@@ -23,6 +23,11 @@
 **Learning:** NestJS/Express defaults to `trust proxy: false`. Without this, any IP-based logic (Rate Limiting, IP Whitelisting) is ineffective behind a proxy and can lead to self-DoS (blocking all users).
 **Prevention:** Always verify `app.set('trust proxy', 1)` (or appropriate value) in `main.ts` for any application intended to run behind a reverse proxy.
 
+## 2026-02-15 - Absolute Path Injection in File Retrieval
+**Vulnerability:** The file retrieval methods in `FilesService` used `path.join(process.cwd(), "uploads", type, filename)`. Since `path.join` appends absolute paths natively if `filename` begins with `/` (e.g. `/etc/passwd`), this allowed arbitrary file reading, bypassing simple `includes("..")` checks.
+**Learning:** `path.join` handles absolute path arguments by replacing earlier path segments. A user input of `/etc/passwd` will become the root.
+**Prevention:** To safely construct paths, use `path.join` for the trusted base path, then `path.resolve(basePath, filename)`, followed by an explicit validation `targetPath.startsWith(basePath + path.sep)`. This ensures absolute payloads evaluate properly but fail the boundary verification check.
+
 ## $(date +%Y-%m-%d) - XSS Vulnerability in dangerouslySetInnerHTML
 **Vulnerability:** Unsanitized user inputs and dynamic content (e.g. `hero.title`, `legal content`) were rendered directly to the DOM in `apps/web` components via React's `dangerouslySetInnerHTML`.
 **Learning:** By default, dynamic or admin-provided content rendered with `dangerouslySetInnerHTML` allows execution of malicious scripts if an attacker can inject an `<script>` or `<img onerror=...>` tag into the data source.
