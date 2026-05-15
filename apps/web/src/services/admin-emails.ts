@@ -29,4 +29,10 @@ export const adminEmailsService = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+
+  sendTestEmail: (type: string, data: { email: string; subject?: string; body?: string }): Promise<{ success: boolean }> =>
+    fetchWithAuth(`/email-templates/${type}/test`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 };

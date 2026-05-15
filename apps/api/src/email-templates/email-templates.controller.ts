@@ -2,6 +2,7 @@ import { Controller, Get, Body, Post, Param, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { EmailTemplatesService } from "./email-templates.service";
 import { UpdateEmailTemplateDto } from "./dto/update-email-template.dto";
+import { SendTestEmailDto } from "./dto/send-test-email.dto";
 import { RolesGuard } from "../auth/roles.guard";
 import { Roles } from "../auth/roles.decorator";
 
@@ -29,5 +30,14 @@ export class EmailTemplatesController {
     @Body() updateDto: UpdateEmailTemplateDto,
   ) {
     return this.emailTemplatesService.update(type, updateDto);
+  }
+
+  @Post(":type/test")
+  @Roles("ADMIN")
+  sendTest(
+    @Param("type") type: string,
+    @Body() testDto: SendTestEmailDto,
+  ) {
+    return this.emailTemplatesService.sendTestEmail(type, testDto);
   }
 }

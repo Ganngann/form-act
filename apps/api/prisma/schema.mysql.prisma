@@ -129,7 +129,7 @@ model EmailTemplate {
   id        String   @id @default(uuid())
   type      String   @unique
   subject   String
-  body      String   @db.Text // HTML content
+  body      String   @db.LongText // HTML content
   variables String?  @db.Text // JSON string
   updatedAt DateTime @updatedAt
 }
