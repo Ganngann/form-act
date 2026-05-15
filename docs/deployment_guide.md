@@ -79,5 +79,5 @@ Pour finaliser la connexion (Prod) :
 3.  Connectez-vous en SSH pour jouer les migrations :
     ```bash
     cd api
-    npx prisma migrate deploy
+    npx prisma db push
     ```

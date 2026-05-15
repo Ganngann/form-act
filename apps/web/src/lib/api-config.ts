@@ -15,7 +15,15 @@ export async function getSiteConfig<T>(key: SiteConfigKey): Promise<T | null> {
       return null;
     }
 
-    return res.json();
+    const text = await res.text();
+    if (!text) return null;
+
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      console.error(`Invalid JSON for ${key}:`, text);
+      return null;
+    }
   } catch (error) {
     console.error(`Error fetching config for ${key}:`, error);
     return null;

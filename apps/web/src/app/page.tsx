@@ -19,7 +19,9 @@ async function getCategories() {
       console.error('Failed to fetch categories:', res.statusText);
       return [];
     }
-    return res.json();
+    const text = await res.text();
+    if (!text) return [];
+    return JSON.parse(text);
   } catch (error) {
     console.error('Error fetching categories:', error);
     return [];
@@ -211,7 +213,7 @@ export default async function Home() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {categories.slice(0, 12).map((category: any) => (
+          {Array.isArray(categories) && categories.slice(0, 12).map((category: any) => (
             <Link
               key={category.id}
               href={`/catalogue?categoryId=${category.id}`}
@@ -229,7 +231,7 @@ export default async function Home() {
       {/* Value Pillars */}
       <section className="container px-4 py-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {values.map((v, i) => (
+          {Array.isArray(values) && values.map((v, i) => (
             <div key={i} className="flex flex-col gap-6">
               <div className="h-14 w-14 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
                 {i === 0 && <Shield className="h-7 w-7" />}
