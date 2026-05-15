@@ -21,7 +21,7 @@ export function AdminPriceProposal({ session }: { session: any }) {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/sessions/${session.id}/offer`, {
-        method: "PATCH",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ price }),
         credentials: "include"

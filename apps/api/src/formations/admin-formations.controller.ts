@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
@@ -31,7 +30,7 @@ export class AdminFormationsController {
     return this.formationsService.create(createFormationDto);
   }
 
-  @Patch(":id")
+  @Post(":id")
   update(
     @Param("id") id: string,
     @Body() updateFormationDto: UpdateFormationDto,

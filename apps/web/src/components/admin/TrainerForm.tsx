@@ -118,7 +118,7 @@ export function TrainerForm({ initialData, isEdit = false }: TrainerFormProps) {
       const url = isEdit
         ? `${API_URL}/admin/trainers/${initialData?.id}`
         : `${API_URL}/admin/trainers`;
-      const method = isEdit ? 'PATCH' : 'POST';
+      const method = 'POST';
 
       const res = await fetch(url, {
         method,

@@ -3,9 +3,8 @@ import {
   Get,
   Param,
   Query,
-  Patch,
-  Body,
   Post,
+  Body,
   UseInterceptors,
   UploadedFile,
   UseGuards,
@@ -70,7 +69,7 @@ export class TrainersController {
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Patch(":id")
+  @Post(":id")
   async updateProfile(
     @Param("id") id: string,
     @Body() updateDto: UpdateTrainerDto,

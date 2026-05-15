@@ -95,7 +95,7 @@ describe('adminFormationsService', () => {
 
       expect(result).toEqual(mockData);
       expect(mockFetch).toHaveBeenCalledWith(`${API_URL}/admin/formations/1`, expect.objectContaining({
-        method: 'PATCH',
+        method: 'POST',
         body: JSON.stringify(inputData),
       }));
     });

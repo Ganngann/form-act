@@ -29,7 +29,7 @@ export function ClientOfferValidation({ session }: ClientOfferValidationProps) {
         setLoading(true);
         try {
             const res = await fetch(`${API_URL}/sessions/${session.id}/accept`, {
-                method: "PATCH",
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include" // Important for cookies
             });

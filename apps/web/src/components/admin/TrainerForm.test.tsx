@@ -43,7 +43,7 @@ describe('TrainerForm', () => {
     expect(screen.getByRole('button', { name: /Mettre à jour/i })).toBeDefined();
   });
 
-  it('submits PATCH when isEdit is true', async () => {
+  it('submits POST when isEdit is true', async () => {
     const user = userEvent.setup();
     const trainer = { id: '1', firstName: 'Jane', lastName: 'Smith', email: 'jane@smith.com' };
     render(<TrainerForm initialData={trainer} isEdit={true} />);
@@ -53,7 +53,7 @@ describe('TrainerForm', () => {
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
         'http://api.test/admin/trainers/1',
-        expect.objectContaining({ method: 'PATCH' })
+        expect.objectContaining({ method: 'POST' })
       );
     });
   });

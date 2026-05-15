@@ -79,7 +79,7 @@ describe("ClientEditForm", () => {
     expect(global.fetch).toHaveBeenCalledWith(
       expect.stringContaining("/clients/client-123"),
       expect.objectContaining({
-        method: "PATCH",
+        method: "POST",
         body: expect.stringContaining("New Company Name"),
       })
     );

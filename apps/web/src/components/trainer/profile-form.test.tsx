@@ -58,7 +58,7 @@ describe('ProfileForm', () => {
       expect(global.fetch).toHaveBeenCalledWith(
         'http://api.test/trainers/1',
         expect.objectContaining({
-          method: 'PATCH',
+          method: 'POST',
           body: JSON.stringify({ bio: 'New bio' }),
         })
       );

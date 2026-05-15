@@ -135,7 +135,7 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
             };
 
             const res = await fetch(`${API_URL}/sessions/${session.id}`, {
-                method: "PATCH",
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },

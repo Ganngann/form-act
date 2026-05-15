@@ -32,7 +32,7 @@ export const adminFormationsService = {
 
   updateFormation: (id: string, data: UpdateFormationData): Promise<Formation> =>
     fetchWithAuth(`/admin/formations/${id}`, {
-      method: 'PATCH',
+      method: 'POST',
       body: JSON.stringify(data),
     }),
 

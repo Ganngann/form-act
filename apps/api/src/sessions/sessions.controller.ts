@@ -4,7 +4,6 @@ import {
   Param,
   Query,
   Post,
-  Patch,
   Body,
   UseInterceptors,
   UploadedFile,
@@ -174,7 +173,7 @@ export class SessionsController {
     }
   }
 
-  @Patch(":id")
+  @Post(":id")
   async update(
     @Param("id") id: string,
     @Body() updateSessionDto: UpdateSessionDto,
@@ -213,7 +212,7 @@ export class SessionsController {
     return this.sessionsService.update(id, updateSessionDto);
   }
 
-  @Patch(":id/admin-update")
+  @Post(":id/admin-update")
   async adminUpdate(
     @Param("id") id: string,
     @Body() body: AdminUpdateSessionDto,
@@ -233,7 +232,7 @@ export class SessionsController {
     return this.sessionsService.sendLogisticsReminder(id);
   }
 
-  @Patch(":id/offer")
+  @Post(":id/offer")
   async sendOffer(
     @Param("id") id: string,
     @Body() body: { price: number | string },
@@ -245,7 +244,7 @@ export class SessionsController {
     return this.sessionsService.sendOffer(id, body.price);
   }
 
-  @Patch(":id/accept")
+  @Post(":id/accept")
   async acceptOffer(@Param("id") id: string, @Request() req) {
     const session = await this.sessionsService.findOne(id);
 

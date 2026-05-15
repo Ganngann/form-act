@@ -116,10 +116,11 @@ export default function SettingsPage() {
         setError("");
         setSuccess("");
 
-        const method = profile ? "PATCH" : "POST";
+        const method = "POST";
 
         try {
-            const res = await fetch(`${API_URL}/clients/me`, {
+            const endpoint = profile ? "/clients/me/update" : "/clients/me";
+            const res = await fetch(`${API_URL}${endpoint}`, {
                 method: method,
                 headers: {
                     "Content-Type": "application/json",
