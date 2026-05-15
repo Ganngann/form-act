@@ -26,7 +26,7 @@ export function ProfileForm({ trainer }: { trainer: any }) {
         setLoading(true);
         try {
             const res = await fetch(`${API_URL}/trainers/${trainer.id}`, {
-                method: 'PATCH',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },

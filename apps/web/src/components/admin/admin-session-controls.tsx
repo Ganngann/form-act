@@ -36,7 +36,7 @@ export function AdminSessionControls({ session, trainers }: { session: Session; 
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/sessions/${session.id}/admin-update`, {
-        method: "PATCH",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates),
         credentials: "include"

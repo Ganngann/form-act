@@ -4,13 +4,14 @@ import {
   UseGuards,
   Request,
   ForbiddenException,
-  Patch,
+  Post,
+
+
   Body,
   Param,
 } from "@nestjs/common";
 import { ClientsService } from "./clients.service";
 import { AuthGuard } from "@nestjs/passport";
-import { Post } from "@nestjs/common";
 import { UpdateClientProfileDto } from "./dto/update-client-profile.dto";
 import { CreateClientProfileDto } from "./dto/create-client-profile.dto";
 
@@ -42,7 +43,7 @@ export class ClientsController {
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Patch("me")
+  @Post("me/update")
   async updateMyProfile(@Request() req, @Body() body: UpdateClientProfileDto) {
     return this.clientsService.updateProfile(
       req.user.userId,
@@ -61,7 +62,7 @@ export class ClientsController {
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Patch(":id")
+  @Post(":id")
   async update(
     @Request() req,
     @Param("id") id: string,

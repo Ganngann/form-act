@@ -30,7 +30,7 @@ export function AdminTrainerControls({ trainer }: { trainer: Trainer }) {
         setLoading(true);
         try {
             const res = await fetch(`${API_URL}/admin/trainers/${trainer.id}`, {
-                method: "PATCH",
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
                 body: JSON.stringify({ isActive: !isActive }),

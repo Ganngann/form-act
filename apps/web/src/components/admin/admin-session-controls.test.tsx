@@ -60,7 +60,7 @@ describe("AdminSessionControls", () => {
         expect(global.fetch).toHaveBeenCalledWith(
             expect.stringContaining("/sessions/1/admin-update"),
             expect.objectContaining({
-                method: "PATCH",
+                method: "POST",
                 body: JSON.stringify({ status: "CANCELLED" }),
             })
         );
@@ -89,7 +89,7 @@ describe("AdminSessionControls", () => {
         expect(global.fetch).toHaveBeenCalledWith(
             expect.stringContaining("/sessions/1/admin-update"),
             expect.objectContaining({
-                method: "PATCH",
+                method: "POST",
                 body: JSON.stringify({ isLogisticsOpen: true }),
             })
         );

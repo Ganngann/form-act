@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Query,
@@ -45,7 +44,7 @@ export class AdminTrainersController {
     return this.trainersService.create(createTrainerDto);
   }
 
-  @Patch(":id")
+  @Post(":id")
   update(@Param("id") id: string, @Body() updateTrainerDto: UpdateTrainerDto) {
     return this.trainersService.update(id, updateTrainerDto);
   }

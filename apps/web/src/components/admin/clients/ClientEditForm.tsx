@@ -49,7 +49,7 @@ export function ClientEditForm({ client, auditLogs }: ClientEditFormProps) {
 
         try {
             const res = await fetch(`${API_URL}/clients/${client.id}`, {
-                method: "PATCH",
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
                 credentials: "include",

@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Post, Param, UseGuards } from "@nestjs/common";
+import { Controller, Get, Body, Post, Param, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { EmailTemplatesService } from "./email-templates.service";
 import { UpdateEmailTemplateDto } from "./dto/update-email-template.dto";

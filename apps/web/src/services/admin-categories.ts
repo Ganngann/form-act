@@ -30,7 +30,7 @@ export const adminCategoriesService = {
 
   updateCategory: (id: string, data: UpdateCategoryData): Promise<Category> =>
     fetchWithAuth(`/categories/${id}`, {
-      method: 'PATCH',
+      method: 'POST',
       body: JSON.stringify(data),
     }),
 

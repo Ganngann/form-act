@@ -78,7 +78,7 @@ export function AdminLogisticsCard({ session }: AdminLogisticsCardProps) {
 
         try {
             const res = await fetch(`${API_URL}/sessions/${session.id}/admin-update`, {
-                method: "PATCH",
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     logistics: JSON.stringify(logisticsObj),
