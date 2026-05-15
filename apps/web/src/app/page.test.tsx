@@ -37,9 +37,11 @@ describe('Home Page', () => {
   beforeEach(() => {
     global.fetch = vi.fn().mockImplementation((url) => {
       if (typeof url === 'string' && url.includes('/categories')) {
+        const categories = [{ id: '1', name: 'Cat 1' }];
         return Promise.resolve({
           ok: true,
-          json: async () => ([{ id: '1', name: 'Cat 1' }]),
+          json: async () => categories,
+          text: async () => JSON.stringify(categories),
         });
       }
       return Promise.resolve({

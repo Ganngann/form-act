@@ -45,13 +45,13 @@ describe("ConfigurationsService", () => {
       expect(result).toEqual({ foo: "bar" });
     });
 
-    it("should return empty object if not found", async () => {
+    it("should return null if not found", async () => {
       (prisma.siteConfiguration.findUnique as jest.Mock).mockResolvedValue(
         null,
       );
 
       const result = await service.getConfiguration("test");
-      expect(result).toEqual({});
+      expect(result).toBeNull();
     });
   });
 });

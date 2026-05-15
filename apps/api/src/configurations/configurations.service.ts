@@ -12,13 +12,13 @@ export class ConfigurationsService {
       });
 
       if (!config) {
-        return {};
+        return null;
       }
 
       return JSON.parse(config.value);
     } catch (e) {
       console.error(`[ConfigurationsService] Error fetching key "${key}":`, e.message);
-      return {};
+      return null;
     }
   }
 
