@@ -37,3 +37,8 @@
 **Vulnerability:** Unsanitized user inputs and dynamic content (e.g. `hero.title`, `legal content`) were rendered directly to the DOM in `apps/web` components via React's `dangerouslySetInnerHTML`.
 **Learning:** By default, dynamic or admin-provided content rendered with `dangerouslySetInnerHTML` allows execution of malicious scripts if an attacker can inject an `<script>` or `<img onerror=...>` tag into the data source.
 **Prevention:** Always wrap dynamically rendered HTML content with a sanitizer library like `sanitize-html`. Use custom configurations to preserve necessary layout tags and classes (e.g. `class` and `className` attributes) so structural styles are not stripped out.
+
+## 2026-05-15 - Missing Authentication on Trainer Missions Endpoint
+**Vulnerability:** The `@Get(":id/missions")` endpoint in `TrainersController` was missing the `@UseGuards(AuthGuard("jwt"))` decorator and authorization checks. This allowed unauthenticated users to enumerate and view sensitive trainer mission data (locations, dates, client info, etc.).
+**Learning:** When adding new endpoints that return specific user data to an otherwise partially-public controller (like `TrainersController`, which has a `/public` endpoint), it is easy to omit authentication decorators, exposing sensitive data.
+**Prevention:** Enforce a "Deny by Default" architecture (e.g., using global Guards) where routes must explicitly be made public (via a `@Public()` decorator), rather than relying on developers to remember to add `@UseGuards` to every private endpoint.
