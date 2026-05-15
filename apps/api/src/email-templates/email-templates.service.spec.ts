@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { EmailTemplatesService } from "./email-templates.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { NotFoundException } from "@nestjs/common";
+import { EmailService } from "../email/email.service";
 
 describe("EmailTemplatesService", () => {
   let service: EmailTemplatesService;
@@ -21,6 +22,12 @@ describe("EmailTemplatesService", () => {
             },
           },
         },
+        {
+          provide: EmailService,
+          useValue: {
+            sendEmail: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -34,10 +41,10 @@ describe("EmailTemplatesService", () => {
 
   describe("findAll", () => {
     it("should return an array of templates", async () => {
-      const result = [{ id: "1", type: "TEST" }];
+      const result = [{ id: "1", type: "TEST" }] as unknown as any;
       jest
         .spyOn(prisma.emailTemplate, "findMany")
-        .mockResolvedValue(result as any);
+        .mockResolvedValue(result);
 
       expect(await service.findAll()).toBe(result);
       expect(prisma.emailTemplate.findMany).toHaveBeenCalledWith({
@@ -48,10 +55,10 @@ describe("EmailTemplatesService", () => {
 
   describe("findOne", () => {
     it("should return a template", async () => {
-      const result = { id: "1", type: "TEST" };
+      const result = { id: "1", type: "TEST" } as unknown as any;
       jest
         .spyOn(prisma.emailTemplate, "findUnique")
-        .mockResolvedValue(result as any);
+        .mockResolvedValue(result);
 
       expect(await service.findOne("TEST")).toBe(result);
     });
@@ -65,13 +72,13 @@ describe("EmailTemplatesService", () => {
 
   describe("update", () => {
     it("should update a template", async () => {
-      const existing = { id: "1", type: "TEST" };
-      const updated = { id: "1", type: "TEST", subject: "New" };
+      const existing = { id: "1", type: "TEST" } as unknown as any;
+      const updated = { id: "1", type: "TEST", subject: "New" } as unknown as any;
 
-      jest.spyOn(service, "findOne").mockResolvedValue(existing as any);
+      jest.spyOn(service, "findOne").mockResolvedValue(existing);
       jest
         .spyOn(prisma.emailTemplate, "update")
-        .mockResolvedValue(updated as any);
+        .mockResolvedValue(updated);
 
       expect(await service.update("TEST", { subject: "New" })).toBe(updated);
       expect(prisma.emailTemplate.update).toHaveBeenCalledWith({
@@ -88,10 +95,10 @@ describe("EmailTemplatesService", () => {
         type: "TEST",
         subject: "Hello {{name}}",
         body: "Your code is {{code}}.",
-      };
+      } as unknown as any;
       jest
         .spyOn(prisma.emailTemplate, "findUnique")
-        .mockResolvedValue(template as any);
+        .mockResolvedValue(template);
 
       const result = await service.getRenderedTemplate("TEST", {
         name: "John",
@@ -110,10 +117,10 @@ describe("EmailTemplatesService", () => {
         type: "TEST",
         subject: "Hello {{name}}",
         body: "Body",
-      };
+      } as unknown as any;
       jest
         .spyOn(prisma.emailTemplate, "findUnique")
-        .mockResolvedValue(template as any);
+        .mockResolvedValue(template);
 
       const result = await service.getRenderedTemplate("TEST", {
         name: null,
@@ -128,6 +135,16 @@ describe("EmailTemplatesService", () => {
       await expect(service.getRenderedTemplate("TEST", {})).rejects.toThrow(
         NotFoundException,
       );
+    });
+  });
+
+  describe("sendTestEmail", () => {
+    it("should send a test email", async () => {
+      const existing = { id: "1", type: "TEST", subject: "S", body: "B", variables: "[\"v\"]" } as unknown as any;
+      jest.spyOn(service, "findOne").mockResolvedValue(existing);
+
+      const result = await service.sendTestEmail("TEST", { email: "a@b.c" });
+      expect(result).toEqual({ success: true });
     });
   });
 });

@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Loader2, Edit2 } from 'lucide-react';
+import { Loader2, Edit2, Send } from 'lucide-react';
 
 export function EmailTemplatesManager() {
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
@@ -18,6 +18,8 @@ export function EmailTemplatesManager() {
   const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [testEmail, setTestEmail] = useState('');
 
   // Form state
   const [subject, setSubject] = useState('');
@@ -56,11 +58,35 @@ export function EmailTemplatesManager() {
       });
       await fetchTemplates(); // Refresh list
       setIsDialogOpen(false);
+      alert('Template sauvegardé avec succès.');
     } catch (error) {
       console.error('Failed to save template:', error);
       alert('Erreur lors de la sauvegarde du template.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleTest = async () => {
+    if (!selectedTemplate) return;
+    if (!testEmail || !testEmail.includes('@')) {
+      alert('Veuillez entrer une adresse email valide pour le test.');
+      return;
+    }
+
+    setTesting(true);
+    try {
+      await adminEmailsService.sendTestEmail(selectedTemplate.type, {
+        email: testEmail,
+        subject,
+        body,
+      });
+      alert('L\'email de test a été envoyé avec succès !');
+    } catch (error) {
+      console.error('Failed to send test email:', error);
+      alert('Erreur lors de l\'envoi de l\'email de test.');
+    } finally {
+      setTesting(false);
     }
   };
 
@@ -158,6 +184,26 @@ export function EmailTemplatesManager() {
               <p className="text-xs text-muted-foreground">
                 Note : Le contenu est interprété comme du HTML. Soyez prudent avec les balises.
               </p>
+            </div>
+
+            <div className="mt-4 pt-4 border-t">
+              <h4 className="text-sm font-medium mb-2">Envoyer un test</h4>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Adresse email pour le test"
+                  type="email"
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                />
+                <Button
+                  variant="secondary"
+                  onClick={handleTest}
+                  disabled={testing || !testEmail}
+                >
+                  {testing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
+                  Tester
+                </Button>
+              </div>
             </div>
           </div>
 

@@ -1,12 +1,17 @@
 import { Injectable, NotFoundException, Logger } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { UpdateEmailTemplateDto } from "./dto/update-email-template.dto";
+import { SendTestEmailDto } from "./dto/send-test-email.dto";
+import { EmailService } from "../email/email.service";
 
 @Injectable()
 export class EmailTemplatesService {
   private readonly logger = new Logger(EmailTemplatesService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
+  ) {}
 
   async findAll() {
     return this.prisma.emailTemplate.findMany({
@@ -68,5 +73,45 @@ export class EmailTemplatesService {
     }
 
     return { subject, body };
+  }
+
+  async sendTestEmail(type: string, dto: SendTestEmailDto) {
+    this.logger.log(`Sending test email for template: ${type} to ${dto.email}`);
+
+    let subject = dto.subject;
+    let body = dto.body;
+
+    // If not provided in request, use the one from DB
+    if (!subject || !body) {
+      const template = await this.findOne(type);
+      subject = subject || template.subject;
+      body = body || template.body;
+    }
+
+    // Replace variables with mock values
+    // To make it look like a real template, we'll replace the {{variables}} with [Variable]
+    const templateRecord = await this.findOne(type);
+    let variablesList: string[] = [];
+    if (templateRecord.variables) {
+      try {
+        variablesList = JSON.parse(templateRecord.variables);
+      } catch (e) {
+        variablesList = [];
+      }
+    }
+
+    for (const variable of variablesList) {
+      const regex = new RegExp(`{{${variable}}}`, "g");
+      subject = subject.replace(regex, `[${variable}]`);
+      body = body.replace(regex, `[${variable}]`);
+    }
+
+    // Also catch any remaining {{anything}} just in case
+    subject = subject.replace(/{{.+?}}/g, "[Test]");
+    body = body.replace(/{{.+?}}/g, "[Test]");
+
+    await this.emailService.sendEmail(dto.email, subject, body);
+
+    return { success: true };
   }
 }
