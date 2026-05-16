@@ -46,7 +46,7 @@ model Formateur {
   expertiseZones     Zone[]      @relation("Expertise")
   authorizedFormations Formation[] @relation("AuthorizedTrainers")
   sessions           Session[]
-  bio                String?
+  bio                String?     // @db.LongText
   avatarUrl         String?
   calendarToken     String?     @unique
   isActive           Boolean     @default(true)
@@ -69,14 +69,14 @@ model Category {
 model Formation {
   id                 String      @id @default(uuid())
   title              String      @unique
-  description        String
+  description        String      // @db.LongText
   level              String
   duration           String
   durationType       String      @default("HALF_DAY")
   programLink        String?     // URL to the PDF program
   price              Decimal?    // Standard amount in Euros (HTVA)
-  methodology        String?     // Pedagogical approach description
-  inclusions         String?     // List of included material
+  methodology        String?     // @db.LongText
+  inclusions         String?     // @db.LongText
   agreementCodes     String?     // JSON string: List of agreement codes [{ region: "Wallonie", code: "..." }]
   imageUrl           String?     // URL of illustration image
   isExpertise        Boolean     @default(false)
@@ -123,7 +123,7 @@ model NotificationLog {
 
 model SiteConfiguration {
   key       String   @id
-  value     String   // JSON string
+  value     String   // @db.LongText
   updatedAt DateTime @updatedAt
 }
 
@@ -131,7 +131,7 @@ model EmailTemplate {
   id        String   @id @default(uuid())
   type      String   @unique
   subject   String
-  body      String   // HTML content
-  variables String?  // JSON string
+  body      String   // @db.LongText
+  variables String?  // @db.LongText
   updatedAt DateTime @updatedAt
 }

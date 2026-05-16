@@ -30,6 +30,7 @@ Copy-Item -Path "apps/api/package.json" -Destination $TempApi
 New-Item -ItemType Directory -Path (Join-Path $TempApi "prisma") | Out-Null
 $SchemaContent = Get-Content "apps/api/prisma/schema.prisma" -Raw
 $SchemaContent = $SchemaContent -replace 'provider = "sqlite"', 'provider = "mysql"'
+$SchemaContent = $SchemaContent -replace '// @db.LongText', '@db.LongText'
 $SchemaContent | Set-Content (Join-Path $TempApi "prisma/schema.prisma") -NoNewline
 
 Copy-Item -Path "apps/api/prisma/seed.ts" -Destination (Join-Path $TempApi "prisma")
