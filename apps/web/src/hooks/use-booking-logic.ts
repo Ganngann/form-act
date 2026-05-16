@@ -107,17 +107,25 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
     // If manual request, all future dates are available
     if (selectedTrainer === 'manual') return false;
 
-    const ymd = format(date, 'yyyy-MM-dd')
-    const sessionsOnDate = availability.filter(s => s.date.startsWith(ymd))
+    // Check default days
+    const dayOfWeek = date.getDay();
+    if (availability.defaultAvailableDays && !availability.defaultAvailableDays.includes(dayOfWeek)) return true;
 
-    if (sessionsOnDate.length === 0) return false;
+    const ymd = format(date, 'yyyy-MM-dd')
+    const sessionsOnDate = (availability.sessions || []).filter(s => s.date.startsWith(ymd))
+    const unavailabilitiesOnDate = (availability.unavailabilities || []).filter(u => u.date.startsWith(ymd))
+
+    if (unavailabilitiesOnDate.some(u => u.slot === 'ALL_DAY')) return true;
+
+    const hasAMUnavail = unavailabilitiesOnDate.some(u => u.slot === 'AM');
+    const hasPMUnavail = unavailabilitiesOnDate.some(u => u.slot === 'PM');
 
     if (formation.durationType === 'FULL_DAY') {
-        return true;
+        if (sessionsOnDate.length > 0 || hasAMUnavail || hasPMUnavail) return true;
     } else {
         if (sessionsOnDate.some(s => s.slot === 'ALL_DAY')) return true;
-        const hasAM = sessionsOnDate.some(s => s.slot === 'AM')
-        const hasPM = sessionsOnDate.some(s => s.slot === 'PM')
+        const hasAM = sessionsOnDate.some(s => s.slot === 'AM') || hasAMUnavail;
+        const hasPM = sessionsOnDate.some(s => s.slot === 'PM') || hasPMUnavail;
         if (hasAM && hasPM) return true;
     }
     return false;
@@ -140,11 +148,18 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
       }
 
       const ymd = format(selectedDate, 'yyyy-MM-dd')
-      const sessionsOnDate = availability.filter(s => s.date.startsWith(ymd))
+      const sessionsOnDate = (availability.sessions || []).filter(s => s.date.startsWith(ymd))
+      const unavailabilitiesOnDate = (availability.unavailabilities || []).filter(u => u.date.startsWith(ymd))
 
       const slots = [];
-      if (!sessionsOnDate.some(s => s.slot === 'AM')) slots.push('AM');
-      if (!sessionsOnDate.some(s => s.slot === 'PM')) slots.push('PM');
+      const hasAMSession = sessionsOnDate.some(s => s.slot === 'AM');
+      const hasPMSession = sessionsOnDate.some(s => s.slot === 'PM');
+      const hasAMUnavail = unavailabilitiesOnDate.some(u => u.slot === 'AM');
+      const hasPMUnavail = unavailabilitiesOnDate.some(u => u.slot === 'PM');
+
+      if (!hasAMSession && !hasAMUnavail) slots.push('AM');
+      if (!hasPMSession && !hasPMUnavail) slots.push('PM');
+
       return slots;
   }
 

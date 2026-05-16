@@ -17,9 +17,16 @@ describe('useBookingLogic', () => {
 
   const mockZones = [{ id: 'z1', name: 'Zone 1' }];
   const mockTrainers = [{ id: 't1', firstName: 'John', lastName: 'Doe' }];
-  const mockAvailability = [
-    { date: '2024-01-20', slot: 'AM', status: 'CONFIRMED' },
-  ];
+  const mockAvailability = {
+    sessions: [{ date: '2024-01-20', slot: 'AM', status: 'CONFIRMED' }],
+    unavailabilities: [],
+    defaultAvailableDays: [1, 2, 3, 4, 5, 6], // Include Saturday (6) for Jan 20, 2024
+  };
+  const mockAvailabilityParsed = {
+    sessions: [{ date: '2024-01-20', slot: 'AM', status: 'CONFIRMED' }],
+    unavailabilities: [],
+    defaultAvailableDays: [1, 2, 3, 4, 5, 6], // Include Saturday (6) for Jan 20, 2024
+  };
 
   beforeEach(() => {
     // Only mock Date, keep setTimeout/setInterval real for waitFor to work
@@ -123,7 +130,7 @@ describe('useBookingLogic', () => {
       expect(result.current.loadingAvailability).toBe(false);
     });
 
-    expect(result.current.availability).toEqual(mockAvailability);
+    expect(result.current.availability).toEqual(mockAvailabilityParsed);
     expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('/trainers/t1/availability'));
   });
 
