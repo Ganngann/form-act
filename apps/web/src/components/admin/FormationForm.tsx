@@ -451,7 +451,7 @@ export function FormationForm({
                                                         onChange={(e) => updateAgreement(index, 'code', e.target.value)}
                                                         className="h-12 border-transparent bg-transparent focus:bg-white transition-all font-mono text-sm rounded-xl w-48"
                                                     />
-                                                    <Button type="button" variant="ghost" size="icon" onClick={() => removeAgreement(index)} className="h-10 w-10 hover:bg-red-50 hover:text-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-all shrink-0">
+                                                    <Button type="button" variant="ghost" size="icon" onClick={() => removeAgreement(index)} className="h-10 w-10 hover:bg-red-50 hover:text-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-all shrink-0" aria-label="Supprimer cet agrément">
                                                         <Trash2 className="h-5 w-5" />
                                                     </Button>
                                                 </div>
