@@ -99,12 +99,12 @@ describe("AuthController", () => {
 
   describe("logout", () => {
     it("should clear the cookie", () => {
-      const res = { clearCookie: jest.fn() } as unknown as Response;
+      const res = { cookie: jest.fn() } as unknown as Response;
       const result = controller.logout(res);
 
-      expect(res.clearCookie).toHaveBeenCalledWith("Authentication", {
-        path: "/",
-      });
+      expect(res.cookie).toHaveBeenCalledWith("Authentication", "", expect.objectContaining({
+        path: "/"
+      }));
       expect(result).toEqual({ success: true });
     });
   });
