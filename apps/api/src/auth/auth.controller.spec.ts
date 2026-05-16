@@ -102,9 +102,14 @@ describe("AuthController", () => {
       const res = { cookie: jest.fn() } as unknown as Response;
       const result = controller.logout(res);
 
-      expect(res.cookie).toHaveBeenCalledWith("Authentication", "", expect.objectContaining({
-        path: "/"
-      }));
+      expect(res.cookie).toHaveBeenCalledWith("Authentication", "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        domain: process.env.COOKIE_DOMAIN,
+        expires: new Date(0),
+      });
       expect(result).toEqual({ success: true });
     });
   });

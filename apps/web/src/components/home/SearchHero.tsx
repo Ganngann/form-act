@@ -20,9 +20,12 @@ interface Category {
 
 interface SearchHeroProps {
   categories: Category[];
+  searchPlaceholder?: string;
+  searchButton?: string;
+  searchAll?: string;
 }
 
-export function SearchHero({ categories }: SearchHeroProps) {
+export function SearchHero({ categories, searchPlaceholder, searchButton, searchAll }: SearchHeroProps) {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
@@ -40,10 +43,10 @@ export function SearchHero({ categories }: SearchHeroProps) {
         <Search className="h-5 w-5 text-muted-foreground mr-3" />
         <Select value={selectedCategory} onValueChange={setSelectedCategory}>
           <SelectTrigger className="w-full border-0 focus:ring-0 focus:ring-offset-0 bg-transparent text-lg font-bold h-12">
-            <SelectValue placeholder="Quelle compétence recherchez-vous ?" />
+            <SelectValue placeholder={searchPlaceholder || "Quelle compétence recherchez-vous ?"} />
           </SelectTrigger>
           <SelectContent className="rounded-2xl border-border shadow-2xl">
-            <SelectItem value="all" className="font-bold py-3">Toutes les thématiques</SelectItem>
+            <SelectItem value="all" className="font-bold py-3">{searchAll || "Toutes les thématiques"}</SelectItem>
             {categories
               .filter((category) => category.id && category.id !== "")
               .map((category) => (
@@ -59,7 +62,7 @@ export function SearchHero({ categories }: SearchHeroProps) {
         size="lg"
         className="h-14 px-10 rounded-2xl font-black text-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
       >
-        Rechercher
+        {searchButton || "Rechercher"}
       </Button>
     </div>
   );

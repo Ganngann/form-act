@@ -9,6 +9,7 @@ export async function Footer() {
   // Fallback defaults if config fails
   const data = config || {
     logoText: "FORM-ACT",
+    footerDescription: "La plateforme de référence pour les experts de la formation professionnelle.",
     email: "contact@form-act.com",
     phone: "",
     address: "",
@@ -32,7 +33,7 @@ export async function Footer() {
               </span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
-              La plateforme de référence pour les experts de la formation professionnelle.
+              {data.footerDescription || "La plateforme de référence pour les experts de la formation professionnelle."}
             </p>
             <div className="flex gap-4">
               {social.linkedin && (

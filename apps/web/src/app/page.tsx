@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { SearchHero } from '@/components/home/SearchHero';
 import { BadgeCheck, Calendar, GraduationCap, Users, Shield, Zap, ArrowRight, Star, Quote } from 'lucide-react';
 import { getSiteConfig } from '@/lib/api-config';
-import { HomeHeroConfig, HomePromoConfig, HomeValueConfig, HomeTrustConfig, HomeCtaConfig } from '@/types/configuration';
+import { HomeHeroConfig, HomePromoConfig, HomeValueConfig, HomeTrustConfig, HomeCtaConfig, HomeBentoConfig, HomeCategoriesConfig } from '@/types/configuration';
 import { sanitize } from "@/lib/sanitize";
 
 async function getCategories() {
@@ -43,21 +43,48 @@ async function getUserRole() {
 }
 
 export default async function Home() {
-  const [categories, userRole, heroConfig, promoConfig, valuesConfig, trustConfig, ctaConfig] = await Promise.all([
+  const [categories, userRole, heroConfig, promoConfig, valuesConfig, trustConfig, ctaConfig, bentoConfig, categoriesConfig] = await Promise.all([
     getCategories(),
     getUserRole(),
     getSiteConfig<HomeHeroConfig>("home_hero"),
     getSiteConfig<HomePromoConfig>("home_promo"),
     getSiteConfig<HomeValueConfig[]>("home_values"),
     getSiteConfig<HomeTrustConfig>("home_trust"),
-    getSiteConfig<HomeCtaConfig>("home_cta")
+    getSiteConfig<HomeCtaConfig>("home_cta"),
+    getSiteConfig<HomeBentoConfig>("home_bento"),
+    getSiteConfig<HomeCategoriesConfig>("home_categories")
   ]);
 
   // Defaults
   const hero = heroConfig || {
     tagline: "The Signature of Expertise",
     title: "Activez votre <br /><span class=\"text-primary italic\">Expertise.</span>",
-    intro: "La puissance du réseau Form-Act dans une interface moderne pour propulser vos talents vers de nouveaux sommets."
+    intro: "La puissance du réseau Form-Act dans une interface moderne pour propulser vos talents vers de nouveaux sommets.",
+    buttonPrimary: "Nos Formations",
+    buttonSecondary: "Accès Client",
+    searchPlaceholder: "Quelle compétence recherchez-vous ?",
+    searchButton: "Rechercher",
+    searchAll: "Toutes les thématiques"
+  };
+
+  const bento = bentoConfig || {
+    userPreviewBadge: "Aperçu de votre espace",
+    userPreviewTitle: "Digital Strategy & <br />Product Management",
+    userPreviewDesc: "Programmé pour le mois prochain. Vous pouvez déjà consulter les ressources.",
+    userActionTitle: "Dossier incomplet",
+    userActionDesc: "Veuillez envoyer la liste des participants pour valider votre session.",
+    visitorActionTitle: "Demande de Devis",
+    visitorActionDesc: "Recevez une proposition personnalisée en moins de 24 heures.",
+    stat1Value: "542",
+    stat1Label: "Experts Certifiés",
+    stat2Value: "98%",
+    stat2Label: "Satisfaction"
+  };
+
+  const catsConfig = categoriesConfig || {
+    badge: "Explorez le savoir",
+    title: "Toutes nos <br /><span class=\"text-primary italic\">Thématiques.</span>",
+    link: "Voir tout le catalogue"
   };
 
   const promo = promoConfig || {
@@ -102,17 +129,22 @@ export default async function Home() {
           </p>
 
           <div className="flex flex-col items-center gap-8 w-full animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            <SearchHero categories={categories} />
+            <SearchHero
+              categories={categories}
+              searchPlaceholder={hero.searchPlaceholder}
+              searchButton={hero.searchButton}
+              searchAll={hero.searchAll}
+            />
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-4">
               <Button asChild size="lg" className="h-16 px-10 text-lg font-black rounded-2xl shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95">
                 <Link href="/catalogue" className="flex items-center gap-2">
-                  Nos Formations <ArrowRight className="h-5 w-5" />
+                  {hero.buttonPrimary || "Nos Formations"} <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild className="h-16 px-10 text-lg font-black border-2 border-border rounded-2xl hover:bg-primary/5 hover:border-primary transition-all hover:scale-105 active:scale-95">
                 <Link href={userRole ? "/dashboard" : "/login"}>
-                  {userRole ? "Mon Dashboard" : "Accès Client"}
+                  {userRole ? "Mon Dashboard" : (hero.buttonSecondary || "Accès Client")}
                 </Link>
               </Button>
             </div>
@@ -131,9 +163,12 @@ export default async function Home() {
               </div>
               <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
               <div className="relative z-10">
-                <span className="text-[10px] font-black text-primary uppercase tracking-[2px]">Aperçu de votre espace</span>
-                <h3 className="text-4xl font-bold mt-4 leading-tight group-hover:text-primary transition-colors">Digital Strategy & <br />Product Management</h3>
-                <p className="text-muted-foreground mt-4 font-medium max-w-xs">Programmé pour le mois prochain. Vous pouvez déjà consulter les ressources.</p>
+                <span className="text-[10px] font-black text-primary uppercase tracking-[2px]">{bento.userPreviewBadge || "Aperçu de votre espace"}</span>
+                <h3
+                  className="text-4xl font-bold mt-4 leading-tight group-hover:text-primary transition-colors"
+                  dangerouslySetInnerHTML={{ __html: sanitize(bento.userPreviewTitle || "Digital Strategy & <br />Product Management") }}
+                />
+                <p className="text-muted-foreground mt-4 font-medium max-w-xs">{bento.userPreviewDesc || "Programmé pour le mois prochain. Vous pouvez déjà consulter les ressources."}</p>
               </div>
 
               <div className="relative z-10 flex items-center gap-5 mt-12">
@@ -170,11 +205,11 @@ export default async function Home() {
                 <p className="font-black text-3xl">!</p>
               </div>
               <div>
-                <h4 className="text-2xl font-bold tracking-tight">{userRole ? "Dossier incomplet" : "Demande de Devis"}</h4>
+                <h4 className="text-2xl font-bold tracking-tight">{userRole ? (bento.userActionTitle || "Dossier incomplet") : (bento.visitorActionTitle || "Demande de Devis")}</h4>
                 <p className="text-muted-foreground mt-1 max-w-[240px] font-medium leading-tight">
                   {userRole
-                    ? "Veuillez envoyer la liste des participants pour valider votre session."
-                    : "Recevez une proposition personnalisée en moins de 24 heures."}
+                    ? (bento.userActionDesc || "Veuillez envoyer la liste des participants pour valider votre session.")
+                    : (bento.visitorActionDesc || "Recevez une proposition personnalisée en moins de 24 heures.")}
                 </p>
               </div>
             </div>
@@ -188,14 +223,14 @@ export default async function Home() {
           {/* Stats Cards */}
           <div className="p-8 bg-white border border-border rounded-[3rem] flex flex-col justify-center items-center text-center group hover:border-primary transition-colors shadow-sm">
             <Users className="h-6 w-6 text-primary mb-3" />
-            <span className="text-5xl font-black tracking-tighter">542</span>
-            <p className="text-[10px] uppercase font-black text-muted-foreground/40 mt-1 tracking-widest">Experts Certifiés</p>
+            <span className="text-5xl font-black tracking-tighter">{bento.stat1Value || "542"}</span>
+            <p className="text-[10px] uppercase font-black text-muted-foreground/40 mt-1 tracking-widest">{bento.stat1Label || "Experts Certifiés"}</p>
           </div>
 
           <div className="p-8 bg-white border border-border rounded-[3rem] flex flex-col justify-center items-center text-center group hover:border-primary transition-colors shadow-sm">
             <Star className="h-6 w-6 text-primary mb-3 fill-primary/10" />
-            <span className="text-5xl font-black tracking-tighter">98%</span>
-            <p className="text-[10px] uppercase font-black text-muted-foreground/40 mt-1 tracking-widest">Satisfaction</p>
+            <span className="text-5xl font-black tracking-tighter">{bento.stat2Value || "98%"}</span>
+            <p className="text-[10px] uppercase font-black text-muted-foreground/40 mt-1 tracking-widest">{bento.stat2Label || "Satisfaction"}</p>
           </div>
         </div>
       </section>
@@ -204,11 +239,14 @@ export default async function Home() {
       <section className="container px-4 py-12">
         <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
           <div className="max-w-2xl">
-            <span className="text-[10px] font-black text-primary uppercase tracking-[3px]">Explorez le savoir</span>
-            <h2 className="text-5xl md:text-7xl font-bold tracking-tighter mt-4 leading-[0.9]">Toutes nos <br /><span className="text-primary italic">Thématiques.</span></h2>
+            <span className="text-[10px] font-black text-primary uppercase tracking-[3px]">{catsConfig.badge || "Explorez le savoir"}</span>
+            <h2
+              className="text-5xl md:text-7xl font-bold tracking-tighter mt-4 leading-[0.9]"
+              dangerouslySetInnerHTML={{ __html: sanitize(catsConfig.title || "Toutes nos <br /><span class=\"text-primary italic\">Thématiques.</span>") }}
+            />
           </div>
           <Button variant="link" className="text-lg font-black p-0 h-auto text-primary" asChild>
-            <Link href="/catalogue">Voir tout le catalogue <ArrowRight className="ml-2 h-5 w-5" /></Link>
+            <Link href="/catalogue">{catsConfig.link || "Voir tout le catalogue"} <ArrowRight className="ml-2 h-5 w-5" /></Link>
           </Button>
         </div>
 
