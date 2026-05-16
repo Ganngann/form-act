@@ -64,7 +64,9 @@ describe("TrainersController", () => {
     it("should deny others", async () => {
       mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u2" });
       await expect(
-        controller.getMissions("1", { user: { role: "TRAINER", userId: "u1" } }),
+        controller.getMissions("1", {
+          user: { role: "TRAINER", userId: "u1" },
+        }),
       ).rejects.toThrow(ForbiddenException);
     });
   });

@@ -23,4 +23,33 @@ export class NotificationLogService {
     });
     return count > 0;
   }
+
+  async getLogsForSessions(sessionIds: string[]): Promise<Set<string>> {
+    const logs = await this.prisma.notificationLog.findMany({
+      where: {
+        OR: sessionIds.map((id) => ({
+          metadata: { contains: id },
+        })),
+      },
+      select: {
+        type: true,
+        metadata: true,
+      },
+    });
+
+    const cache = new Set<string>();
+    for (const log of logs) {
+      if (log.metadata) {
+        try {
+          const parsed = JSON.parse(log.metadata);
+          if (parsed.sessionId) {
+            cache.add(`${parsed.sessionId}:${log.type}`);
+          }
+        } catch {
+          // Ignore parse errors
+        }
+      }
+    }
+    return cache;
+  }
 }

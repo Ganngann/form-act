@@ -27,25 +27,32 @@ export class NotificationsService {
     const chunkSize = 50;
     for (let i = 0; i < sessions.length; i += chunkSize) {
       const chunk = sessions.slice(i, i + chunkSize);
+      const sessionIds = chunk.map((s) => s.id);
+      const logCache = await this.logService.getLogsForSessions(sessionIds);
+
       await Promise.all(
-        chunk.map((session) => this.processSession(session, now)),
+        chunk.map((session) => this.processSession(session, now, logCache)),
       );
     }
     this.logger.log("Notification cron job finished.");
   }
 
-  private async processSession(session: SessionWithRelations, now: Date) {
+  private async processSession(
+    session: SessionWithRelations,
+    now: Date,
+    logCache: Set<string>,
+  ) {
     if (session.status === "CANCELLED") return;
 
     try {
       await Promise.all([
-        this.checkLogisticsTPlus48(session, now),
-        this.checkParticipantsJ15(session, now),
-        this.checkParticipantsJ9(session, now),
-        this.checkProgramJ30(session, now),
-        this.checkMissionJ21(session, now),
-        this.checkAttendanceJ7(session, now),
-        this.checkProofJPlus1(session, now),
+        this.checkLogisticsTPlus48(session, now, logCache),
+        this.checkParticipantsJ15(session, now, logCache),
+        this.checkParticipantsJ9(session, now, logCache),
+        this.checkProgramJ30(session, now, logCache),
+        this.checkMissionJ21(session, now, logCache),
+        this.checkAttendanceJ7(session, now, logCache),
+        this.checkProofJPlus1(session, now, logCache),
       ]);
     } catch (error) {
       this.logger.error(
@@ -59,6 +66,7 @@ export class NotificationsService {
   private async checkLogisticsTPlus48(
     session: SessionWithRelations,
     now: Date,
+    logCache: Set<string>,
   ) {
     if (this.sessionsService.isLogisticsStrictlyComplete(session)) return;
 
@@ -67,7 +75,7 @@ export class NotificationsService {
 
     if (hoursDiff >= 48) {
       const type = "LOGISTICS_REMINDER_48H";
-      if (await this.logService.hasLog(type, session.id)) return;
+      if (logCache.has(`${session.id}:${type}`)) return;
 
       if (session.client?.user?.email) {
         const template = await this.emailTemplatesService.getRenderedTemplate(
@@ -94,13 +102,17 @@ export class NotificationsService {
   }
 
   // 2. J-15: Alerte si Participants vides
-  private async checkParticipantsJ15(session: SessionWithRelations, now: Date) {
+  private async checkParticipantsJ15(
+    session: SessionWithRelations,
+    now: Date,
+    logCache: Set<string>,
+  ) {
     if (!this.isEmpty(session.participants)) return;
 
     const days = this.getDaysUntil(new Date(session.date), now);
     if (days <= 15 && days > 9) {
       const type = "PARTICIPANTS_ALERT_J15";
-      if (await this.logService.hasLog(type, session.id)) return;
+      if (logCache.has(`${session.id}:${type}`)) return;
 
       if (session.client?.user?.email) {
         const template = await this.emailTemplatesService.getRenderedTemplate(
@@ -125,13 +137,17 @@ export class NotificationsService {
   }
 
   // 3. J-9: Alerte Critique si Participants vides
-  private async checkParticipantsJ9(session: SessionWithRelations, now: Date) {
+  private async checkParticipantsJ9(
+    session: SessionWithRelations,
+    now: Date,
+    logCache: Set<string>,
+  ) {
     if (!this.isEmpty(session.participants)) return;
 
     const days = this.getDaysUntil(new Date(session.date), now);
     if (days <= 9) {
       const type = "PARTICIPANTS_CRITICAL_J9";
-      if (await this.logService.hasLog(type, session.id)) return;
+      if (logCache.has(`${session.id}:${type}`)) return;
 
       if (session.client?.user?.email) {
         const template = await this.emailTemplatesService.getRenderedTemplate(
@@ -156,11 +172,15 @@ export class NotificationsService {
   }
 
   // 4. J-30: Envoi PDF Programme (Client)
-  private async checkProgramJ30(session: SessionWithRelations, now: Date) {
+  private async checkProgramJ30(
+    session: SessionWithRelations,
+    now: Date,
+    logCache: Set<string>,
+  ) {
     const days = this.getDaysUntil(new Date(session.date), now);
     if (days <= 30) {
       const type = "PROGRAM_SEND_J30";
-      if (await this.logService.hasLog(type, session.id)) return;
+      if (logCache.has(`${session.id}:${type}`)) return;
 
       const programLink = session.formation.programLink;
       if (programLink && session.client?.user?.email) {
@@ -186,11 +206,15 @@ export class NotificationsService {
   }
 
   // 5. J-21: Rappel Mission avec détails (Formateur)
-  private async checkMissionJ21(session: SessionWithRelations, now: Date) {
+  private async checkMissionJ21(
+    session: SessionWithRelations,
+    now: Date,
+    logCache: Set<string>,
+  ) {
     const days = this.getDaysUntil(new Date(session.date), now);
     if (days <= 21) {
       const type = "MISSION_REMINDER_J21";
-      if (await this.logService.hasLog(type, session.id)) return;
+      if (logCache.has(`${session.id}:${type}`)) return;
 
       if (session.trainer?.email) {
         const template = await this.emailTemplatesService.getRenderedTemplate(
@@ -219,11 +243,15 @@ export class NotificationsService {
   }
 
   // 6. J-7: Envoi Pack Documentaire (Formateur) + Verrouillage (implied)
-  private async checkAttendanceJ7(session: SessionWithRelations, now: Date) {
+  private async checkAttendanceJ7(
+    session: SessionWithRelations,
+    now: Date,
+    logCache: Set<string>,
+  ) {
     const days = this.getDaysUntil(new Date(session.date), now);
     if (days <= 7) {
       const type = "DOC_PACK_J7";
-      if (await this.logService.hasLog(type, session.id)) return;
+      if (logCache.has(`${session.id}:${type}`)) return;
 
       if (session.trainer?.email) {
         const pdfBuffer =
@@ -255,7 +283,11 @@ export class NotificationsService {
   }
 
   // 7. J+1: Rappel Preuve (Formateur)
-  private async checkProofJPlus1(session: SessionWithRelations, now: Date) {
+  private async checkProofJPlus1(
+    session: SessionWithRelations,
+    now: Date,
+    logCache: Set<string>,
+  ) {
     // Si la preuve est déjà là ou session annulée (déjà filtré en haut mais double check), on ne fait rien
     if (session.proofUrl) return;
 
@@ -270,7 +302,7 @@ export class NotificationsService {
       sessionDate.getFullYear() === yesterday.getFullYear()
     ) {
       const type = "PROOF_REMINDER_J1";
-      if (await this.logService.hasLog(type, session.id)) return;
+      if (logCache.has(`${session.id}:${type}`)) return;
 
       if (session.trainer?.email) {
         const template = await this.emailTemplatesService.getRenderedTemplate(

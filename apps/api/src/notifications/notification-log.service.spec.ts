@@ -11,6 +11,7 @@ describe("NotificationLogService", () => {
     notificationLog: {
       create: jest.fn(),
       count: jest.fn(),
+      findMany: jest.fn(),
     },
   };
 
@@ -59,6 +60,44 @@ describe("NotificationLogService", () => {
       mockPrismaService.notificationLog.count.mockResolvedValue(0);
       const result = await service.hasLog("TEST", "session1");
       expect(result).toBe(false);
+    });
+  });
+
+  describe("getLogsForSessions", () => {
+    it("should return a set of cached log keys", async () => {
+      mockPrismaService.notificationLog.findMany = jest.fn().mockResolvedValue([
+        {
+          type: "TEST_TYPE_1",
+          metadata: JSON.stringify({ sessionId: "session1" }),
+        },
+        {
+          type: "TEST_TYPE_2",
+          metadata: JSON.stringify({ sessionId: "session2" }),
+        },
+        {
+          type: "INVALID_METADATA",
+          metadata: "invalid json",
+        },
+      ]);
+
+      const result = await service.getLogsForSessions(["session1", "session2"]);
+
+      expect(prisma.notificationLog.findMany).toHaveBeenCalledWith({
+        where: {
+          OR: [
+            { metadata: { contains: "session1" } },
+            { metadata: { contains: "session2" } },
+          ],
+        },
+        select: {
+          type: true,
+          metadata: true,
+        },
+      });
+
+      expect(result.size).toBe(2);
+      expect(result.has("session1:TEST_TYPE_1")).toBe(true);
+      expect(result.has("session2:TEST_TYPE_2")).toBe(true);
     });
   });
 });

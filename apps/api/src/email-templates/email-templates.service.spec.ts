@@ -42,9 +42,7 @@ describe("EmailTemplatesService", () => {
   describe("findAll", () => {
     it("should return an array of templates", async () => {
       const result = [{ id: "1", type: "TEST" }] as unknown as any;
-      jest
-        .spyOn(prisma.emailTemplate, "findMany")
-        .mockResolvedValue(result);
+      jest.spyOn(prisma.emailTemplate, "findMany").mockResolvedValue(result);
 
       expect(await service.findAll()).toBe(result);
       expect(prisma.emailTemplate.findMany).toHaveBeenCalledWith({
@@ -56,9 +54,7 @@ describe("EmailTemplatesService", () => {
   describe("findOne", () => {
     it("should return a template", async () => {
       const result = { id: "1", type: "TEST" } as unknown as any;
-      jest
-        .spyOn(prisma.emailTemplate, "findUnique")
-        .mockResolvedValue(result);
+      jest.spyOn(prisma.emailTemplate, "findUnique").mockResolvedValue(result);
 
       expect(await service.findOne("TEST")).toBe(result);
     });
@@ -73,12 +69,14 @@ describe("EmailTemplatesService", () => {
   describe("update", () => {
     it("should update a template", async () => {
       const existing = { id: "1", type: "TEST" } as unknown as any;
-      const updated = { id: "1", type: "TEST", subject: "New" } as unknown as any;
+      const updated = {
+        id: "1",
+        type: "TEST",
+        subject: "New",
+      } as unknown as any;
 
       jest.spyOn(service, "findOne").mockResolvedValue(existing);
-      jest
-        .spyOn(prisma.emailTemplate, "update")
-        .mockResolvedValue(updated);
+      jest.spyOn(prisma.emailTemplate, "update").mockResolvedValue(updated);
 
       expect(await service.update("TEST", { subject: "New" })).toBe(updated);
       expect(prisma.emailTemplate.update).toHaveBeenCalledWith({
@@ -140,7 +138,13 @@ describe("EmailTemplatesService", () => {
 
   describe("sendTestEmail", () => {
     it("should send a test email", async () => {
-      const existing = { id: "1", type: "TEST", subject: "S", body: "B", variables: "[\"v\"]" } as unknown as any;
+      const existing = {
+        id: "1",
+        type: "TEST",
+        subject: "S",
+        body: "B",
+        variables: '["v"]',
+      } as unknown as any;
       jest.spyOn(service, "findOne").mockResolvedValue(existing);
 
       const result = await service.sendTestEmail("TEST", { email: "a@b.c" });
