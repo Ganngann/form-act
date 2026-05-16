@@ -12,6 +12,23 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Label } from '@/components/ui/label';
 import { Loader2, Edit2, Send } from 'lucide-react';
 
+const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
+  CHECKOUT_CONFIRMATION: "Envoyé au client immédiatement après qu'il ait soumis une demande de formation. Confirme la bonne réception de la demande par l'équipe.",
+  PASSWORD_RESET: "Envoyé à tout utilisateur (client, formateur, admin) qui demande une réinitialisation de son mot de passe. Contient un lien de réinitialisation sécurisé, valable 1 heure.",
+  SESSION_OFFER: "Envoyé au client lorsqu'un administrateur a analysé sa demande et lui fait une proposition tarifaire formelle pour la formation.",
+  SESSION_CONFIRMATION: "Envoyé au client lorsqu'il valide l'offre proposée. Confirme que la session de formation est définitivement planifiée.",
+  SESSION_INVOICED: "Envoyé au client après que la session de formation ait eu lieu et que la facturation ait été générée par l'administration.",
+  SESSION_CANCELLED_CLIENT: "Envoyé au client pour l'informer que sa session de formation a été annulée.",
+  SESSION_CANCELLED_TRAINER: "Envoyé au formateur pour l'informer que sa mission pour une session donnée a été annulée.",
+  LOGISTICS_REMINDER_48H: "Envoyé au client 48 heures avant la session de formation s'il manque des informations logistiques indispensables.",
+  PARTICIPANTS_ALERT_J15: "Envoyé au client 15 jours avant le début de la formation pour lui rappeler de fournir la liste des participants.",
+  PARTICIPANTS_CRITICAL_J9: "Envoyé au client 9 jours avant le début de la formation, de manière urgente, si la liste des participants est toujours manquante. Prévient d'un risque d'annulation.",
+  PROGRAM_SEND_J30: "Envoyé au client 30 jours avant le début de la formation pour lui fournir le programme détaillé de celle-ci.",
+  MISSION_REMINDER_J21: "Envoyé au formateur 21 jours avant sa mission pour lui rappeler les détails de la session (client, lieu, date).",
+  DOC_PACK_J7: "Envoyé au formateur 7 jours avant le début de la formation. Contient le pack documentaire, incluant notamment la feuille d'émargement.",
+  PROOF_REMINDER_J1: "Envoyé au formateur le lendemain de la formation pour lui rappeler de déposer la feuille d'émargement signée afin de déclencher la facturation."
+};
+
 export function EmailTemplatesManager() {
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -118,6 +135,7 @@ export function EmailTemplatesManager() {
               <TableRow>
                 <TableHead>Type</TableHead>
                 <TableHead>Sujet</TableHead>
+                <TableHead>Description & Déclencheurs</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -129,6 +147,9 @@ export function EmailTemplatesManager() {
                   </TableCell>
                   <TableCell className="truncate max-w-md">
                     {template.subject}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground whitespace-pre-wrap max-w-sm">
+                    {TEMPLATE_DESCRIPTIONS[template.type] || 'Description non disponible.'}
                   </TableCell>
                   <TableCell className="text-right">
                     <Button variant="outline" size="sm" onClick={() => handleEdit(template)}>
