@@ -36,4 +36,8 @@ export class UpdateTrainerDto {
   @IsBoolean()
   @IsOptional()
   isActive?: boolean;
+
+  @IsString()
+  @IsOptional()
+  defaultAvailableDays?: string;
 }

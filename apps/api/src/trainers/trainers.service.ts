@@ -145,6 +145,9 @@ export class TrainersService {
         email: data.email,
         bio: data.bio,
         ...(data.isActive !== undefined && { isActive: data.isActive }),
+        ...(data.defaultAvailableDays !== undefined && {
+          defaultAvailableDays: data.defaultAvailableDays,
+        }),
       };
 
       if (data.predilectionZones) {
@@ -212,6 +215,10 @@ export class TrainersService {
       trainerId,
     };
 
+    const unavailWhere: Prisma.TrainerUnavailabilityWhereInput = {
+      trainerId,
+    };
+
     if (month) {
       const [year, monthNum] = month.split("-").map(Number);
       if (!isNaN(year) && !isNaN(monthNum)) {
@@ -219,6 +226,10 @@ export class TrainersService {
         // Get last day of the month by going to day 0 of next month
         const endDate = new Date(year, monthNum, 0, 23, 59, 59);
         where.date = {
+          gte: startDate,
+          lte: endDate,
+        };
+        unavailWhere.date = {
           gte: startDate,
           lte: endDate,
         };
@@ -233,23 +244,47 @@ export class TrainersService {
         gte: today,
         lte: defaultEndDate,
       };
+      unavailWhere.date = {
+        gte: today,
+        lte: defaultEndDate,
+      };
     }
 
-    return this.prisma.session.findMany({
-      where,
-      select: {
-        id: true,
-        date: true,
-        slot: true,
-        status: true,
-        formation: {
-          select: {
-            title: true,
-            durationType: true,
+    const [sessions, unavailabilities, trainer] = await Promise.all([
+      this.prisma.session.findMany({
+        where,
+        select: {
+          id: true,
+          date: true,
+          slot: true,
+          status: true,
+          formation: {
+            select: {
+              title: true,
+              durationType: true,
+            },
           },
         },
-      },
-    });
+      }),
+      this.prisma.trainerUnavailability.findMany({
+        where: unavailWhere,
+        select: {
+          id: true,
+          date: true,
+          slot: true,
+        },
+      }),
+      this.prisma.formateur.findUnique({
+        where: { id: trainerId },
+        select: { defaultAvailableDays: true },
+      }),
+    ]);
+
+    return {
+      sessions,
+      unavailabilities,
+      defaultAvailableDays: trainer?.defaultAvailableDays || "[1,2,3,4,5]",
+    };
   }
 
   async getMissions(trainerId: string) {
@@ -266,7 +301,9 @@ export class TrainersService {
       include: {
         formation: true,
         client: {
-          include: { user: { select: { id: true, email: true, name: true, role: true } } },
+          include: {
+            user: { select: { id: true, email: true, name: true, role: true } },
+          },
         },
       },
       orderBy: {
@@ -279,6 +316,50 @@ export class TrainersService {
     return this.prisma.formateur.update({
       where: { id },
       data: { avatarUrl },
+    });
+  }
+
+  async addUnavailability(trainerId: string, dateStr: string, slot: string) {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      throw new BadRequestException("Invalid date format");
+    }
+    date.setHours(0, 0, 0, 0);
+
+    return this.prisma.trainerUnavailability.upsert({
+      where: {
+        trainerId_date_slot: {
+          trainerId,
+          date,
+          slot,
+        },
+      },
+      update: {},
+      create: {
+        trainerId,
+        date,
+        slot,
+      },
+    });
+  }
+
+  async removeUnavailability(id: string, trainerId: string) {
+    const unavail = await this.prisma.trainerUnavailability.findUnique({
+      where: { id },
+    });
+
+    if (!unavail) {
+      throw new BadRequestException("Unavailability not found");
+    }
+
+    if (unavail.trainerId !== trainerId) {
+      throw new BadRequestException(
+        "Not authorized to remove this unavailability",
+      );
+    }
+
+    return this.prisma.trainerUnavailability.delete({
+      where: { id },
     });
   }
 

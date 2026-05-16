@@ -4,6 +4,8 @@ import {
   Param,
   Query,
   Post,
+  Put,
+  Delete,
   Body,
   UseInterceptors,
   UploadedFile,
@@ -12,6 +14,7 @@ import {
   ForbiddenException,
   BadRequestException,
 } from "@nestjs/common";
+import { Request as ExpressRequest } from "express";
 import { TrainersService } from "./trainers.service";
 import { UpdateTrainerDto } from "./dto/update-trainer.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -37,7 +40,10 @@ export class TrainersController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get(":id/missions")
-  async getMissions(@Param("id") id: string, @Request() req) {
+  async getMissions(
+    @Param("id") id: string,
+    @Request() req: any,
+  ) {
     const trainer = await this.trainersService.findOne(id);
 
     if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
@@ -45,6 +51,50 @@ export class TrainersController {
     }
 
     return this.trainersService.getMissions(id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Post(":id/unavailability")
+  async addUnavailability(
+    @Param("id") id: string,
+    @Body() data: { date: string; slot: string },
+    @Request() req: any,
+  ) {
+    const trainer = await this.trainersService.findOne(id);
+    if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
+      throw new ForbiddenException("Access denied");
+    }
+    return this.trainersService.addUnavailability(id, data.date, data.slot);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Delete(":id/unavailability/:unavailabilityId")
+  async removeUnavailability(
+    @Param("id") id: string,
+    @Param("unavailabilityId") unavailabilityId: string,
+    @Request() req: any,
+  ) {
+    const trainer = await this.trainersService.findOne(id);
+    if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
+      throw new ForbiddenException("Access denied");
+    }
+    return this.trainersService.removeUnavailability(unavailabilityId, id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Put(":id/settings")
+  async updateSettings(
+    @Param("id") id: string,
+    @Body() data: { defaultAvailableDays: string },
+    @Request() req: any,
+  ) {
+    const trainer = await this.trainersService.findOne(id);
+    if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
+      throw new ForbiddenException("Access denied");
+    }
+    return this.trainersService.update(id, {
+      defaultAvailableDays: data.defaultAvailableDays,
+    });
   }
 
   @Get(":id/public")
@@ -61,7 +111,10 @@ export class TrainersController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get(":id")
-  async findOne(@Param("id") id: string, @Request() req) {
+  async findOne(
+    @Param("id") id: string,
+    @Request() req: any,
+  ) {
     const trainer = await this.trainersService.findOne(id);
 
     if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
@@ -80,7 +133,7 @@ export class TrainersController {
   async updateProfile(
     @Param("id") id: string,
     @Body() updateDto: UpdateTrainerDto,
-    @Request() req,
+    @Request() req: any,
   ) {
     const trainer = await this.trainersService.findOne(id);
 
@@ -103,7 +156,7 @@ export class TrainersController {
   async uploadAvatar(
     @Param("id") id: string,
     @UploadedFile() file: Express.Multer.File,
-    @Request() req,
+    @Request() req: any,
   ) {
     if (!file) throw new BadRequestException("File is required");
 
@@ -125,7 +178,10 @@ export class TrainersController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get(":id/calendar-url")
-  async getCalendarUrl(@Param("id") id: string, @Request() req) {
+  async getCalendarUrl(
+    @Param("id") id: string,
+    @Request() req: any,
+  ) {
     const trainer = await this.trainersService.findOne(id);
     if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
       throw new ForbiddenException("Access denied");

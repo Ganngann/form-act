@@ -26,6 +26,12 @@ describe("TrainersService", () => {
       findMany: jest.fn(),
       count: jest.fn(),
     },
+    trainerUnavailability: {
+      findMany: jest.fn().mockResolvedValue([]),
+      upsert: jest.fn(),
+      delete: jest.fn(),
+      findUnique: jest.fn(),
+    },
     $transaction: jest.fn((cb) => cb(mockPrismaService)),
   };
 
