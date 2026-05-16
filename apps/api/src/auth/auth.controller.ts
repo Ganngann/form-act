@@ -85,7 +85,14 @@ export class AuthController {
 
   @Post("logout")
   logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie("Authentication", { path: "/" });
+    res.cookie("Authentication", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      domain: process.env.COOKIE_DOMAIN,
+      expires: new Date(0),
+    });
     return { success: true };
   }
 
