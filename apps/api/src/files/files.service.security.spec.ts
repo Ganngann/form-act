@@ -90,8 +90,8 @@ describe("FilesService Security", () => {
 
   it("should reject invalid URI encoding", async () => {
     const user = { userId: "1", role: "ADMIN", email: "admin@test.com" };
-    await expect(service.getFile("public", "test%G1.jpg", user)).rejects.toThrow(
-      NotFoundException,
-    );
+    await expect(
+      service.getFile("public", "test%G1.jpg", user),
+    ).rejects.toThrow(NotFoundException);
   });
 });

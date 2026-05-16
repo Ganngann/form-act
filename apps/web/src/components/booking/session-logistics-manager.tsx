@@ -478,7 +478,7 @@ export function SessionLogisticsManager({ session }: { session: Session }) {
                                                 )}
                                             </div>
                                         </div>
-                                        <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)} disabled={fields.length === 1}>
+                                        <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)} disabled={fields.length === 1} aria-label="Supprimer le participant">
                                             <Trash2 className="h-4 w-4 text-destructive" />
                                         </Button>
                                     </div>

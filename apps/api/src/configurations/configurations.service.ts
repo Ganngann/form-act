@@ -17,7 +17,10 @@ export class ConfigurationsService {
 
       return JSON.parse(config.value);
     } catch (e) {
-      console.error(`[ConfigurationsService] Error fetching key "${key}":`, e.message);
+      console.error(
+        `[ConfigurationsService] Error fetching key "${key}":`,
+        e.message,
+      );
       return null;
     }
   }
