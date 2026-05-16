@@ -23,9 +23,7 @@ export class SessionsService {
       where: { id },
       include: {
         client: {
-          include: {
-            user: { select: { id: true, email: true, name: true, role: true } },
-          },
+          include: { user: { select: { id: true, email: true, name: true, role: true } } },
         },
         trainer: true,
         formation: true,
@@ -97,9 +95,7 @@ export class SessionsService {
       where,
       include: {
         client: {
-          include: {
-            user: { select: { id: true, email: true, name: true, role: true } },
-          },
+          include: { user: { select: { id: true, email: true, name: true, role: true } } },
         },
         trainer: true,
         formation: true,
@@ -131,9 +127,7 @@ export class SessionsService {
       where,
       include: {
         client: {
-          include: {
-            user: { select: { id: true, email: true, name: true, role: true } },
-          },
+          include: { user: { select: { id: true, email: true, name: true, role: true } } },
         },
         trainer: true,
         formation: true,
@@ -234,14 +228,7 @@ export class SessionsService {
         billingData: JSON.stringify(billingData),
         status: "INVOICED",
       },
-      include: {
-        client: {
-          include: {
-            user: { select: { id: true, email: true, name: true, role: true } },
-          },
-        },
-        formation: true,
-      },
+      include: { client: { include: { user: { select: { id: true, email: true, name: true, role: true } } } }, formation: true },
     });
 
     // Notify Client
@@ -301,11 +288,7 @@ export class SessionsService {
       where: { id },
       data: updateData,
       include: {
-        client: {
-          include: {
-            user: { select: { id: true, email: true, name: true, role: true } },
-          },
-        },
+        client: { include: { user: { select: { id: true, email: true, name: true, role: true } } } },
         trainer: true,
         formation: true,
       },
@@ -360,11 +343,7 @@ export class SessionsService {
         status: "CONFIRMED",
       },
       include: {
-        client: {
-          include: {
-            user: { select: { id: true, email: true, name: true, role: true } },
-          },
-        },
+        client: { include: { user: { select: { id: true, email: true, name: true, role: true } } } },
         formation: true,
       },
     });
@@ -412,11 +391,7 @@ export class SessionsService {
         status: "OFFER_SENT",
       },
       include: {
-        client: {
-          include: {
-            user: { select: { id: true, email: true, name: true, role: true } },
-          },
-        },
+        client: { include: { user: { select: { id: true, email: true, name: true, role: true } } } },
         formation: true,
       },
     });

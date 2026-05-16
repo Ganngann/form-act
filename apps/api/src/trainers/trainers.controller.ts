@@ -42,7 +42,7 @@ export class TrainersController {
   @Get(":id/missions")
   async getMissions(
     @Param("id") id: string,
-    @Request() req: any,
+    @Request() req: ExpressRequest & { user: { role: string; userId: string } },
   ) {
     const trainer = await this.trainersService.findOne(id);
 
@@ -58,7 +58,7 @@ export class TrainersController {
   async addUnavailability(
     @Param("id") id: string,
     @Body() data: { date: string; slot: string },
-    @Request() req: any,
+    @Request() req: ExpressRequest & { user: { role: string; userId: string } },
   ) {
     const trainer = await this.trainersService.findOne(id);
     if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
@@ -72,7 +72,7 @@ export class TrainersController {
   async removeUnavailability(
     @Param("id") id: string,
     @Param("unavailabilityId") unavailabilityId: string,
-    @Request() req: any,
+    @Request() req: ExpressRequest & { user: { role: string; userId: string } },
   ) {
     const trainer = await this.trainersService.findOne(id);
     if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
@@ -86,7 +86,7 @@ export class TrainersController {
   async updateSettings(
     @Param("id") id: string,
     @Body() data: { defaultAvailableDays: string },
-    @Request() req: any,
+    @Request() req: ExpressRequest & { user: { role: string; userId: string } },
   ) {
     const trainer = await this.trainersService.findOne(id);
     if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
@@ -113,7 +113,7 @@ export class TrainersController {
   @Get(":id")
   async findOne(
     @Param("id") id: string,
-    @Request() req: any,
+    @Request() req: ExpressRequest & { user: { role: string; userId: string } },
   ) {
     const trainer = await this.trainersService.findOne(id);
 
@@ -133,7 +133,7 @@ export class TrainersController {
   async updateProfile(
     @Param("id") id: string,
     @Body() updateDto: UpdateTrainerDto,
-    @Request() req: any,
+    @Request() req: ExpressRequest & { user: { role: string; userId: string } },
   ) {
     const trainer = await this.trainersService.findOne(id);
 
@@ -156,7 +156,7 @@ export class TrainersController {
   async uploadAvatar(
     @Param("id") id: string,
     @UploadedFile() file: Express.Multer.File,
-    @Request() req: any,
+    @Request() req: ExpressRequest & { user: { role: string; userId: string } },
   ) {
     if (!file) throw new BadRequestException("File is required");
 
@@ -180,7 +180,7 @@ export class TrainersController {
   @Get(":id/calendar-url")
   async getCalendarUrl(
     @Param("id") id: string,
-    @Request() req: any,
+    @Request() req: ExpressRequest & { user: { role: string; userId: string } },
   ) {
     const trainer = await this.trainersService.findOne(id);
     if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {

@@ -4,11 +4,7 @@ import { Session, Client, Formation, Formateur, User } from "@prisma/client";
 
 // Define a type that includes relations
 export type SessionWithRelations = Session & {
-  client:
-    | (Client & {
-        user: { id: string; email: string; name: string; role: string };
-      })
-    | null;
+  client: (Client & { user: { id: string; email: string; name: string; role: string; } }) | null;
   formation: Formation;
   trainer: Formateur;
 };
