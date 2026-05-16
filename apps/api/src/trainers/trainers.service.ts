@@ -50,7 +50,7 @@ export class TrainersService {
     const formateur = await this.prisma.formateur.findUnique({
       where: { id },
       include: {
-        user: true,
+        user: { select: { id: true, email: true, name: true, role: true } },
         predilectionZones: true,
         expertiseZones: true,
         authorizedFormations: true,
@@ -266,7 +266,7 @@ export class TrainersService {
       include: {
         formation: true,
         client: {
-          include: { user: true },
+          include: { user: { select: { id: true, email: true, name: true, role: true } } },
         },
       },
       orderBy: {
