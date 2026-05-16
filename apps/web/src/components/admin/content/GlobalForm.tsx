@@ -73,6 +73,11 @@ export function GlobalForm() {
              />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="footerDescription">Description du Footer</Label>
+            <Textarea id="footerDescription" {...register("footerDescription")} />
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email de Contact</Label>

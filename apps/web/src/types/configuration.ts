@@ -2,6 +2,7 @@ export interface GlobalConfig {
   logoText: string;
   logoUrl?: string;
   faviconUrl?: string;
+  footerDescription?: string;
   email: string;
   phone: string;
   address: string;
@@ -15,6 +16,31 @@ export interface HomeHeroConfig {
   tagline: string;
   title: string;
   intro: string;
+  buttonPrimary?: string;
+  buttonSecondary?: string;
+  searchPlaceholder?: string;
+  searchButton?: string;
+  searchAll?: string;
+}
+
+export interface HomeBentoConfig {
+  userPreviewBadge?: string;
+  userPreviewTitle?: string;
+  userPreviewDesc?: string;
+  userActionTitle?: string;
+  userActionDesc?: string;
+  visitorActionTitle?: string;
+  visitorActionDesc?: string;
+  stat1Value?: string;
+  stat1Label?: string;
+  stat2Value?: string;
+  stat2Label?: string;
+}
+
+export interface HomeCategoriesConfig {
+  badge?: string;
+  title?: string;
+  link?: string;
 }
 
 export interface HomePromoConfig {
@@ -56,4 +82,6 @@ export type SiteConfigKey =
   | 'home_values'
   | 'home_trust'
   | 'home_cta'
+  | 'home_bento'
+  | 'home_categories'
   | 'legal_texts';

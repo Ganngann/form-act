@@ -9,6 +9,8 @@ import { ValuesForm } from "@/components/admin/content/ValuesForm";
 import { TrustForm } from "@/components/admin/content/TrustForm";
 import { CtaForm } from "@/components/admin/content/CtaForm";
 import { LegalForm } from "@/components/admin/content/LegalForm";
+import { BentoForm } from "@/components/admin/content/BentoForm";
+import { CategoriesConfigForm } from "@/components/admin/content/CategoriesConfigForm";
 
 export default function ContentPage() {
   return (
@@ -24,6 +26,8 @@ export default function ContentPage() {
         <TabsList className="w-full justify-start h-auto p-1 bg-muted/50 rounded-xl mb-6 overflow-x-auto">
           <TabsTrigger value="global" className="rounded-lg py-2.5 px-4 font-bold">Global</TabsTrigger>
           <TabsTrigger value="hero" className="rounded-lg py-2.5 px-4 font-bold">Hero (Intro)</TabsTrigger>
+          <TabsTrigger value="bento" className="rounded-lg py-2.5 px-4 font-bold">Grille Bento</TabsTrigger>
+          <TabsTrigger value="categories" className="rounded-lg py-2.5 px-4 font-bold">Catégories</TabsTrigger>
           <TabsTrigger value="promo" className="rounded-lg py-2.5 px-4 font-bold">Promo (Grid)</TabsTrigger>
           <TabsTrigger value="values" className="rounded-lg py-2.5 px-4 font-bold">Arguments</TabsTrigger>
           <TabsTrigger value="trust" className="rounded-lg py-2.5 px-4 font-bold">Preuve Sociale</TabsTrigger>
@@ -36,6 +40,12 @@ export default function ContentPage() {
         </TabsContent>
         <TabsContent value="hero" className="focus-visible:ring-0">
           <HeroForm />
+        </TabsContent>
+        <TabsContent value="bento" className="focus-visible:ring-0">
+          <BentoForm />
+        </TabsContent>
+        <TabsContent value="categories" className="focus-visible:ring-0">
+          <CategoriesConfigForm />
         </TabsContent>
         <TabsContent value="promo" className="focus-visible:ring-0">
           <PromoForm />

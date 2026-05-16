@@ -66,6 +66,33 @@ export function HeroForm() {
             <Label htmlFor="intro">Paragraphe d&apos;intro</Label>
             <Textarea id="intro" {...register("intro")} />
           </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="buttonPrimary">Bouton Principal</Label>
+              <Input id="buttonPrimary" {...register("buttonPrimary")} placeholder="Nos Formations" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="buttonSecondary">Bouton Secondaire</Label>
+              <Input id="buttonSecondary" {...register("buttonSecondary")} placeholder="Accès Client" />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+             <Label htmlFor="searchPlaceholder">Placeholder Recherche</Label>
+             <Input id="searchPlaceholder" {...register("searchPlaceholder")} placeholder="Quelle compétence recherchez-vous ?" />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="searchButton">Bouton Recherche</Label>
+              <Input id="searchButton" {...register("searchButton")} placeholder="Rechercher" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="searchAll">Option Toutes Catégories</Label>
+              <Input id="searchAll" {...register("searchAll")} placeholder="Toutes les thématiques" />
+            </div>
+          </div>
         </CardContent>
       </Card>
 
