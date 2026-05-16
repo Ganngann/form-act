@@ -42,7 +42,10 @@ export class EmailTemplatesService {
       this.logger.log(`Successfully updated email template: ${type}`);
       return updated;
     } catch (error) {
-      this.logger.error(`Failed to update email template: ${type}`, error.stack);
+      this.logger.error(
+        `Failed to update email template: ${type}`,
+        error.stack,
+      );
       throw error;
     }
   }

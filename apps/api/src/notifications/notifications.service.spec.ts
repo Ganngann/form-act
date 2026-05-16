@@ -38,6 +38,7 @@ describe("NotificationsService", () => {
           useValue: {
             hasLog: jest.fn(),
             createLog: jest.fn(),
+            getLogsForSessions: jest.fn(),
           },
         },
         {
@@ -129,7 +130,7 @@ describe("NotificationsService", () => {
       jest
         .spyOn(sessionsService, "isLogisticsStrictlyComplete")
         .mockReturnValue(false);
-      jest.spyOn(logService, "hasLog").mockResolvedValue(false);
+      jest.spyOn(logService, "getLogsForSessions").mockResolvedValue(new Set());
 
       await service.handleCron();
 
@@ -154,6 +155,7 @@ describe("NotificationsService", () => {
       jest
         .spyOn(sessionsService, "isLogisticsStrictlyComplete")
         .mockReturnValue(true);
+      jest.spyOn(logService, "getLogsForSessions").mockResolvedValue(new Set());
 
       await service.handleCron();
       expect(emailService.sendEmail).not.toHaveBeenCalled();
@@ -172,6 +174,7 @@ describe("NotificationsService", () => {
       jest
         .spyOn(sessionsService, "isLogisticsStrictlyComplete")
         .mockReturnValue(false);
+      jest.spyOn(logService, "getLogsForSessions").mockResolvedValue(new Set());
 
       await service.handleCron();
       expect(emailService.sendEmail).not.toHaveBeenCalled();
@@ -185,7 +188,7 @@ describe("NotificationsService", () => {
       const session = createSession({ participants: "[]" }); // Empty array json
 
       jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
-      jest.spyOn(logService, "hasLog").mockResolvedValue(false);
+      jest.spyOn(logService, "getLogsForSessions").mockResolvedValue(new Set());
 
       await service.handleCron();
       expect(emailService.sendEmail).toHaveBeenCalledWith(
@@ -213,7 +216,7 @@ describe("NotificationsService", () => {
       const session = createSession({ participants: null });
 
       jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
-      jest.spyOn(logService, "hasLog").mockResolvedValue(false);
+      jest.spyOn(logService, "getLogsForSessions").mockResolvedValue(new Set());
 
       await service.handleCron();
       expect(emailService.sendEmail).toHaveBeenCalledWith(
@@ -231,7 +234,7 @@ describe("NotificationsService", () => {
       const session = createSession();
 
       jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
-      jest.spyOn(logService, "hasLog").mockResolvedValue(false);
+      jest.spyOn(logService, "getLogsForSessions").mockResolvedValue(new Set());
 
       await service.handleCron();
       expect(emailService.sendEmail).toHaveBeenCalledWith(
@@ -249,7 +252,7 @@ describe("NotificationsService", () => {
       const session = createSession();
 
       jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
-      jest.spyOn(logService, "hasLog").mockResolvedValue(false);
+      jest.spyOn(logService, "getLogsForSessions").mockResolvedValue(new Set());
 
       await service.handleCron();
       expect(emailService.sendEmail).toHaveBeenCalledWith(
@@ -267,7 +270,7 @@ describe("NotificationsService", () => {
       const session = createSession();
 
       jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
-      jest.spyOn(logService, "hasLog").mockResolvedValue(false);
+      jest.spyOn(logService, "getLogsForSessions").mockResolvedValue(new Set());
 
       await service.handleCron();
       expect(emailService.sendEmailWithAttachments).toHaveBeenCalledWith(
@@ -289,9 +292,14 @@ describe("NotificationsService", () => {
 
       jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
       // Silence other notifications by pretending they were sent
-      jest
-        .spyOn(logService, "hasLog")
-        .mockImplementation(async (type) => type !== "PROOF_REMINDER_J1");
+      const logCache = new Set<string>();
+      logCache.add("s1:LOGISTICS_REMINDER_48H");
+      logCache.add("s1:PARTICIPANTS_ALERT_J15");
+      logCache.add("s1:PARTICIPANTS_CRITICAL_J9");
+      logCache.add("s1:PROGRAM_SEND_J30");
+      logCache.add("s1:MISSION_REMINDER_J21");
+      logCache.add("s1:DOC_PACK_J7");
+      jest.spyOn(logService, "getLogsForSessions").mockResolvedValue(logCache);
 
       await service.handleCron();
       expect(emailService.sendEmail).toHaveBeenCalledWith(
@@ -313,7 +321,9 @@ describe("NotificationsService", () => {
 
       jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
       // Silence all notifications
-      jest.spyOn(logService, "hasLog").mockResolvedValue(true);
+      const mockSet = new Set<string>();
+      mockSet.has = jest.fn().mockReturnValue(true);
+      jest.spyOn(logService, "getLogsForSessions").mockResolvedValue(mockSet);
 
       await service.handleCron();
       expect(emailService.sendEmail).not.toHaveBeenCalled();
@@ -326,7 +336,9 @@ describe("NotificationsService", () => {
 
       jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
       // Silence all notifications
-      jest.spyOn(logService, "hasLog").mockResolvedValue(true);
+      const mockSet = new Set<string>();
+      mockSet.has = jest.fn().mockReturnValue(true);
+      jest.spyOn(logService, "getLogsForSessions").mockResolvedValue(mockSet);
 
       await service.handleCron();
       expect(emailService.sendEmail).not.toHaveBeenCalled();
@@ -340,6 +352,8 @@ describe("NotificationsService", () => {
       const session = createSession({ status: "CANCELLED" });
 
       jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
+      jest.spyOn(logService, "getLogsForSessions").mockResolvedValue(new Set());
+
       await service.handleCron();
       expect(emailService.sendEmail).not.toHaveBeenCalled();
       expect(emailService.sendEmailWithAttachments).not.toHaveBeenCalled();
@@ -351,7 +365,9 @@ describe("NotificationsService", () => {
       const session = createSession();
 
       jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
-      jest.spyOn(logService, "hasLog").mockResolvedValue(true); // Already sent
+      const mockSet = new Set<string>();
+      mockSet.has = jest.fn().mockReturnValue(true); // Already sent
+      jest.spyOn(logService, "getLogsForSessions").mockResolvedValue(mockSet);
 
       await service.handleCron();
       expect(emailService.sendEmail).not.toHaveBeenCalled();

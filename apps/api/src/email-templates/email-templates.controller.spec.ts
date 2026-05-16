@@ -62,7 +62,9 @@ describe("EmailTemplatesController", () => {
       const result = { success: true };
       jest.spyOn(service, "sendTestEmail").mockResolvedValue(result);
 
-      expect(await controller.sendTest("TEST", { email: "test@example.com" })).toBe(result);
+      expect(
+        await controller.sendTest("TEST", { email: "test@example.com" }),
+      ).toBe(result);
     });
   });
 });

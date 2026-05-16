@@ -34,10 +34,7 @@ export class EmailTemplatesController {
 
   @Post(":type/test")
   @Roles("ADMIN")
-  sendTest(
-    @Param("type") type: string,
-    @Body() testDto: SendTestEmailDto,
-  ) {
+  sendTest(@Param("type") type: string, @Body() testDto: SendTestEmailDto) {
     return this.emailTemplatesService.sendTestEmail(type, testDto);
   }
 }
