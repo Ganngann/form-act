@@ -101,13 +101,13 @@ export function MasterCalendar({ }: MasterCalendarProps) {
             {format(currentDate, viewMode === 'month' ? "MMMM yyyy" : "'Semaine du' d MMMM", { locale: fr })}
           </h2>
           <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-lg border border-border/50">
-            <Button variant="ghost" size="icon" onClick={handlePrevious} className="h-7 w-7 rounded-md hover:bg-white hover:shadow-sm">
+            <Button variant="ghost" size="icon" onClick={handlePrevious} className="h-7 w-7 rounded-md hover:bg-white hover:shadow-sm" aria-label="Précédent">
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="sm" onClick={handleToday} className="h-7 px-3 text-xs font-bold rounded-md hover:bg-white hover:shadow-sm">
               Aujourd&apos;hui
             </Button>
-            <Button variant="ghost" size="icon" onClick={handleNext} className="h-7 w-7 rounded-md hover:bg-white hover:shadow-sm">
+            <Button variant="ghost" size="icon" onClick={handleNext} className="h-7 w-7 rounded-md hover:bg-white hover:shadow-sm" aria-label="Suivant">
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
