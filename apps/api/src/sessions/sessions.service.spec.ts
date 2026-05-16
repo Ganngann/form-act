@@ -401,6 +401,22 @@ describe("SessionsService", () => {
       expect(service.isLogisticsStrictlyComplete(s as any)).toBe(false);
     });
 
+    it("should return false if wifi or subsidies have invalid values", () => {
+      const s1 = {
+        location: "Loc",
+        participants: validParticipants,
+        logistics: JSON.stringify({ wifi: "maybe", subsidies: "yes", videoMaterial: ["A"] }),
+      } as Session;
+      expect(service.isLogisticsStrictlyComplete(s1 as any)).toBe(false);
+
+      const s2 = {
+        location: "Loc",
+        participants: validParticipants,
+        logistics: JSON.stringify({ wifi: "yes", subsidies: "maybe", videoMaterial: ["A"] }),
+      } as Session;
+      expect(service.isLogisticsStrictlyComplete(s2 as any)).toBe(false);
+    });
+
     it("should return false if no material", () => {
       const s = {
         location: "Loc",
