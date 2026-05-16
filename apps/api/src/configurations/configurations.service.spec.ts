@@ -54,4 +54,46 @@ describe("ConfigurationsService", () => {
       expect(result).toBeNull();
     });
   });
+
+  describe("updateConfiguration", () => {
+    it("should stringify an object value and call upsert", async () => {
+      const mockResult = {
+        key: "test-key",
+        value: '{"foo":"bar"}',
+        updatedAt: new Date(),
+      };
+      (prisma.siteConfiguration.upsert as jest.Mock).mockResolvedValue(
+        mockResult,
+      );
+
+      const result = await service.updateConfiguration("test-key", { foo: "bar" });
+
+      expect(prisma.siteConfiguration.upsert).toHaveBeenCalledWith({
+        where: { key: "test-key" },
+        update: { value: '{"foo":"bar"}' },
+        create: { key: "test-key", value: '{"foo":"bar"}' },
+      });
+      expect(result).toEqual(mockResult);
+    });
+
+    it("should stringify a primitive value and call upsert", async () => {
+      const mockResult = {
+        key: "primitive-key",
+        value: '"string-value"',
+        updatedAt: new Date(),
+      };
+      (prisma.siteConfiguration.upsert as jest.Mock).mockResolvedValue(
+        mockResult,
+      );
+
+      const result = await service.updateConfiguration("primitive-key", "string-value");
+
+      expect(prisma.siteConfiguration.upsert).toHaveBeenCalledWith({
+        where: { key: "primitive-key" },
+        update: { value: '"string-value"' },
+        create: { key: "primitive-key", value: '"string-value"' },
+      });
+      expect(result).toEqual(mockResult);
+    });
+  });
 });
