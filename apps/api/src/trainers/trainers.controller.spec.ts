@@ -14,6 +14,8 @@ describe("TrainersController", () => {
     update: jest.fn(),
     updateAvatar: jest.fn(),
     ensureCalendarToken: jest.fn(),
+    addUnavailability: jest.fn(),
+    removeUnavailability: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -177,6 +179,74 @@ describe("TrainersController", () => {
         controller.uploadAvatar("1", file, {
           user: { role: "TRAINER", userId: "u1" },
         }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("addUnavailability", () => {
+    it("should allow Owner", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u1" });
+      mockTrainersService.addUnavailability.mockResolvedValue({});
+      await controller.addUnavailability(
+        "1",
+        { date: "2024-01-01", slot: "AM" },
+        { user: { role: "TRAINER", userId: "u1" } },
+      );
+      expect(service.addUnavailability).toHaveBeenCalled();
+    });
+
+    it("should deny others", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u2" });
+      await expect(
+        controller.addUnavailability(
+          "1",
+          { date: "2024-01-01", slot: "AM" },
+          { user: { role: "TRAINER", userId: "u1" } },
+        ),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("removeUnavailability", () => {
+    it("should allow Owner", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u1" });
+      mockTrainersService.removeUnavailability.mockResolvedValue({});
+      await controller.removeUnavailability("1", "unav1", {
+        user: { role: "TRAINER", userId: "u1" },
+      });
+      expect(service.removeUnavailability).toHaveBeenCalled();
+    });
+
+    it("should deny others", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u2" });
+      await expect(
+        controller.removeUnavailability("1", "unav1", {
+          user: { role: "TRAINER", userId: "u1" },
+        }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("updateSettings", () => {
+    it("should allow Owner", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u1" });
+      mockTrainersService.update.mockResolvedValue({});
+      await controller.updateSettings(
+        "1",
+        { defaultAvailableDays: "[1]" },
+        { user: { role: "TRAINER", userId: "u1" } },
+      );
+      expect(service.update).toHaveBeenCalled();
+    });
+
+    it("should deny others", async () => {
+      mockTrainersService.findOne.mockResolvedValue({ id: "1", userId: "u2" });
+      await expect(
+        controller.updateSettings(
+          "1",
+          { defaultAvailableDays: "[1]" },
+          { user: { role: "TRAINER", userId: "u1" } },
+        ),
       ).rejects.toThrow(ForbiddenException);
     });
   });
