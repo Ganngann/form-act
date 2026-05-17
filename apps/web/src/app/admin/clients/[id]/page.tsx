@@ -31,9 +31,6 @@ export default async function ClientDetailPage({ params }: { params: { id: strin
 
     const auditLogs: AuditEntry[] = client.auditLog ? JSON.parse(client.auditLog) : [];
 
-    // Log to server console as per AC
-    console.log(`Rendering ClientDetailPage for client: ${client.companyName} (${client.id})`);
-
     return (
         <ClientEditForm client={client} auditLogs={auditLogs} />
     );
