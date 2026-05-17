@@ -20,6 +20,12 @@ const navItems = [
         exact: false
     },
     {
+        href: '/trainer/availability',
+        label: "Mes Disponibilités",
+        icon: Calendar,
+        exact: false
+    },
+    {
         href: '/trainer/settings',
         label: "Paramètres & Sync",
         icon: Settings,
