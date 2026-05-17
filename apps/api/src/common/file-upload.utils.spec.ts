@@ -3,8 +3,12 @@ import {
   generateSecureFilename,
   ALLOWED_EXTENSIONS,
   ALLOWED_FILE_TYPES,
+  removeFile,
 } from "./file-upload.utils";
 import { BadRequestException } from "@nestjs/common";
+import * as fs from "fs/promises";
+
+jest.mock("fs/promises");
 
 describe("File Validation Logic", () => {
   it("should generate ALLOWED_EXTENSIONS regex that matches all defined extensions", () => {
@@ -98,5 +102,52 @@ describe("generateSecureFilename", () => {
     const name1 = generateSecureFilename("image.png");
     const name2 = generateSecureFilename("image.png");
     expect(name1).not.toBe(name2);
+  });
+});
+
+describe("removeFile", () => {
+  let consoleErrorSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
+  });
+
+  it("should successfully remove a file when fs.unlink succeeds", async () => {
+    (fs.unlink as jest.Mock).mockResolvedValue(undefined);
+
+    await removeFile("test-file.txt");
+
+    expect(fs.unlink).toHaveBeenCalledWith("test-file.txt");
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
+  it("should ignore ENOENT error and not log anything", async () => {
+    const error = new Error("File not found");
+    (error as any).code = "ENOENT";
+    (fs.unlink as jest.Mock).mockRejectedValue(error);
+
+    await removeFile("missing-file.txt");
+
+    expect(fs.unlink).toHaveBeenCalledWith("missing-file.txt");
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
+  it("should catch and log non-ENOENT errors", async () => {
+    const error = new Error("Permission denied");
+    (error as any).code = "EACCES";
+    (fs.unlink as jest.Mock).mockRejectedValue(error);
+
+    await removeFile("locked-file.txt");
+
+    expect(fs.unlink).toHaveBeenCalledWith("locked-file.txt");
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      `Error deleting file locked-file.txt:`,
+      error,
+    );
   });
 });
