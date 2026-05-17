@@ -66,7 +66,9 @@ describe("ConfigurationsService", () => {
         mockResult,
       );
 
-      const result = await service.updateConfiguration("test-key", { foo: "bar" });
+      const result = await service.updateConfiguration("test-key", {
+        foo: "bar",
+      });
 
       expect(prisma.siteConfiguration.upsert).toHaveBeenCalledWith({
         where: { key: "test-key" },
@@ -86,7 +88,10 @@ describe("ConfigurationsService", () => {
         mockResult,
       );
 
-      const result = await service.updateConfiguration("primitive-key", "string-value");
+      const result = await service.updateConfiguration(
+        "primitive-key",
+        "string-value",
+      );
 
       expect(prisma.siteConfiguration.upsert).toHaveBeenCalledWith({
         where: { key: "primitive-key" },
