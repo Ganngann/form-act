@@ -8,8 +8,6 @@ import {
 import { BadRequestException } from "@nestjs/common";
 import * as fs from "fs/promises";
 
-jest.mock("fs/promises");
-
 describe("File Validation Logic", () => {
   it("should generate ALLOWED_EXTENSIONS regex that matches all defined extensions", () => {
     const allExtensions = Object.values(ALLOWED_FILE_TYPES).flat();
@@ -106,47 +104,48 @@ describe("generateSecureFilename", () => {
 });
 
 describe("removeFile", () => {
+  let unlinkSpy: jest.SpyInstance;
   let consoleErrorSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    unlinkSpy = jest.spyOn(fs, "unlink").mockResolvedValue(undefined);
     consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
-    jest.clearAllMocks();
   });
 
   afterEach(() => {
-    consoleErrorSpy.mockRestore();
+    jest.restoreAllMocks();
   });
 
-  it("should successfully remove a file when fs.unlink succeeds", async () => {
-    (fs.unlink as jest.Mock).mockResolvedValue(undefined);
-
-    await removeFile("test-file.txt");
-
-    expect(fs.unlink).toHaveBeenCalledWith("test-file.txt");
+  it("should successfully remove a file", async () => {
+    const filePath = "test/path/file.txt";
+    await removeFile(filePath);
+    expect(unlinkSpy).toHaveBeenCalledWith(filePath);
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 
-  it("should ignore ENOENT error and not log anything", async () => {
-    const error = new Error("File not found");
-    (error as any).code = "ENOENT";
-    (fs.unlink as jest.Mock).mockRejectedValue(error);
+  it("should ignore ENOENT error (file not found)", async () => {
+    const error = new Error("File not found") as any;
+    error.code = "ENOENT";
+    unlinkSpy.mockRejectedValue(error);
 
-    await removeFile("missing-file.txt");
+    const filePath = "test/path/nonexistent.txt";
+    await removeFile(filePath);
 
-    expect(fs.unlink).toHaveBeenCalledWith("missing-file.txt");
+    expect(unlinkSpy).toHaveBeenCalledWith(filePath);
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 
-  it("should catch and log non-ENOENT errors", async () => {
-    const error = new Error("Permission denied");
-    (error as any).code = "EACCES";
-    (fs.unlink as jest.Mock).mockRejectedValue(error);
+  it("should log error if fs.unlink throws a non-ENOENT error", async () => {
+    const error = new Error("Permission denied") as any;
+    error.code = "EACCES";
+    unlinkSpy.mockRejectedValue(error);
 
-    await removeFile("locked-file.txt");
+    const filePath = "test/path/locked.txt";
+    await removeFile(filePath);
 
-    expect(fs.unlink).toHaveBeenCalledWith("locked-file.txt");
+    expect(unlinkSpy).toHaveBeenCalledWith(filePath);
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      `Error deleting file locked-file.txt:`,
+      `Error deleting file ${filePath}:`,
       error,
     );
   });

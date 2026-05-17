@@ -53,6 +53,48 @@ describe("ConfigurationsService", () => {
       const result = await service.getConfiguration("test");
       expect(result).toBeNull();
     });
+
+    it("should handle findUnique errors, log to console.error and return null", async () => {
+      const mockError = new Error("Database error");
+      (prisma.siteConfiguration.findUnique as jest.Mock).mockRejectedValue(
+        mockError,
+      );
+
+      const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+      const result = await service.getConfiguration("test");
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        '[ConfigurationsService] Error fetching key "test":',
+        "Database error"
+      );
+      expect(result).toBeNull();
+
+      consoleSpy.mockRestore();
+    });
+
+    it("should handle JSON.parse errors, log to console.error and return null", async () => {
+      const mockConfig = {
+        key: "test",
+        value: 'invalid-json',
+        updatedAt: new Date(),
+      };
+      (prisma.siteConfiguration.findUnique as jest.Mock).mockResolvedValue(
+        mockConfig,
+      );
+
+      const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+      const result = await service.getConfiguration("test");
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        '[ConfigurationsService] Error fetching key "test":',
+        expect.stringContaining("Unexpected token")
+      );
+      expect(result).toBeNull();
+
+      consoleSpy.mockRestore();
+    });
   });
 
   describe("updateConfiguration", () => {
