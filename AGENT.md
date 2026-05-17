@@ -36,5 +36,13 @@ Ton objectif est de développer une plateforme de gestion de formation robuste, 
     *   **Composants** : Interdiction d'utiliser des balises HTML brutes pour la UI. Importe toujours les composants `shadcn/ui` (`<Button>`, `<Input>`, `<Card>`).
     *   **Police** : Utilise toujours la font configurée (`Inter`).
 
+6.  **Gestion des Versions & Commits (Conventional Commits)** :
+    *   **Impératif** : Tous les messages de commit ou de PR doivent respecter la spécification **Conventional Commits** :
+        *   `feat: ...` ➔ pour une nouvelle fonctionnalité.
+        *   `fix: ...` ➔ pour une correction de bug.
+        *   `docs: ...` ➔ pour les modifications de documentation.
+        *   `chore: ...` ➔ pour les tâches de maintenance, dépendances, etc.
+    *   Toute nouvelle version est gérée et tagguée de façon automatisée. Le script de build `scripts/build-prod.ps1` lance automatiquement la release et pousse les tags Git correspondants.
+
 ### 🎯 TA MISSION ACTUELLE
 [Décrivez ici la tâche du jour, ex: "Créer le formulaire de réservation"]

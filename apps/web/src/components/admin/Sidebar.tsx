@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Calendar, Users, Briefcase, BookOpen, Tags, Settings, Archive, Palette, Mail } from 'lucide-react';
@@ -41,8 +42,23 @@ const navItems: NavItem[] = [
   { href: '/admin/settings', label: "Paramètres", icon: Settings },
 ];
 
+interface VersionData {
+  webVersion: string;
+  apiVersion: string;
+  commit: string;
+  buildDate: string;
+}
+
 export function Sidebar() {
   const pathname = usePathname();
+  const [version, setVersion] = useState<VersionData | null>(null);
+
+  useEffect(() => {
+    fetch('/api/version')
+      .then((res) => res.json())
+      .then((data) => setVersion(data))
+      .catch(() => {});
+  }, []);
 
   return (
     <aside className="hidden lg:block w-[280px] shrink-0 space-y-6 py-6 pl-6 h-screen sticky top-0 overflow-y-auto">
@@ -121,7 +137,7 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="pr-4 mt-auto">
+      <div className="pr-4 mt-auto space-y-4">
         <Card className="rounded-[1.5rem] border-primary/10 bg-gradient-to-br from-primary/5 to-transparent overflow-hidden">
           <CardContent className="p-5 relative">
             <div className="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-full blur-2xl -mr-8 -mt-8"></div>
@@ -134,6 +150,25 @@ export function Sidebar() {
             </Link>
           </CardContent>
         </Card>
+
+        {version && (
+          <div className="px-4 text-[9px] text-muted-foreground font-medium flex flex-col gap-0.5 border-t border-border/20 pt-3">
+            <div className="flex justify-between">
+              <span>Web :</span>
+              <span className="font-bold text-foreground">v{version.webVersion}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>API :</span>
+              <span className="font-bold text-foreground">v{version.apiVersion}</span>
+            </div>
+            {version.commit && version.commit !== 'development' && version.commit !== 'unknown' && (
+              <div className="flex justify-between">
+                <span>Commit :</span>
+                <span className="font-bold font-mono text-primary">{version.commit}</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </aside>
   );
