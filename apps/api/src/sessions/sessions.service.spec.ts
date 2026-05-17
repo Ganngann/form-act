@@ -320,10 +320,9 @@ describe("SessionsService", () => {
     it("should return counts", async () => {
       jest.spyOn(prisma.session, "count").mockResolvedValue(5);
       jest.spyOn(prisma.session, "findMany").mockResolvedValue([
-        { id: "1", location: "", logistics: null } as Session,
-        { id: "2", location: "Loc", logistics: null } as Session,
+        { location: "", logistics: null } as any,
+        { location: "Loc", logistics: null } as any,
         {
-          id: "3",
           location: "Loc",
           participants: '[{"name":"A"}]',
           logistics: JSON.stringify({
@@ -331,7 +330,7 @@ describe("SessionsService", () => {
             subsidies: "no",
             videoMaterial: ["None"],
           }),
-        } as Session,
+        } as any,
       ]);
 
       const result = await service.getAdminStats();

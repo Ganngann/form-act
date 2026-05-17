@@ -463,7 +463,7 @@ export class SessionsService {
       }),
 
       // 3. Logistique manquante (T+48h, status CONFIRMED et logistique incomplete)
-      // Note: We count in JS because of JSON parsing complexity
+      // Done in JS due to JSON parsing complexity, but optimized via 'select' to reduce memory footprint.
       this.prisma.session
         .findMany({
           where: {
@@ -473,10 +473,15 @@ export class SessionsService {
               lte: new Date(new Date().setHours(new Date().getHours() - 48)),
             },
           },
+          select: {
+            location: true,
+            participants: true,
+            logistics: true,
+          },
         })
         .then(
           (sessions) =>
-            sessions.filter((s) => !this.isLogisticsStrictlyComplete(s)).length,
+            sessions.filter((s) => !this.isLogisticsStrictlyComplete(s as any)).length,
         ),
 
       // 4. Feuilles de présence manquantes (Session passée, status CONFIRMED ou PROOF_RECEIVED, mais proofUrl null)

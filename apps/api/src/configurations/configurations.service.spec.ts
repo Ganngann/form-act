@@ -60,13 +60,15 @@ describe("ConfigurationsService", () => {
         mockError,
       );
 
-      const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
       const result = await service.getConfiguration("test");
 
       expect(consoleSpy).toHaveBeenCalledWith(
         '[ConfigurationsService] Error fetching key "test":',
-        "Database error"
+        "Database error",
       );
       expect(result).toBeNull();
 
@@ -76,20 +78,22 @@ describe("ConfigurationsService", () => {
     it("should handle JSON.parse errors, log to console.error and return null", async () => {
       const mockConfig = {
         key: "test",
-        value: 'invalid-json',
+        value: "invalid-json",
         updatedAt: new Date(),
       };
       (prisma.siteConfiguration.findUnique as jest.Mock).mockResolvedValue(
         mockConfig,
       );
 
-      const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
       const result = await service.getConfiguration("test");
 
       expect(consoleSpy).toHaveBeenCalledWith(
         '[ConfigurationsService] Error fetching key "test":',
-        expect.stringContaining("Unexpected token")
+        expect.stringContaining("Unexpected token"),
       );
       expect(result).toBeNull();
 
