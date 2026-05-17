@@ -291,12 +291,6 @@ export class SessionsService {
     if (data.location !== undefined) updateData.location = data.location;
     if (data.status !== undefined) updateData.status = data.status;
 
-    // Auto-confirm if assigning trainer to a PENDING session
-    // Removed for US-02/US-03 workflow: Status must be updated via Offer/Accept flow
-    // if (session.status === "PENDING" && data.trainerId && !data.status) {
-    //   updateData.status = "CONFIRMED";
-    // }
-
     const updatedSession = await this.prisma.session.update({
       where: { id },
       data: updateData,
