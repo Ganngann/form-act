@@ -50,6 +50,19 @@ model Formateur {
   avatarUrl         String?
   calendarToken     String?     @unique
   isActive           Boolean     @default(true)
+  defaultAvailableDays String?   // JSON string: list of active weekday indices, e.g., "[1,2,3,4,5]"
+  unavailabilities   TrainerUnavailability[]
+}
+
+model TrainerUnavailability {
+  id          String    @id @default(uuid())
+  trainerId   String
+  trainer     Formateur @relation(fields: [trainerId], references: [id])
+  date        DateTime
+  slot        String    // AM, PM, ALL_DAY
+  createdAt   DateTime  @default(now())
+
+  @@unique([trainerId, date, slot])
 }
 
 model Zone {

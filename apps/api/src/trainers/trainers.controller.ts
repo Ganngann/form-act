@@ -4,6 +4,8 @@ import {
   Param,
   Query,
   Post,
+  Put,
+  Delete,
   Body,
   UseInterceptors,
   UploadedFile,
@@ -45,6 +47,50 @@ export class TrainersController {
     }
 
     return this.trainersService.getMissions(id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Post(":id/unavailability")
+  async addUnavailability(
+    @Param("id") id: string,
+    @Body() data: { date: string; slot: string },
+    @Request() req,
+  ) {
+    const trainer = await this.trainersService.findOne(id);
+    if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
+      throw new ForbiddenException("Access denied");
+    }
+    return this.trainersService.addUnavailability(id, data.date, data.slot);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Delete(":id/unavailability/:unavailabilityId")
+  async removeUnavailability(
+    @Param("id") id: string,
+    @Param("unavailabilityId") unavailabilityId: string,
+    @Request() req,
+  ) {
+    const trainer = await this.trainersService.findOne(id);
+    if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
+      throw new ForbiddenException("Access denied");
+    }
+    return this.trainersService.removeUnavailability(unavailabilityId, id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Put(":id/settings")
+  async updateSettings(
+    @Param("id") id: string,
+    @Body() data: { defaultAvailableDays: string },
+    @Request() req,
+  ) {
+    const trainer = await this.trainersService.findOne(id);
+    if (req.user.role !== "ADMIN" && trainer.userId !== req.user.userId) {
+      throw new ForbiddenException("Access denied");
+    }
+    return this.trainersService.update(id, {
+      defaultAvailableDays: data.defaultAvailableDays,
+    });
   }
 
   @Get(":id/public")

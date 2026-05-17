@@ -26,6 +26,12 @@ describe("TrainersService", () => {
       findMany: jest.fn(),
       count: jest.fn(),
     },
+    trainerUnavailability: {
+      findMany: jest.fn().mockResolvedValue([]),
+      upsert: jest.fn(),
+      delete: jest.fn(),
+      findUnique: jest.fn(),
+    },
     $transaction: jest.fn((cb) => cb(mockPrismaService)),
   };
 
@@ -196,6 +202,57 @@ describe("TrainersService", () => {
     it("should update avatar", async () => {
       await service.updateAvatar("t1", "url");
       expect(mockPrismaService.formateur.update).toHaveBeenCalled();
+    });
+  });
+
+  describe("addUnavailability", () => {
+    it("should add unavailability correctly", async () => {
+      mockPrismaService.trainerUnavailability.upsert.mockResolvedValue({
+        id: "1",
+      });
+      const res = await service.addUnavailability("t1", "2024-01-01", "AM");
+      expect(res).toEqual({ id: "1" });
+      expect(mockPrismaService.trainerUnavailability.upsert).toHaveBeenCalled();
+    });
+
+    it("should throw on invalid date", async () => {
+      await expect(
+        service.addUnavailability("t1", "invalid", "AM"),
+      ).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe("removeUnavailability", () => {
+    it("should remove unavailability correctly", async () => {
+      mockPrismaService.trainerUnavailability.findUnique.mockResolvedValue({
+        id: "1",
+        trainerId: "t1",
+      });
+      mockPrismaService.trainerUnavailability.delete.mockResolvedValue({
+        id: "1",
+      });
+      const res = await service.removeUnavailability("1", "t1");
+      expect(res).toEqual({ id: "1" });
+      expect(mockPrismaService.trainerUnavailability.delete).toHaveBeenCalled();
+    });
+
+    it("should throw if not found", async () => {
+      mockPrismaService.trainerUnavailability.findUnique.mockResolvedValue(
+        null,
+      );
+      await expect(service.removeUnavailability("1", "t1")).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it("should throw if not authorized", async () => {
+      mockPrismaService.trainerUnavailability.findUnique.mockResolvedValue({
+        id: "1",
+        trainerId: "t2",
+      });
+      await expect(service.removeUnavailability("1", "t1")).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 

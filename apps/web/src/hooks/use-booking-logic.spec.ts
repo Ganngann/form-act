@@ -33,7 +33,7 @@ describe("useBookingLogic", () => {
 
     // Check availability is empty and mode is manual
     expect(result.current.selectedTrainer).toBe("manual");
-    expect(result.current.availability).toEqual([]);
+    expect(result.current.availability).toEqual({ sessions: [], unavailabilities: [], defaultAvailableDays: [1,2,3,4,5] });
 
     // Check date selection
     const futureDate = new Date();

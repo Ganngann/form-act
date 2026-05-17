@@ -4,6 +4,7 @@ import { API_URL } from "@/lib/config"
 
 export type Zone = { id: string; name: string }
 export type Trainer = { id: string; firstName: string; lastName: string }
+export type Unavailability = { id: string; date: string; slot: string }
 export type Session = { date: string; slot: string; status: string }
 
 interface UseBookingLogicProps {
@@ -22,7 +23,11 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
   const [trainers, setTrainers] = useState<Trainer[]>([])
   const [selectedTrainer, setSelectedTrainer] = useState<string>("")
 
-  const [availability, setAvailability] = useState<Session[]>([])
+  const [availability, setAvailability] = useState<{
+      sessions: Session[],
+      unavailabilities: Unavailability[],
+      defaultAvailableDays: number[]
+  }>({ sessions: [], unavailabilities: [], defaultAvailableDays: [1,2,3,4,5] })
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [selectedSlot, setSelectedSlot] = useState<string>("")
 
@@ -49,7 +54,7 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
     setLoadingTrainers(true)
     setTrainers([])
     setSelectedTrainer("")
-    setAvailability([])
+    setAvailability({ sessions: [], unavailabilities: [], defaultAvailableDays: [1,2,3,4,5] })
     setSelectedDate(undefined)
 
     let url = `${API_URL}/dispatcher/trainers?zoneId=${selectedZone}&formationId=${formation.id}`
@@ -75,21 +80,25 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
 
     // Manual handling: No availability check
     if (selectedTrainer === 'manual') {
-        setAvailability([]);
+        setAvailability({ sessions: [], unavailabilities: [], defaultAvailableDays: [1,2,3,4,5] });
         setSelectedDate(undefined);
         setSelectedSlot("");
         return;
     }
 
     setLoadingAvailability(true)
-    setAvailability([])
+    setAvailability({ sessions: [], unavailabilities: [], defaultAvailableDays: [1,2,3,4,5] })
     setSelectedDate(undefined)
     setSelectedSlot("")
 
     fetch(`${API_URL}/trainers/${selectedTrainer}/availability`)
       .then((res) => res.json())
       .then((data) => {
-        setAvailability(data)
+        setAvailability({
+            sessions: data.sessions || [],
+            unavailabilities: data.unavailabilities || [],
+            defaultAvailableDays: typeof data.defaultAvailableDays === "string" ? JSON.parse(data.defaultAvailableDays) : data.defaultAvailableDays || [1,2,3,4,5],
+        })
         setLoadingAvailability(false)
       })
       .catch((err) => {
@@ -107,17 +116,25 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
     // If manual request, all future dates are available
     if (selectedTrainer === 'manual') return false;
 
-    const ymd = format(date, 'yyyy-MM-dd')
-    const sessionsOnDate = availability.filter(s => s.date.startsWith(ymd))
+    // Check default days
+    const dayOfWeek = date.getDay();
+    if (availability.defaultAvailableDays && !availability.defaultAvailableDays.includes(dayOfWeek)) return true;
 
-    if (sessionsOnDate.length === 0) return false;
+    const ymd = format(date, 'yyyy-MM-dd')
+    const sessionsOnDate = (availability.sessions || []).filter(s => s.date.startsWith(ymd))
+    const unavailabilitiesOnDate = (availability.unavailabilities || []).filter(u => u.date.startsWith(ymd))
+
+    if (unavailabilitiesOnDate.some(u => u.slot === 'ALL_DAY')) return true;
+
+    const hasAMUnavail = unavailabilitiesOnDate.some(u => u.slot === 'AM');
+    const hasPMUnavail = unavailabilitiesOnDate.some(u => u.slot === 'PM');
 
     if (formation.durationType === 'FULL_DAY') {
-        return true;
+        if (sessionsOnDate.length > 0 || hasAMUnavail || hasPMUnavail) return true;
     } else {
         if (sessionsOnDate.some(s => s.slot === 'ALL_DAY')) return true;
-        const hasAM = sessionsOnDate.some(s => s.slot === 'AM')
-        const hasPM = sessionsOnDate.some(s => s.slot === 'PM')
+        const hasAM = sessionsOnDate.some(s => s.slot === 'AM') || hasAMUnavail;
+        const hasPM = sessionsOnDate.some(s => s.slot === 'PM') || hasPMUnavail;
         if (hasAM && hasPM) return true;
     }
     return false;
@@ -140,11 +157,18 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
       }
 
       const ymd = format(selectedDate, 'yyyy-MM-dd')
-      const sessionsOnDate = availability.filter(s => s.date.startsWith(ymd))
+      const sessionsOnDate = (availability.sessions || []).filter(s => s.date.startsWith(ymd))
+      const unavailabilitiesOnDate = (availability.unavailabilities || []).filter(u => u.date.startsWith(ymd))
 
       const slots = [];
-      if (!sessionsOnDate.some(s => s.slot === 'AM')) slots.push('AM');
-      if (!sessionsOnDate.some(s => s.slot === 'PM')) slots.push('PM');
+      const hasAMSession = sessionsOnDate.some(s => s.slot === 'AM');
+      const hasPMSession = sessionsOnDate.some(s => s.slot === 'PM');
+      const hasAMUnavail = unavailabilitiesOnDate.some(u => u.slot === 'AM');
+      const hasPMUnavail = unavailabilitiesOnDate.some(u => u.slot === 'PM');
+
+      if (!hasAMSession && !hasAMUnavail) slots.push('AM');
+      if (!hasPMSession && !hasPMUnavail) slots.push('PM');
+
       return slots;
   }
 
