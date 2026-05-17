@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Check, User, Building2, MapPin, Mail, Edit2, Loader2, ArrowRight } from "lucide-react"
+import { User, Building2, MapPin, Mail, Edit2, Loader2, ArrowRight } from "lucide-react"
 
 const formSchema = z.object({
     vatNumber: z.string().min(4, "Numéro de TVA invalide"),
