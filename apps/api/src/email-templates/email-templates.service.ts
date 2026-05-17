@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException, Logger } from "@nestjs/common";
+import { EmailTemplate } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { UpdateEmailTemplateDto } from "./dto/update-email-template.dto";
 import { SendTestEmailDto } from "./dto/send-test-email.dto";
@@ -7,6 +8,7 @@ import { EmailService } from "../email/email.service";
 @Injectable()
 export class EmailTemplatesService {
   private readonly logger = new Logger(EmailTemplatesService.name);
+  private readonly templateCache = new Map<string, EmailTemplate>();
 
   constructor(
     private readonly prisma: PrismaService,
@@ -20,11 +22,15 @@ export class EmailTemplatesService {
   }
 
   async findOne(type: string) {
-    const template = await this.prisma.emailTemplate.findUnique({
-      where: { type },
-    });
+    let template = this.templateCache.get(type);
     if (!template) {
-      throw new NotFoundException(`Email template ${type} not found`);
+      template = await this.prisma.emailTemplate.findUnique({
+        where: { type },
+      });
+      if (!template) {
+        throw new NotFoundException(`Email template ${type} not found`);
+      }
+      this.templateCache.set(type, template);
     }
     return template;
   }
@@ -39,6 +45,7 @@ export class EmailTemplatesService {
         where: { type },
         data: updateDto,
       });
+      this.templateCache.set(type, updated);
       this.logger.log(`Successfully updated email template: ${type}`);
       return updated;
     } catch (error) {
@@ -51,17 +58,16 @@ export class EmailTemplatesService {
   }
 
   async getRenderedTemplate(type: string, variables: Record<string, any>) {
-    const template = await this.prisma.emailTemplate.findUnique({
-      where: { type },
-    });
-
-    if (!template) {
-      this.logger.warn(
-        `Email template ${type} not found, using fallback or throwing error.`,
-      );
-      // Depending on requirement, we could have hardcoded fallbacks here or throw.
-      // For now, let's throw to ensure templates are seeded.
-      throw new NotFoundException(`Email template ${type} not found`);
+    let template;
+    try {
+      template = await this.findOne(type);
+    } catch (e) {
+      if (e instanceof NotFoundException) {
+        this.logger.warn(
+          `Email template ${type} not found, using fallback or throwing error.`,
+        );
+      }
+      throw e;
     }
 
     let subject = template.subject;
