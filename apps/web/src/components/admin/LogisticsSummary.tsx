@@ -66,6 +66,7 @@ export function LogisticsSummary({ logistics }: LogisticsSummaryProps) {
             </div>
         );
     } catch (e) {
+        console.error("Failed to parse logistics JSON:", e);
         return <pre className="text-xs p-4 bg-red-50 text-red-600 rounded-xl">{logistics}</pre>;
     }
 }
