@@ -4,6 +4,7 @@ import { API_URL } from "@/lib/config"
 
 export type Zone = { id: string; name: string }
 export type Trainer = { id: string; firstName: string; lastName: string }
+export type Unavailability = { id: string; date: string; slot: string }
 export type Session = { date: string; slot: string; status: string }
 
 interface UseBookingLogicProps {
@@ -22,7 +23,11 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
   const [trainers, setTrainers] = useState<Trainer[]>([])
   const [selectedTrainer, setSelectedTrainer] = useState<string>("")
 
-  const [availability, setAvailability] = useState<Session[]>([])
+  const [availability, setAvailability] = useState<{
+      sessions: Session[],
+      unavailabilities: Unavailability[],
+      defaultAvailableDays: number[]
+  }>({ sessions: [], unavailabilities: [], defaultAvailableDays: [1,2,3,4,5] })
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [selectedSlot, setSelectedSlot] = useState<string>("")
 
@@ -49,7 +54,7 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
     setLoadingTrainers(true)
     setTrainers([])
     setSelectedTrainer("")
-    setAvailability([])
+    setAvailability({ sessions: [], unavailabilities: [], defaultAvailableDays: [1,2,3,4,5] })
     setSelectedDate(undefined)
 
     let url = `${API_URL}/dispatcher/trainers?zoneId=${selectedZone}&formationId=${formation.id}`
@@ -75,21 +80,25 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
 
     // Manual handling: No availability check
     if (selectedTrainer === 'manual') {
-        setAvailability([]);
+        setAvailability({ sessions: [], unavailabilities: [], defaultAvailableDays: [1,2,3,4,5] });
         setSelectedDate(undefined);
         setSelectedSlot("");
         return;
     }
 
     setLoadingAvailability(true)
-    setAvailability([])
+    setAvailability({ sessions: [], unavailabilities: [], defaultAvailableDays: [1,2,3,4,5] })
     setSelectedDate(undefined)
     setSelectedSlot("")
 
     fetch(`${API_URL}/trainers/${selectedTrainer}/availability`)
       .then((res) => res.json())
       .then((data) => {
-        setAvailability(data)
+        setAvailability({
+            sessions: data.sessions || [],
+            unavailabilities: data.unavailabilities || [],
+            defaultAvailableDays: typeof data.defaultAvailableDays === "string" ? JSON.parse(data.defaultAvailableDays) : data.defaultAvailableDays || [1,2,3,4,5],
+        })
         setLoadingAvailability(false)
       })
       .catch((err) => {
