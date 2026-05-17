@@ -70,4 +70,46 @@ describe("AdminLogisticsCard", () => {
 
     expect(global.fetch).not.toHaveBeenCalled();
   });
+
+  it("should alert on error when sending reminder fails", async () => {
+    (global.confirm as any).mockReturnValue(true);
+    (global.fetch as any).mockResolvedValue({
+      ok: false,
+      json: async () => ({ message: "Erreur serveur de test" }),
+    });
+
+    const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
+
+    render(<AdminLogisticsCard session={mockSession} />);
+
+    const button = screen.getByText("Relancer Client");
+    fireEvent.click(button);
+
+    await waitFor(() => {
+        expect(alertMock).toHaveBeenCalledWith("Erreur serveur de test");
+    });
+
+    alertMock.mockRestore();
+  });
+
+  it("should alert default error when sending reminder fails with no message", async () => {
+    (global.confirm as any).mockReturnValue(true);
+    (global.fetch as any).mockResolvedValue({
+      ok: false,
+      json: async () => ({}),
+    });
+
+    const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
+
+    render(<AdminLogisticsCard session={mockSession} />);
+
+    const button = screen.getByText("Relancer Client");
+    fireEvent.click(button);
+
+    await waitFor(() => {
+        expect(alertMock).toHaveBeenCalledWith("Erreur lors de l'envoi");
+    });
+
+    alertMock.mockRestore();
+  });
 });
