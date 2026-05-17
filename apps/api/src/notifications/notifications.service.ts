@@ -24,11 +24,12 @@ export class NotificationsService {
     const sessions = await this.sessionsService.findAll();
     const now = new Date();
 
+    const allSessionIds = sessions.map((s) => s.id);
+    const logCache = await this.logService.getLogsForSessions(allSessionIds);
+
     const chunkSize = 50;
     for (let i = 0; i < sessions.length; i += chunkSize) {
       const chunk = sessions.slice(i, i + chunkSize);
-      const sessionIds = chunk.map((s) => s.id);
-      const logCache = await this.logService.getLogsForSessions(sessionIds);
 
       await Promise.all(
         chunk.map((session) => this.processSession(session, now, logCache)),
