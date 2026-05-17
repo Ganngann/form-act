@@ -9,6 +9,7 @@ import { EmailService } from "../email/email.service";
 export class EmailTemplatesService {
   private readonly logger = new Logger(EmailTemplatesService.name);
   private readonly templateCache = new Map<string, EmailTemplate>();
+  private readonly pendingRequests = new Map<string, Promise<EmailTemplate>>();
 
   constructor(
     private readonly prisma: PrismaService,
@@ -22,17 +23,29 @@ export class EmailTemplatesService {
   }
 
   async findOne(type: string) {
-    let template = this.templateCache.get(type);
-    if (!template) {
-      template = await this.prisma.emailTemplate.findUnique({
-        where: { type },
-      });
-      if (!template) {
-        throw new NotFoundException(`Email template ${type} not found`);
+    const template = this.templateCache.get(type);
+    if (template) return template;
+
+    let pending = this.pendingRequests.get(type);
+    if (pending) return pending;
+
+    pending = (async () => {
+      try {
+        const result = await this.prisma.emailTemplate.findUnique({
+          where: { type },
+        });
+        if (!result) {
+          throw new NotFoundException(`Email template ${type} not found`);
+        }
+        this.templateCache.set(type, result);
+        return result;
+      } finally {
+        this.pendingRequests.delete(type);
       }
-      this.templateCache.set(type, template);
-    }
-    return template;
+    })();
+
+    this.pendingRequests.set(type, pending);
+    return pending;
   }
 
   async update(type: string, updateDto: UpdateEmailTemplateDto) {
