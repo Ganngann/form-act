@@ -7,6 +7,7 @@ import {
   Logger,
 } from "@nestjs/common";
 import { Request } from "express";
+import * as crypto from "crypto";
 
 @Injectable()
 export class LoginThrottlerGuard implements CanActivate {
@@ -28,7 +29,7 @@ export class LoginThrottlerGuard implements CanActivate {
     const ip = req.ip || req.socket.remoteAddress || "unknown";
 
     // cleanup with 1% probability to avoid memory leaks
-    if (Math.random() < 0.01) {
+    if (crypto.randomInt(0, 100) === 0) {
       this.cleanup();
     }
 
