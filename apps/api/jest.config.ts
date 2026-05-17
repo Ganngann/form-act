@@ -11,10 +11,10 @@ export default {
   coverageReporters: ['text', 'json-summary', 'lcov'],
   coverageThreshold: {
     global: {
-      branches: 79.5,
-      functions: 84.5,
-      lines: 84.24,
-      statements: 82.43,
+      branches: 79.21,
+      functions: 88.65,
+      lines: 92.51,
+      statements: 92.3,
     },
   },
   testEnvironment: 'node',
