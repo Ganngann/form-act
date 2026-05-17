@@ -67,13 +67,17 @@ export class EmailTemplatesService {
     let subject = template.subject;
     let body = template.body;
 
-    // Simple variable replacement: {{variableName}}
-    for (const [key, value] of Object.entries(variables)) {
-      const regex = new RegExp(`{{${key}}}`, "g");
-      const val = value === null || value === undefined ? "" : String(value);
-      subject = subject.replace(regex, val);
-      body = body.replace(regex, val);
-    }
+    // Fast, single-pass variable replacement: {{variableName}}
+    const replacer = (match: string, key: string) => {
+      if (!Object.prototype.hasOwnProperty.call(variables, key)) {
+        return match; // Leave untouched if not in variables map
+      }
+      const val = variables[key];
+      return val === null || val === undefined ? "" : String(val);
+    };
+
+    subject = subject.replace(/{{(.+?)}}/g, replacer);
+    body = body.replace(/{{(.+?)}}/g, replacer);
 
     return { subject, body };
   }
