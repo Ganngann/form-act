@@ -9,6 +9,7 @@ import { BadgeCheck, Calendar, GraduationCap, Users, Shield, Zap, ArrowRight, St
 import { getSiteConfig } from '@/lib/api-config';
 import { HomeHeroConfig, HomePromoConfig, HomeValueConfig, HomeTrustConfig, HomeCtaConfig, HomeBentoConfig, HomeCategoriesConfig } from '@/types/configuration';
 import { sanitize } from "@/lib/sanitize";
+import parse from 'html-react-parser';
 
 async function getCategories() {
   try {
@@ -120,10 +121,9 @@ export default async function Home() {
           <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-black uppercase tracking-[3px] text-primary mb-8 animate-in fade-in slide-in-from-bottom-2">
             {hero.tagline}
           </span>
-          <h1
-            className="text-6xl sm:text-9xl font-bold tracking-tighter leading-[0.8] mb-10 text-balance animate-in fade-in slide-in-from-bottom-4 duration-700"
-            dangerouslySetInnerHTML={{ __html: sanitize(hero.title) }}
-          />
+          <h1 className="text-6xl sm:text-9xl font-bold tracking-tighter leading-[0.8] mb-10 text-balance animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {parse(sanitize(hero.title))}
+          </h1>
           <p className="text-xl md:text-2xl text-muted-foreground/80 max-w-2xl mb-14 leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-6 duration-1000">
             {hero.intro}
           </p>
@@ -164,10 +164,9 @@ export default async function Home() {
               <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
               <div className="relative z-10">
                 <span className="text-[10px] font-black text-primary uppercase tracking-[2px]">{bento.userPreviewBadge || "Aperçu de votre espace"}</span>
-                <h3
-                  className="text-4xl font-bold mt-4 leading-tight group-hover:text-primary transition-colors"
-                  dangerouslySetInnerHTML={{ __html: sanitize(bento.userPreviewTitle || "Digital Strategy & <br />Product Management") }}
-                />
+                <h3 className="text-4xl font-bold mt-4 leading-tight group-hover:text-primary transition-colors">
+                  {parse(sanitize(bento.userPreviewTitle || "Digital Strategy & <br />Product Management"))}
+                </h3>
                 <p className="text-muted-foreground mt-4 font-medium max-w-xs">{bento.userPreviewDesc || "Programmé pour le mois prochain. Vous pouvez déjà consulter les ressources."}</p>
               </div>
 
@@ -185,10 +184,9 @@ export default async function Home() {
             <div className="md:col-span-2 md:row-span-2 p-12 bg-primary border-[1px] border-primary rounded-[3rem] flex flex-col justify-between group overflow-hidden relative shadow-2xl shadow-primary/30">
               <div className="relative z-10">
                 <span className="text-[10px] font-black text-white/50 uppercase tracking-[2px]">{promo.subtitle}</span>
-                <h3
-                  className="text-5xl font-bold mt-4 leading-tight text-white mb-6 tracking-tighter"
-                  dangerouslySetInnerHTML={{ __html: sanitize(promo.title) }}
-                />
+                <h3 className="text-5xl font-bold mt-4 leading-tight text-white mb-6 tracking-tighter">
+                  {parse(sanitize(promo.title))}
+                </h3>
                 <p className="text-white/80 font-medium text-lg max-w-sm mb-8">{promo.description}</p>
               </div>
               <Button asChild variant="secondary" className="bg-white text-primary hover:bg-white/90 font-black rounded-2xl h-16 w-fit relative z-10 px-10 transition-transform hover:scale-105 text-lg">
@@ -240,10 +238,9 @@ export default async function Home() {
         <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
           <div className="max-w-2xl">
             <span className="text-[10px] font-black text-primary uppercase tracking-[3px]">{catsConfig.badge || "Explorez le savoir"}</span>
-            <h2
-              className="text-5xl md:text-7xl font-bold tracking-tighter mt-4 leading-[0.9]"
-              dangerouslySetInnerHTML={{ __html: sanitize(catsConfig.title || "Toutes nos <br /><span class=\"text-primary italic\">Thématiques.</span>") }}
-            />
+            <h2 className="text-5xl md:text-7xl font-bold tracking-tighter mt-4 leading-[0.9]">
+              {parse(sanitize(catsConfig.title || "Toutes nos <br /><span class=\"text-primary italic\">Thématiques.</span>"))}
+            </h2>
           </div>
           <Button variant="link" className="text-lg font-black p-0 h-auto text-primary" asChild>
             <Link href="/catalogue">{catsConfig.link || "Voir tout le catalogue"} <ArrowRight className="ml-2 h-5 w-5" /></Link>
@@ -276,10 +273,9 @@ export default async function Home() {
                 {i === 1 && <Users className="h-7 w-7" />}
                 {i === 2 && <Zap className="h-7 w-7" />}
               </div>
-              <h3
-                className="text-3xl font-bold tracking-tight"
-                dangerouslySetInnerHTML={{ __html: sanitize(v.title) }}
-              />
+              <h3 className="text-3xl font-bold tracking-tight">
+                {parse(sanitize(v.title))}
+              </h3>
               <p className="text-muted-foreground font-medium leading-relaxed">{v.text}</p>
             </div>
           ))}
@@ -306,10 +302,9 @@ export default async function Home() {
         <div className="bg-primary rounded-[4rem] p-12 md:p-32 text-center text-white relative overflow-hidden group">
           <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
           <div className="relative z-10 flex flex-col items-center">
-            <h2
-              className="text-5xl md:text-8xl font-black tracking-tighter mb-10 leading-[0.85]"
-              dangerouslySetInnerHTML={{ __html: sanitize(cta.title) }}
-            />
+            <h2 className="text-5xl md:text-8xl font-black tracking-tighter mb-10 leading-[0.85]">
+              {parse(sanitize(cta.title))}
+            </h2>
             <div className="flex flex-col sm:flex-row gap-6 mt-4">
               <Button asChild size="lg" variant="secondary" className="h-16 px-12 text-lg font-black rounded-2xl hover:bg-white hover:text-primary transition-all">
                 <a href="mailto:contact@form-act.com">{cta.buttonPrimary}</a>
