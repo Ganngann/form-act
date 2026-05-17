@@ -3,8 +3,10 @@ import {
   generateSecureFilename,
   ALLOWED_EXTENSIONS,
   ALLOWED_FILE_TYPES,
+  removeFile,
 } from "./file-upload.utils";
 import { BadRequestException } from "@nestjs/common";
+import * as fs from "fs/promises";
 
 describe("File Validation Logic", () => {
   it("should generate ALLOWED_EXTENSIONS regex that matches all defined extensions", () => {
@@ -98,5 +100,53 @@ describe("generateSecureFilename", () => {
     const name1 = generateSecureFilename("image.png");
     const name2 = generateSecureFilename("image.png");
     expect(name1).not.toBe(name2);
+  });
+});
+
+describe("removeFile", () => {
+  let unlinkSpy: jest.SpyInstance;
+  let consoleErrorSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    unlinkSpy = jest.spyOn(fs, "unlink").mockResolvedValue(undefined);
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("should successfully remove a file", async () => {
+    const filePath = "test/path/file.txt";
+    await removeFile(filePath);
+    expect(unlinkSpy).toHaveBeenCalledWith(filePath);
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
+  it("should ignore ENOENT error (file not found)", async () => {
+    const error = new Error("File not found") as any;
+    error.code = "ENOENT";
+    unlinkSpy.mockRejectedValue(error);
+
+    const filePath = "test/path/nonexistent.txt";
+    await removeFile(filePath);
+
+    expect(unlinkSpy).toHaveBeenCalledWith(filePath);
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
+  it("should log error if fs.unlink throws a non-ENOENT error", async () => {
+    const error = new Error("Permission denied") as any;
+    error.code = "EACCES";
+    unlinkSpy.mockRejectedValue(error);
+
+    const filePath = "test/path/locked.txt";
+    await removeFile(filePath);
+
+    expect(unlinkSpy).toHaveBeenCalledWith(filePath);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      `Error deleting file ${filePath}:`,
+      error,
+    );
   });
 });
