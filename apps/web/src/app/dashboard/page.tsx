@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { API_URL } from "@/lib/config"
 import Link from "next/link"
@@ -34,36 +34,64 @@ export default function ClientDashboard() {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
 
-    const isParticipantsIncomplete = (s: Session) => {
-        if (!s.participants) return true;
-        try {
-            const parsed = JSON.parse(s.participants);
-            return !Array.isArray(parsed) || parsed.length === 0;
-        } catch {
-            return true;
-        }
+    type ParsedSession = Session & {
+        _parsedParticipants: any | null;
+        _parsedLogistics: any | null;
+        _parsedDate: Date;
+        _dateNormalized: Date;
     };
 
-    const isLogisticsStrictlyIncomplete = (s: Session) => {
+    const parsedSessions = useMemo<ParsedSession[]>(() => {
+        return sessions.map(s => {
+            let _parsedParticipants = null;
+            let _parsedLogistics = null;
+            if (s.participants) {
+                try {
+                    _parsedParticipants = JSON.parse(s.participants);
+                } catch { }
+            }
+            if (s.logistics) {
+                try {
+                    _parsedLogistics = JSON.parse(s.logistics);
+                } catch { }
+            }
+            const _parsedDate = new Date(s.date);
+            const _dateNormalized = new Date(_parsedDate);
+            _dateNormalized.setHours(0, 0, 0, 0);
+
+            return {
+                ...s,
+                _parsedParticipants,
+                _parsedLogistics,
+                _parsedDate,
+                _dateNormalized
+            };
+        });
+    }, [sessions]);
+
+    const isParticipantsIncomplete = (s: ParsedSession) => {
+        if (!s.participants) return true;
+        const parsed = s._parsedParticipants;
+        if (!parsed) return true;
+        return !Array.isArray(parsed) || parsed.length === 0;
+    };
+
+    const isLogisticsStrictlyIncomplete = (s: ParsedSession) => {
         if (!s.location || s.location.trim() === '') return true;
         if (!s.logistics) return true;
-        try {
-            const log = JSON.parse(s.logistics);
-            if (log.wifi !== 'yes' && log.wifi !== 'no') return true;
-            if (log.subsidies !== 'yes' && log.subsidies !== 'no') return true;
-            const hasVideo = Array.isArray(log.videoMaterial) && log.videoMaterial.length > 0;
-            const hasWriting = Array.isArray(log.writingMaterial) && log.writingMaterial.length > 0;
-            if (!hasVideo && !hasWriting) return true;
-            return false;
-        } catch {
-            return true;
-        }
+        const log = s._parsedLogistics;
+        if (!log) return true;
+        if (log.wifi !== 'yes' && log.wifi !== 'no') return true;
+        if (log.subsidies !== 'yes' && log.subsidies !== 'no') return true;
+        const hasVideo = Array.isArray(log.videoMaterial) && log.videoMaterial.length > 0;
+        const hasWriting = Array.isArray(log.writingMaterial) && log.writingMaterial.length > 0;
+        if (!hasVideo && !hasWriting) return true;
+        return false;
     };
 
-    const isActionRequired = (s: Session) => {
+    const isActionRequired = (s: ParsedSession) => {
         if (s.status !== 'CONFIRMED') return false;
-        const sessionDate = new Date(s.date);
-        sessionDate.setHours(0, 0, 0, 0);
+        const sessionDate = s._dateNormalized;
         if (sessionDate < now) return false;
         const daysDiff = differenceInCalendarDays(sessionDate, now);
         if (isLogisticsStrictlyIncomplete(s)) return true;
@@ -72,25 +100,21 @@ export default function ClientDashboard() {
     };
 
     // Data Filtering
-    const actionRequiredSessions = sessions.filter(isActionRequired);
-    const upcomingSessions = sessions.filter(s => {
-        const sessionDate = new Date(s.date);
-        sessionDate.setHours(0, 0, 0, 0);
+    const actionRequiredSessions = parsedSessions.filter(isActionRequired);
+    const upcomingSessions = parsedSessions.filter(s => {
+        const sessionDate = s._dateNormalized;
         return sessionDate >= now && !isActionRequired(s);
-    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    }).sort((a, b) => a._parsedDate.getTime() - b._parsedDate.getTime());
 
-    const completedSessions = sessions.filter(s => {
-        const sessionDate = new Date(s.date);
-        sessionDate.setHours(0, 0, 0, 0);
+    const completedSessions = parsedSessions.filter(s => {
+        const sessionDate = s._dateNormalized;
         return sessionDate < now;
     });
 
     // Stats Calculation
     const totalParticipants = completedSessions.reduce((acc, s) => {
-        try {
-            const parts = s.participants ? JSON.parse(s.participants) : [];
-            return acc + (Array.isArray(parts) ? parts.length : 0);
-        } catch { return acc; }
+        const parts = s._parsedParticipants || [];
+        return acc + (Array.isArray(parts) ? parts.length : 0);
     }, 0);
 
     const totalTrainingDays = completedSessions.reduce((acc, s) => {
@@ -99,7 +123,7 @@ export default function ClientDashboard() {
     }, 0);
 
     const nextSessionDays = upcomingSessions.length > 0
-        ? differenceInCalendarDays(new Date(upcomingSessions[0].date), now)
+        ? differenceInCalendarDays(upcomingSessions[0]._parsedDate, now)
         : null;
 
     return (
@@ -140,7 +164,7 @@ export default function ClientDashboard() {
                                 {upcomingSessions[0]?.trainer ? `${upcomingSessions[0].trainer.firstName} ${upcomingSessions[0].trainer.lastName}` : "Expert à venir"}
                             </p>
                             <p className="text-sm text-muted-foreground mt-2 font-medium">
-                                {upcomingSessions[0] ? new Date(upcomingSessions[0].date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : "-- -- --"}
+                                {upcomingSessions[0] ? upcomingSessions[0]._parsedDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : "-- -- --"}
                             </p>
                         </div>
                     </div>
