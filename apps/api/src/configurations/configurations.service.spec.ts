@@ -99,6 +99,33 @@ describe("ConfigurationsService", () => {
 
       consoleSpy.mockRestore();
     });
+
+    it("should handle error accessing config.value, log to console.error and return null", async () => {
+      const mockConfig = {
+        key: "test",
+        get value() {
+          throw new Error("Value access error");
+        },
+        updatedAt: new Date(),
+      };
+      (prisma.siteConfiguration.findUnique as jest.Mock).mockResolvedValue(
+        mockConfig,
+      );
+
+      const consoleSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      const result = await service.getConfiguration("test");
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        '[ConfigurationsService] Error fetching key "test":',
+        "Value access error",
+      );
+      expect(result).toBeNull();
+
+      consoleSpy.mockRestore();
+    });
   });
 
   describe("updateConfiguration", () => {
@@ -145,6 +172,26 @@ describe("ConfigurationsService", () => {
         create: { key: "primitive-key", value: '"string-value"' },
       });
       expect(result).toEqual(mockResult);
+    });
+
+    it("should propagate errors from prisma.siteConfiguration.upsert", async () => {
+      const mockError = new Error("Database error");
+      (prisma.siteConfiguration.upsert as jest.Mock).mockRejectedValue(
+        mockError,
+      );
+
+      await expect(
+        service.updateConfiguration("test-key", { foo: "bar" }),
+      ).rejects.toThrow("Database error");
+    });
+
+    it("should propagate errors from JSON.stringify for circular structures", async () => {
+      const circularObj: any = {};
+      circularObj.self = circularObj;
+
+      await expect(
+        service.updateConfiguration("test-key", circularObj),
+      ).rejects.toThrow(TypeError);
     });
   });
 });
