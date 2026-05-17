@@ -10,7 +10,6 @@ jest.mock("fs", () => ({
   createReadStream: jest.fn(),
 }));
 
-
 describe("FilesService", () => {
   let service: FilesService;
 
