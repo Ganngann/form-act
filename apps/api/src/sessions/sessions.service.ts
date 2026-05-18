@@ -481,7 +481,8 @@ export class SessionsService {
         })
         .then(
           (sessions) =>
-            sessions.filter((s) => !this.isLogisticsStrictlyComplete(s as any)).length,
+            sessions.filter((s) => !this.isLogisticsStrictlyComplete(s as any))
+              .length,
         ),
 
       // 4. Feuilles de présence manquantes (Session passée, status CONFIRMED ou PROOF_RECEIVED, mais proofUrl null)

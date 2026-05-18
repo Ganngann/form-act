@@ -105,7 +105,10 @@ describe("AuthController", () => {
       expect(res.cookie).toHaveBeenCalledWith("Authentication", "", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        sameSite: (process.env.COOKIE_SAME_SITE || "lax") as
+          | "lax"
+          | "strict"
+          | "none",
         path: "/",
         domain: process.env.COOKIE_DOMAIN,
         expires: new Date(0),

@@ -50,7 +50,10 @@ export class AuthController {
     res.cookie("Authentication", access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: (process.env.COOKIE_SAME_SITE || "lax") as
+        | "lax"
+        | "strict"
+        | "none",
       path: "/",
       domain: process.env.COOKIE_DOMAIN,
       maxAge: 24 * 60 * 60 * 1000, // 1 day
@@ -74,7 +77,10 @@ export class AuthController {
     res.cookie("Authentication", access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax", // Lax is better for navigation from external sites, strict might be too aggressive for now
+      sameSite: (process.env.COOKIE_SAME_SITE || "lax") as
+        | "lax"
+        | "strict"
+        | "none", // Lax is better for navigation from external sites, strict might be too aggressive for now
       path: "/",
       domain: process.env.COOKIE_DOMAIN,
       maxAge: 24 * 60 * 60 * 1000, // 1 day
@@ -88,7 +94,10 @@ export class AuthController {
     res.cookie("Authentication", "", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: (process.env.COOKIE_SAME_SITE || "lax") as
+        | "lax"
+        | "strict"
+        | "none",
       path: "/",
       domain: process.env.COOKIE_DOMAIN,
       expires: new Date(0),
