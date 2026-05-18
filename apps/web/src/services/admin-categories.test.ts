@@ -44,10 +44,32 @@ describe('adminCategoriesService', () => {
       }));
     });
 
-    it('should handle API errors', async () => {
+    it('should handle API errors with message', async () => {
       mockError(400, 'Bad Request');
 
       await expect(adminCategoriesService.getCategories()).rejects.toThrow('Bad Request');
+    });
+
+    it('should handle API errors with missing message and use statusText', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+        json: () => Promise.resolve({}),
+      });
+
+      await expect(adminCategoriesService.getCategories()).rejects.toThrow('Not Found');
+    });
+
+    it('should handle API errors with invalid JSON response', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+        json: () => Promise.reject(new Error('Invalid JSON')),
+      });
+
+      await expect(adminCategoriesService.getCategories()).rejects.toThrow('An error occurred');
     });
   });
 

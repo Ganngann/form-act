@@ -48,6 +48,26 @@ describe('adminEmailsService', () => {
 
       await expect(adminEmailsService.getEmailTemplates()).rejects.toThrow('Bad Request');
     });
+
+    it('should handle API errors with invalid JSON response', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        statusText: 'Internal Server Error',
+        json: () => Promise.reject(new Error('Invalid JSON')),
+      });
+
+      await expect(adminEmailsService.getEmailTemplates()).rejects.toThrow('An error occurred');
+    });
+
+    it('should handle API errors with JSON response but no message', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        statusText: 'Bad Request',
+        json: () => Promise.resolve({ error: 'Some other error format' }),
+      });
+
+      await expect(adminEmailsService.getEmailTemplates()).rejects.toThrow('Bad Request');
+    });
   });
 
   describe('getTemplate', () => {

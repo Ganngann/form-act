@@ -1,61 +1,84 @@
-import { render, screen, waitFor } from "@testing-library/react"
-import { MasterCalendar } from "./master-calendar"
-import { vi } from "vitest"
+import { render, screen, waitFor } from "@testing-library/react";
+import { MasterCalendar } from "./master-calendar";
+import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 
-// Mock fetch globally
-global.fetch = vi.fn()
+// Mock sub-components to avoid rendering their complex children logic
+vi.mock("./calendar-grid", () => ({
+  CalendarGrid: () => <div data-testid="calendar-grid">Calendar Grid</div>
+}));
+
+vi.mock("./session-details-dialog", () => ({
+  SessionDetailsDialog: () => <div data-testid="session-details-dialog">Session Details Dialog</div>
+}));
+
+const mockFetch = vi.fn();
+global.fetch = mockFetch;
 
 describe("MasterCalendar", () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    window.HTMLElement.prototype.scrollIntoView = vi.fn()
+    vi.clearAllMocks();
 
-    // We mock fetch as resolving to empty arrays normally so it doesn't fail right away
-    ;(global.fetch as any).mockResolvedValue({
-      json: () => Promise.resolve([])
-    })
-  })
+    // Default success fetch implementation
+    mockFetch.mockResolvedValue({
+      json: async () => []
+    });
+  });
 
   afterEach(() => {
-    vi.restoreAllMocks()
-  })
+    vi.restoreAllMocks();
+  });
 
-  it("handles fetch errors gracefully and logs them", async () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {})
+  it("renders successfully and fetches trainers and sessions", async () => {
+    render(<MasterCalendar />);
 
-    // Force fetch to reject to trigger the error path
-    ;(global.fetch as any).mockRejectedValueOnce(new Error("Network Error"))
-
-    render(<MasterCalendar />)
-
-    // Wait for the fetch call and error log to happen
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith("Failed to fetch trainers", expect.any(Error))
-    })
+      // It should fetch trainers and then sessions
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+      expect(mockFetch.mock.calls[0][0]).toContain("/admin/trainers");
+      expect(mockFetch.mock.calls[1][0]).toContain("/sessions");
+    });
 
-    // Restore the spy
-    consoleSpy.mockRestore()
-  })
+    expect(screen.getByTestId("calendar-grid")).toBeDefined();
+    expect(screen.getByTestId("session-details-dialog")).toBeDefined();
+  });
 
-  it("handles sessions fetch errors gracefully and logs them", async () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {})
+  it("handles 'Failed to fetch trainers' error path quietly", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    // 1st call: trainers fetch - let it resolve
-    ;(global.fetch as any).mockResolvedValueOnce({
-      json: () => Promise.resolve([])
-    })
+    // Make only the trainers fetch fail
+    mockFetch.mockImplementation(async (url: string) => {
+      if (url.includes("/admin/trainers")) {
+        throw new Error("Network error");
+      }
+      return { json: async () => [] };
+    });
 
-    // 2nd call: sessions fetch - let it reject
-    ;(global.fetch as any).mockRejectedValueOnce(new Error("Sessions Fetch Error"))
+    render(<MasterCalendar />);
 
-    render(<MasterCalendar />)
-
-    // Wait for the fetch call and error log to happen
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith("Failed to fetch sessions", expect.any(Error))
-    })
+      expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to fetch trainers", expect.any(Error));
+    });
 
-    // Restore the spy
-    consoleSpy.mockRestore()
-  })
-})
+    consoleErrorSpy.mockRestore();
+  });
+
+  it("handles 'Failed to fetch sessions' error path quietly", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    // Make only the sessions fetch fail
+    mockFetch.mockImplementation(async (url: string) => {
+      if (url.includes("/sessions")) {
+        throw new Error("Network error");
+      }
+      return { json: async () => [] };
+    });
+
+    render(<MasterCalendar />);
+
+    await waitFor(() => {
+      expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to fetch sessions", expect.any(Error));
+    });
+
+    consoleErrorSpy.mockRestore();
+  });
+});
