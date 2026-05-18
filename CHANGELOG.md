@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/Ganngann/form-act/compare/v0.0.2...v0.0.3) (2026-05-18)
+
+
+### Features
+
+* **auth:** make SameSite cookie attribute configurable ([c4e9be1](https://github.com/Ganngann/form-act/commit/c4e9be168d78f9793916de97a95481303b4e8aca))
+* **web:** add dedicated availability page and sidebar link for trainers ([5315ba1](https://github.com/Ganngann/form-act/commit/5315ba164617773611b22be75a9d46b1e88c7afb))
+
+
+### Bug Fixes
+
+* **auth:** secure random number generation in LoginThrottlerGuard ([431e256](https://github.com/Ganngann/form-act/commit/431e2560b39992489131a93ff8d022818cb687ad))
+* **web:** add error logging to empty catch block in LogisticsSummary ([7e7f100](https://github.com/Ganngann/form-act/commit/7e7f100e90db8c73b94e719a22b5b94beaaa5d35))
+
 ### 0.0.2 (2026-05-17)
 
 
