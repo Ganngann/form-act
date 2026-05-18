@@ -212,7 +212,7 @@ export default async function Home() {
               </div>
             </div>
             <Button asChild size="icon" className="h-14 w-14 rounded-2xl bg-white text-primary hover:bg-white/90 border border-orange-100 shadow-sm shrink-0">
-              <Link href={userRole ? "/dashboard" : "mailto:contact@form-act.com"}>
+              <Link href={userRole ? "/dashboard" : "mailto:contact@form-act.com"} aria-label={userRole ? "Aller au tableau de bord" : "Nous contacter par email"}>
                 <ArrowRight className="h-6 w-6" />
               </Link>
             </Button>
