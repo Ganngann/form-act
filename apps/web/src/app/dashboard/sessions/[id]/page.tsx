@@ -33,7 +33,7 @@ export default async function ClientSessionDetailPage({ params }: { params: { id
             {/* Header */}
             <div className="flex items-center gap-6">
                 <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-primary/10 hover:text-primary transition-all">
-                    <Link href="/dashboard"><ArrowLeft className="h-6 w-6" /></Link>
+                    <Link href="/dashboard" aria-label="Retour au tableau de bord"><ArrowLeft className="h-6 w-6" /></Link>
                 </Button>
                 <h1 className="text-4xl font-bold tracking-tight">Détails de ma session.</h1>
             </div>
