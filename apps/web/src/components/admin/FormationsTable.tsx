@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Plus, Pencil, Trash2, MoreHorizontal, Search } from "lucide-react"
@@ -53,10 +53,13 @@ export function FormationsTable({
   }
 
   // Basic client-side filtering
-  const filteredFormations = formations.filter(f =>
-    f.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    f.category?.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // ⚡ Bolt: Memoize the filtered list to prevent O(N) recalculation on every render
+  const filteredFormations = useMemo(() => {
+    return formations.filter(f =>
+      f.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      f.category?.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [formations, searchTerm]);
 
   return (
     <div className="space-y-6">

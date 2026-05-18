@@ -182,4 +182,44 @@ describe("FormationDialog", () => {
     const submitBtn = screen.getByText(/Enregistrer/i);
     await user.click(submitBtn);
   });
+
+  it("handles invalid agreement codes JSON gracefully", async () => {
+    const user = userEvent.setup();
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const formation = {
+      id: "f-invalid",
+      title: "Invalid JSON Formation",
+      description: "Desc",
+      level: "Beginner",
+      duration: "1 day",
+      durationType: "HALF_DAY",
+      categoryId: "cat-1",
+      isExpertise: true,
+      authorizedTrainers: [],
+      isPublished: true,
+      agreementCodes: "invalid json string",
+    };
+
+    render(
+      <FormationDialog
+        open={true}
+        onOpenChange={onOpenChange}
+        formation={formation as any}
+        categories={mockCategories}
+        trainers={mockTrainers}
+        onSuccess={onSuccess}
+      />
+    );
+
+    // Switch to Media tab
+    await user.click(screen.getByText(/Médias/i));
+
+    await waitFor(() => {
+      expect(screen.getByText("Aucun agrément configuré.")).toBeInTheDocument();
+    });
+
+    expect(consoleSpy).toHaveBeenCalledWith("Failed to parse agreement codes", expect.any(Error));
+    consoleSpy.mockRestore();
+  });
 });
