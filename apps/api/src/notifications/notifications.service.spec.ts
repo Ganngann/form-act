@@ -372,5 +372,28 @@ describe("NotificationsService", () => {
       await service.handleCron();
       expect(emailService.sendEmail).not.toHaveBeenCalled();
     });
+
+    it("should catch and log errors during session processing", async () => {
+      const now = new Date("2024-01-25T12:00:00Z");
+      jest.useFakeTimers({ now });
+      const session = createSession();
+
+      jest.spyOn(sessionsService, "findAll").mockResolvedValue([session]);
+      jest.spyOn(logService, "getLogsForSessions").mockResolvedValue(new Set());
+
+      const testError = new Error("Test error");
+      jest.spyOn(sessionsService, "isLogisticsStrictlyComplete").mockImplementation(() => {
+        throw testError;
+      });
+
+      const loggerErrorSpy = jest.spyOn(service["logger"], "error").mockImplementation(() => {});
+
+      await service.handleCron();
+
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
+        `Error processing session ${session.id}: ${testError.message}`,
+        testError.stack,
+      );
+    });
   });
 });
