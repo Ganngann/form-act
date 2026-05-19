@@ -59,6 +59,7 @@ export function SessionSearchBar() {
                     <button
                         onClick={() => setValue("")}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        aria-label="Effacer la recherche"
                     >
                         <X className="h-4 w-4" />
                     </button>

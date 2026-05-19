@@ -5,3 +5,6 @@
 ## 2024-05-18 - ARIA Labels on Next.js Links inside shadcn/ui asChild Buttons
 **Learning:** When using shadcn/ui's `<Button size="icon" asChild>` pattern wrapped around a Next.js `<Link>` component for icon-only navigation, the `aria-label` MUST be placed on the inner `<Link>` component, not the outer `<Button>`. Since `asChild` passes the button props down, screen readers need the accessible name directly on the rendered anchor tag to properly announce the link's destination.
 **Action:** Always place the `aria-label` on the inner `<Link>` (or `<a>` tag) when it is the child of a `<Button asChild size="icon">`.
+## 2026-05-19 - Adding stateful ARIA attributes to interactive toggles
+**Learning:** When adding `aria-label` to icon-only toggle buttons (like mobile menus or calendar view toggles), it's crucial to pair them with state attributes like `aria-expanded` or `aria-pressed` so screen readers can interpret their current state, not just their label.
+**Action:** Always verify if an interactive button toggles state, and include the corresponding ARIA state attribute when adding accessibility labels.
