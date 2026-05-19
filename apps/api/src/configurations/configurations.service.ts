@@ -25,8 +25,7 @@ export class ConfigurationsService {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async updateConfiguration(key: string, value: any) {
+  async updateConfiguration(key: string, value: unknown) {
     // Ensure value is an object/valid JSON
     const stringValue = JSON.stringify(value);
 

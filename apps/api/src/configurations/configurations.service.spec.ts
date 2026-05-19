@@ -186,7 +186,7 @@ describe("ConfigurationsService", () => {
     });
 
     it("should propagate errors from JSON.stringify for circular structures", async () => {
-      const circularObj: any = {};
+      const circularObj: Record<string, unknown> = {};
       circularObj.self = circularObj;
 
       await expect(
