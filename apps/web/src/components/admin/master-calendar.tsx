@@ -117,12 +117,16 @@ export function MasterCalendar({ }: MasterCalendarProps) {
           <button
             onClick={() => setViewMode("month")}
             className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${viewMode === 'month' ? 'bg-white text-primary shadow-sm' : 'text-muted-foreground hover:text-primary'}`}
+            aria-label="Vue par mois"
+            aria-pressed={viewMode === 'month'}
           >
             Mois
           </button>
           <button
             onClick={() => setViewMode("week")}
             className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${viewMode === 'week' ? 'bg-white text-primary shadow-sm' : 'text-muted-foreground hover:text-primary'}`}
+            aria-label="Vue par semaine"
+            aria-pressed={viewMode === 'week'}
           >
             Semaine
           </button>

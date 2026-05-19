@@ -94,7 +94,12 @@ export function Header({ userRole, logoText, logoUrl }: HeaderProps) {
         </div>
 
         {/* Mobile Menu Toggle */}
-        <button className="md:hidden" onClick={toggleMenu}>
+        <button
+          className="md:hidden"
+          onClick={toggleMenu}
+          aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+          aria-expanded={isMenuOpen}
+        >
           {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>

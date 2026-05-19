@@ -39,6 +39,7 @@ export function CalendarExport({ url }: { url: string | null }) {
                 <button
                     onClick={handleCopy}
                     className="flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors min-w-[100px]"
+                    aria-label="Copier le lien d'exportation du calendrier"
                 >
                     {copied ? (
                         <span className="text-green-600 font-bold">Copié !</span>
