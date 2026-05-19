@@ -80,9 +80,9 @@ describe("ConfigurationsController", () => {
     });
 
     it("should throw BadRequestException if no file is provided", async () => {
-      await expect(controller.uploadFile(undefined as any)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        controller.uploadFile(undefined as unknown as Express.Multer.File),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it("should remove the file and rethrow if an error occurs during processing", async () => {

@@ -34,11 +34,7 @@ export class ConfigurationsController {
   @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Roles("ADMIN")
   @Put(":key")
-  async updateConfiguration(
-    @Param("key") key: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @Body() body: any,
-  ) {
+  async updateConfiguration(@Param("key") key: string, @Body() body: unknown) {
     return this.configurationsService.updateConfiguration(key, body);
   }
 
