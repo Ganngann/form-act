@@ -9,12 +9,30 @@ import { Calendar, User, Building2, CheckCircle2, Circle, AlertCircle, Clock, Cr
 import Link from "next/link";
 import { format, differenceInDays } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useMemo } from "react";
 
 interface SessionRadarCardProps {
     session: any; // Using any for now to avoid type errors if types are not fully defined
 }
 
 export function SessionRadarCard({ session }: SessionRadarCardProps) {
+    // ⚡ Bolt: Cache parsed logistics and billing data to prevent redundant parsing overhead
+    const parsedLogistics = useMemo(() => {
+        try {
+            return session.logistics ? JSON.parse(session.logistics) : {};
+        } catch {
+            return {};
+        }
+    }, [session.logistics]);
+
+    const parsedBillingData = useMemo(() => {
+        try {
+            return session.billingData ? JSON.parse(session.billingData) : null;
+        } catch {
+            return null;
+        }
+    }, [session.billingData]);
+
     const sessionDate = new Date(session.date);
     const now = new Date();
     const daysUntil = differenceInDays(sessionDate, now);
@@ -37,7 +55,7 @@ export function SessionRadarCard({ session }: SessionRadarCardProps) {
     const steps = [
         { label: "Info", done: !!session.location && !!session.slot },
         { label: "Formateur", done: !!session.trainerId },
-        { label: "Logistique", done: !!session.logistics && JSON.parse(session.logistics || "{}").complete },
+        { label: "Logistique", done: !!session.logistics && parsedLogistics.complete },
         { label: "Présence", done: !!session.proofUrl },
         { label: "Facture", done: !!session.billedAt },
     ];
@@ -49,7 +67,7 @@ export function SessionRadarCard({ session }: SessionRadarCardProps) {
     if (!session.trainerId) {
         actionMessage = "À ASSIGNER";
         actionStatus = "error";
-    } else if (daysUntil < 14 && (!session.logistics || !JSON.parse(session.logistics || "{}").complete)) {
+    } else if (daysUntil < 14 && (!session.logistics || !parsedLogistics.complete)) {
         actionMessage = "⚠️ LOGISTIQUE À FINALISER";
         actionStatus = "warn";
     } else if (isPast && !session.proofUrl) {
@@ -60,7 +78,7 @@ export function SessionRadarCard({ session }: SessionRadarCardProps) {
         actionStatus = "ok";
     }
 
-    const finalPrice = session.billingData ? JSON.parse(session.billingData).finalPrice : (session.formation.price || 0);
+    const finalPrice = parsedBillingData ? parsedBillingData.finalPrice : (session.formation.price || 0);
 
     return (
         <Card className="overflow-hidden border-none shadow-md hover:shadow-xl transition-all duration-300 group rounded-2xl bg-white mb-4">

@@ -382,11 +382,15 @@ describe("NotificationsService", () => {
       jest.spyOn(logService, "getLogsForSessions").mockResolvedValue(new Set());
 
       const testError = new Error("Test error");
-      jest.spyOn(sessionsService, "isLogisticsStrictlyComplete").mockImplementation(() => {
-        throw testError;
-      });
+      jest
+        .spyOn(sessionsService, "isLogisticsStrictlyComplete")
+        .mockImplementation(() => {
+          throw testError;
+        });
 
-      const loggerErrorSpy = jest.spyOn(service["logger"], "error").mockImplementation(() => {});
+      const loggerErrorSpy = jest
+        .spyOn(service["logger"], "error")
+        .mockImplementation(() => {});
 
       await service.handleCron();
 
