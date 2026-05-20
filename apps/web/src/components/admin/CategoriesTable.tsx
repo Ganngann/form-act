@@ -174,6 +174,7 @@ export function CategoriesTable({ initialCategories }: CategoriesTableProps) {
                           onClick={() => handleSaveEdit(category.id)}
                           disabled={isUpdating || !editingName.trim()}
                           className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg"
+                          aria-label="Sauvegarder"
                         >
                           <Check className="h-4 w-4" />
                         </Button>
@@ -183,6 +184,7 @@ export function CategoriesTable({ initialCategories }: CategoriesTableProps) {
                           onClick={handleCancelEdit}
                           disabled={isUpdating}
                           className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
+                          aria-label="Annuler"
                         >
                           <X className="h-4 w-4" />
                         </Button>
