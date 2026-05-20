@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { format } from "date-fns"
 import { API_URL } from "@/lib/config"
 
@@ -75,6 +75,26 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
       })
   }, [selectedZone, formation.isExpertise, formation.id])
 
+  // ⚡ Bolt: Memoize availability maps by date to prevent O(N) filtering inside calendar rendering loops
+  const { sessionsMap, unavailabilitiesMap } = useMemo(() => {
+    const sMap: Record<string, Session[]> = {};
+    const uMap: Record<string, Unavailability[]> = {};
+
+    (availability.sessions || []).forEach(s => {
+      const ymd = s.date.substring(0, 10);
+      if (!sMap[ymd]) sMap[ymd] = [];
+      sMap[ymd].push(s);
+    });
+
+    (availability.unavailabilities || []).forEach(u => {
+      const ymd = u.date.substring(0, 10);
+      if (!uMap[ymd]) uMap[ymd] = [];
+      uMap[ymd].push(u);
+    });
+
+    return { sessionsMap: sMap, unavailabilitiesMap: uMap };
+  }, [availability.sessions, availability.unavailabilities]);
+
   useEffect(() => {
     if (!selectedTrainer) return
 
@@ -121,8 +141,8 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
     if (availability.defaultAvailableDays && !availability.defaultAvailableDays.includes(dayOfWeek)) return true;
 
     const ymd = format(date, 'yyyy-MM-dd')
-    const sessionsOnDate = (availability.sessions || []).filter(s => s.date.startsWith(ymd))
-    const unavailabilitiesOnDate = (availability.unavailabilities || []).filter(u => u.date.startsWith(ymd))
+    const sessionsOnDate = sessionsMap[ymd] || []
+    const unavailabilitiesOnDate = unavailabilitiesMap[ymd] || []
 
     if (unavailabilitiesOnDate.some(u => u.slot === 'ALL_DAY')) return true;
 
@@ -157,8 +177,8 @@ export function useBookingLogic({ formation }: UseBookingLogicProps) {
       }
 
       const ymd = format(selectedDate, 'yyyy-MM-dd')
-      const sessionsOnDate = (availability.sessions || []).filter(s => s.date.startsWith(ymd))
-      const unavailabilitiesOnDate = (availability.unavailabilities || []).filter(u => u.date.startsWith(ymd))
+      const sessionsOnDate = sessionsMap[ymd] || []
+      const unavailabilitiesOnDate = unavailabilitiesMap[ymd] || []
 
       const slots = [];
       const hasAMSession = sessionsOnDate.some(s => s.slot === 'AM');
