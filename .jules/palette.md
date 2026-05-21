@@ -8,3 +8,6 @@
 ## 2026-05-19 - Adding stateful ARIA attributes to interactive toggles
 **Learning:** When adding `aria-label` to icon-only toggle buttons (like mobile menus or calendar view toggles), it's crucial to pair them with state attributes like `aria-expanded` or `aria-pressed` so screen readers can interpret their current state, not just their label.
 **Action:** Always verify if an interactive button toggles state, and include the corresponding ARIA state attribute when adding accessibility labels.
+## 2024-05-21 - Added aria-label to TrainerActions dropdown
+**Learning:** Found an icon-only button triggering a dropdown menu in `TrainerActions.tsx` that lacked a proper `aria-label`. The generic screen-reader only text ("Open menu") was confusing, especially in a French application context where it should describe the specific action.
+**Action:** Always add context-specific `aria-label`s to icon-only buttons triggering dropdown menus, ensuring the label matches the language of the application (e.g., "Actions du formateur").
