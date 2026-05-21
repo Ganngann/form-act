@@ -48,7 +48,7 @@ export function TrainerActions({ trainerId }: TrainerActionsProps) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-gray-100 rounded-lg text-muted-foreground">
+                <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-gray-100 rounded-lg text-muted-foreground" aria-label="Actions du formateur">
                     <span className="sr-only">Open menu</span>
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreHorizontal className="h-4 w-4" />}
                 </Button>
